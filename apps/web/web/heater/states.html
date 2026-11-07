@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heater states</title>
+<link rel="stylesheet" href="heater.css">
+<link rel="stylesheet" href="states.css">
+<script type="module" src="states.js"></script>
+</head>
+<body>
+<header class="top">
+  <h1>Heater <span>/ state sheet</span></h1>
+  <p>Original HeatCheck pundit rig: inline SVG, 25 shards and one basketball. Each cell holds one state.
+     One-shot states replay every few seconds.</p>
+</header>
+
+<section class="seq" aria-labelledby="seq-h">
+  <h2 id="seq-h">Full sequence</h2>
+  <div class="seq-grid">
+    <div class="stage big"><div id="seq-heater"></div></div>
+    <div class="seq-side">
+      <div id="seq-card"></div>
+      <form id="ask" class="ask" autocomplete="off">
+        <label for="q">Your question <small>(typed fallback; always available)</small></label>
+        <input id="q" name="q" type="text" maxlength="200" placeholder="Is the hot hand real?">
+        <label for="rec">Evidence record</label>
+        <select id="rec" name="rec"></select>
+        <div class="row">
+          <label><input id="voice" type="checkbox" checked> Voices</label>
+          <label><input id="mic" type="checkbox"> Mic level while listening</label>
+          <button id="go" type="submit">Play sequence</button>
+        </div>
+        <p class="phase" id="phase" aria-live="polite">Ready.</p>
+        <p class="src" id="src"></p>
+        <p class="note">Heater's take and the Ref's verdict are read from the selected evidence record
+           in Max's ledger. No model is called, and the question does not change the record.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="grid-h">
+  <h2 id="grid-h">States</h2>
+  <div class="grid" id="grid"></div>
+</section>
+</body>
+</html>

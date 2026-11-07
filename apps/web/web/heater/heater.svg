@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 320" class="h-svg" role="img" aria-label="Heater, the HeatCheck pundit">
+  <!-- Heater rig. Original design for HeatCheck: 25 angular shards plus one basketball.
+       No style element, no scripts, no external references (the app CSP is self-only).
+       Every part is a named class (h-*) so heater.css can pose and animate it.
+       Feet stand on the fixed baseline y=300 in every state. Filter ids "hg1..hg3" are
+       suffixed per instance by heater.js so several rigs can share one page. -->
+  <defs>
+    <filter id="hg1" x="-15%" y="-5%" width="130%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.07" numOctaves="1" seed="3" result="n"/>
+      <feComponentTransfer in="n" result="b">
+        <feFuncR type="discrete" tableValues="0.5 0.33 0.5 0.83 0.5 0.17 0.5 1"/>
+        <feFuncG type="discrete" tableValues="0.5"/>
+      </feComponentTransfer>
+      <feDisplacementMap in="SourceGraphic" in2="b" scale="12" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.77  0 0 0 0 0.71  0 0 0 0.75 0" result="t"/>
+      <feOffset in="t" dx="-3" result="t2"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.29  0 0 0 0 1  0 0 0 0.75 0" result="v"/>
+      <feOffset in="v" dx="3" result="v2"/>
+      <feMerge><feMergeNode in="t2"/><feMergeNode in="v2"/><feMergeNode in="d"/></feMerge>
+    </filter>
+    <filter id="hg2" x="-15%" y="-5%" width="130%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.11" numOctaves="1" seed="11" result="n"/>
+      <feComponentTransfer in="n" result="b">
+        <feFuncR type="discrete" tableValues="0.5 0.83 0.5 0.17 0.67 0.5 0.33 0.5"/>
+        <feFuncG type="discrete" tableValues="0.5"/>
+      </feComponentTransfer>
+      <feDisplacementMap in="SourceGraphic" in2="b" scale="12" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.77  0 0 0 0 0.71  0 0 0 0.75 0" result="t"/>
+      <feOffset in="t" dx="4" result="t2"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.29  0 0 0 0 1  0 0 0 0.75 0" result="v"/>
+      <feOffset in="v" dx="-4" result="v2"/>
+      <feMerge><feMergeNode in="t2"/><feMergeNode in="v2"/><feMergeNode in="d"/></feMerge>
+    </filter>
+    <filter id="hg3" x="-15%" y="-5%" width="130%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.05" numOctaves="1" seed="29" result="n"/>
+      <feComponentTransfer in="n" result="b">
+        <feFuncR type="discrete" tableValues="0.33 0.5 1 0.5 0.5 0 0.5 0.67"/>
+        <feFuncG type="discrete" tableValues="0.5"/>
+      </feComponentTransfer>
+      <feDisplacementMap in="SourceGraphic" in2="b" scale="10" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.77  0 0 0 0 0.71  0 0 0 0.75 0" result="t"/>
+      <feOffset in="t" dx="-2" result="t2"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.29  0 0 0 0 1  0 0 0 0.75 0" result="v"/>
+      <feOffset in="v" dx="2" result="v2"/>
+      <feMerge><feMergeNode in="t2"/><feMergeNode in="v2"/><feMergeNode in="d"/></feMerge>
+    </filter>
+  </defs>
+
+  <polygon class="h-floor" points="18,300 202,300 196,303 24,303"/>
+
+  <g class="h-all">
+    <g class="h-figure">
+      <g class="h-legs">
+        <polygon class="h-shard h-leg h-leg-l" points="86,212 102,214 98,258 106,300 80,300 86,258"/>
+        <polygon class="h-shard h-leg h-leg-r" points="112,214 128,210 134,256 150,300 122,300 118,258"/>
+      </g>
+
+      <g class="h-upper"><g class="h-upper-loop">
+        <g class="h-arm-l"><g class="h-arm-l-loop">
+          <polygon class="h-shard h-blazer h-arm" points="80,136 92,134 86,192 74,194"/>
+          <g class="h-claw-l">
+            <polygon class="h-shard h-claw" points="74,194 86,192 82,206"/>
+            <polygon class="h-shard h-claw" points="82,206 86,192 92,203"/>
+            <polygon class="h-shard h-claw h-claw-tip" points="74,194 82,206 72,211"/>
+          </g>
+        </g></g>
+
+        <g class="h-torso">
+          <polygon class="h-shard h-blazer h-blazer-back" points="78,140 104,124 102,218 84,216"/>
+          <polygon class="h-shard h-blazer h-blazer-front" points="104,124 134,130 130,214 102,218"/>
+          <polygon class="h-shard h-lapel" points="110,126 117,127 109,190 105,186"/>
+          <g class="h-shoulders">
+            <polygon class="h-shard h-blazer h-blazer-shoulder-l" points="68,142 94,120 104,124 80,148"/>
+            <polygon class="h-shard h-blazer h-blazer-shoulder-r" points="104,124 128,114 148,128 132,136"/>
+          </g>
+        </g>
+
+        <g class="h-head">
+          <g class="h-smoke">
+            <polygon class="h-wisp h-wisp-1" points="104,70 110,58 106,46 112,52 108,64"/>
+            <polygon class="h-wisp h-wisp-2" points="122,64 128,50 124,38 131,45 127,58"/>
+            <polygon class="h-wisp h-wisp-3" points="138,70 143,58 140,48 146,54 142,64"/>
+          </g>
+          <g class="h-steam">
+            <polygon class="h-puff h-puff-1" points="100,58 108,52 116,57 110,64 102,64"/>
+            <polygon class="h-puff h-puff-2" points="124,46 133,40 141,46 135,53 126,52"/>
+            <polygon class="h-puff h-puff-3" points="142,62 150,57 157,62 151,68 144,67"/>
+          </g>
+          <g class="h-crest"><g class="h-crest-loop">
+            <polygon class="h-shard h-flame h-flame-1" points="104,104 88,66 114,99"/>
+            <polygon class="h-shard h-flame h-flame-2" points="110,101 98,46 121,97"/>
+            <polygon class="h-shard h-flame h-flame-3" points="116,99 112,26 128,96"/>
+            <polygon class="h-shard h-flame h-flame-4" points="122,98 132,34 135,96"/>
+            <polygon class="h-shard h-flame h-flame-5" points="129,97 148,52 141,96"/>
+            <polygon class="h-shard h-flame h-flame-6" points="136,97 160,70 147,98"/>
+            <polygon class="h-shard h-flame h-flame-7" points="113,99 121,58 127,97"/>
+          </g></g>
+          <g class="h-sparks">
+            <polygon class="h-spark h-spark-1" points="150,48 153,40 155,47"/>
+            <polygon class="h-spark h-spark-2" points="100,44 102,36 105,43"/>
+            <polygon class="h-spark h-spark-3" points="126,22 129,14 131,21"/>
+            <polygon class="h-spark h-spark-4" points="162,62 165,55 167,61"/>
+          </g>
+          <polygon class="h-shard h-jaw" points="114,100 142,96 136,114 122,124"/>
+          <polygon class="h-shard h-visor" points="112,86 148,83 147,89 113,92"/>
+          <polygon class="h-visor-scan" points="117,86 125,85.4 125,90.4 117,91"/>
+          <polygon class="h-shard h-mouth" points="126,110 138,107 136,112 132,111 129,115"/>
+        </g>
+
+        <g class="h-arm-r"><g class="h-arm-r-loop">
+          <polygon class="h-shard h-blazer h-arm" points="128,122 142,124 156,186 146,190"/>
+          <g class="h-claw-r">
+            <polygon class="h-shard h-claw" points="146,190 156,186 154,201"/>
+            <polygon class="h-shard h-claw h-claw-tip" points="154,201 156,186 165,197"/>
+            <polygon class="h-shard h-claw" points="146,190 154,201 147,208"/>
+          </g>
+        </g></g>
+      </g></g>
+    </g>
+
+    <g class="h-ball"><g class="h-ball-spin">
+      <circle class="h-ball-core" cx="0" cy="0" r="13"/>
+      <path class="h-ball-seam" d="M -13 0 L 13 0 M 0 -13 L 0 13 M -9 -9 Q -3 0 -9 9 M 9 -9 Q 3 0 9 9"/>
+    </g></g>
+  </g>
+
+  <polygon class="h-scan" points="0,0 220,0 220,3 0,3"/>
+</svg>
