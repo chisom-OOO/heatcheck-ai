@@ -7,7 +7,7 @@ or model reviewer can approve, unknowns block, and any rules change invalidates 
 import hashlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 NBA_TEAMS = {
     "ATL": ("Atlanta", "Hawks"), "BOS": ("Boston", "Celtics"), "BKN": ("Brooklyn", "Nets"),
@@ -45,7 +45,7 @@ def _dt(s):
         return None
     try:
         d = datetime.fromisoformat(str(s).replace("Z", "+00:00").replace(" ", "T"))
-        return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+        return d if d.tzinfo else d.replace(tzinfo=UTC)
     except ValueError:
         return None
 
@@ -168,6 +168,6 @@ def approve(mapping, reviewer, current_rules_hash):
         raise PermissionError("market rules changed since the mapping was proposed; re-propose")
     out = dict(mapping)
     out["status"] = "APPROVED"
-    out["trusted_reviewer"] = {"name": reviewer, "at": datetime.now(timezone.utc).isoformat(),
+    out["trusted_reviewer"] = {"name": reviewer, "at": datetime.now(UTC).isoformat(),
                                "attested": "checked teams, date, outcome direction, overtime and postponement rules"}
     return out

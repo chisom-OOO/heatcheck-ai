@@ -4,7 +4,7 @@ import hashlib
 import io
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 MAX_BYTES = 2 * 1024 * 1024
 MAX_ROWS = 50_000
@@ -58,7 +58,7 @@ def ingest(name, data, declared_mime=None, meta=None):
     try:
         text = data.decode("utf-8-sig")
     except UnicodeDecodeError:
-        raise FileRejected("not valid UTF-8 text")
+        raise FileRejected("not valid UTF-8 text") from None
     if declared_mime and declared_mime.split(";")[0].strip() not in (
         "text/csv", "application/json", "text/plain", "application/vnd.ms-excel", "application/octet-stream", ""
     ):
@@ -68,7 +68,7 @@ def ingest(name, data, declared_mime=None, meta=None):
         "file_name": name,
         "bytes": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
-        "retrieved_utc": datetime.now(timezone.utc).isoformat(),
+        "retrieved_utc": datetime.now(UTC).isoformat(),
         "declared_mime": declared_mime,
         "source_date": (meta or {}).get("source_date"),
         "units": (meta or {}).get("units"),
@@ -89,7 +89,7 @@ def _csv_preview(text):
     try:
         rows = list(csv.reader(io.StringIO(text)))
     except csv.Error as e:
-        raise FileRejected(f"malformed CSV: {e}")
+        raise FileRejected(f"malformed CSV: {e}") from None
     if not rows:
         raise FileRejected("CSV has no rows")
     if len(rows) > MAX_ROWS:
@@ -116,11 +116,11 @@ def _csv_preview(text):
 
 
 def _json_preview(text):
-    from .contracts import loads_strict, ContractError
+    from .contracts import ContractError, loads_strict
     try:
         obj = loads_strict(text)
     except (ValueError, ContractError) as e:
-        raise FileRejected(f"JSON rejected: {e}")
+        raise FileRejected(f"JSON rejected: {e}") from None
     desc = {"kind": "json", "top_level": type(obj).__name__}
     if isinstance(obj, list):
         desc["items"] = len(obj)

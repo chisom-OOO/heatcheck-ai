@@ -107,7 +107,7 @@ def interpret(text):
         if kind == "game_win" and "game" not in fields:
             unresolved.append("Which scheduled game (teams and tip date)?")
 
-    for q, ptn in (("Direction", r"\b(better|higher|more|improve|increase|worse|lower|less|decline)\b"),):
+    for _label, ptn in (("Direction", r"\b(better|higher|more|improve|increase|worse|lower|less|decline)\b"),):
         m = re.search(ptn, low)
         if m:
             fields["direction"] = "positive" if m.group(1) in {"better", "higher", "more", "improve", "increase"} else "negative"

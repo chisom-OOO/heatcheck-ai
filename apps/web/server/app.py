@@ -10,20 +10,19 @@ import os
 import platform
 import re
 import secrets
-import subprocess
 import sys
 import threading
 import traceback
 import urllib.parse
 import urllib.request
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
 from . import comparison, engine_fixture, files, intake, quotes, venue_fixtures
-from .authority import AuthorityError, Session, canonical, sha
+from .authority import AuthorityError, Session, sha
 from .contracts import PROTOCOL_VERSION, ContractError, loads_strict, validate_envelope
 from .venues import UrllibTransport, VenueError, adapter
 
@@ -44,7 +43,7 @@ LOCK = threading.RLock()
 
 
 def utcnow():
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def code_hash():
@@ -263,13 +262,13 @@ def transcribe(audio, mime):
                                  headers={"Authorization": f"Bearer {key}",
                                           "Content-Type": f"multipart/form-data; boundary={boundary}",
                                           "Accept": "application/json"})
-    t0 = datetime.now(timezone.utc)
+    t0 = datetime.now(UTC)
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             out = json.loads(r.read(1_000_000))
     except Exception as e:
-        raise ApiError(502, "PROVIDER_ERROR", f"transcription failed: {type(e).__name__}")
-    ms = (datetime.now(timezone.utc) - t0).total_seconds() * 1000
+        raise ApiError(502, "PROVIDER_ERROR", f"transcription failed: {type(e).__name__}") from None
+    ms = (datetime.now(UTC) - t0).total_seconds() * 1000
     return {"transcript": out.get("transcript", ""), "provider": "meta muse-voice-transcribe-1.0",
             "provider_ms": round(ms), "audio_ms": out.get("audioDurationMs"), "raw_audio_retained": False}
 
@@ -316,7 +315,7 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         if os.environ.get("HEATCHECK_QUIET"):
             return
-        sys.stderr.write("[%s] %s\n" % (self.log_date_time_string(), fmt % args))
+        sys.stderr.write(f"[{self.log_date_time_string()}] {fmt % args}\n")
 
     # -- plumbing
     def _send(self, status, body, ctype="application/json", extra=None):
@@ -375,7 +374,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             obj = loads_strict(raw.decode("utf-8") or "{}")
         except (ValueError, ContractError, UnicodeDecodeError) as e:
-            raise ApiError(400, "BAD_JSON", f"invalid JSON body: {e}")
+            raise ApiError(400, "BAD_JSON", f"invalid JSON body: {e}") from None
         if not isinstance(obj, dict):
             raise ApiError(400, "BAD_JSON", "body must be an object")
         return obj
@@ -483,7 +482,7 @@ def r_claim(h, args, q):
         try:
             k = int(f["streak_length"])
         except (TypeError, ValueError):
-            raise ApiError(422, "BAD_FIELD", "streak_length must be an integer")
+            raise ApiError(422, "BAD_FIELD", "streak_length must be an integer") from None
         if not 1 <= k <= 6:
             raise ApiError(422, "BAD_FIELD", "streak_length must be 1-6")
     if f.get("direction") not in ("positive", "negative", "two_sided"):
@@ -674,7 +673,7 @@ def _transport(source):
         try:
             return venue_fixtures.transport(source.split(":", 1)[1])
         except KeyError:
-            raise ApiError(400, "BAD_SOURCE", "unknown fixture scenario")
+            raise ApiError(400, "BAD_SOURCE", "unknown fixture scenario") from None
     raise ApiError(400, "BAD_SOURCE", "source must be 'live' or 'fixture:<scenario>'")
 
 

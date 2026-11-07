@@ -92,9 +92,13 @@ class Api(unittest.TestCase):
     def test_keepalive_unread_body_does_not_corrupt_next_request(self):
         c = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
         h = {"Host": f"127.0.0.1:{self.port}", "Content-Type": "application/json"}
-        c.request("POST", "/api/session", body=b'{"ignored": true}', headers=h); c.getresponse().read()
-        c.request("GET", "/api/health", headers=h); r = c.getresponse()
-        self.assertEqual(r.status, 200); r.read(); c.close()
+        c.request("POST", "/api/session", body=b'{"ignored": true}', headers=h)
+        c.getresponse().read()
+        c.request("GET", "/api/health", headers=h)
+        r = c.getresponse()
+        self.assertEqual(r.status, 200)
+        r.read()
+        c.close()
 
     # --- claim / plan / run
     def test_claim_needs_every_field(self):

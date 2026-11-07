@@ -4,7 +4,7 @@ Research owns the canonical implementation (gate G11). This module exists so the
 layer can run offline against fixtures; replace calls with Research's normaliser when delivered.
 All money/probability math uses Decimal. No fees, no profit, no sizing, no ranking.
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 
 ZERO, ONE = Decimal("0"), Decimal("1")
@@ -25,7 +25,7 @@ def parse_price(raw, unit):
     try:
         d = Decimal(str(raw).strip().lstrip("$"))
     except (InvalidOperation, AttributeError):
-        raise QuoteError("MALFORMED", f"unparseable price {raw!r}")
+        raise QuoteError("MALFORMED", f"unparseable price {raw!r}") from None
     if not d.is_finite():
         raise QuoteError("MALFORMED", "non-finite price")
     if unit == "cents":
@@ -39,7 +39,7 @@ def parse_qty(raw):
     try:
         d = Decimal(str(raw).strip())
     except InvalidOperation:
-        raise QuoteError("MALFORMED", f"unparseable quantity {raw!r}")
+        raise QuoteError("MALFORMED", f"unparseable quantity {raw!r}") from None
     if not d.is_finite() or d < 0:
         raise QuoteError("MALFORMED", "negative or non-finite quantity")
     return d
@@ -56,11 +56,13 @@ def normalise_kalshi(orderbook_fp, tick="0.01", price_unit="dollars"):
         raise QuoteError("MALFORMED", "orderbook_fp must contain yes_dollars and no_dollars")
     yes_bids, no_bids = [], []
     for price, qty in orderbook_fp["yes_dollars"]:
-        p = parse_price(price, price_unit); check_grid(p, tick)
+        p = parse_price(price, price_unit)
+        check_grid(p, tick)
         yes_bids.append({"price": p, "qty": parse_qty(qty), "derived": False, "raw_side": "yes_bid"})
     derived_yes_asks = []
     for price, qty in orderbook_fp["no_dollars"]:
-        p = parse_price(price, price_unit); check_grid(p, tick)
+        p = parse_price(price, price_unit)
+        check_grid(p, tick)
         no_bids.append({"price": p, "qty": parse_qty(qty)})
         derived_yes_asks.append({"price": ONE - p, "qty": parse_qty(qty), "derived": True, "raw_side": "no_bid"})
     return _book(yes_bids, derived_yes_asks, raw_no_bids=no_bids)
@@ -74,17 +76,19 @@ def normalise_polymarket(book, tick=None):
     bids = []
     asks = []
     for lv in book["bids"]:
-        p = parse_price(lv["price"], "dollars"); check_grid(p, tick)
+        p = parse_price(lv["price"], "dollars")
+        check_grid(p, tick)
         bids.append({"price": p, "qty": parse_qty(lv["size"]), "derived": False, "raw_side": "bid"})
     for lv in book["asks"]:
-        p = parse_price(lv["price"], "dollars"); check_grid(p, tick)
+        p = parse_price(lv["price"], "dollars")
+        check_grid(p, tick)
         asks.append({"price": p, "qty": parse_qty(lv["size"]), "derived": False, "raw_side": "ask"})
     return _book(bids, asks)
 
 
 def _book(bids, asks, raw_no_bids=None):
-    bids = sorted(bids, key=lambda l: l["price"], reverse=True)
-    asks = sorted(asks, key=lambda l: l["price"])
+    bids = sorted(bids, key=lambda lv: lv["price"], reverse=True)
+    asks = sorted(asks, key=lambda lv: lv["price"])
     bb = bids[0]["price"] if bids else None
     ba = asks[0]["price"] if asks else None
     crossed = bb is not None and ba is not None and bb > ba
@@ -107,7 +111,7 @@ def _book(bids, asks, raw_no_bids=None):
 
 def freshness(received_utc, now_utc=None, threshold_seconds=30, cutoff_utc=None):
     """Explicit status; a historical comparison never accepts a quote received after its cutoff."""
-    now_utc = now_utc or datetime.now(timezone.utc)
+    now_utc = now_utc or datetime.now(UTC)
     age = (now_utc - received_utc).total_seconds()
     if cutoff_utc is not None and received_utc > cutoff_utc:
         return {"status": "FUTURE_QUOTE", "age_seconds": age}

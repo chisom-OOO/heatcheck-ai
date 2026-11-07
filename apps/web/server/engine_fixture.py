@@ -304,9 +304,11 @@ def harness_batch(leagues_per_cell=12, seed0=10_000, perms=150, sizes=(0.0, 0.02
                 continue
             s = c["decisions"].get("SURVIVED_PROTOCOL", 0)
             if c["truth_has_effect"]:
-                tp += s; reals += c["n"]
+                tp += s
+                reals += c["n"]
             else:
-                fp += s; nulls += c["n"]
+                fp += s
+                nulls += c["n"]
         return {"null_leagues": nulls, "false_survivals": fp, "false_survival_rate": fp / nulls if nulls else None,
                 "false_survival_interval95": list(wilson(fp, nulls)) if nulls else None,
                 "effect_leagues": reals, "true_survivals": tp, "power": tp / reals if reals else None,

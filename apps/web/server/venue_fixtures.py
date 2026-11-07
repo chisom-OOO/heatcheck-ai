@@ -6,7 +6,7 @@ Each scenario exercises one market-semantics case from DATA_PIPELINE.md section 
 """
 import copy
 
-from .venues import FixtureTransport, KALSHI_BASE, PolymarketAdapter
+from .venues import KALSHI_BASE, FixtureTransport, PolymarketAdapter
 
 GAME = {"game_id": "FIX-G0001", "home_team": "BOS", "away_team": "NYK",
         "scheduled_tip_utc": "2026-11-08T00:30:00+00:00", "season": "fixture", "data_mode": "SYNTHETIC"}
