@@ -1,0 +1,529 @@
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+.........FF.FF...FF.sssssssssssssssssssss............................... [ 66%]
+...FFFF......FFFFF....FFF.FF.....FFFFFF............ssss.ss.....xx...x... [ 88%]
+...x.x.x.xxxx........x.......xx...xxx                                    [100%]
+================================== FAILURES ===================================
+_________ test_rv_al1_forged_decision_with_recomputed_hashes_detected _________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-485/test_rv_al1_forged_decision_wi0')
+
+    def test_rv_al1_forged_decision_with_recomputed_hashes_detected(tmp_path):
+        """Max report: 'tampering is detected on read'. Both hashes are unkeyed content hashes, so
+        a forger recomputes them. Expected: detection (hash chain / signed or externally anchored
+        head). Actual is reported in the message."""
+        entries = EvidenceLedger(COMMITTED).all()
+        entries[1] = forge(entries[1], decision="SURVIVED_PROTOCOL",
+                           reason="p=0.0010 <= 0.05, effect +0.0740 >= 0.01")
+        write_lines(tmp_path / "l.jsonl", entries)
+        try:
+            got = EvidenceLedger(tmp_path / "l.jsonl").all()
+        except LedgerError:
+            return
+>       pytest.fail(f"EXPECTED forged line detected; ACTUAL accepted, HH-K2 decision now "
+                    f"{got[1]['identity']['decision']}")
+E       Failed: EXPECTED forged line detected; ACTUAL accepted, HH-K2 decision now SURVIVED_PROTOCOL
+
+tests\review\test_rv_agent_loop.py:83: Failed
+______________________ test_rv_al2_deleted_line_detected ______________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-485/test_rv_al2_deleted_line_detec0')
+
+    def test_rv_al2_deleted_line_detected(tmp_path):
+        entries = EvidenceLedger(COMMITTED).all()
+        write_lines(tmp_path / "l.jsonl", [entries[1], entries[2]])  # HH-K3 result removed
+        try:
+            got = EvidenceLedger(tmp_path / "l.jsonl").all()
+        except LedgerError:
+            return
+>       pytest.fail(f"EXPECTED deletion detected; ACTUAL {len(got)} entries accepted, HH-K3 gone, "
+                    "and the loop would re-run it as a fresh evaluation")
+E       Failed: EXPECTED deletion detected; ACTUAL 2 entries accepted, HH-K3 gone, and the loop would re-run it as a fresh evaluation
+
+tests\review\test_rv_agent_loop.py:94: Failed
+_______ test_rv_al4_challenger_cannot_drop_applicable_optional_attacks ________
+
+    def test_rv_al4_challenger_cannot_drop_applicable_optional_attacks():
+        """The Referee only requires mandatory attacks. If the shot-value confound check would
+        flag, a Challenger that simply does not select it turns INSUFFICIENT into SURVIVED."""
+        claim = CLAIMS["HH-K3"]
+        ok = {"status": "EXECUTED", "reason": "ok", "details": {"sufficient": True}}
+        base = {"A-INPUT-INTEGRITY": ok, "A-SAMPLE-SIZE": ok,
+                "A-PERMUTATION-NULL": {**ok, "p_value": 0.001, "effect_estimate": 0.08}}
+        with_sv = {**base, "A-SHOT-VALUE-SELECTION": {**ok, "reason": "gap 0.25",
+                                                      "details": {"flagged": True}}}
+        assert decide(claim, with_sv, True)[0] == "INSUFFICIENT_EVIDENCE"
+        got = decide(claim, base, True)[0]
+>       assert got != "SURVIVED_PROTOCOL", (
+            "EXPECTED the Referee to require every optional attack whose prerequisites hold "
+            f"(BLOCKED or INSUFFICIENT); ACTUAL {got} when the Challenger omits the confound check")
+E       AssertionError: EXPECTED the Referee to require every optional attack whose prerequisites hold (BLOCKED or INSUFFICIENT); ACTUAL SURVIVED_PROTOCOL when the Challenger omits the confound check
+E       assert 'SURVIVED_PROTOCOL' != 'SURVIVED_PROTOCOL'
+
+tests\review\test_rv_agent_loop.py:126: AssertionError
+_________________ test_rv_al5_loop_accepts_minimal_challenger _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-485/test_rv_al5_loop_accepts_minim0')
+
+    def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+        class MandatoryOnly(DeterministicChallenger):
+            identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
+    
+            def select(self, claim, view):
+                return sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+    
+        view = tiny_view()
+        full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
+        mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
+        have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
+            set(mini["identity"]["challenger"]["selected_attacks"])
+        assert have_optional, "control: the full Challenger should select optional attacks here"
+>       pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
+                    f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+E       Failed: EXPECTED refusal of a selection that omits applicable optional attacks ['A-SHOT-VALUE-SELECTION', 'A-SPLIT-HALF-REPLICATION']; ACTUAL accepted, decision NOT_SUPPORTED
+
+tests\review\test_rv_agent_loop.py:144: Failed
+_ test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}] _
+
+raw = '{"claim_id": ["HH-K3"], "rationale": "x"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}',
+        '{"claim_id": "hh-k3", "rationale": "x"}',
+        '{"claim_id": "HH-K3 ", "rationale": "x"}',
+        '{"claim_id": ["HH-K3"], "rationale": "x"}',
+        '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}',
+    ])
+    def test_rv_al6_jone_cannot_smuggle_ids_or_params(raw):
+        with pytest.raises(ProposalRefused):
+>           parse_proposal(raw)
+
+tests\review\test_rv_agent_loop.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = '{"claim_id": ["HH-K3"], "rationale": "x"}'
+
+    def parse_proposal(raw: str) -> tuple[Claim | None, str]:
+        """Validate Jone's output. Anything but a registered claim id is refused."""
+        try:
+            obj = json.loads(raw)
+        except (TypeError, ValueError):
+            raise ProposalRefused("proposal is not JSON") from None
+        if not isinstance(obj, dict) or set(obj) != {"claim_id", "rationale"}:
+            raise ProposalRefused("proposal must be exactly {claim_id, rationale}")
+        if obj["claim_id"] is None:
+            return None, str(obj["rationale"])
+>       if obj["claim_id"] not in CLAIMS:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: unhashable type: 'list'
+
+heatcheck\agents\roles.py:56: TypeError
+_ test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}] _
+
+raw = '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}',
+        '{"claim_id": "hh-k3", "rationale": "x"}',
+        '{"claim_id": "HH-K3 ", "rationale": "x"}',
+        '{"claim_id": ["HH-K3"], "rationale": "x"}',
+        '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}',
+    ])
+    def test_rv_al6_jone_cannot_smuggle_ids_or_params(raw):
+>       with pytest.raises(ProposalRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.agents.roles.ProposalRefused'>
+
+tests\review\test_rv_agent_loop.py:156: Failed
+_________________ test_rv_e_u1_off_tick_price_refused[0.537] __________________
+
+price = '0.537'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_e_u1_off_tick_price_refused(price):
+        """Market tick 0.01. '0.0053' is a cents value divided by 100 twice."""
+        out = refused(pm_book, bids=[{"price": price, "size": "10"}])
+>       assert isinstance(out, AdapterError), (
+            f"EXPECTED refusal of off-tick price {price}; ACTUAL stored level "
+            f"{out['body']['levels'] if isinstance(out, dict) else out}")
+E       AssertionError: EXPECTED refusal of off-tick price 0.537; ACTUAL stored level [{'side': 'BID', 'price': '0.537', 'size': '10', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.58', 'size': '700', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.57', 'size': '350', 'derivation': 'DIRECT'}]
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:76: AssertionError
+_________________ test_rv_e_u1_off_tick_price_refused[0.0053] _________________
+
+price = '0.0053'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_e_u1_off_tick_price_refused(price):
+        """Market tick 0.01. '0.0053' is a cents value divided by 100 twice."""
+        out = refused(pm_book, bids=[{"price": price, "size": "10"}])
+>       assert isinstance(out, AdapterError), (
+            f"EXPECTED refusal of off-tick price {price}; ACTUAL stored level "
+            f"{out['body']['levels'] if isinstance(out, dict) else out}")
+E       AssertionError: EXPECTED refusal of off-tick price 0.0053; ACTUAL stored level [{'side': 'BID', 'price': '0.0053', 'size': '10', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.58', 'size': '700', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.57', 'size': '350', 'derivation': 'DIRECT'}]
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:76: AssertionError
+_________________ test_rv_e_u1_off_tick_price_refused[0.005] __________________
+
+price = '0.005'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_e_u1_off_tick_price_refused(price):
+        """Market tick 0.01. '0.0053' is a cents value divided by 100 twice."""
+        out = refused(pm_book, bids=[{"price": price, "size": "10"}])
+>       assert isinstance(out, AdapterError), (
+            f"EXPECTED refusal of off-tick price {price}; ACTUAL stored level "
+            f"{out['body']['levels'] if isinstance(out, dict) else out}")
+E       AssertionError: EXPECTED refusal of off-tick price 0.005; ACTUAL stored level [{'side': 'BID', 'price': '0.005', 'size': '10', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.58', 'size': '700', 'derivation': 'DIRECT'}, {'side': 'ASK', 'price': '0.57', 'size': '350', 'derivation': 'DIRECT'}]
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:76: AssertionError
+____________________ test_rv_e_u2_zero_size_level_refused _____________________
+
+    def test_rv_e_u2_zero_size_level_refused():
+        out = refused(pm_book, bids=[{"price": "0.52", "size": "0"}])
+>       assert isinstance(out, AdapterError), "EXPECTED refusal of size 0; ACTUAL stored a level"
+E       AssertionError: EXPECTED refusal of size 0; ACTUAL stored a level
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:83: AssertionError
+____________________ test_rv_e_u4_kalshi_off_tick_refused _____________________
+
+    def test_rv_e_u4_kalshi_off_tick_refused():
+        bad = {"orderbook_fp": {"yes_dollars": [["0.5150", "10.00"]], "no_dollars": []}}
+        out = refused(kalshi.parse_book, raw(bad), CAP, market=k_market(),
+                      contract_id=f"{B.K_TICKER}:yes", game_id=GAME, paused=None)
+>       assert isinstance(out, AdapterError), "EXPECTED refusal of 0.5150 on a 0.01 tick; ACTUAL stored"
+E       AssertionError: EXPECTED refusal of 0.5150 on a 0.01 tick; ACTUAL stored
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': 'KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes', 'fetch_star...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:96: AssertionError
+_____________ test_rv_e_t1_epoch_seconds_mistaken_for_ms_refused ______________
+
+    def test_rv_e_t1_epoch_seconds_mistaken_for_ms_refused():
+        """'1794067200' is epoch SECONDS (2026-11-07T16:00:00Z); read as ms it is 1970-01-21."""
+        out = refused(pm_book, timestamp="1794067200")
+>       assert isinstance(out, AdapterError), (
+            f"EXPECTED refusal (implausible provider time); ACTUAL provider_time_utc="
+            f"{out['body']['provider_time_utc']} status={out['body']['status']}")
+E       AssertionError: EXPECTED refusal (implausible provider time); ACTUAL provider_time_utc=1970-01-21T18:21:07.200Z status=OK
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:104: AssertionError
+______________ test_rv_e_t2_provider_time_after_receipt_refused _______________
+
+    def test_rv_e_t2_provider_time_after_receipt_refused():
+        out = refused(pm_book, timestamp="1794085200050")  # +5 h: local time stored as UTC
+>       assert isinstance(out, AdapterError), (
+            f"EXPECTED refusal; ACTUAL provider {out['body']['provider_time_utc']} > received "
+            f"{out['body']['received_utc']}, status {out['body']['status']}")
+E       AssertionError: EXPECTED refusal; ACTUAL provider 2026-11-07T21:00:00.050Z > received 2026-11-07T16:00:00.100Z, status OK
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:111: AssertionError
+____________________ test_rv_e_s1_two_hour_old_book_not_ok ____________________
+
+    def test_rv_e_s1_two_hour_old_book_not_ok():
+        out = refused(pm_book, timestamp="1794060000050")  # 2 h before receipt
+        status = out["body"]["status"] if isinstance(out, dict) else "REFUSED"
+>       assert status != "OK", "EXPECTED STALE or refusal for a 2 h old book; ACTUAL status OK"
+E       AssertionError: EXPECTED STALE or refusal for a 2 h old book; ACTUAL status OK
+E       assert 'OK' != 'OK'
+
+tests\review\test_rv_e001_adapter.py:119: AssertionError
+_________________ test_rv_e_s2_day_long_fetch_window_refused __________________
+
+    def test_rv_e_s2_day_long_fetch_window_refused():
+        cap = Capture(source="rv", fetch_start_utc="2026-11-06T16:00:00Z",
+                      received_utc="2026-11-07T16:00:00.100Z", data_mode="SYNTHETIC")
+        out = refused(pm_book, cap=cap)
+>       assert isinstance(out, AdapterError) or out["body"]["status"] != "OK", \
+            "EXPECTED refusal or non-OK for a 24 h fetch; ACTUAL status OK"
+E       AssertionError: EXPECTED refusal or non-OK for a 24 h fetch; ACTUAL status OK
+E       assert (False or 'OK' != 'OK')
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-06T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:126: AssertionError
+__________ test_rv_e_o1_no_contract_proposed_as_yes_team_win_refused __________
+
+    def test_rv_e_o1_no_contract_proposed_as_yes_team_win_refused():
+        """Kalshi YES = Boston wins. Mapping the NO contract to 'Boston TEAM_WINS' reverses it."""
+        m = k_market()
+        no_label = next(o["label"] for o in m["body"]["outcomes"] if o["contract_id"].endswith(":no"))
+        out = refused(propose_mapping, game_id=GAME, team_id="syn-team:BOS", market=m,
+                      contract_id=f"{B.K_TICKER}:no", expected_label=no_label, rules_text=_k_rules())
+>       assert isinstance(out, AdapterError), (
+            "EXPECTED refusal: NO contract proposed as the YES team's TEAM_WINS; ACTUAL PROPOSED "
+            f"mapping team={out['body']['team_id']} contract={out['body']['contract_id']}")
+E       AssertionError: EXPECTED refusal: NO contract proposed as the YES team's TEAM_WINS; ACTUAL PROPOSED mapping team=syn-team:BOS contract=KXNBAGAME-FIX26NOV08NYKBOS-BOS:no
+E       assert False
+E        +  where False = isinstance({'body': {'cancel_postpone_convention': "RULES TEXT: If the game is postponed, the market remains open until the resch...', ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:150: AssertionError
+_______________ test_rv_e_o2_team_not_named_by_outcome_refused ________________
+
+    def test_rv_e_o2_team_not_named_by_outcome_refused():
+        """Outcome 'Celtics' proposed as TEAM_WINS for the Knicks' team id."""
+        m = pm_market()
+        out = refused(propose_mapping, game_id=GAME, team_id="syn-team:NYK", market=m,
+                      contract_id=B.PM_TOKEN_HOME, expected_label="Celtics",
+                      rules_text=B.PM_MARKET["description"])
+>       assert isinstance(out, AdapterError), (
+            "EXPECTED refusal: team id is not the team the outcome names; ACTUAL PROPOSED "
+            f"team={out['body']['team_id']} for outcome 'Celtics'")
+E       AssertionError: EXPECTED refusal: team id is not the team the outcome names; ACTUAL PROPOSED team=syn-team:NYK for outcome 'Celtics'
+E       assert False
+E        +  where False = isinstance({'body': {'cancel_postpone_convention': 'RULES TEXT: If the game is postponed, the market stays open until it is playe...', ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:161: AssertionError
+_________________ test_rv_e_o3_book_without_asset_id_refused __________________
+
+    def test_rv_e_o3_book_without_asset_id_refused():
+        """The real CLOB book carries asset_id (live capture); a book without it cannot be
+        tied to the token, so another token's book would be accepted."""
+        out = refused(pm_book, asset_id=None)
+>       assert isinstance(out, AdapterError), "EXPECTED refusal; ACTUAL book accepted with no asset_id"
+E       AssertionError: EXPECTED refusal; ACTUAL book accepted with no asset_id
+E       assert False
+E        +  where False = isinstance({'body': {'adapter_version': 'experience-adapters/1', 'contract_id': '222002', 'fetch_start_utc': '2026-11-07T16:00:00...], ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, AdapterError)
+
+tests\review\test_rv_e001_adapter.py:170: AssertionError
+_ test_rv_e_ot1_overtime_reading[If the game is tied at the end of regulation, overtime periods count toward the result.-expected0] _
+
+text = 'If the game is tied at the end of regulation, overtime periods count toward the result.'
+expected = {'INCLUDES_OVERTIME', 'UNKNOWN'}
+
+    @pytest.mark.parametrize("text, expected", [
+        ("If the game is tied at the end of regulation, overtime periods count toward the result.",
+         {"INCLUDES_OVERTIME", "UNKNOWN"}),
+        ("Resolves on the final score including any overtime; it does not resolve at the end of "
+         "regulation.", {"INCLUDES_OVERTIME", "UNKNOWN"}),
+        ("Resolves on the score at the end of regulation only. Overtime is not included.",
+         {"REGULATION_ONLY"}),
+        ("The result will be determined based on the final score including any overtime periods.",
+         {"INCLUDES_OVERTIME"}),
+        ("Overtime does not count.", {"REGULATION_ONLY", "UNKNOWN"}),
+        ("Includes OT.", {"INCLUDES_OVERTIME", "UNKNOWN"}),
+    ])
+    def test_rv_e_ot1_overtime_reading(text, expected):
+        got = overtime_convention(text)
+>       assert got in expected, f"EXPECTED {sorted(expected)} for {text!r}; ACTUAL {got}"
+E       AssertionError: EXPECTED ['INCLUDES_OVERTIME', 'UNKNOWN'] for 'If the game is tied at the end of regulation, overtime periods count toward the result.'; ACTUAL REGULATION_ONLY
+E       assert 'REGULATION_ONLY' in {'INCLUDES_OVERTIME', 'UNKNOWN'}
+
+tests\review\test_rv_e001_adapter.py:198: AssertionError
+_ test_rv_e_ot1_overtime_reading[Resolves on the final score including any overtime; it does not resolve at the end of regulation.-expected1] _
+
+text = 'Resolves on the final score including any overtime; it does not resolve at the end of regulation.'
+expected = {'INCLUDES_OVERTIME', 'UNKNOWN'}
+
+    @pytest.mark.parametrize("text, expected", [
+        ("If the game is tied at the end of regulation, overtime periods count toward the result.",
+         {"INCLUDES_OVERTIME", "UNKNOWN"}),
+        ("Resolves on the final score including any overtime; it does not resolve at the end of "
+         "regulation.", {"INCLUDES_OVERTIME", "UNKNOWN"}),
+        ("Resolves on the score at the end of regulation only. Overtime is not included.",
+         {"REGULATION_ONLY"}),
+        ("The result will be determined based on the final score including any overtime periods.",
+         {"INCLUDES_OVERTIME"}),
+        ("Overtime does not count.", {"REGULATION_ONLY", "UNKNOWN"}),
+        ("Includes OT.", {"INCLUDES_OVERTIME", "UNKNOWN"}),
+    ])
+    def test_rv_e_ot1_overtime_reading(text, expected):
+        got = overtime_convention(text)
+>       assert got in expected, f"EXPECTED {sorted(expected)} for {text!r}; ACTUAL {got}"
+E       AssertionError: EXPECTED ['INCLUDES_OVERTIME', 'UNKNOWN'] for 'Resolves on the final score including any overtime; it does not resolve at the end of regulation.'; ACTUAL REGULATION_ONLY
+E       assert 'REGULATION_ONLY' in {'INCLUDES_OVERTIME', 'UNKNOWN'}
+
+tests\review\test_rv_e001_adapter.py:198: AssertionError
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book/../order] _
+
+url = 'https://clob.polymarket.com/book/../order'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://clob.polymarket.com/book/../order; ACTUAL allowed (host clob.polymarket.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book%2F..%2Forder] _
+
+url = 'https://clob.polymarket.com/book%2F..%2Forder'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://clob.polymarket.com/book%2F..%2Forder; ACTUAL allowed (host clob.polymarket.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/bookkeeping] _
+
+url = 'https://clob.polymarket.com/bookkeeping'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://clob.polymarket.com/bookkeeping; ACTUAL allowed (host clob.polymarket.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://gamma-api.polymarket.com/marketsX/admin] _
+
+url = 'https://gamma-api.polymarket.com/marketsX/admin'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://gamma-api.polymarket.com/marketsX/admin; ACTUAL allowed (host gamma-api.polymarket.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders] _
+
+url = 'https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders; ACTUAL allowed (host api.elections.kalshi.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+_ test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance] _
+
+url = 'https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance'
+
+    @pytest.mark.parametrize("url", [
+        "https://clob.polymarket.com/book/../order",
+        "https://clob.polymarket.com/book%2F..%2Forder",
+        "https://clob.polymarket.com/bookkeeping",
+        "https://gamma-api.polymarket.com/marketsX/admin",
+        "https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders",
+        "https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance",
+    ])
+    def test_rv_e_r1_allowlist_prefix_bypass_refused(url):
+        out = None
+        try:
+            out = check_request("GET", url)
+        except AdapterError:
+            return
+>       pytest.fail(f"EXPECTED refusal of {url}; ACTUAL allowed (host {out})")
+E       Failed: EXPECTED refusal of https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance; ACTUAL allowed (host api.elections.kalshi.com)
+
+tests\review\test_rv_e001_adapter.py:224: Failed
+=========================== short test summary info ===========================
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+SKIPPED [19] tests\review\test_rv_agent_loop.py:179: NOT_RUN: Ref number guard not landed; set HEATCHECK_REVIEW_REF_GUARD
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [6] tests\review\test_rv_preshot_invariance.py:76: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al1_forged_decision_with_recomputed_hashes_detected
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al2_deleted_line_detected
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al4_challenger_cannot_drop_applicable_optional_attacks
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}]
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.537]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.0053]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.005]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_u2_zero_size_level_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_u4_kalshi_off_tick_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_t1_epoch_seconds_mistaken_for_ms_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_t2_provider_time_after_receipt_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_s1_two_hour_old_book_not_ok
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_s2_day_long_fetch_window_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_o1_no_contract_proposed_as_yes_team_win_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_o2_team_not_named_by_outcome_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_o3_book_without_asset_id_refused
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[If the game is tied at the end of regulation, overtime periods count toward the result.-expected0]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[Resolves on the final score including any overtime; it does not resolve at the end of regulation.-expected1]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book/../order]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book%2F..%2Forder]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/bookkeeping]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://gamma-api.polymarket.com/marketsX/admin]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders]
+FAILED tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance]
+26 failed, 256 passed, 29 skipped, 16 xfailed in 160.90s (0:02:40)

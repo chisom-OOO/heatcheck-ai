@@ -1,0 +1,168 @@
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+................................................................FF.FF... [ 56%]
+FF.sssssssssssssssssssss................................................ [ 75%]
+..................................ssss.ss.....xx...x......x.x.x.xxxx.... [ 94%]
+....x.......xx...xxx                                                     [100%]
+================================== FAILURES ===================================
+_________ test_rv_al1_forged_decision_with_recomputed_hashes_detected _________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-486/test_rv_al1_forged_decision_wi0')
+
+    def test_rv_al1_forged_decision_with_recomputed_hashes_detected(tmp_path):
+        """Max report: 'tampering is detected on read'. Both hashes are unkeyed content hashes, so
+        a forger recomputes them. Expected: detection (hash chain / signed or externally anchored
+        head). Actual is reported in the message."""
+        entries = EvidenceLedger(COMMITTED).all()
+        entries[1] = forge(entries[1], decision="SURVIVED_PROTOCOL",
+                           reason="p=0.0010 <= 0.05, effect +0.0740 >= 0.01")
+        write_lines(tmp_path / "l.jsonl", entries)
+        try:
+            got = EvidenceLedger(tmp_path / "l.jsonl").all()
+        except LedgerError:
+            return
+>       pytest.fail(f"EXPECTED forged line detected; ACTUAL accepted, HH-K2 decision now "
+                    f"{got[1]['identity']['decision']}")
+E       Failed: EXPECTED forged line detected; ACTUAL accepted, HH-K2 decision now SURVIVED_PROTOCOL
+
+tests\review\test_rv_agent_loop.py:83: Failed
+______________________ test_rv_al2_deleted_line_detected ______________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-486/test_rv_al2_deleted_line_detec0')
+
+    def test_rv_al2_deleted_line_detected(tmp_path):
+        entries = EvidenceLedger(COMMITTED).all()
+        write_lines(tmp_path / "l.jsonl", [entries[1], entries[2]])  # HH-K3 result removed
+        try:
+            got = EvidenceLedger(tmp_path / "l.jsonl").all()
+        except LedgerError:
+            return
+>       pytest.fail(f"EXPECTED deletion detected; ACTUAL {len(got)} entries accepted, HH-K3 gone, "
+                    "and the loop would re-run it as a fresh evaluation")
+E       Failed: EXPECTED deletion detected; ACTUAL 2 entries accepted, HH-K3 gone, and the loop would re-run it as a fresh evaluation
+
+tests\review\test_rv_agent_loop.py:94: Failed
+_______ test_rv_al4_challenger_cannot_drop_applicable_optional_attacks ________
+
+    def test_rv_al4_challenger_cannot_drop_applicable_optional_attacks():
+        """The Referee only requires mandatory attacks. If the shot-value confound check would
+        flag, a Challenger that simply does not select it turns INSUFFICIENT into SURVIVED."""
+        claim = CLAIMS["HH-K3"]
+        ok = {"status": "EXECUTED", "reason": "ok", "details": {"sufficient": True}}
+        base = {"A-INPUT-INTEGRITY": ok, "A-SAMPLE-SIZE": ok,
+                "A-PERMUTATION-NULL": {**ok, "p_value": 0.001, "effect_estimate": 0.08}}
+        with_sv = {**base, "A-SHOT-VALUE-SELECTION": {**ok, "reason": "gap 0.25",
+                                                      "details": {"flagged": True}}}
+        assert decide(claim, with_sv, True)[0] == "INSUFFICIENT_EVIDENCE"
+        got = decide(claim, base, True)[0]
+>       assert got != "SURVIVED_PROTOCOL", (
+            "EXPECTED the Referee to require every optional attack whose prerequisites hold "
+            f"(BLOCKED or INSUFFICIENT); ACTUAL {got} when the Challenger omits the confound check")
+E       AssertionError: EXPECTED the Referee to require every optional attack whose prerequisites hold (BLOCKED or INSUFFICIENT); ACTUAL SURVIVED_PROTOCOL when the Challenger omits the confound check
+E       assert 'SURVIVED_PROTOCOL' != 'SURVIVED_PROTOCOL'
+
+tests\review\test_rv_agent_loop.py:126: AssertionError
+_________________ test_rv_al5_loop_accepts_minimal_challenger _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-486/test_rv_al5_loop_accepts_minim0')
+
+    def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+        class MandatoryOnly(DeterministicChallenger):
+            identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
+    
+            def select(self, claim, view):
+                return sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+    
+        view = tiny_view()
+        full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
+        mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
+        have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
+            set(mini["identity"]["challenger"]["selected_attacks"])
+        assert have_optional, "control: the full Challenger should select optional attacks here"
+>       pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
+                    f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+E       Failed: EXPECTED refusal of a selection that omits applicable optional attacks ['A-SHOT-VALUE-SELECTION', 'A-SPLIT-HALF-REPLICATION']; ACTUAL accepted, decision NOT_SUPPORTED
+
+tests\review\test_rv_agent_loop.py:144: Failed
+_ test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}] _
+
+raw = '{"claim_id": ["HH-K3"], "rationale": "x"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}',
+        '{"claim_id": "hh-k3", "rationale": "x"}',
+        '{"claim_id": "HH-K3 ", "rationale": "x"}',
+        '{"claim_id": ["HH-K3"], "rationale": "x"}',
+        '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}',
+    ])
+    def test_rv_al6_jone_cannot_smuggle_ids_or_params(raw):
+        with pytest.raises(ProposalRefused):
+>           parse_proposal(raw)
+
+tests\review\test_rv_agent_loop.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = '{"claim_id": ["HH-K3"], "rationale": "x"}'
+
+    def parse_proposal(raw: str) -> tuple[Claim | None, str]:
+        """Validate Jone's output. Anything but a registered claim id is refused."""
+        try:
+            obj = json.loads(raw)
+        except (TypeError, ValueError):
+            raise ProposalRefused("proposal is not JSON") from None
+        if not isinstance(obj, dict) or set(obj) != {"claim_id", "rationale"}:
+            raise ProposalRefused("proposal must be exactly {claim_id, rationale}")
+        if obj["claim_id"] is None:
+            return None, str(obj["rationale"])
+>       if obj["claim_id"] not in CLAIMS:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: unhashable type: 'list'
+
+heatcheck\agents\roles.py:56: TypeError
+_ test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}] _
+
+raw = '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}',
+        '{"claim_id": "hh-k3", "rationale": "x"}',
+        '{"claim_id": "HH-K3 ", "rationale": "x"}',
+        '{"claim_id": ["HH-K3"], "rationale": "x"}',
+        '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}',
+    ])
+    def test_rv_al6_jone_cannot_smuggle_ids_or_params(raw):
+>       with pytest.raises(ProposalRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.agents.roles.ProposalRefused'>
+
+tests\review\test_rv_agent_loop.py:156: Failed
+=========================== short test summary info ===========================
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+SKIPPED [19] tests\review\test_rv_agent_loop.py:179: NOT_RUN: Ref number guard not landed; set HEATCHECK_REVIEW_REF_GUARD
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [6] tests\review\test_rv_preshot_invariance.py:76: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al1_forged_decision_with_recomputed_hashes_detected
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al2_deleted_line_detected
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al4_challenger_cannot_drop_applicable_optional_attacks
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}]
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}]
+6 failed, 331 passed, 29 skipped, 16 xfailed in 153.31s (0:02:33)
