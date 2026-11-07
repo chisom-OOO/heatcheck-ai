@@ -15,6 +15,11 @@ Order of one turn (``Dialogue.turn``):
    ``ref_guard``: every number and verdict word must come from the evidence record, else the
    deterministic template is used. Heater's text passes the number part of the guard.
 
+Confirmatory claims (CONF-HA, CONF-MOM, CONF-HH; Research's sealed 2024-25 family) skip step 3:
+the Referee hands them to ``ConfirmatoryLane``. In its default dry-run mode nothing runs and
+nothing is written; the turn reports that the final test has not been run, with the dry-run
+checks, and no verdict.
+
 No LLM output reaches ``decide()``. Every LLM call has an 8 s deadline and a deterministic
 fallback, so a turn always returns all four fields.
 """
@@ -29,6 +34,13 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from heatcheck.agents.confirmatory import (
+    CONFIRMATORY_IDS,
+    EVIDENCE,
+    LANE_CONFIRMATORY,
+    SUBDIR,
+    ConfirmatoryLane,
+)
 from heatcheck.agents.llm import LLMUnavailable, MetaChat, prompt_sha256
 from heatcheck.agents.loop import run_once
 from heatcheck.agents.registry import ATTACKS, CLAIMS, Claim, catalogue
@@ -51,6 +63,28 @@ DECISIONS = ("SURVIVED_PROTOCOL", "NOT_SUPPORTED", "INSUFFICIENT_EVIDENCE", "DAT
 
 # --------------------------------------------------------------------------- mapping
 
+_CONF_STATEMENTS: dict[str, str] = {}
+
+
+def confirmatory_statements() -> dict[str, str]:
+    """Claim text of the frozen confirmatory plans (read from Research's evidence)."""
+    if not _CONF_STATEMENTS:
+        for hid in CONFIRMATORY_IDS:
+            plan = json.loads((EVIDENCE / SUBDIR / f"{hid}.plan.json").read_text(encoding="utf-8"))
+            _CONF_STATEMENTS[hid] = plan["claim"]
+    return _CONF_STATEMENTS
+
+
+def mapping_catalogue() -> list[dict]:
+    """What a question may map to: development claims, then the confirmatory family."""
+    return ([{"claim_id": c["claim_id"], "statement": c["statement"]} for c in catalogue()]
+            + [{"claim_id": h, "statement": t} for h, t in confirmatory_statements().items()])
+
+
+def statement_of(claim_id: str) -> str:
+    return CLAIMS[claim_id].statement if claim_id in CLAIMS else confirmatory_statements()[claim_id]
+
+
 
 def keyword_map(question: str) -> str:
     """Deterministic stand-in mapping. Field-goal streak questions only (free throws are out
@@ -58,6 +92,8 @@ def keyword_map(question: str) -> str:
     q = question.lower()
     if re.search(r"\bfree[- ]throws?\b", q):
         return NONE
+    if re.search(r"\bhome[- ](court|teams?|advantage)\b", q):
+        return "CONF-HA"
     if re.search(r"\b(rest|back[- ]to[- ]backs?|days? off|b2b)\b", q):
         return "GP-REST"
     streak = re.search(r"hot hand|streak|in a row|straight|consecutive|heat(ing)? up|on fire", q)
@@ -77,7 +113,7 @@ MAP_SYSTEM = (
 
 
 def map_schema() -> dict:
-    ids = [c["claim_id"] for c in catalogue()] + [NONE]
+    ids = [c["claim_id"] for c in mapping_catalogue()] + [NONE]
     return {"type": "json_schema", "json_schema": {"name": "claim_mapping", "strict": True, "schema": {
         "type": "object", "additionalProperties": False, "required": ["claim_id"],
         "properties": {"claim_id": {"type": "string", "enum": ids}}}}}
@@ -95,7 +131,7 @@ def parse_mapping(text: str) -> str:
     cid = obj["claim_id"]
     if not isinstance(cid, str):
         raise ValueError(f"claim_id must be a string, not {type(cid).__name__}")
-    if cid != NONE and cid not in CLAIMS:
+    if cid != NONE and cid not in CLAIMS and cid not in CONFIRMATORY_IDS:
         raise ValueError(f"claim_id {cid!r} is not registered")
     return cid
 
@@ -249,6 +285,8 @@ def ref_facts(entry: dict) -> dict:
     """The part of an evidence entry the Ref may talk about. Hashes are excluded so their hex
     digits cannot license invented numbers."""
     i = entry["identity"]
+    if i.get("lane") == LANE_CONFIRMATORY:
+        return confirmatory_facts(entry)
     claim = CLAIMS[i["claim"]["claim_id"]]
     return {
         "claim_id": claim.claim_id, "statement": claim.statement, "decision": i["decision"],
@@ -258,6 +296,21 @@ def ref_facts(entry: dict) -> dict:
         "attacks": [{"test": r["test_id_version"], "status": r["status"], "reason": r["reason"],
                      "statistic": r["statistic"], "effect_estimate": r["effect_estimate"],
                      "p_value": r["p_value"]} for r in i["attack_results"]],
+    }
+
+
+def confirmatory_facts(entry: dict) -> dict:
+    """Ref facts for a CONFIRMATORY entry, in the same shape as ``ref_facts``."""
+    i = entry["identity"]
+    r = i["result"]
+    return {
+        "claim_id": i["claim"]["claim_id"], "statement": i["claim"]["statement"],
+        "decision": i["decision"], "reason": i["reason"], "limits": i["limits"],
+        "lane": LANE_CONFIRMATORY,
+        "data": {"data_mode": i["data"]["data_mode"], "season": i["data"]["season"],
+                 "n_attempts": r.get("n_fga"), "n_groups": None, "n_games": r.get("n_games")},
+        "params": {k: v for k, v in i["claim"]["plan"]["params"].items() if k != "seed"},
+        "attacks": [], "result": r, "p_holm": i["p_holm"],
     }
 
 
@@ -349,6 +402,25 @@ def ref_template(facts: dict) -> str:
             f"Reason: {facts['reason']}.")
 
 
+CONF_PENDING_REF = (
+    "{cid} is a pre-registered confirmatory claim on the sealed {season} season: {statement} "
+    "Its single final test has not been run, so there is no verdict yet. It runs once, recorded, "
+    "after the reviewer verifies the seal. Dry run: {summary}.")
+
+
+def dry_run_summary(report: dict) -> str:
+    by = {c["check"]: c["status"] for c in report["checks"]}
+    core = [k for k in by if k.startswith(("family", "plan:")) or k in
+            ("research_code", "seal", "registration", "exposure")]
+    bad = [k for k in core if by[k] != "PASS"]
+    parts = ["plans, code and seal match" if not bad else f"MISMATCH in {', '.join(bad)}"]
+    if by.get("sealed_data") == "NOT_CHECKED":
+        parts.append("the sealed data were not checked on this machine")
+    elif by.get("sealed_data") == "FAIL":
+        parts.append("the data do NOT match the seal")
+    return "; ".join(parts)
+
+
 NO_TEST_REF = ("No registered test exists for this question, so nothing was run and there is no "
                "verdict. Registered claims: {ids}.")
 
@@ -383,6 +455,8 @@ HEATER_FALLBACK = {
     "DATA_INVALID": "Heater here, and the Ref threw out the data! You can't cook with a broken "
                     "stove.",
     "BLOCKED": "Heater here! The Ref says that test can't run yet. Stay tuned.",
+    "CONFIRMATORY_PENDING": "Heater here! That one's locked in the vault for its one big "
+                            "official run. No peeking, no verdict yet. I'm DYING to know.",
 }
 
 
@@ -395,16 +469,19 @@ class Dialogue:
     ledger: EvidenceLedger
     llm: MetaChat | None  # None: deterministic only
     view_identity: dict | None = None
+    confirmatory: ConfirmatoryLane | None = None  # None: default dry-run lane
 
     def turn(self, question: str) -> dict[str, Any]:
         sources: dict[str, str] = {}
         claim_id, sources["mapping"], map_identity = self._map(question)
         if claim_id == NONE:
-            ref_text = NO_TEST_REF.format(ids=", ".join(c["claim_id"] for c in catalogue()))
+            ref_text = NO_TEST_REF.format(ids=", ".join(c["claim_id"] for c in mapping_catalogue()))
             heater_text, sources["heater"] = self._heater(question, None, None, None)
             sources["ref"] = "TEMPLATE_NO_REGISTERED_TEST"
             return {"heater_text": heater_text, "ref_text": ref_text, "evidence_record_id": None,
-                    "verdict": None, "claim_id": NONE, "sources": sources}
+                    "verdict": None, "claim_id": NONE, "lane": None, "sources": sources}
+        if claim_id in CONFIRMATORY_IDS:
+            return self._confirmatory_turn(question, claim_id, map_identity, sources)
         challenger = LLMChallenger(self.llm) if self.llm else DeterministicChallenger()
         entry = run_once(self.view, self.ledger, view_identity=self.view_identity,
                          jone=MappedDiscoverer(claim_id, question, map_identity),
@@ -426,14 +503,47 @@ class Dialogue:
             ref_text, sources["ref"] = r.result()
         return {"heater_text": heater_text, "ref_text": ref_text,
                 "evidence_record_id": entry["evidence_id"], "verdict": entry["identity"]["decision"],
-                "claim_id": ran, "sources": sources}
+                "claim_id": ran, "lane": entry["identity"]["lane"], "sources": sources}
+
+    def _confirmatory_turn(self, question, claim_id, map_identity, sources) -> dict[str, Any]:
+        lane = self.confirmatory or ConfirmatoryLane()
+        disc = MappedDiscoverer(claim_id, question, map_identity)
+        proposer = {**disc.identity, "rationale": f"user question sha256:{disc.question_sha256}"}
+        out = lane.evaluate(claim_id, self.ledger, proposer)
+        sources["challenger"] = "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)"
+        if "dry_run" in out:
+            report = out["dry_run"]
+            ref_text = CONF_PENDING_REF.format(cid=claim_id, season="2024-25",
+                                               statement=statement_of(claim_id),
+                                               summary=dry_run_summary(report))
+            heater_text, sources["heater"] = self._heater(question, claim_id, None, None,
+                                                          pending=True)
+            sources["ref"] = "TEMPLATE_CONFIRMATORY_NOT_RUN"
+            return {"heater_text": heater_text, "ref_text": ref_text, "evidence_record_id": None,
+                    "verdict": None, "claim_id": claim_id, "lane": LANE_CONFIRMATORY,
+                    "confirmatory_status": report["state"],
+                    "dry_run": {"ready": report["ready"], "checks": report["checks"]},
+                    "sources": sources}
+        entry = out["entry"]
+        if entry["identity"]["claim"]["claim_id"] != claim_id:
+            raise RuntimeError("confirmatory evidence claim differs from the mapped claim")
+        facts = ref_facts(entry)
+        with cf.ThreadPoolExecutor(max_workers=2) as pool:
+            h = pool.submit(self._heater, question, claim_id, facts["decision"], facts)
+            r = pool.submit(self._ref, facts)
+            heater_text, sources["heater"] = h.result()
+            ref_text, sources["ref"] = r.result()
+        return {"heater_text": heater_text, "ref_text": ref_text,
+                "evidence_record_id": entry["evidence_id"], "verdict": entry["identity"]["decision"],
+                "claim_id": claim_id, "lane": LANE_CONFIRMATORY, "confirmatory_status": "FINAL_DONE",
+                "sources": sources}
 
     # -- pieces
 
     def _map(self, question: str) -> tuple[str, str, dict]:
         if self.llm:
-            messages = [{"role": "system", "content": MAP_SYSTEM.format(catalogue=json.dumps(
-                [{"claim_id": c["claim_id"], "statement": c["statement"]} for c in catalogue()]))},
+            messages = [{"role": "system", "content": MAP_SYSTEM.format(
+                catalogue=json.dumps(mapping_catalogue()))},
                 {"role": "user", "content": question}]
             fmt = map_schema()
             try:
@@ -449,13 +559,16 @@ class Dialogue:
         return keyword_map(question), "KEYWORD_STANDIN", {
             "kind": "DETERMINISTIC_STANDIN", "model": None, "prompt": None}
 
-    def _heater(self, question, claim_id, decision, facts) -> tuple[str, str]:
-        fallback = HEATER_FALLBACK[decision]
+    def _heater(self, question, claim_id, decision, facts, pending=False) -> tuple[str, str]:
+        fallback = HEATER_FALLBACK["CONFIRMATORY_PENDING" if pending else decision]
         if not self.llm:
             return fallback, "TEMPLATE"
         ctx = {"fan_question": question,
-               "registered_claim": CLAIMS[claim_id].statement if claim_id else None,
-               "refs_verdict": PLAIN[decision] if decision else "No registered test exists; nothing was run."}
+               "registered_claim": statement_of(claim_id) if claim_id else None,
+               "refs_verdict": PLAIN[decision] if decision else (
+                   "Not run yet: this pre-registered test runs once, later, after its seal is "
+                   "verified. There is no verdict." if pending else
+                   "No registered test exists; nothing was run.")}
         messages = [{"role": "system", "content": HEATER_SYSTEM},
                     {"role": "user", "content": json.dumps(ctx)}]
         try:

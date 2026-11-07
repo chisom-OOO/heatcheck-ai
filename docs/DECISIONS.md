@@ -74,3 +74,19 @@
       never remove (b2e6537).
     - RV-AL1/AL2: the ledger is hash-chained (c8831e6). The two committed ledgers were
       migrated by adding chain fields only.
+
+- **2026-11-07 18:15 UTC: confirmatory lane wired, dry run only (user instruction, Max).**
+  - Research's 2024-25 family (CONF-HA, CONF-MOM, CONF-HH) is merged at 2d277d4. When Heater
+    proposes one of these, the Referee hands it to `heatcheck/agents/confirmatory.py` instead of
+    Max's attacks. In final mode that calls `scripts/confirmatory.py final` under Research's
+    custodian and records each hypothesis in the evidence ledger with `lane: CONFIRMATORY`.
+    New development-loop entries carry `lane: DEVELOPMENT`; entries written before this
+    change have no lane field and are all 2023-24 development results.
+  - Default mode is dry run: plans, Research code hash, seal, registration, exposure state and
+    (if a data dir is given) the sealed table hashes are checked read-only. Nothing is run,
+    reserved or written. Final mode needs a named authoriser and an all-PASS dry run.
+  - The dry run is Max code, not a flag in Research's script, because that script is inside
+    the family's frozen code_hash.
+  - The final step is not run. It runs once, recorded, after the reviewer verifies the seal.
+    It must run on Linux/macOS (Research's custodian uses fcntl) with a rebuilt 2024-25 data
+    dir whose bytes match the seal.

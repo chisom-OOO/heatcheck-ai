@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from heatcheck.agents.attacks import IMPLEMENTATIONS
+from heatcheck.agents.confirmatory import LANE_DEVELOPMENT
 from heatcheck.agents.registry import REGISTRY_VERSION, catalogue
 from heatcheck.agents.roles import (
     REFEREE_IDENTITY,
@@ -69,6 +70,7 @@ def run_once(view: ShotView | None, ledger: EvidenceLedger, *, view_identity: di
     identity = {
         "protocol_version": PROTOCOL_VERSION,
         "registry_version": REGISTRY_VERSION,
+        "lane": LANE_DEVELOPMENT,
         "channel": claim.channel,
         "claim": {"claim_id": claim.claim_id, "version": claim.version,
                   "plan": claim.plan(), "canonical_plan_hash": claim.plan_hash()},

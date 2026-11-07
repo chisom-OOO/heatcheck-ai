@@ -1,0 +1,27 @@
+.....F.........................                                          [100%]
+================================== FAILURES ===================================
+_________________ test_rv_al5_loop_accepts_minimal_challenger _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-497/test_rv_al5_loop_accepts_minim0')
+
+    def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+        class MandatoryOnly(DeterministicChallenger):
+            identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
+    
+            def select(self, claim, view):
+                return sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+    
+        view = tiny_view()
+        full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
+        mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
+        have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
+            set(mini["identity"]["challenger"]["selected_attacks"])
+        assert have_optional, "control: the full Challenger should select optional attacks here"
+>       pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
+                    f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+E       Failed: EXPECTED refusal of a selection that omits applicable optional attacks ['A-SHOT-VALUE-SELECTION', 'A-SPLIT-HALF-REPLICATION']; ACTUAL accepted, decision NOT_SUPPORTED
+
+tests\review\test_rv_agent_loop.py:144: Failed
+=========================== short test summary info ===========================
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger
+1 failed, 30 passed in 2.56s
