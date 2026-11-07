@@ -43,7 +43,7 @@ def main(repo: Path, out: Path, extracted: Path):
     store.publish(out / "restricted_labels.sqlite", {"game_labels": b23.game_labels,
                                                      "shot_labels": b23.shot_labels,
                                                      "game_labels_2022": b22.game_labels}, restricted=True)
-    rec.to_csv(out / "reconciliation_2023.csv", index=False)
+    rec.to_csv(out / "reconciliation_2023.csv", index=False, lineterminator="\n")
 
     hashes = {
         "games": frame_hash(b23.games, ["game_id"]),
@@ -71,7 +71,7 @@ def main(repo: Path, out: Path, extracted: Path):
         "data_mode": "REAL_NBA_RETROSPECTIVE",
         "pseudo_out_of_sample": True,
     }
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2, default=str))
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2, default=str), newline="\n")
     print(json.dumps({"hashes": hashes, "counts": manifest["record_counts"],
                       "reconciliation": manifest["reconciliation"],
                       "exclusions": manifest["exclusions_2023"]}, indent=2, default=str))

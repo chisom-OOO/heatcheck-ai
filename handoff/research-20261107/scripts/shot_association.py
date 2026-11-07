@@ -105,8 +105,8 @@ def harness(_data, out: Path):
                         "TruthManifest kept in a separate file; separation is logical (same OS user)."],
               "created_utc": utc_now_iso()}
     out.mkdir(parents=True, exist_ok=True)
-    (out / "harness_report.json").write_text(json.dumps(report, indent=2, default=str))
-    df.to_csv(out / "harness_league_results.csv", index=False)
+    (out / "harness_report.json").write_text(json.dumps(report, indent=2, default=str), newline="\n")
+    df.to_csv(out / "harness_league_results.csv", index=False, lineterminator="\n")
     print(json.dumps(report, indent=2, default=str))
 
 
@@ -152,7 +152,7 @@ def nba(data: Path, out: Path):
                   "Development games only; this is not a confirmatory final result."],
               "created_utc": utc_now_iso()}
     out.mkdir(parents=True, exist_ok=True)
-    (out / "hot_hand_dev.json").write_text(json.dumps(report, indent=2, default=str))
+    (out / "hot_hand_dev.json").write_text(json.dumps(report, indent=2, default=str), newline="\n")
     print(json.dumps(report, indent=2, default=str))
 
 
