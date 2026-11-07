@@ -1,0 +1,45 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "lane": "SHOT_ASSOCIATION",
+  "phase": "DEVELOPMENT",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "pseudo_out_of_sample": true,
+  "games": 930,
+  "fga_eligible": 165710,
+  "fga_excluded_ordering_unresolved": 210,
+  "counts": {
+    "hits_after_3_makes": 6114,
+    "n_after_3_makes": 12666,
+    "hits_after_3_misses": 7306,
+    "n_after_3_misses": 15295,
+    "p_make_after_3_makes": 0.4827096162955945,
+    "p_make_after_3_misses": 0.4776724419745015
+  },
+  "test": {
+    "status": "EXECUTED",
+    "T": 0.005037174321093019,
+    "p": 0.996,
+    "null_mean": 0.0190090429534447,
+    "null_sd": 0.004769432669367587,
+    "B_effective": 999
+  },
+  "development_outcome": "NOT_REJECTED",
+  "attack_difficulty_selection": {
+    "after_3_makes": {
+      "n": 12670,
+      "mean_distance_ft": 13.934050513022887,
+      "share_3pt": 0.3782162588792423
+    },
+    "after_3_misses": {
+      "n": 15292,
+      "mean_distance_ft": 13.780741564216582,
+      "share_3pt": 0.38523410933821606
+    }
+  },
+  "interpretation_limits": [
+    "Association under within-player-game-shotvalue exchangeability only; not a causal hot hand.",
+    "Does not adjust for within-value shot difficulty, defence, fatigue, or shot selection after makes.",
+    "Development games only; this is not a confirmatory final result."
+  ],
+  "created_utc": "2026-11-07T15:24:46.500800Z"
+}
