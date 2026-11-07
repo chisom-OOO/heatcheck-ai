@@ -1,0 +1,261 @@
+code commit ffa419d31766c4263fa14429d174ff82a5cf5967
+$ python -I scripts/idea_family.py dev $DATA2023 evidence/idea-family/request_dev_example.json evidence/idea-family/dev_example
+{
+  "format": "heatcheck-idea-family/1",
+  "mode": "development",
+  "label": "EXPLORATORY",
+  "registration_hash": "7fa1f8953d5d5c5819653a1e5379faced745494d48a720013aad494efb68c5f4",
+  "n_ideas": 12,
+  "alpha": 0.05,
+  "B": 999,
+  "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+  "results": [
+    {
+      "idea_hash": "e5d599684213dfa7c9d25c02d18c892c5babe32c93f070a73f196120520054ff",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "greater",
+        "feature": "away_back_to_back",
+        "level": "yes"
+      },
+      "n_condition": 169,
+      "n_rest": 757,
+      "rate_condition": 0.591715976331361,
+      "rate_rest": 0.5442536327608983,
+      "status": "EXECUTED",
+      "T": 0.04746234357046264,
+      "null_mean": -0.0010818976371257587,
+      "B_effective": 999,
+      "p_raw": 0.162,
+      "p_holm": 0.972,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "be5e45c6739d94c8ac1c9aa89523d52ce3cd89f191a3a11a9f9ca3644e4bcfe3",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "less",
+        "feature": "home_back_to_back",
+        "level": "yes"
+      },
+      "n_condition": 154,
+      "n_rest": 772,
+      "rate_condition": 0.5,
+      "rate_rest": 0.5634715025906736,
+      "status": "EXECUTED",
+      "T": -0.06347150259067358,
+      "null_mean": 9.430061243559957e-07,
+      "B_effective": 999,
+      "p_raw": 0.091,
+      "p_holm": 0.728,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "greater",
+        "feature": "rest_advantage",
+        "level": "home_more"
+      },
+      "n_condition": 222,
+      "n_rest": 704,
+      "rate_condition": 0.5900900900900901,
+      "rate_rest": 0.5411931818181818,
+      "status": "EXECUTED",
+      "T": 0.04889690827190829,
+      "null_mean": -0.0020612980917034994,
+      "B_effective": 999,
+      "p_raw": 0.107,
+      "p_holm": 0.749,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "79f97d47cf813759aa5a6876dc6a68a6652fa3d3e74c9efe055e14f3356d5c65",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "greater",
+        "feature": "elo_gap",
+        "level": "home_fav_100+"
+      },
+      "n_condition": 460,
+      "n_rest": 466,
+      "rate_condition": 0.6826086956521739,
+      "rate_rest": 0.4248927038626609,
+      "status": "EXECUTED",
+      "T": 0.25771599178951293,
+      "null_mean": 4.707076922041e-06,
+      "B_effective": 999,
+      "p_raw": 0.001,
+      "p_holm": 0.012,
+      "verdict": "CANDIDATE"
+    },
+    {
+      "idea_hash": "6e2c78a904ef5fc19a8ba80032873fce1579924f8d188f634fb654b735c06505",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "day_of_week",
+        "level": "Sun"
+      },
+      "n_condition": 105,
+      "n_rest": 821,
+      "rate_condition": 0.5428571428571428,
+      "rate_rest": 0.5542021924482339,
+      "status": "EXECUTED",
+      "T": -0.011345049591091061,
+      "null_mean": -4.407864740791673e-05,
+      "B_effective": 999,
+      "p_raw": 0.839,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "37fb1dfd72941a08655b5e4cfcb0c9965d54c1ff939fec5d05da6688619704af",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "month",
+        "level": "12"
+      },
+      "n_condition": 205,
+      "n_rest": 721,
+      "rate_condition": 0.5707317073170731,
+      "rate_rest": 0.5478502080443828,
+      "status": "EXECUTED",
+      "T": 0.022881499272690342,
+      "null_mean": 0.0013960850333097849,
+      "B_effective": 999,
+      "p_raw": 0.622,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "1"
+      },
+      "n_condition": 70543,
+      "n_rest": 76290,
+      "rate_condition": 0.47458996640347023,
+      "rate_rest": 0.47807052038275005,
+      "status": "EXECUTED",
+      "T": -0.0034805539792798212,
+      "null_mean": 0.007169277651191234,
+      "B_effective": 999,
+      "p_raw": 1.0,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "3"
+      },
+      "n_condition": 12666,
+      "n_rest": 100296,
+      "rate_condition": 0.4827096162955945,
+      "rate_rest": 0.47694823322964025,
+      "status": "EXECUTED",
+      "T": 0.005761383065954251,
+      "null_mean": 0.01444161621555857,
+      "B_effective": 999,
+      "p_raw": 0.985,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "2"
+      },
+      "n_condition": 34402,
+      "n_rest": 94814,
+      "rate_condition": 0.4777338526829836,
+      "rate_rest": 0.47649081359292933,
+      "status": "EXECUTED",
+      "T": 0.0012430390900542432,
+      "null_mean": -0.006732726497419132,
+      "B_effective": 999,
+      "p_raw": 0.997,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "shot_value",
+        "level": "3"
+      },
+      "n_condition": 65088,
+      "n_rest": 100622,
+      "rate_condition": 0.36710299901671584,
+      "rate_rest": 0.5447218302160561,
+      "status": "EXECUTED",
+      "T": -0.1776188311993403,
+      "null_mean": -0.04650265337890448,
+      "B_effective": 999,
+      "p_raw": 0.001,
+      "p_holm": 0.012,
+      "verdict": "CANDIDATE"
+    },
+    {
+      "idea_hash": "db56353916638a8b44d8f1aee9953efc6352b086fa02ed87c556a835224d8760",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "period",
+        "level": "4"
+      },
+      "n_condition": 39268,
+      "n_rest": 126442,
+      "rate_condition": 0.470714067434043,
+      "rate_rest": 0.4762737065215672,
+      "status": "EXECUTED",
+      "T": -0.005559639087524215,
+      "null_mean": 0.0027057502920621547,
+      "B_effective": 999,
+      "p_raw": 0.001,
+      "p_holm": 0.012,
+      "verdict": "CANDIDATE"
+    },
+    {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "1"
+      },
+      "n_condition": 42873,
+      "n_rest": 122837,
+      "rate_condition": 0.4756373475147529,
+      "rate_rest": 0.47471852943331405,
+      "status": "EXECUTED",
+      "T": 0.0009188180814388436,
+      "null_mean": -0.006256970364786755,
+      "B_effective": 999,
+      "p_raw": 0.004,
+      "p_holm": 0.036000000000000004,
+      "verdict": "CANDIDATE"
+    }
+  ],
+  "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+  "created_utc": "2026-11-07T22:29:35.460468Z"
+}
+
+real	3m37.439s
+user	3m36.090s
+sys	0m1.030s
+exit=0

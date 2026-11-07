@@ -1,0 +1,11 @@
+{
+  "revealed_after": "results.json",
+  "results_sha256": "66df5234d3c68cfa2f5f959e1f4c6f9d9487b3503514c9aed643ddc8d40fba22",
+  "simulator_family": "A",
+  "gamma_logodds": 0.0,
+  "seed": 20261109,
+  "form_sd": 0.0,
+  "planted_label": "NULL",
+  "synthetic_period_labels": "uniform 1-4 from default_rng(seed + 7777777); planted NULL",
+  "created_utc": "2026-11-07T22:30:37.028481Z"
+}
