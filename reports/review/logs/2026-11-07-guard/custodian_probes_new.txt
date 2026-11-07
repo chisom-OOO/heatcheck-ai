@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.7.0 -- /tmp/claude-0/-home-user/fe5586ee-a7f5-53b3-a884-b5f7093c719b/scratchpad/venv-r/bin/python
+rootdir: /home/user/heatcheck-ai
+configfile: pyproject.toml
+collecting ... collected 10 items
+
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix] PASSED [ 10%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped] PASSED [ 20%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_space] PASSED [ 30%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline] PASSED [ 40%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c2_truncated_ledger_fails_closed PASSED [ 50%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[fork] PASSED [ 60%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[spawn] PASSED [ 70%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[forkserver] PASSED [ 80%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c4_retry_after_spend_returns_same_receipt_and_stays_spent PASSED [ 90%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c5_subset_with_same_identity_is_not_a_retry PASSED [100%]
+
+============================== 10 passed in 1.97s ==============================

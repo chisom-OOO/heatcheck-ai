@@ -1,0 +1,88 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.7.0 -- /tmp/claude-0/-home-user/fe5586ee-a7f5-53b3-a884-b5f7093c719b/scratchpad/venv-r/bin/python
+rootdir: /home/user/heatcheck-ai
+configfile: pyproject.toml
+collecting ... collected 10 items
+
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix] FAILED [ 10%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped] FAILED [ 20%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_space] FAILED [ 30%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline] FAILED [ 40%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c2_truncated_ledger_fails_closed PASSED [ 50%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[fork] PASSED [ 60%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[spawn] PASSED [ 70%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c3_race_under_each_start_method[forkserver] PASSED [ 80%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c4_retry_after_spend_returns_same_receipt_and_stays_spent PASSED [ 90%]
+tests/review/incoming/test_rv_research_custodian.py::test_rv_c5_subset_with_same_identity_is_not_a_retry PASSED [100%]
+
+=================================== FAILURES ===================================
+___________ test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-74/test_rv_c1_id_spelling_variant0')
+variant = ['nba:0022300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+tests/review/incoming/test_rv_research_custodian.py:39: Failed
+_____ test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-74/test_rv_c1_id_spelling_variant1')
+variant = ['22300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+tests/review/incoming/test_rv_research_custodian.py:39: Failed
+_________ test_rv_c1_id_spelling_variant_cannot_reopen[leading_space] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-74/test_rv_c1_id_spelling_variant2')
+variant = [' 0022300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+tests/review/incoming/test_rv_research_custodian.py:39: Failed
+________ test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-74/test_rv_c1_id_spelling_variant3')
+variant = ['0022300901\n']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+tests/review/incoming/test_rv_research_custodian.py:39: Failed
+=========================== short test summary info ============================
+FAILED tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix]
+FAILED tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped]
+FAILED tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_space]
+FAILED tests/review/incoming/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline]
+========================= 4 failed, 6 passed in 2.01s ==========================
