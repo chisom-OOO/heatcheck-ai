@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jone · Heat Check</title>
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to workspace</a>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">◐</span>
+    <div><h1>Jone <span class="thin">· Heat Check</span></h1>
+    <p class="tag">An NBA research partner that tries to break its own claims.</p></div>
+  </div>
+  <div class="top-status">
+    <span id="voice-state" class="chip state" role="status" aria-live="polite" data-state="IDLE">IDLE</span>
+    <span id="engine-chip" class="chip muted">engine: checking…</span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Channels">
+  <button role="tab" id="tab-research" aria-controls="panel-research" aria-selected="true">Research claim<small>SHOT_ASSOCIATION</small></button>
+  <button role="tab" id="tab-forecast" aria-controls="panel-forecast" aria-selected="false" tabindex="-1">Game forecast<small>GAME_PREDICTION</small></button>
+  <button role="tab" id="tab-market" aria-controls="panel-market" aria-selected="false" tabindex="-1">Market comparison<small>MARKET_COMPARISON · read-only</small></button>
+  <button role="tab" id="tab-harness" aria-controls="panel-harness" aria-selected="false" tabindex="-1">Harness<small>SYNTHETIC calibration</small></button>
+  <button role="tab" id="tab-gates" aria-controls="panel-gates" aria-selected="false" tabindex="-1">Evidence &amp; gates</button>
+</nav>
+
+<div id="announce" class="sr-only" role="status" aria-live="polite"></div>
+
+<main id="main">
+<!-- ===================================================== RESEARCH -->
+<section id="panel-research" role="tabpanel" aria-labelledby="tab-research" class="panel">
+  <div class="grid">
+    <div class="col">
+      <article class="card" aria-labelledby="h-claim">
+        <h2 id="h-claim"><span class="step">1</span> Say or type a claim</h2>
+        <label for="claim-text">Claim</label>
+        <textarea id="claim-text" rows="3" maxlength="2000" placeholder="e.g. Players shoot better after three makes in a row"></textarea>
+        <div class="row">
+          <button id="btn-interpret" class="primary">Interpret</button>
+          <button id="btn-mic" aria-pressed="false" title="Push to talk: press to start, press again to stop">🎙 Push to talk</button>
+          <label class="inline"><span class="sr-only">Speech provider</span>
+            <select id="voice-provider">
+              <option value="browser">Browser speech (audio goes to the browser's speech service)</option>
+              <option value="server">Server: Meta transcription (needs META_API_KEY)</option>
+            </select></label>
+          <label class="inline check"><input type="checkbox" id="voice-mute"> Mute spoken replies</label>
+          <button id="btn-stop-speak" class="ghost">Stop speaking</button>
+        </div>
+        <p id="mic-status" class="hint">Microphone is off. Nothing is recorded until you press Push to talk.</p>
+        <p class="hint">Commands: <kbd>challenge this claim</kbd> <kbd>attach evidence</kbd> <kbd>show why rejected</kbd> <kbd>compare an NBA market</kbd> <kbd>stop</kbd> <kbd>export</kbd></p>
+      </article>
+
+      <article class="card" aria-labelledby="h-interp" id="interp-card" hidden>
+        <h2 id="h-interp"><span class="step">2</span> Exact interpretation</h2>
+        <p class="hint">Highlighted words are what each field was read from. Nothing is chosen for you: answer every open question, then approve.</p>
+        <p id="interp-spans" class="spans"></p>
+        <form id="fields-form" class="fields"></form>
+        <ul id="unresolved" class="unresolved"></ul>
+        <div class="row"><button id="btn-approve" class="primary">Approve definition</button><span id="approve-msg" class="hint"></span></div>
+      </article>
+
+      <article class="card" aria-labelledby="h-src">
+        <h2 id="h-src"><span class="step">3</span> Attach evidence <small class="muted">optional · treated as untrusted data</small></h2>
+        <div class="row">
+          <label class="btnlike" for="file-input">Choose a file (.csv .json .txt, ≤ 2 MB)</label>
+          <input type="file" id="file-input" accept=".csv,.json,.txt" class="sr-only">
+          <button id="btn-screen">Capture a screen frame</button>
+          <button id="btn-screen-stop" class="ghost" hidden>Stop capture</button>
+        </div>
+        <p id="screen-status" class="hint" hidden></p>
+        <details>
+          <summary>Attach selected page content</summary>
+          <p class="hint">Use the Heat Check browser extension on the page, or paste here. Page text is stored as evidence and never followed as instructions.</p>
+          <label for="page-url">Page URL</label><input id="page-url" type="url" placeholder="https://…">
+          <label for="page-title">Title</label><input id="page-title" type="text">
+          <label for="page-text">Selected text or table</label><textarea id="page-text" rows="3"></textarea>
+          <button id="btn-page">Attach page content</button>
+        </details>
+        <p class="hint">Browser extension pairing code: <code id="pair-code" class="mono"></code></p>
+        <ul id="sources" class="sources" aria-label="Attached sources"></ul>
+      </article>
+    </div>
+
+    <div class="col">
+      <article class="card" aria-labelledby="h-plan">
+        <h2 id="h-plan"><span class="step">4</span> Review and confirm the plan</h2>
+        <div id="revoked-banner" class="banner warn" hidden role="alert">⚠ The claim or its sources changed. The previous confirmation was revoked; earlier runs stay attached to their old revision.</div>
+        <div class="row">
+          <label class="inline" for="data-mode">Data</label>
+          <select id="data-mode">
+            <option value="SYNTHETIC">SYNTHETIC: blind planted-truth league</option>
+            <option value="REAL_NBA_RETROSPECTIVE">REAL_NBA_RETROSPECTIVE: Research engine</option>
+          </select>
+          <button id="btn-plan">Propose plan</button>
+        </div>
+        <div id="plan-view" hidden></div>
+        <fieldset id="blind" class="blind" hidden>
+          <legend>Blind challenge configuration</legend>
+          <p class="hint">The custodian holds this. Product agents, run IDs, URLs and colours never carry it. Truth is revealed only after the decision.</p>
+          <label class="check"><input type="radio" name="blind-mode" value="random" checked> Custodian picks a family and effect at random (sealed)</label>
+          <label class="check"><input type="radio" name="blind-mode" value="choose"> I choose (the chooser cannot also judge)</label>
+          <div class="row" id="blind-choose" hidden>
+            <select id="blind-family" aria-label="Generator family"></select>
+            <select id="blind-effect" aria-label="Planted effect"></select>
+          </div>
+          <p id="blind-sealed" class="sealed" hidden>🔒 Configuration sealed for this run.</p>
+        </fieldset>
+        <div class="row">
+          <button id="btn-confirm" class="primary" disabled>Confirm exact plan</button>
+          <button id="btn-run" class="primary" disabled>Run research loop</button>
+          <button id="btn-cancel" class="danger" disabled>Cancel</button>
+        </div>
+      </article>
+
+      <article class="card" aria-labelledby="h-trace">
+        <h2 id="h-trace"><span class="step">5</span> Discoverer · Challenger · Referee</h2>
+        <ol id="trace" class="trace" aria-live="polite"></ol>
+      </article>
+
+      <article class="card" aria-labelledby="h-verdict" id="verdict-card" hidden>
+        <h2 id="h-verdict"><span class="step">6</span> Referee evidence record</h2>
+        <div id="ref-source" role="note"></div>
+        <h3 id="h-ref-claim">Claim</h3>
+        <dl id="ref-claim" class="kv" aria-labelledby="h-ref-claim"></dl>
+        <h3 id="h-ref-attacks">Attacks run</h3>
+        <div class="tablewrap"><table id="attacks" aria-labelledby="h-ref-attacks"><thead><tr><th scope="col">Check</th><th scope="col">Outcome</th><th scope="col">Statistic</th><th scope="col">p</th><th scope="col">Method and assumptions</th></tr></thead><tbody></tbody></table></div>
+        <h3>Verdict</h3>
+        <div id="verdict"></div>
+        <h3 id="h-ref-evidence">Evidence</h3>
+        <ul id="ref-evidence" class="evidence" aria-labelledby="h-ref-evidence"></ul>
+        <details id="ref-problems-wrap"><summary>Gaps in this record <span id="ref-problems-count"></span></summary><ul id="ref-problems"></ul></details>
+        <div class="row">
+          <button id="btn-reveal">Reveal hidden truth</button>
+          <a id="dl-json" class="btnlike" download>Export run (JSON)</a>
+          <a id="dl-csv" class="btnlike" download>Export tests (CSV)</a>
+          <label class="btnlike" for="ref-file">Open a Referee record (JSON)</label>
+          <input id="ref-file" type="file" accept=".json,application/json" class="sr-only">
+        </div>
+        <div id="reveal-view"></div>
+        <details id="standin-extras" open><summary>Stand-in engine extras (not part of a Referee record)</summary>
+          <h3>Raw versus shrunk talent <small class="muted">make rate per anonymised shooter, 90% posterior interval</small></h3>
+          <div class="viz-root"><div id="talent-chart" class="chart"></div></div>
+          <details><summary>Talent table</summary><div class="tablewrap"><table id="talent-table"></table></div></details>
+        </details>
+      </article>
+
+      <article class="card" aria-labelledby="h-hist">
+        <h2 id="h-hist">Run history <small class="muted">failed claims stay visible</small></h2>
+        <ul id="history" class="history"></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== FORECAST -->
+<section id="panel-forecast" role="tabpanel" aria-labelledby="tab-forecast" class="panel" hidden>
+  <article class="card">
+    <h2>Game forecast</h2>
+    <p class="hint">GAME_PREDICTION probabilities come from Research's forecast engine. It is not connected in this build, so only the authored fixture forecast below exists. It is not a model output and has no calibration.</p>
+    <div id="forecast-view"></div>
+  </article>
+</section>
+
+<!-- ===================================================== MARKET -->
+<section id="panel-market" role="tabpanel" aria-labelledby="tab-market" class="panel" hidden>
+  <div class="grid">
+    <div class="col">
+      <article class="card">
+        <h2>Compare one forecast with one quote</h2>
+        <p class="hint">Read-only public data. No orders, wallets or account access exist in this app. A difference is descriptive context, not profit.</p>
+        <div id="mk-forecast"></div>
+        <label for="mk-source">Market data source</label>
+        <select id="mk-source"></select>
+        <div id="mk-live" class="row" hidden>
+          <select id="mk-venue" aria-label="Venue"><option value="kalshi">Kalshi</option><option value="polymarket">Polymarket</option></select>
+          <input id="mk-ref" type="text" placeholder="Kalshi ticker or Polymarket slug" aria-label="Market ticker or slug">
+        </div>
+        <button id="btn-mk-propose" class="primary">Fetch market rules and propose mapping</button>
+      </article>
+      <article class="card" id="mk-spec-card" hidden>
+        <h2>Event mapping</h2>
+        <div id="mk-spec"></div>
+        <div id="mk-approve">
+          <label for="mk-reviewer">Reviewer name (a human; automated approval is refused)</label>
+          <input id="mk-reviewer" type="text" autocomplete="name">
+          <label class="check"><input type="checkbox" id="mk-attest"> I checked teams, date, which outcome means the forecast team wins, overtime and postponement rules.</label>
+          <label for="mk-qtype">Quote type</label>
+          <select id="mk-qtype"><option value="midpoint">Midpoint</option><option value="bid">Best bid</option><option value="ask">Best ask</option></select>
+          <button id="btn-mk-compare" class="primary">Approve mapping and compare</button>
+        </div>
+      </article>
+    </div>
+    <div class="col">
+      <article class="card" id="mk-result-card" hidden aria-live="polite">
+        <h2>Comparison</h2>
+        <div id="mk-result"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== HARNESS -->
+<section id="panel-harness" role="tabpanel" aria-labelledby="tab-harness" class="panel" hidden>
+  <article class="card">
+    <h2>Planted-truth harness <small class="muted">fixture engine · SYNTHETIC</small></h2>
+    <p class="hint">The custodian generates leagues with known truth; the same registered policy decides each one blind; decisions are scored only afterwards. Tuning families and the held-out family are reported separately. Nothing here is a statement about real NBA shooting.</p>
+    <div class="row">
+      <label class="inline" for="h-n">Leagues per cell</label><input id="h-n" type="number" min="2" max="60" value="12">
+      <button id="btn-harness" class="primary">Run harness batch</button>
+      <span id="h-progress" class="hint"></span>
+    </div>
+    <div id="harness-view"></div>
+  </article>
+</section>
+
+<!-- ===================================================== GATES -->
+<section id="panel-gates" role="tabpanel" aria-labelledby="tab-gates" class="panel" hidden>
+  <article class="card">
+    <h2>Acceptance gates</h2>
+    <p class="hint">Status reflects what was actually executed and recorded. A gate passes only after Max's independent replay.</p>
+    <div class="tablewrap"><table id="gates"><thead><tr><th scope="col">Gate</th><th scope="col">Owner</th><th scope="col">Status</th><th scope="col">Evidence</th></tr></thead><tbody></tbody></table></div>
+  </article>
+  <article class="card">
+    <h2>Voice latency samples <small class="muted">this browser session only</small></h2>
+    <div class="tablewrap"><table id="latency"><thead><tr><th>Provider</th><th>Mic stop → transcript (ms)</th><th>Transcript → first feedback (ms)</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+  </article>
+</section>
+</main>
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+<footer class="foot">Data modes are carried by artifacts, not by this page. Experience build · <span id="code-hash"></span></footer>
+</body>
+</html>

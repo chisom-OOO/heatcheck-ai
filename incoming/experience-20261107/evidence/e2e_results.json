@@ -1,0 +1,351 @@
+{
+ "tool": "playwright chromium",
+ "browser": "/usr/bin/google-chrome",
+ "base": "http://127.0.0.1:8765",
+ "headless": true,
+ "started": "2026-11-07T15:43:54.841Z",
+ "seconds": 17.309,
+ "passed": 66,
+ "failed": 0,
+ "console_errors": [
+  "Failed to load resource: the server responded with a status of 404 (Not Found)",
+  "Failed to load resource: the server responded with a status of 422 (Unprocessable Content)",
+  "Failed to load resource: the server responded with a status of 422 (Unprocessable Content)",
+  "Failed to load resource: the server responded with a status of 413 (Content Too Large)",
+  "Failed to load resource: the server responded with a status of 422 (Unprocessable Content)",
+  "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+ ],
+ "note": "Fake media device used for microphone; this is not live-mic evidence.",
+ "results": [
+  {
+   "name": "page loads and creates a session",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "CSP header present and blocks inline script",
+   "ok": true,
+   "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+  },
+  {
+   "name": "unsupported claim shows a reason, not a guess",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "unsupported claim cannot be approved",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "ambiguous 'Steph is clutch' asks for window, margin, comparator and statistic",
+   "ok": true,
+   "detail": "Time window: last 2 or 5 minutes, or another value? (not chosen for you) | Score margin: within 3, within 5, or another value? | Comparator: the same player's non-clutch shooting, or the league baseline? | Statistic: FG%, eFG% or TS%? | Direction: positive, negative or two-sided?"
+  },
+  {
+   "name": "interpretation state is NEEDS_CLARIFICATION",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "approving with open questions is refused",
+   "ok": true,
+   "detail": "unresolved fields: window_minutes, margin_points, comparator, statistic, direction"
+  },
+  {
+   "name": "source spans highlighted",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "streak length read from the text, not chosen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "definition approved after every field answered",
+   "ok": true,
+   "detail": "Approved as revision 1."
+  },
+  {
+   "name": "plan shows estimand, mandatory checks and hash",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "run disabled before confirmation",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "confirmation enables run",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "double-click on Run creates exactly one run",
+   "ok": true,
+   "detail": "runs=1"
+  },
+  {
+   "name": "blind configuration sealed and not left on screen",
+   "ok": true,
+   "detail": "parametric_beta_binomial"
+  },
+  {
+   "name": "run id carries no family/effect label",
+   "ok": true,
+   "detail": "f5a2d38e5f7f4e5d"
+  },
+  {
+   "name": "Referee decision rendered with protocol state",
+   "ok": true,
+   "detail": "SURVIVED_PROTOCOL"
+  },
+  {
+   "name": "trace shows Discoverer, Challenger and Referee events",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "four registered checks listed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "talent chart drawn from engine JSON (60 dots)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "verdict uses icon + text, not colour alone",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "chart hover tooltip shows values",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "truth revealed only after decision, scored against it",
+   "ok": true,
+   "detail": "Truth revealed after the decision. Family parametric_beta_binomial, effect weak (size 0.02). Decision SURVIVED_PROTOCOL: a real planted effect was kept."
+  },
+  {
+   "name": "export JSON carries run, plan hash, revision and EvaluationRun envelope",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "export CSV produced",
+   "ok": true,
+   "detail": "run_id,revision,decision,reason,test_id,statistic,p_value,pass,note\r"
+  },
+  {
+   "name": "file preview shows rows, columns and formula-like count",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "attaching a source revokes the confirmation",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "historical export keeps its original revision and is not current",
+   "ok": true,
+   "detail": "{\"revision\":1,\"plan_hash\":\"a0f897a2e78439f3abbed54c920c2f6f224b07368399745ddbe559a936884741\",\"current_revision_now\":2,\"is_current\":false}"
+  },
+  {
+   "name": "source name in CSV export cannot start a formula",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "malicious page HTML rendered as text (no img/script elements)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "restricted page URL refused visibly",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "oversized file rejected visibly",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "archive disguised as .csv rejected",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "cancel stops the run and says late results are historical only",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "cancelled run never regains authority",
+   "ok": true,
+   "detail": "{\"s\":\"CANCELLED\",\"a\":\"none\"}"
+  },
+  {
+   "name": "REAL_NBA plan shows BLOCKED reason instead of a result",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "push-to-talk shows LISTENING and pressed state",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "server transcription without provider shows BLOCKED reason (no invented transcript)",
+   "ok": true,
+   "detail": "Transcription unavailable: No server-side transcription provider configured (META_API_KEY unset). Use browser speech or type the claim."
+  },
+  {
+   "name": "voice state ERROR is visible",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Escape stops all voice activity",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "literal command 'compare an NBA market' switches channel",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Kalshi fixture: matched mapping gives +4.0 pp vs midpoint 0.5500",
+   "ok": true,
+   "detail": "OKSYNTHETICkalshi+4.0 ppForecast 0.59 minus midpoint 0.5500.Descriptive difference only. Not an expected profit, edge, f"
+  },
+  {
+   "name": "comparison carries SYNTHETIC badge and 'not profit' note",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Kalshi YES ask derived from NO bid is labelled derived",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Polymarket fixture: outcome chosen by label, not position",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "automated reviewer cannot approve a mapping",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "market scenario kalshi_reversed_outcome → NO_MATCH with no number",
+   "ok": true,
+   "detail": "NO_MATCH"
+  },
+  {
+   "name": "market scenario kalshi_other_date → NO_MATCH with no number",
+   "ok": true,
+   "detail": "NO_MATCH"
+  },
+  {
+   "name": "market scenario kalshi_regulation_only → OVERTIME_MISMATCH with no number",
+   "ok": true,
+   "detail": "OVERTIME_MISMATCH"
+  },
+  {
+   "name": "market scenario kalshi_unknown_units → UNKNOWN_UNITS with no number",
+   "ok": true,
+   "detail": "UNKNOWN_UNITS"
+  },
+  {
+   "name": "market scenario kalshi_stale_book → STALE_BOOK with no number",
+   "ok": true,
+   "detail": "STALE_BOOK"
+  },
+  {
+   "name": "market scenario kalshi_after_cutoff → FUTURE_QUOTE with no number",
+   "ok": true,
+   "detail": "FUTURE_QUOTE"
+  },
+  {
+   "name": "market scenario kalshi_paused → PAUSED_MARKET with no number",
+   "ok": true,
+   "detail": "PAUSED_MARKET"
+  },
+  {
+   "name": "market scenario polymarket_crossed → CROSSED_BOOK with no number",
+   "ok": true,
+   "detail": "CROSSED_BOOK"
+  },
+  {
+   "name": "market scenario polymarket_rate_limited → RATE_LIMITED with no number",
+   "ok": true,
+   "detail": "RATE_LIMITED"
+  },
+  {
+   "name": "missing ask is unavailable, not zero",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "legacy cent levels converted to the same 0.55 midpoint",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "absent listing shows NO_MATCH and leaves the page usable",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "live fetch failure is shown as a status, not a price",
+   "ok": true,
+   "detail": "UNAVAILABLE DNS failure for api.elections.kalshi.com: [Errno -2] Name or service not known"
+  },
+  {
+   "name": "harness view renders tuning and held-out summaries separately",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "detectability chart drawn",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tabs operable with arrow keys",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "every visible control has an accessible name",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "gates panel lists 18 gates",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "no browser console errors (HTTP 4xx from deliberate refusals excluded)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "no alert/confirm dialogs triggered",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

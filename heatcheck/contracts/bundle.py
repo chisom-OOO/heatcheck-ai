@@ -24,8 +24,11 @@ from heatcheck.contracts.records import (
     canonical_bytes,
     encode_records,
     loads_strict,
+    parse_utc,
+    record_hash,
     sha256_hex,
     validate_record,
+    validate_utc,
 )
 
 MAX_FILE_BYTES = 64 * 1024 * 1024
@@ -121,6 +124,10 @@ def load_bundle(directory: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
         raise BundleError("manifest format_version mismatch")
     if manifest["created_by_role"] not in ROLES:
         raise BundleError(f"created_by_role must be one of {ROLES}")
+    try:
+        validate_utc(manifest["created_utc"], "manifest.created_utc")  # RV-U9
+    except RecordError as exc:
+        raise BundleError(str(exc)) from None
 
     body = _read_capped(directory / "records.jsonl")
     if sha256_hex(body) != manifest["records_sha256"]:
@@ -203,6 +210,10 @@ def _check_references(directory: Path, records: list[dict[str, Any]]) -> None:
             mapping = mappings.get(b["mapping_id"])
             if mapping is None:
                 raise BundleError(f"{rid} references unknown mapping {b['mapping_id']}")
+            # RV-U8: the raw book must have been retrieved inside the quote's fetch window.
+            retrieved = parse_utc(snapshots[b["raw_snapshot_id"]]["body"]["retrieved_utc"])
+            if not parse_utc(b["fetch_start_utc"]) <= retrieved <= parse_utc(b["received_utc"]):
+                raise BundleError(f"{rid} raw snapshot retrieved_utc is outside its fetch window")
             market = markets[mapping["body"]["venue_market_record_id"]]["body"]
             if (b["venue"], b["market_id"], b["contract_id"]) != (
                 market["venue"],
@@ -210,6 +221,100 @@ def _check_references(directory: Path, records: list[dict[str, Any]]) -> None:
                 mapping["body"]["contract_id"],
             ):
                 raise BundleError(f"{rid} venue/market/contract disagree with its mapping")
+
+    _check_nba_consistency(by_type, games)
+
+
+def _check_nba_consistency(
+    by_type: dict[str, dict[str, dict[str, Any]]], games: dict[str, dict[str, Any]]
+) -> None:
+    """Cross-record NBA checks: events, feature rows and labels must agree with each other."""
+    # Latest revision of each shot EVENT, keyed by its target id <game_id>:shot:<event id>.
+    shots: dict[str, dict[str, Any]] = {}
+    for r in by_type["EVENT"].values():
+        b = r["body"]
+        if b["action"] == "SHOT":
+            key = f"{b['game_id']}:shot:{b['provider_event_id']}"
+            if key not in shots or b["revision"] > shots[key]["body"]["revision"]:
+                shots[key] = r
+    event_by_hash = {record_hash(r): r for r in by_type["EVENT"].values()}
+
+    for r in by_type["EVENT"].values():
+        b = r["body"]
+        game = games[b["game_id"]]["body"]
+        # RV-G1: an event's team must be a participant of its game.
+        if b["team_id"] is not None and b["team_id"] not in (
+            game["home_team_id"],
+            game["away_team_id"],
+        ):
+            raise BundleError(f"EVENT:{r['record_id']} team_id is not home or away of its game")
+
+    for r in by_type["FEATURE_ROW"].values():
+        b = r["body"]
+        rid = f"FEATURE_ROW:{r['record_id']}"
+        if b["target_kind"] == "PRE_SHOT_MAKE":
+            # RV-G2: a shot target belongs to the row's own game (<game_id>:shot:<event id>).
+            if not b["target_id"].startswith(f"{b['game_id']}:shot:"):
+                raise BundleError(f"{rid} target {b['target_id']} is not a shot of {b['game_id']}")
+            target = shots.get(b["target_id"])
+            cutoff = b["cutoff"]
+            if target is not None and cutoff["kind"] == "GAME_SEQUENCE":
+                # RV-L3: the cutoff may not fall after the target shot itself.
+                if cutoff["before_sequence"] > target["body"]["sequence"]:
+                    raise BundleError(
+                        f"{rid} cutoff before_sequence {cutoff['before_sequence']} is after its "
+                        f"target shot (sequence {target['body']['sequence']})"
+                    )
+            # RV-L4: no input may be the target shot's own EVENT, or a same-game EVENT at or
+            # after the cutoff sequence.
+            for h in b["source_record_hashes"]:
+                ev = event_by_hash.get(h)
+                if ev is None:
+                    continue
+                if target is not None and h == record_hash(target):
+                    raise BundleError(f"{rid} lists its own target shot EVENT as an input")
+                if (
+                    cutoff["kind"] == "GAME_SEQUENCE"
+                    and ev["body"]["game_id"] == b["game_id"]
+                    and ev["body"]["sequence"] >= cutoff["before_sequence"]
+                ):
+                    raise BundleError(
+                        f"{rid} input EVENT sequence {ev['body']['sequence']} is not before the "
+                        f"cutoff {cutoff['before_sequence']}"
+                    )
+
+    # Made-shot points per (game, team), from the latest revision of each shot.
+    points: dict[tuple[str, str], int] = {}
+    for r in shots.values():
+        b = r["body"]
+        if b["shot"]["made"] and b["team_id"] is not None:
+            key = (b["game_id"], b["team_id"])
+            points[key] = points.get(key, 0) + b["shot"]["points_if_made"]
+    games_with_shots = {r["body"]["game_id"] for r in shots.values()}
+
+    for r in by_type["RESTRICTED_LABEL"].values():
+        b = r["body"]
+        rid = f"RESTRICTED_LABEL:{r['record_id']}"
+        game = games[b["game_id"]]["body"]
+        if b["label_kind"] == "GAME_FINAL_SCORE" and b["game_id"] in games_with_shots:
+            # RV-O1: a final score in the same bundle as the play-by-play must equal the
+            # made-shot totals with home/away identity preserved.
+            home = points.get((b["game_id"], game["home_team_id"]), 0)
+            away = points.get((b["game_id"], game["away_team_id"]), 0)
+            if (b["value"]["home_points"], b["value"]["away_points"]) != (home, away):
+                raise BundleError(
+                    f"{rid} final score home {b['value']['home_points']}-away "
+                    f"{b['value']['away_points']} contradicts EVENT made-shot totals "
+                    f"home {home}-away {away}"
+                )
+        if b["label_kind"] == "SHOT_MADE":
+            # RV-O2: a shot label must agree with the shot EVENT it names.
+            target = shots.get(b["target_id"])
+            if target is not None and target["body"]["shot"]["made"] != b["value"]["made"]:
+                raise BundleError(
+                    f"{rid} made={b['value']['made']} contradicts EVENT "
+                    f"{target['record_id']} made={target['body']['shot']['made']}"
+                )
 
 
 def main(argv: list[str]) -> int:

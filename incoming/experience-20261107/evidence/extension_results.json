@@ -1,0 +1,59 @@
+{
+ "browser": "/usr/bin/google-chrome (Chrome for Testing)",
+ "extension_id": "pccbeofehgcpfhnjkjedgbdigidbekbm",
+ "passed": 10,
+ "failed": 0,
+ "results": [
+  {
+   "name": "manifest requests only activeTab, scripting, storage",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "host permission limited to the local workspace",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "extension loads unpacked and popup renders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "popup validates pairing code",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "restricted page (the extension page itself) is refused visibly",
+   "ok": true,
+   "detail": "This page can't be read (browser-restricted page, PDF viewer or store page): Cannot access contents of the page. Extension manifest must request permission to access the respective host."
+  },
+  {
+   "name": "popup has no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "grab.js returns selected text and the intersecting table",
+   "ok": true,
+   "detail": "[{\"rows\":[[\"Player\",\"FT\"],[\"P001\",\"7-8\"],[\"P002\",\"=cmd\"]],\"truncated\":false}]"
+  },
+  {
+   "name": "no selection → nothing captured",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "extension-origin POST accepted and stored with hash",
+   "ok": true,
+   "detail": "201"
+  },
+  {
+   "name": "workspace shows the extension source as untrusted text",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "note": "Popup driven as a tab; the click-on-toolbar-icon gesture itself is not automatable here."
+}

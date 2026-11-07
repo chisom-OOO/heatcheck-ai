@@ -1,0 +1,242 @@
+{
+ "engine": "fixture-local-0.2",
+ "data_mode": "SYNTHETIC",
+ "scope": "30 shooters x 300 attempts per league; streak length 3; 150 permutations per league in batch mode",
+ "leagues_per_cell": 20,
+ "seed0": 10000,
+ "tuning_families": [
+  "parametric_beta_binomial",
+  "heavy_tailed_talent"
+ ],
+ "held_out_family": "ar1_drift",
+ "cells": {
+  "parametric_beta_binomial|null": {
+   "family": "parametric_beta_binomial",
+   "effect": "null",
+   "truth_has_effect": false,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 20
+   }
+  },
+  "parametric_beta_binomial|weak": {
+   "family": "parametric_beta_binomial",
+   "effect": "weak",
+   "truth_has_effect": true,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 11,
+    "SURVIVED_PROTOCOL": 9
+   }
+  },
+  "parametric_beta_binomial|planted": {
+   "family": "parametric_beta_binomial",
+   "effect": "planted",
+   "truth_has_effect": true,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "SURVIVED_PROTOCOL": 20
+   }
+  },
+  "parametric_beta_binomial|confounded": {
+   "family": "parametric_beta_binomial",
+   "effect": "confounded",
+   "truth_has_effect": false,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 20
+   }
+  },
+  "heavy_tailed_talent|null": {
+   "family": "heavy_tailed_talent",
+   "effect": "null",
+   "truth_has_effect": false,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 15,
+    "INSUFFICIENT_EVIDENCE": 5
+   }
+  },
+  "heavy_tailed_talent|weak": {
+   "family": "heavy_tailed_talent",
+   "effect": "weak",
+   "truth_has_effect": true,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "SURVIVED_PROTOCOL": 10,
+    "NOT_SUPPORTED": 10
+   }
+  },
+  "heavy_tailed_talent|planted": {
+   "family": "heavy_tailed_talent",
+   "effect": "planted",
+   "truth_has_effect": true,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "SURVIVED_PROTOCOL": 20
+   }
+  },
+  "heavy_tailed_talent|confounded": {
+   "family": "heavy_tailed_talent",
+   "effect": "confounded",
+   "truth_has_effect": false,
+   "held_out": false,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 17,
+    "SURVIVED_PROTOCOL": 3
+   }
+  },
+  "ar1_drift|null": {
+   "family": "ar1_drift",
+   "effect": "null",
+   "truth_has_effect": false,
+   "held_out": true,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 19,
+    "SURVIVED_PROTOCOL": 1
+   }
+  },
+  "ar1_drift|weak": {
+   "family": "ar1_drift",
+   "effect": "weak",
+   "truth_has_effect": true,
+   "held_out": true,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 10,
+    "SURVIVED_PROTOCOL": 10
+   }
+  },
+  "ar1_drift|planted": {
+   "family": "ar1_drift",
+   "effect": "planted",
+   "truth_has_effect": true,
+   "held_out": true,
+   "n": 20,
+   "decisions": {
+    "SURVIVED_PROTOCOL": 17,
+    "NOT_SUPPORTED": 3
+   }
+  },
+  "ar1_drift|confounded": {
+   "family": "ar1_drift",
+   "effect": "confounded",
+   "truth_has_effect": false,
+   "held_out": true,
+   "n": 20,
+   "decisions": {
+    "NOT_SUPPORTED": 20
+   }
+  }
+ },
+ "tuning_summary": {
+  "null_leagues": 80,
+  "false_survivals": 3,
+  "false_survival_rate": 0.0375,
+  "false_survival_interval95": [
+   0.012834568820056527,
+   0.10454720163827584
+  ],
+  "effect_leagues": 80,
+  "true_survivals": 59,
+  "power": 0.7375,
+  "power_interval95": [
+   0.6318104024689473,
+   0.8214259856740713
+  ],
+  "survived_total": 62,
+  "false_discovery_proportion": 0.04838709677419355
+ },
+ "held_out_summary": {
+  "null_leagues": 40,
+  "false_survivals": 1,
+  "false_survival_rate": 0.025,
+  "false_survival_interval95": [
+   0.004426831453704344,
+   0.12881369088183614
+  ],
+  "effect_leagues": 40,
+  "true_survivals": 27,
+  "power": 0.675,
+  "power_interval95": [
+   0.5201774606620777,
+   0.7991549784774601
+  ],
+  "survived_total": 28,
+  "false_discovery_proportion": 0.03571428571428571
+ },
+ "detectability": {
+  "0.0": {
+   "effect_size": 0.0,
+   "n": 20,
+   "survived": 0,
+   "rate": 0.0,
+   "interval95": [
+    0.0,
+    0.16112516018512965
+   ]
+  },
+  "0.02": {
+   "effect_size": 0.02,
+   "n": 20,
+   "survived": 12,
+   "rate": 0.6,
+   "interval95": [
+    0.3865814992347542,
+    0.7811934687282198
+   ]
+  },
+  "0.04": {
+   "effect_size": 0.04,
+   "n": 20,
+   "survived": 20,
+   "rate": 1.0,
+   "interval95": [
+    0.8388748398148705,
+    1.0
+   ]
+  },
+  "0.06": {
+   "effect_size": 0.06,
+   "n": 20,
+   "survived": 19,
+   "rate": 0.95,
+   "interval95": [
+    0.7638688045357189,
+    0.9911185512976646
+   ]
+  },
+  "0.08": {
+   "effect_size": 0.08,
+   "n": 20,
+   "survived": 19,
+   "rate": 0.95,
+   "interval95": [
+    0.7638688045357189,
+    0.9911185512976646
+   ]
+  },
+  "0.12": {
+   "effect_size": 0.12,
+   "n": 20,
+   "survived": 19,
+   "rate": 0.95,
+   "interval95": [
+    0.7638688045357189,
+    0.9911185512976646
+   ]
+  }
+ },
+ "caveat": "Simulator-conditioned. Says nothing about real NBA shooting. Small league counts: read the intervals.",
+ "generated_at_utc": "2026-11-07T15:41:38.493493+00:00",
+ "code_config_environment_hash": "4ab84c721bb6f18e78559d92d10206497867891c4f60370baade2474f722719b"
+}

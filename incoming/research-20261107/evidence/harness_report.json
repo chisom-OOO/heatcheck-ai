@@ -1,0 +1,136 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "lane": "SHOT_ASSOCIATION",
+  "phase": "HARNESS",
+  "data_mode": "SYNTHETIC",
+  "test": {
+    "k": 3,
+    "B": 99,
+    "alpha": 0.05,
+    "null": "within player-game-shotvalue permutation"
+  },
+  "summary": [
+    {
+      "family": "A",
+      "held_out": false,
+      "gamma_logodds": 0.0,
+      "form_sd": 0.0,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "false_positive_rate",
+      "rate": 0.006666666666666667,
+      "wilson95": [
+        0.0011777710231334546,
+        0.036793752933975674
+      ],
+      "mean_T": 0.019495130334988734,
+      "mean_null_T": 0.021405086998294177,
+      "mean_shots_per_league": 11993.08
+    },
+    {
+      "family": "A",
+      "held_out": false,
+      "gamma_logodds": 0.3,
+      "form_sd": 0.0,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "power",
+      "rate": 0.8666666666666667,
+      "wilson95": [
+        0.8030184935523371,
+        0.9120026710741359
+      ],
+      "mean_T": 0.09005643558317233,
+      "mean_null_T": 0.041855621305921284,
+      "mean_shots_per_league": 11989.686666666666
+    },
+    {
+      "family": "A",
+      "held_out": false,
+      "gamma_logodds": 0.12,
+      "form_sd": 0.0,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "power",
+      "rate": 0.30666666666666664,
+      "wilson95": [
+        0.2384689020846879,
+        0.38451993838498993
+      ],
+      "mean_T": 0.05036748580416951,
+      "mean_null_T": 0.02954618134004019,
+      "mean_shots_per_league": 12004.866666666667
+    },
+    {
+      "family": "B",
+      "held_out": true,
+      "gamma_logodds": 0.0,
+      "form_sd": 0.0,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "false_positive_rate",
+      "rate": 0.013333333333333334,
+      "wilson95": [
+        0.0036640523882232115,
+        0.047307856380276334
+      ],
+      "mean_T": 0.03857134345004148,
+      "mean_null_T": 0.04101844858311283,
+      "mean_shots_per_league": 11822.98
+    },
+    {
+      "family": "B",
+      "held_out": true,
+      "gamma_logodds": 0.3,
+      "form_sd": 0.0,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "power",
+      "rate": 0.88,
+      "wilson95": [
+        0.8182903386460476,
+        0.9227315956032063
+      ],
+      "mean_T": 0.11230245444618354,
+      "mean_null_T": 0.06340214772009403,
+      "mean_shots_per_league": 11808.473333333333
+    },
+    {
+      "family": "C",
+      "held_out": false,
+      "gamma_logodds": 0.0,
+      "form_sd": 0.15,
+      "leagues": 150,
+      "executed": 150,
+      "undefined": 0,
+      "metric": "confounder_rejection_rate",
+      "rate": 0.38,
+      "wilson95": [
+        0.30623600246985916,
+        0.4597570709251133
+      ],
+      "mean_T": 0.10453269562579476,
+      "mean_null_T": 0.08293075789617994,
+      "mean_shots_per_league": 12007.473333333333
+    }
+  ],
+  "derived_fdr_from_rates": {
+    "family_A_gamma0.30_prevalence0.1": 0.06474820143884892,
+    "family_A_gamma0.30_prevalence0.5": 0.007633587786259542,
+    "family_B_gamma0.30_prevalence0.1": 0.12,
+    "family_B_gamma0.30_prevalence0.5": 0.01492537313432836
+  },
+  "notes": [
+    "Scripted test policy, not autonomous LLM runs.",
+    "Each league tests one claim, so per-league FDP = V_j \u2208 {0,1}; pure-null FDR = FPR.",
+    "Derived FDR assumes the stated prevalence and is computed from rates, not from replicated mixed families.",
+    "Family C has no causal streak term; its rejection rate measures susceptibility to within-game form drift, not FDR under the registered null.",
+    "TruthManifest kept in a separate file; separation is logical (same OS user)."
+  ],
+  "created_utc": "2026-11-07T15:26:41.764580Z"
+}

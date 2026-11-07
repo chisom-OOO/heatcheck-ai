@@ -1,0 +1,26 @@
+# HEAD 3422d0c112c087d799ab1daf45f76e5ea63dc493
+$ HEATCHECK_REVIEW_EXPERIENCE_BUNDLE=tests/fixtures/quotes/e001 uv run --frozen pytest -q tests/review/test_rv_candidates.py -rA -p no:cacheprovider
+ssF.                                                                     [100%]
+================================== FAILURES ===================================
+___________________________ test_experience_bundle ____________________________
+
+no_network = None
+
+    def test_experience_bundle(no_network):  # noqa: F811
+        manifest, recs = require_bundle(ENV_EXPERIENCE_BUNDLE, E001_DEFAULT)
+        path = env_path(ENV_EXPERIENCE_BUNDLE, E001_DEFAULT)
+        problems = experience_problems(path, manifest, recs, stale_s=stale_seconds())
+>       assert not problems, _report(problems)
+E       AssertionError: EXPECTED no problems; ACTUAL:
+E           quote:map:syn:FIX-G0001:KALSHI:KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes:a92f676d989d9e65: status OK with no provider_time_utc; freshness unprovable
+E       assert not ['quote:map:syn:FIX-G0001:KALSHI:KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes:a92f676d989d9e65: status OK with no provider_time_utc; freshness unprovable']
+
+tests\review\test_rv_candidates.py:47: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/review/test_rv_candidates.py::test_experience_bundle_cli_validator
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+FAILED tests/review/test_rv_candidates.py::test_experience_bundle - Assertion...
+1 failed, 1 passed, 2 skipped in 0.16s
+exit=1

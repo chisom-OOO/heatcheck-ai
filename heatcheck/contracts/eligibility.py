@@ -14,6 +14,10 @@ from typing import Any
 
 from heatcheck.contracts.records import parse_utc, validate_record
 
+# Freshness thresholds fixed before any demo (docs/DECISIONS.md, 7 November).
+HISTORICAL_MAX_AGE = timedelta(seconds=600)  # quote received <= 600 s before forecast cutoff
+LIVE_MAX_AGE = timedelta(seconds=60)  # live display: quote no more than 60 s old
+
 
 @dataclass(frozen=True)
 class QuoteSelection:

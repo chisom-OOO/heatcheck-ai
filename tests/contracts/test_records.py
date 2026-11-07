@@ -249,3 +249,15 @@ def test_real_record_cannot_reference_synthetic_game(records, tmp_path):
     first(records, "VENUE_MAPPING")["data_mode"] = "RECORDED_MARKET"
     with pytest.raises(RecordError, match="namespace"):
         load_bundle(_rewrite(tmp_path, records))
+
+
+def test_game_tip_times_scheduled_or_observed(records):
+    game = first(records, "GAME")
+    game["body"].update(scheduled_tip_utc=None, observed_tip_utc="2024-01-01T00:35:55.7Z")
+    validate_record(game)  # observed only (Research's cdnnba data has no published schedule)
+    game["body"]["observed_tip_utc"] = None
+    with pytest.raises(RecordError, match="scheduled_tip_utc or observed_tip_utc"):
+        validate_record(game)
+    game["body"]["observed_tip_utc"] = "not a time"
+    with pytest.raises(RecordError, match="UTC"):
+        validate_record(game)

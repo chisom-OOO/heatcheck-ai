@@ -6,3 +6,5 @@
 tests/fixtures/** -text
 data/bundles/** -text
 *.jsonl -text
+# Team handoffs are imported byte-for-byte; their code hashes cover exact bytes.
+incoming/** -text

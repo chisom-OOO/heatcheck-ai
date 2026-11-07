@@ -1,0 +1,12 @@
+$ uv run --frozen python tests/experience/make_e001_bundle.py --check
+PASS: E-001 bundle reproducible, records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+exit=0
+$ uv run --frozen ruff check .
+All checks passed!
+exit=0
+$ uv run --frozen python tools/check_scaffold.py
+PASS: preparation contracts/guard only; application/research gates NOT_RUN
+exit=0
+$ uv run --frozen python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=faa3d335b941d6c7103271ec3c75ed474b29f753ff588b26fb1012aa1e627465
+exit=0

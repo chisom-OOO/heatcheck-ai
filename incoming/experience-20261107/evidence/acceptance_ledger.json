@@ -1,0 +1,224 @@
+{
+ "version": "1.0",
+ "status": "PROPOSED ACCEPTANCE FRAMEWORK; Experience evidence recorded; NO GATE PASSED (independent replay by Max outstanding)",
+ "gates": [
+  {
+   "id": "G01",
+   "name": "Data/provenance",
+   "owner": "Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Raw hashes, schema/completeness, totals/IDs and source/use notes; no invented fields",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G02",
+   "name": "Temporal correctness",
+   "owner": "Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Future-perturbation, availability cutoff, one-row/game, event boundaries and exposure audit",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G03",
+   "name": "Statistical oracles",
+   "owner": "Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Conjugate moments, score fixtures, exact tiny null and explicit undefined cases",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G04",
+   "name": "Registered adversarial tests",
+   "owner": "Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Mandatory applicable attacks execute; missing prerequisites block; changes logged",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G05",
+   "name": "Harness truth isolation",
+   "owner": "Research/Max",
+   "status": "FIXTURE_ENGINE_EVIDENCE_ONLY",
+   "required_evidence": "Actual access-denial tests; no truth leakage; labels match estimands",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "tests/test_core.py::TestEngineIsolation (analyse has no truth argument; generated data carries no config; custodian exposes only generate/reveal)",
+    "tests/test_api.py::test_full_synthetic_run_reveal_export (run payload contains no family/effect; reveal refused before decision)",
+    "Applies to the local fixture engine, not Research's simulator."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G06",
+   "name": "Null and power",
+   "owner": "Research",
+   "status": "FIXTURE_ENGINE_EVIDENCE_ONLY",
+   "required_evidence": "Independent replicated null/planted/weak/confounded cases; uncertainty and actual counts",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "evidence/harness_batch.json: 20 leagues per family x effect cell, 30 shooters x 300 attempts per league; streak length 3; 150 permutations per league in batch mode",
+    "tuning families: 3/80 null leagues survived; power 59/80",
+    "held-out family: 1/40 null leagues survived; power 27/40",
+    "Fixture engine only; Research's attacks and simulator are not exercised."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G07",
+   "name": "Calibration separation",
+   "owner": "Research",
+   "status": "PARTIAL_FIXTURE_EVIDENCE",
+   "required_evidence": "Disjoint train/tune/calibration/final groups; held-out family, base rates and scope disclosed",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "Held-out generator family (ar1_drift) reported separately from tuning families; referee thresholds were not tuned on it.",
+    "No trust-score calibration was built or claimed."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G08",
+   "name": "Final-data/adaptivity",
+   "owner": "Max/Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Frozen family/epoch, persistent record-level exposure registry and atomic unlock; new-ID/renamed-file/restart bypass probes; full family reported",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G09",
+   "name": "Forecast comparison",
+   "owner": "Research",
+   "status": "NOT_RUN",
+   "required_evidence": "Identical eligible games/fallbacks; baseline, proper scores, dependence assumptions, coverage",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G10",
+   "name": "NBA event mapping",
+   "owner": "Max/Research",
+   "status": "EXPERIENCE_EVIDENCE_PENDING_MAX",
+   "required_evidence": "Exact game/participants/date/outcome and regulation/overtime/cancel mapping; unknowns block",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "tests/test_core.py::TestMapping: reversed outcome, other date, regulation-only, paused, target not in game, LA city ambiguity, human-only approval, rules-hash change",
+    "Max owns the trusted mapping workflow; not reviewed."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G11",
+   "name": "Quote normalization",
+   "owner": "Research/Experience",
+   "status": "EXPERIENCE_FIXTURES_PASS_PENDING_RESEARCH",
+   "required_evidence": "Independent quote-side/unit/tick/quantity fixtures; difference is descriptive, no profit claim",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "tests/test_core.py::TestQuotes and ::TestComparison (Decimal; Kalshi derived ask; cents vs dollars; missing side; crossed; freshness; DATA_PIPELINE 4.3 +5pp example)",
+    "e2e market scenarios: 14 authored SYNTHETIC venue payloads",
+    "quotes.py is a stand-in; Research's canonical normaliser not yet delivered."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G12",
+   "name": "Read-only live adapters",
+   "owner": "Experience",
+   "status": "BLOCKED",
+   "required_evidence": "Actual permitted metadata/book fetch; stale/empty/error modes, timestamps and raw hashes",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "Live fetch from this workspace refused by the egress proxy (polymarket.com, kalshi.com not allowlisted); adapter reports UNAVAILABLE and the UI shows it.",
+    "Adapters written to vendor docs read 2026-11-07; tested against authored payloads only (allowlist, no redirects, private-IP refusal, bounded 429 retry, size cap, malformed JSON)."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G13",
+   "name": "Authority/immutability",
+   "owner": "Max",
+   "status": "EXPERIENCE_EVIDENCE_PENDING_MAX",
+   "required_evidence": "Exact confirmation, retry identity, stale edits, historical evidence and export stability",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "tests/test_core.py::TestAuthority (edit revokes, stale hash/revision refused, double confirm idempotent, retry identity, 8 concurrent starts -> 1 run, late completion historical, cancel then completion, export after edit)",
+    "e2e: double-click Run -> 1 run; historical export keeps revision 1 and is_current=false"
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G14",
+   "name": "Injection/resource/security",
+   "owner": "All",
+   "status": "PARTIAL_EVIDENCE_EXPERIENCE_SCOPE",
+   "required_evidence": "Malicious source/file/URL, bounded tools/jobs/audio, private keys and no order capability",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "e2e: malicious page HTML rendered as text, no dialogs; restricted URL refused; oversized file and disguised archive refused; CSP script-src 'self' with no inline",
+    "API: Host-header rebinding 421, cross-origin POST 403, static traversal 404, oversize 413, NaN JSON 400, keep-alive desync fixed and tested",
+    "Files: traversal names reduced, magic-byte checks, CSV formula neutralisation on export; venues: allowlisted GET only",
+    "Provider keys never sent to the browser; no order/wallet capability exists in code (tested by source scan)."
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G15",
+   "name": "Real interface/voice",
+   "owner": "Experience",
+   "status": "PARTIAL_EVIDENCE",
+   "required_evidence": "Actual browser/mic flow, correction/cancel/permissions/error/export; logs and environment",
+   "source_identity": "HeatCheck-Experience local build",
+   "evidence": [
+    "evidence/e2e_results.json: 66 passed, 0 failed in headless Chrome for Testing against the real backend",
+    "evidence/extension_results.json: 10 passed, 0 failed (unpacked MV3 extension loaded; popup driven as a tab)",
+    "Microphone path exercised only with Chrome's fake media device: NOT live-mic evidence; no latency percentiles recorded",
+    "Screen capture (getDisplayMedia) not exercised: needs a real user gesture/picker",
+    "Screenshots: evidence/screenshots/*.png"
+   ],
+   "reviewer": null
+  },
+  {
+   "id": "G16",
+   "name": "Separate review/replay",
+   "owner": "Max",
+   "status": "NOT_RUN",
+   "required_evidence": "Reviewer other than author replays exact scope; root causes repaired and rechecked",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G17",
+   "name": "Demo and claims",
+   "owner": "All",
+   "status": "NOT_RUN",
+   "required_evidence": "Every spoken headline linked to actual evidence/mode/limits; recorded fallback labelled",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  },
+  {
+   "id": "G18",
+   "name": "Eligibility/submission",
+   "owner": "User/Max",
+   "status": "NOT_RUN",
+   "required_evidence": "Actual event rules/reuse/AI and submission requirements recorded; no concealed preparation",
+   "source_identity": null,
+   "evidence": [],
+   "reviewer": null
+  }
+ ],
+ "updated_utc": "2026-11-07T15:43:33+00:00",
+ "updated_by": "HeatCheck-Experience session"
+}

@@ -1,0 +1,167 @@
+# HeatCheck-Experience check run
+date_utc: 2026-11-07T15:43:42Z
+host: Linux 6.18.44-fc-v310 x86_64
+python: Python 3.13.18 numpy: 2.5.3 scipy: 1.18.1
+node: v22.23.4  chrome: Google Chrome for Testing 153.0.8010.12 
+
+## python -m unittest discover -s tests -v
+test_cancel (test_api.Api.test_cancel) ... ok
+test_claim_needs_every_field (test_api.Api.test_claim_needs_every_field) ... ok
+test_cross_origin_post_refused (test_api.Api.test_cross_origin_post_refused) ... ok
+test_file_endpoint (test_api.Api.test_file_endpoint) ... ok
+test_full_synthetic_run_reveal_export (test_api.Api.test_full_synthetic_run_reveal_export) ... ok
+test_gates_endpoint (test_api.Api.test_gates_endpoint) ... ok
+test_host_header_rebinding_refused (test_api.Api.test_host_header_rebinding_refused) ... ok
+test_idempotent_run_and_late_edit (test_api.Api.test_idempotent_run_and_late_edit) ... ok
+test_keepalive_unread_body_does_not_corrupt_next_request (test_api.Api.test_keepalive_unread_body_does_not_corrupt_next_request) ... ok
+test_market_flow (test_api.Api.test_market_flow) ... ok
+test_methods_and_bad_json (test_api.Api.test_methods_and_bad_json) ... ok
+test_oversize_json_refused (test_api.Api.test_oversize_json_refused) ... ok
+test_page_and_screen_sources (test_api.Api.test_page_and_screen_sources) ... ok
+test_real_mode_blocked_not_invented (test_api.Api.test_real_mode_blocked_not_invented) ... ok
+test_stale_confirmation_refused (test_api.Api.test_stale_confirmation_refused) ... ok
+test_static_traversal_and_headers (test_api.Api.test_static_traversal_and_headers) ... ok
+test_transcribe_blocked_without_provider (test_api.Api.test_transcribe_blocked_without_provider) ... ok
+test_cancel_then_provider_completion_does_not_restore (test_core.TestAuthority.test_cancel_then_provider_completion_does_not_restore) ... ok
+test_concurrent_starts_create_one_run (test_core.TestAuthority.test_concurrent_starts_create_one_run) ... ok
+test_double_confirmation_idempotent (test_core.TestAuthority.test_double_confirmation_idempotent) ... ok
+test_edit_revokes_confirmation (test_core.TestAuthority.test_edit_revokes_confirmation) ... ok
+test_export_after_edit_keeps_history (test_core.TestAuthority.test_export_after_edit_keeps_history) ... ok
+test_late_completion_after_edit_is_historical (test_core.TestAuthority.test_late_completion_after_edit_is_historical) ... ok
+test_replacement_run_supersedes (test_core.TestAuthority.test_replacement_run_supersedes) ... ok
+test_retry_same_request_id_returns_same_run (test_core.TestAuthority.test_retry_same_request_id_returns_same_run) ... ok
+test_stale_hash_and_revision_refused (test_core.TestAuthority.test_stale_hash_and_revision_refused) ... ok
+test_absent_listing (test_core.TestComparison.test_absent_listing) ... ok
+test_expected_statuses (test_core.TestComparison.test_expected_statuses) ... ok
+test_quote_types (test_core.TestComparison.test_quote_types) ... ok
+test_every_invalid_fixture_rejected (test_core.TestContracts.test_every_invalid_fixture_rejected) ... ok
+test_infinity_rejected (test_core.TestContracts.test_infinity_rejected) ... ok
+test_valid_fixtures_validate (test_core.TestContracts.test_valid_fixtures_validate) ... ok
+test_analyse_has_no_truth_argument (test_core.TestEngineIsolation.test_analyse_has_no_truth_argument) ... ok
+test_bad_data_invalid (test_core.TestEngineIsolation.test_bad_data_invalid) ... ok
+test_cancel_returns_none (test_core.TestEngineIsolation.test_cancel_returns_none) ... ok
+test_custodian_bounds (test_core.TestEngineIsolation.test_custodian_bounds) ... ok
+test_custodian_does_not_expose_config_attributes (test_core.TestEngineIsolation.test_custodian_does_not_expose_config_attributes) ... ok
+test_deterministic (test_core.TestEngineIsolation.test_deterministic) ... ok
+test_generated_data_carries_no_config (test_core.TestEngineIsolation.test_generated_data_carries_no_config) ... ok
+test_streak_stat_tiny_exact (test_core.TestEngineIsolation.test_streak_stat_tiny_exact) ... ok
+test_formula_cells_neutralised_on_export (test_core.TestFiles.test_formula_cells_neutralised_on_export) ... ok
+test_preview_counts (test_core.TestFiles.test_preview_counts) ... ok
+test_rejections (test_core.TestFiles.test_rejections) ... ok
+test_traversal_name_reduced (test_core.TestFiles.test_traversal_name_reduced) ... ok
+test_clutch_never_chooses_definition (test_core.TestIntake.test_clutch_never_chooses_definition) ... ok
+test_commands (test_core.TestIntake.test_commands) ... ok
+test_spans_point_into_text (test_core.TestIntake.test_spans_point_into_text) ... ok
+test_unsupported_and_injection_is_data (test_core.TestIntake.test_unsupported_and_injection_is_data) ... ok
+test_la_city_alone_does_not_identify (test_core.TestMapping.test_la_city_alone_does_not_identify) ... ok
+test_ok_requires_human (test_core.TestMapping.test_ok_requires_human) ... ok
+test_polymarket_outcome_by_label_not_position (test_core.TestMapping.test_polymarket_outcome_by_label_not_position) ... ok
+test_rules_change_invalidates (test_core.TestMapping.test_rules_change_invalidates) ... ok
+test_semantic_failures (test_core.TestMapping.test_semantic_failures) ... ok
+test_target_not_in_game (test_core.TestMapping.test_target_not_in_game) ... ok
+test_cents_vs_dollars (test_core.TestQuotes.test_cents_vs_dollars) ... ok
+test_float_and_off_grid_rejected (test_core.TestQuotes.test_float_and_off_grid_rejected) ... ok
+test_freshness (test_core.TestQuotes.test_freshness) ... ok
+test_kalshi_derived_ask (test_core.TestQuotes.test_kalshi_derived_ask) ... ok
+test_missing_side_and_crossed (test_core.TestQuotes.test_missing_side_and_crossed) ... ok
+test_synthetic_example_from_spec (test_core.TestQuotes.test_synthetic_example_from_spec) ... ok
+test_429_bounded_retry_honours_retry_after (test_core.TestVenues.test_429_bounded_retry_honours_retry_after) ... ok
+test_allowlist (test_core.TestVenues.test_allowlist) ... ok
+test_book_hash_and_timestamps (test_core.TestVenues.test_book_hash_and_timestamps) ... ok
+test_malformed_and_oversize (test_core.TestVenues.test_malformed_and_oversize) ... ok
+test_no_write_capability (test_core.TestVenues.test_no_write_capability) ... ok
+test_polymarket_misaligned_tokens (test_core.TestVenues.test_polymarket_misaligned_tokens) ... ok
+test_private_resolution_refused (test_core.TestVenues.test_private_resolution_refused) ... ok
+test_redirect_refused (test_core.TestVenues.test_redirect_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 68 tests in 8.207s
+
+OK
+exit: 0
+
+## node tests/e2e_browser.mjs
+PASS  page loads and creates a session
+PASS  CSP header present and blocks inline script  — default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-ur
+PASS  unsupported claim shows a reason, not a guess
+PASS  unsupported claim cannot be approved
+PASS  ambiguous 'Steph is clutch' asks for window, margin, comparator and statistic  — Time window: last 2 or 5 minutes, or another value? (not chosen for you) | Score margin: within 3, within 5, or another value? | Comparator: the same player's n
+PASS  interpretation state is NEEDS_CLARIFICATION
+PASS  approving with open questions is refused  — unresolved fields: window_minutes, margin_points, comparator, statistic, direction
+PASS  source spans highlighted
+PASS  streak length read from the text, not chosen
+PASS  definition approved after every field answered  — Approved as revision 1.
+PASS  plan shows estimand, mandatory checks and hash
+PASS  run disabled before confirmation
+PASS  confirmation enables run
+PASS  double-click on Run creates exactly one run  — runs=1
+PASS  blind configuration sealed and not left on screen  — parametric_beta_binomial
+PASS  run id carries no family/effect label  — f5a2d38e5f7f4e5d
+PASS  Referee decision rendered with protocol state  — SURVIVED_PROTOCOL
+PASS  trace shows Discoverer, Challenger and Referee events
+PASS  four registered checks listed
+PASS  talent chart drawn from engine JSON (60 dots)
+PASS  verdict uses icon + text, not colour alone
+PASS  chart hover tooltip shows values
+PASS  truth revealed only after decision, scored against it  — Truth revealed after the decision. Family parametric_beta_binomial, effect weak (size 0.02). Decision SURVIVED_PROTOCOL: a real planted effect was kept.
+PASS  export JSON carries run, plan hash, revision and EvaluationRun envelope
+PASS  export CSV produced  — run_id,revision,decision,reason,test_id,statistic,p_value,pass,note
+PASS  file preview shows rows, columns and formula-like count
+PASS  attaching a source revokes the confirmation
+PASS  historical export keeps its original revision and is not current  — {"revision":1,"plan_hash":"a0f897a2e78439f3abbed54c920c2f6f224b07368399745ddbe559a936884741","current_revision_now":2,"is_current":false}
+PASS  source name in CSV export cannot start a formula
+PASS  malicious page HTML rendered as text (no img/script elements)
+PASS  restricted page URL refused visibly
+PASS  oversized file rejected visibly
+PASS  archive disguised as .csv rejected
+PASS  cancel stops the run and says late results are historical only
+PASS  cancelled run never regains authority  — {"s":"CANCELLED","a":"none"}
+PASS  REAL_NBA plan shows BLOCKED reason instead of a result
+PASS  push-to-talk shows LISTENING and pressed state
+PASS  server transcription without provider shows BLOCKED reason (no invented transcript)  — Transcription unavailable: No server-side transcription provider configured (META_API_KEY unset). Use browser speech or type the claim.
+PASS  voice state ERROR is visible
+PASS  Escape stops all voice activity
+PASS  literal command 'compare an NBA market' switches channel
+PASS  Kalshi fixture: matched mapping gives +4.0 pp vs midpoint 0.5500  — OKSYNTHETICkalshi+4.0 ppForecast 0.59 minus midpoint 0.5500.Descriptive difference only. Not an expected profit, edge, f
+PASS  comparison carries SYNTHETIC badge and 'not profit' note
+PASS  Kalshi YES ask derived from NO bid is labelled derived
+PASS  Polymarket fixture: outcome chosen by label, not position
+PASS  automated reviewer cannot approve a mapping
+PASS  market scenario kalshi_reversed_outcome → NO_MATCH with no number  — NO_MATCH
+PASS  market scenario kalshi_other_date → NO_MATCH with no number  — NO_MATCH
+PASS  market scenario kalshi_regulation_only → OVERTIME_MISMATCH with no number  — OVERTIME_MISMATCH
+PASS  market scenario kalshi_unknown_units → UNKNOWN_UNITS with no number  — UNKNOWN_UNITS
+PASS  market scenario kalshi_stale_book → STALE_BOOK with no number  — STALE_BOOK
+PASS  market scenario kalshi_after_cutoff → FUTURE_QUOTE with no number  — FUTURE_QUOTE
+PASS  market scenario kalshi_paused → PAUSED_MARKET with no number  — PAUSED_MARKET
+PASS  market scenario polymarket_crossed → CROSSED_BOOK with no number  — CROSSED_BOOK
+PASS  market scenario polymarket_rate_limited → RATE_LIMITED with no number  — RATE_LIMITED
+PASS  missing ask is unavailable, not zero
+PASS  legacy cent levels converted to the same 0.55 midpoint
+PASS  absent listing shows NO_MATCH and leaves the page usable
+PASS  live fetch failure is shown as a status, not a price  — UNAVAILABLE DNS failure for api.elections.kalshi.com: [Errno -2] Name or service not known
+PASS  harness view renders tuning and held-out summaries separately
+PASS  detectability chart drawn
+PASS  tabs operable with arrow keys
+PASS  every visible control has an accessible name
+PASS  gates panel lists 18 gates
+PASS  no browser console errors (HTTP 4xx from deliberate refusals excluded)
+PASS  no alert/confirm dialogs triggered
+
+66 passed, 0 failed in 17.309s
+exit: 0
+
+## node tests/e2e_extension.mjs
+PASS  manifest requests only activeTab, scripting, storage
+PASS  host permission limited to the local workspace
+PASS  extension loads unpacked and popup renders
+PASS  popup validates pairing code
+PASS  restricted page (the extension page itself) is refused visibly  — This page can't be read (browser-restricted page, PDF viewer or store page): Cannot access contents of the page. Extension manifest must req
+PASS  popup has no script errors
+PASS  grab.js returns selected text and the intersecting table  — [{"rows":[["Player","FT"],["P001","7-8"],["P002","=cmd"]],"truncated":false}]
+PASS  no selection → nothing captured
+PASS  extension-origin POST accepted and stored with hash  — 201
+PASS  workspace shows the extension source as untrusted text
+
+10 passed, 0 failed
+exit: 0
