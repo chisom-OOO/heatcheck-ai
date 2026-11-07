@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600193",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600193"
+    },
+    "home_team_id": "nba-team:1610612744",
+    "away_team_id": "nba-team:1610612753",
+    "scheduled_tip_utc": "2026-11-08T01:30:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file."
+  },
+  "captures": [
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW",
+      "http_status": 200,
+      "payload_sha256": "f13d9a4b602c4635b184ff59681651ef531390f1f15f7c09f62fdd783e58a881",
+      "fetch_start_utc": "2026-11-07T22:29:56.144248Z",
+      "received_utc": "2026-11-07T22:29:56.309013Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW/orderbook",
+      "http_status": 200,
+      "payload_sha256": "3c8f9c34a3ddff3eaeeb3bc4e11f450db2726c200538e291ff38d8ac5753e265",
+      "fetch_start_utc": "2026-11-07T22:29:56.334033Z",
+      "received_utc": "2026-11-07T22:29:56.490592Z",
+      "market_payload_sha256": "f13d9a4b602c4635b184ff59681651ef531390f1f15f7c09f62fdd783e58a881",
+      "target": {
+        "game_id": "nba:0022600193",
+        "team_id": "nba-team:1610612744",
+        "contract_id": "KXNBAGAME-26NOV07ORLGSW-GSW:yes",
+        "expected_label": "YES (Golden State)"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600193 (ORL at GSW, tip 2026-11-08T01:30:00Z), KALSHI contract KXNBAGAME-26NOV07ORLGSW-GSW:yes labelled 'YES (Golden State)' = home team wins. Received 2026-11-07T22:29:56.309013Z (market) and 2026-11-07T22:29:56.490592Z (book), local clock. Game list: game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.. Mapping PROPOSED for Max to verify. SAMPLE INPUT: the game list was hand-made; the venue prices are real. "
+}
