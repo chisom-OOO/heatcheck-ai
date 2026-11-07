@@ -9,10 +9,13 @@ Safety (tested in tests/test_venues.py):
   * no order, signing, wallet, transfer or account endpoint exists in this module.
   * every payload is hashed and timestamped (fetch start / received) and kept raw.
 
-Schema notes (from vendor docs read 7 Nov 2026; verify on the target host before G12):
+Schema notes (from vendor docs read 7 Nov 2026; checked against the recorded capture
+tests/fixtures/quotes/e001-recorded-0022600189 on 7 Nov 2026):
   Polymarket Gamma  GET https://gamma-api.polymarket.com/markets/slug/{slug} -> market object with
-                    outcomes (JSON string), clobTokenIds (JSON string, v1) or positionIds (array, v2),
-                    gameStartTime, description, orderPriceMinTickSize, active/closed/acceptingOrders.
+                    outcomes (JSON string), clobTokenIds (JSON string; these are the CLOB book token
+                    ids), gameStartTime, description, orderPriceMinTickSize, active/closed/acceptingOrders.
+                    The real capture was version v1. positionIds (documented for v2) is used only when
+                    clobTokenIds is absent and is UNVERIFIED against a real payload.
   Polymarket CLOB   GET https://clob.polymarket.com/book?token_id=... -> {bids, asks, timestamp(ms), hash, tick_size}
   Kalshi            GET {base}/markets/{ticker} -> {market: {...}}
                     GET {base}/markets/{ticker}/orderbook -> {orderbook_fp: {yes_dollars, no_dollars}}; bids only.
@@ -29,9 +32,13 @@ import urllib.request
 from datetime import UTC, datetime
 
 from . import quotes
+from .quotes import PRICE_UNIT
+from .timefmt import iso_z, parse_utc
 
-ADAPTER_VERSION = "0.1-docs-2026-11-07"
+ADAPTER_VERSION = "0.2-capture-2026-11-07"
 MAX_RESPONSE = 2 * 1024 * 1024
+# A provider timestamp later than our own receipt by more than this is a clock fault, not a quote.
+PROVIDER_CLOCK_TOLERANCE_SECONDS = 5
 ALLOW = {
     "gamma-api.polymarket.com": ("/markets/slug/", "/markets", "/events"),
     "clob.polymarket.com": ("/book",),
@@ -113,11 +120,16 @@ class UrllibTransport:
 
 class FixtureTransport:
     """Serves authored payloads keyed by URL. Used for offline replay and tests.
-    data_mode of its artifacts is whatever the fixture file declares (SYNTHETIC for authored ones)."""
+    data_mode of its artifacts is whatever the fixture file declares (SYNTHETIC for authored ones).
+
+    clock_utc is the authored fetch time reported for every response. Without it a replay would
+    stamp today's wall clock as received_at_utc next to an authored provider_time, which is how
+    BookSnapshot.json once showed provider_time 8 hours after its own receipt."""
     name = "fixture"
 
-    def __init__(self, routes, data_mode="SYNTHETIC", captured_at=None):
+    def __init__(self, routes, data_mode="SYNTHETIC", captured_at=None, clock_utc=None):
         self.routes, self.data_mode, self.captured_at = routes, data_mode, captured_at
+        self.clock_utc = parse_utc(clock_utc) if clock_utc else None
 
     def get(self, url):
         check_url(url)
@@ -132,11 +144,12 @@ class FixtureTransport:
 def fetch_json(transport, url, retries=3, max_sleep=5.0, sleep=time.sleep):
     """Bounded retry for 429/5xx; Retry-After honoured up to max_sleep. Returns (obj, provenance)."""
     attempt = 0
+    clock = getattr(transport, "clock_utc", None)
     while True:
         attempt += 1
-        start = utcnow()
+        start = clock or utcnow()
         status, headers, body = transport.get(url)
-        received = utcnow()
+        received = clock or utcnow()
         if len(body) > MAX_RESPONSE:
             raise VenueError("MALFORMED", f"response over {MAX_RESPONSE} bytes")
         if status == 429 or 500 <= status < 600:
@@ -158,7 +171,8 @@ def fetch_json(transport, url, retries=3, max_sleep=5.0, sleep=time.sleep):
             obj = json.loads(body, parse_constant=lambda c: (_ for _ in ()).throw(ValueError(c)))
         except ValueError as e:
             raise VenueError("MALFORMED", f"invalid JSON: {e}", url=url) from None
-        prov = {"url": url, "fetch_start_utc": start.isoformat(), "received_at_utc": received.isoformat(),
+        prov = {"url": url, "fetch_start_utc": iso_z(start), "received_at_utc": iso_z(received),
+                "clock": "authored fixture clock" if clock else "local system clock",
                 "raw_hash": hashlib.sha256(body).hexdigest(), "bytes": len(body), "attempts": attempt,
                 "transport": transport.name}
         return obj, prov
@@ -229,7 +243,13 @@ class PolymarketAdapter:
         if version not in ("v1", "v2"):
             raise VenueError("UNSUPPORTED", f"market version {version!r} not supported")
         outcomes = _json_list(m.get("outcomes"), "outcomes")
-        ids = _json_list(m.get("positionIds"), "positionIds") if version == "v2" else _json_list(m.get("clobTokenIds"), "clobTokenIds")
+        # clobTokenIds are the ids the CLOB /book endpoint takes (verified on a real v1 capture).
+        if m.get("clobTokenIds"):
+            ids = _json_list(m.get("clobTokenIds"), "clobTokenIds")
+        elif version == "v2":
+            ids = _json_list(m.get("positionIds"), "positionIds")   # unverified fallback
+        else:
+            ids = None
         if not outcomes or not ids or len(outcomes) != len(ids):
             raise VenueError("MALFORMED", "outcomes and token IDs missing or misaligned")
         rules = m.get("description") or ""
@@ -248,7 +268,7 @@ class PolymarketAdapter:
             "rules_hash": _sha(rules),
             "settlement_source": m.get("resolutionSource") or None,
             "outcome_convention": "each outcome has its own token; YES of an outcome token pays if that outcome wins",
-            "price_quantity_grid": {"price_unit": "dollars", "tick": str(tick) if tick is not None else None,
+            "price_quantity_grid": {"price_unit": PRICE_UNIT, "tick": str(tick) if tick is not None else None,
                                      "quantity_unit": "shares"},
             "capabilities": self.capabilities(),
             "market_status": status,
@@ -322,7 +342,7 @@ class KalshiAdapter:
             "rules_hash": _sha(rules),
             "settlement_source": (m.get("settlement_sources") or [None])[0] if isinstance(m.get("settlement_sources"), list) else None,
             "outcome_convention": "binary YES/NO; book returns YES bids and NO bids only; YES ask is derived as 1 - best NO bid",
-            "price_quantity_grid": {"price_unit": "dollars", "tick": m.get("tick_size_dollars") or "0.01",
+            "price_quantity_grid": {"price_unit": PRICE_UNIT, "tick": m.get("tick_size_dollars") or "0.01",
                                      "quantity_unit": "contracts (fixed-point string)"},
             "capabilities": self.capabilities(),
             "market_status": "OPEN" if status in ("active", "open") else ("PAUSED_MARKET" if status else "UNKNOWN"),
@@ -341,40 +361,43 @@ class KalshiAdapter:
         obj, prov = fetch_json(self.t, url)
         if not isinstance(obj, dict):
             raise VenueError("MALFORMED", "orderbook payload is not an object")
-        if "orderbook_fp" in obj:
-            book, unit = obj["orderbook_fp"], "dollars"
-        elif isinstance(obj.get("orderbook"), dict) and "yes" in obj["orderbook"]:
-            # legacy integer-cent arrays: convert explicitly, flagged in the snapshot
-            ob = obj["orderbook"]
-            book = {"yes_dollars": ob.get("yes") or [], "no_dollars": ob.get("no") or []}
-            unit = "cents"
-        else:
-            raise VenueError("UNKNOWN_UNITS", "orderbook has neither orderbook_fp nor a recognised legacy shape")
+        if "orderbook_fp" not in obj:
+            # Legacy integer-cent `orderbook` arrays are refused, not converted: heatcheck-records/1
+            # accepts PROBABILITY_DOLLARS decimal strings only (docs/DATA_FORMAT.md).
+            legacy = isinstance(obj.get("orderbook"), dict)
+            raise VenueError("UNKNOWN_UNITS", "legacy integer-cent orderbook refused; only orderbook_fp "
+                             f"({PRICE_UNIT} decimal strings) is accepted" if legacy
+                             else "orderbook has no orderbook_fp")
         try:
-            norm = quotes.normalise_kalshi(book, tick=spec["price_quantity_grid"]["tick"] if unit == "dollars" else None,
-                                           price_unit=unit)
+            norm = quotes.normalise_kalshi(obj["orderbook_fp"], tick=spec["price_quantity_grid"]["tick"])
         except quotes.QuoteError as e:
             raise VenueError(e.status, str(e)) from None
-        snap = _snapshot(self.venue, spec, contract_id, "yes_bid_and_derived_yes_ask", norm, obj.get("_provider_time"), prov, self.t)
-        snap["source_price_unit"] = unit
-        return snap
+        return _snapshot(self.venue, spec, contract_id, "yes_bid_and_derived_yes_ask", norm,
+                         obj.get("_provider_time"), prov, self.t)
 
 
 def _snapshot(venue, spec, contract_id, side, norm, provider_time, prov, transport):
     pt = _parse_time(provider_time)
+    if pt is not None and pt.tzinfo is None:
+        raise VenueError("MALFORMED", f"provider time {provider_time!r} has no UTC offset")
+    received = parse_utc(prov["received_at_utc"])
+    if pt is not None and (pt - received).total_seconds() > PROVIDER_CLOCK_TOLERANCE_SECONDS:
+        raise VenueError("CLOCK_SKEW", f"provider_time {iso_z(pt)} is later than received_at_utc "
+                         f"{prov['received_at_utc']} by more than {PROVIDER_CLOCK_TOLERANCE_SECONDS}s; "
+                         "quote refused")
     snap = {
         "venue": venue,
         "market_id": spec["market_id"],
         "contract_id": contract_id,
         "normalized_side": side,
-        "price_unit": "probability_dollars_per_1_payout",
+        "price_unit": PRICE_UNIT,
         "quantity_unit": spec["price_quantity_grid"]["quantity_unit"],
         "levels": {"bids": norm["bids"], "asks": norm["asks"]},
         "best_bid": norm["best_bid"], "best_ask": norm["best_ask"],
         "midpoint": norm["midpoint"], "midpoint_unavailable_reason": norm["midpoint_unavailable_reason"],
         "spread": norm["spread"], "crossed": norm["crossed"], "ask_is_derived": norm["ask_is_derived"],
         "liquidity_ids": [],
-        "provider_time": pt.isoformat() if pt else None,
+        "provider_time": iso_z(pt) if pt else None,
         "fetch_start_utc": prov["fetch_start_utc"],
         "received_at_utc": prov["received_at_utc"],
         "clock_uncertainty": "provider and local clocks not synchronised; book fetches across venues are not atomic",

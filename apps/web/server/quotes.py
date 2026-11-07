@@ -8,6 +8,9 @@ from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 
 ZERO, ONE = Decimal("0"), Decimal("1")
+# The only unit label in heatcheck-records/1 (docs/DATA_FORMAT.md): decimal-string probability
+# dollars per $1 payout, in [0, 1]. Cents and any other unit are refused, never converted.
+PRICE_UNIT = "PROBABILITY_DOLLARS"
 
 
 class QuoteError(ValueError):
@@ -16,22 +19,20 @@ class QuoteError(ValueError):
         self.status = status
 
 
-def parse_price(raw, unit):
-    """unit: 'dollars' (0..1 per contract) or 'cents' (0..100). Anything else is UNKNOWN_UNITS."""
-    if unit not in ("dollars", "cents"):
-        raise QuoteError("UNKNOWN_UNITS", f"price unit {unit!r} not declared by the venue")
-    if isinstance(raw, float):
-        raise QuoteError("MALFORMED", "float price rejected; venues send decimal strings")
+def parse_price(raw, unit=PRICE_UNIT):
+    """Only PROBABILITY_DOLLARS decimal strings in [0,1]. Any other unit is UNKNOWN_UNITS."""
+    if unit != PRICE_UNIT:
+        raise QuoteError("UNKNOWN_UNITS", f"price unit {unit!r} refused; only {PRICE_UNIT} is accepted")
+    if not isinstance(raw, str):
+        raise QuoteError("MALFORMED", f"{type(raw).__name__} price rejected; venues send decimal strings")
     try:
-        d = Decimal(str(raw).strip().lstrip("$"))
-    except (InvalidOperation, AttributeError):
+        d = Decimal(raw.strip())
+    except InvalidOperation:
         raise QuoteError("MALFORMED", f"unparseable price {raw!r}") from None
     if not d.is_finite():
         raise QuoteError("MALFORMED", "non-finite price")
-    if unit == "cents":
-        d = d / Decimal(100)
     if d < ZERO or d > ONE:
-        raise QuoteError("UNKNOWN_UNITS", f"price {d} outside [0,1] after {unit} conversion; unit mismatch?")
+        raise QuoteError("UNKNOWN_UNITS", f"price {d} outside [0,1]; not {PRICE_UNIT}")
     return d
 
 
@@ -50,18 +51,18 @@ def check_grid(price, tick):
         raise QuoteError("OFF_GRID", f"price {price} is not on the {tick} tick grid")
 
 
-def normalise_kalshi(orderbook_fp, tick="0.01", price_unit="dollars"):
+def normalise_kalshi(orderbook_fp, tick="0.01"):
     """Kalshi gives only bids for YES and NO. YES ask is DERIVED as 1 - best NO bid."""
     if not isinstance(orderbook_fp, dict) or "yes_dollars" not in orderbook_fp or "no_dollars" not in orderbook_fp:
         raise QuoteError("MALFORMED", "orderbook_fp must contain yes_dollars and no_dollars")
     yes_bids, no_bids = [], []
     for price, qty in orderbook_fp["yes_dollars"]:
-        p = parse_price(price, price_unit)
+        p = parse_price(price)
         check_grid(p, tick)
         yes_bids.append({"price": p, "qty": parse_qty(qty), "derived": False, "raw_side": "yes_bid"})
     derived_yes_asks = []
     for price, qty in orderbook_fp["no_dollars"]:
-        p = parse_price(price, price_unit)
+        p = parse_price(price)
         check_grid(p, tick)
         no_bids.append({"price": p, "qty": parse_qty(qty)})
         derived_yes_asks.append({"price": ONE - p, "qty": parse_qty(qty), "derived": True, "raw_side": "no_bid"})
@@ -76,11 +77,11 @@ def normalise_polymarket(book, tick=None):
     bids = []
     asks = []
     for lv in book["bids"]:
-        p = parse_price(lv["price"], "dollars")
+        p = parse_price(lv["price"])
         check_grid(p, tick)
         bids.append({"price": p, "qty": parse_qty(lv["size"]), "derived": False, "raw_side": "bid"})
     for lv in book["asks"]:
-        p = parse_price(lv["price"], "dollars")
+        p = parse_price(lv["price"])
         check_grid(p, tick)
         asks.append({"price": p, "qty": parse_qty(lv["size"]), "derived": False, "raw_side": "ask"})
     return _book(bids, asks)

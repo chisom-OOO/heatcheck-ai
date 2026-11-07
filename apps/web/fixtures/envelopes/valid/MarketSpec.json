@@ -1,6 +1,6 @@
 {
  "capabilities": {
-  "adapter_version": "0.1-docs-2026-11-07",
+  "adapter_version": "0.2-capture-2026-11-07",
   "discovery": "by explicit market ticker; event search is not implemented",
   "operations": [
    "market_by_ticker",
@@ -31,16 +31,17 @@
  ],
  "outcome_convention": "binary YES/NO; book returns YES bids and NO bids only; YES ask is derived as 1 - best NO bid",
  "price_quantity_grid": {
-  "price_unit": "dollars",
+  "price_unit": "PROBABILITY_DOLLARS",
   "quantity_unit": "contracts (fixed-point string)",
   "tick": "0.01"
  },
  "provenance": {
   "attempts": 1,
   "bytes": 656,
-  "fetch_start_utc": "2026-11-07T15:42:18.953444+00:00",
+  "clock": "authored fixture clock",
+  "fetch_start_utc": "2026-11-07T23:58:01Z",
   "raw_hash": "776ff356553dcce5ea7b2e9f4746d168b80f652aef0c3901ee4c77003d8afc5f",
-  "received_at_utc": "2026-11-07T15:42:18.953514+00:00",
+  "received_at_utc": "2026-11-07T23:58:01Z",
   "transport": "fixture",
   "url": "https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS"
  },

@@ -227,7 +227,9 @@ try {
   check("missing ask is unavailable, not zero", m.status === "QUOTE_UNAVAILABLE" && m.text.includes("not zero"));
   await shot(page, "10_market_missing_ask");
   m = await marketRun("kalshi_cents_legacy", "Chisom O", "midpoint");
-  check("legacy cent levels converted to the same 0.55 midpoint", m.status === "OK" && m.text.includes("+4.0 pp"));
+  check("legacy cent levels are refused as UNKNOWN_UNITS, not converted", m.status === "UNKNOWN_UNITS" && !/[+-]\d+\.\d pp/.test(m.text), m.status);
+  m = await marketRun("kalshi_clock_skew", "Chisom O", "midpoint");
+  check("provider time after our receipt is refused as CLOCK_SKEW", m.status === "CLOCK_SKEW" && !/[+-]\d+\.\d pp/.test(m.text), m.status);
   m = await marketRun("polymarket_no_listing", "Chisom O", "midpoint");
   check("absent listing shows NO_MATCH and leaves the page usable", m.stage === "spec" && m.text.includes("NO_MATCH"));
   await page.selectOption("#mk-source", "live");

@@ -11,7 +11,8 @@ import hashlib
 import json
 import threading
 import uuid
-from datetime import UTC, datetime
+
+from .timefmt import now_z
 
 
 def canonical(obj):
@@ -23,7 +24,7 @@ def sha(obj):
 
 
 def now():
-    return datetime.now(UTC).isoformat()
+    return now_z()
 
 
 class AuthorityError(Exception):
