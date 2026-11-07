@@ -46,3 +46,39 @@ def read(db_path: Path, table: str) -> pd.DataFrame:
         return pd.read_sql(f"SELECT * FROM {table}", con)
     finally:
         con.close()
+
+
+# --------------------------------------------------------------------------- logical table hashes (RV-R1)
+# frame_hash() at build time runs on in-memory frames. publish() stores tz-datetimes as strings, bools as
+# 0/1 and nullable Int64 ids as REAL. logical_frame() undoes exactly those conversions so the hash of
+# the STORED bytes can be compared with the frozen plan. Any other drift changes the hash: fail closed.
+TABLES = {  # table -> (database file stem, sort keys); mirrors scripts/build_dataset.py
+    "games": ("public", ["game_id"]),
+    "events": ("public", ["game_id", "sequence"]),
+    "exclusions": ("public", ["game_id"]),
+    "games_2022": ("public", ["game_id"]),
+    "game_labels": ("restricted_labels", ["game_id"]),
+    "shot_labels": ("restricted_labels", ["target_id"]),
+    "game_labels_2022": ("restricted_labels", ["game_id"]),
+}
+_BOOL_COLS = {"neutral_site", "clock_regress"}
+_NULLABLE_INT_COLS = {"team_id", "person_id", "assist_person_id", "block_person_id"}
+
+
+def logical_frame(df: pd.DataFrame) -> pd.DataFrame:
+    d = df.copy()
+    for c in d.columns:
+        if c.endswith("_utc"):
+            d[c] = pd.to_datetime(d[c], utc=True, format="%Y-%m-%dT%H:%M:%S.%fZ")
+        elif c in _BOOL_COLS:
+            d[c] = d[c].astype(bool)
+        elif c in _NULLABLE_INT_COLS:
+            d[c] = d[c].astype("Int64")
+    return d
+
+
+def logical_table_hashes(data_dir: Path) -> dict[str, str]:
+    """Recompute every logical table hash from the actual SQLite files in `data_dir`."""
+    from .util import frame_hash
+    return {t: frame_hash(logical_frame(read(Path(data_dir) / f"{db}.sqlite", t)), keys)
+            for t, (db, keys) in TABLES.items()}

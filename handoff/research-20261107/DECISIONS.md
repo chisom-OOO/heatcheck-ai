@@ -60,3 +60,25 @@ Protocol `heatcheck-nba/1`. Decisions taken by HeatCheck-Research on 2026-11-07 
 - Estimand: within player-game, P(make | previous 3 FGA in same player-game all made) − P(make | previous 3 all missed), pooled counts over all eligible player-games.
 - Null: outcomes exchangeable within (player, game, shot value 2pt/3pt) strata. Permutation recomputes streak eligibility each draw. B=999, seed 20261107. One-sided p = (1+#{T* ≥ T})/(B+1).
 - Known limitation, stated up front: within-stratum exchangeability ignores within-game difficulty drift and shot selection after makes. A rejection is therefore an association under this null, **not** evidence of a causal hot hand. Run on development games (fit+tune+calibration) only. Final shot games are not opened in this pass.
+
+## D12 — SHOT_ASSOCIATION scope: field-goal attempts only (appended 2026-11-07 ~17:20 UTC; decision by the user/Max)
+- SHOT_ASSOCIATION covers field-goal attempts only. Free throws are out of scope: no pre-shot FEATURE_ROW,
+  no SHOT_MADE label and no hot-hand/clutch test over free throws. `player_prior_attempts_in_game` and
+  `player_prior_makes_in_game` count field-goal attempts/makes only.
+- Records the existing behaviour of `features.preshot_features` (FGA rows only). It answers reviewer RV-R6 by
+  scope decision, not by code change; the reviewer's FT-coverage check is out of scope under this decision.
+
+## D13 — Final-step guard fixed after the original final run (appended 2026-11-07 ~17:20 UTC)
+- **The original GAME_PREDICTION final run (receipt 3e238d2d-030e-45b4-aae7-db0787ecb873, reserved
+  2026-11-07T15:22:56Z, spent 15:22:57Z) predates this fix.** At that time `final()` checked only split and
+  code hashes, and the custodian keyed exposure on raw id strings (reviewer RV-R1, RV-R2).
+- Fixes: `final()` verifies the plan's own hash, recomputes every logical table hash from the SQLite inputs and
+  refuses on any difference from `plan.data_hashes`; the custodian binds a reservation to an `input_hash`
+  (a retry with different data is refused) and canonicalises record ids (`nba:` + 10 digits) before any
+  exposure check; `CODE_FILES` adds util.py, store.py, canonical.py, build_dataset.py (RV-R4); sensitivity
+  block lengths that the window cannot support are reported `NOT_COMPUTED` with counts (RV-R5).
+- Because the fix changes code inside the frozen `code_hash`, the frozen plan is replayed through a
+  CODE_IDENTITY_ONLY amendment (`claim_plan_GP.amendment-1.json`): it records the new code hash only; claim,
+  hypotheses, thresholds, floor, splits, data hashes, family, epoch and seed are read from the unchanged
+  original plan. The replay is an audit re-execution of the spent receipt on the same unchanged data; it is
+  logged in the ledger as `type: replay`, exposes no new record, and does not create a new verdict of record.
