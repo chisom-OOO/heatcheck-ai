@@ -297,6 +297,14 @@ def _check_nba_consistency(
                     f"{b['value']['away_points']} contradicts EVENT made-shot totals "
                     f"home {home}-away {away}"
                 )
+        if b["label_kind"] == "SHOT_MADE":
+            # RV-O2: a shot label must agree with the shot EVENT it names.
+            target = shots.get(b["target_id"])
+            if target is not None and target["body"]["shot"]["made"] != b["value"]["made"]:
+                raise BundleError(
+                    f"{rid} made={b['value']['made']} contradicts EVENT "
+                    f"{target['record_id']} made={target['body']['shot']['made']}"
+                )
 
 
 def main(argv: list[str]) -> int:
