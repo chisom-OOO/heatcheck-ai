@@ -152,6 +152,20 @@ def freeze(data: Path, out: Path):
     print(json.dumps(plan, indent=2))
 
 
+def _write_once(path: Path, text: str) -> Path:
+    """Never overwrite a result. The first run writes `path`; any rerun writes `<stem>.rerun-<n><suffix>`
+    (smallest free n). Exclusive create, so a concurrent writer cannot clobber either file."""
+    candidates = [path] + [path.with_name(f"{path.stem}.rerun-{n}{path.suffix}") for n in range(1, 10_000)]
+    for c in candidates:
+        try:
+            with open(c, "x", newline="\n") as f:
+                f.write(text)
+            return c
+        except FileExistsError:
+            continue
+    raise FinalRefused(f"no free result filename next to {path.name}")
+
+
 def _verified_plan(out: Path) -> dict:
     plan = json.loads((out / "claim_plan_GP.json").read_text())
     body = {k: v for k, v in plan.items() if k != "canonical_plan_hash"}
@@ -306,8 +320,9 @@ def final(data: Path, out: Path):
               "created_at_utc": utc_now_iso()}
     name = ("game_prediction_final.json" if mode == "ORIGINAL"
             else f"game_prediction_final.replay-{amendment['amendment_id']}.json")
-    (out / name).write_text(json.dumps(result, indent=2, default=str) + "\n", newline="\n")
+    written = _write_once(out / name, json.dumps(result, indent=2, default=str) + "\n")
     print(json.dumps(result, indent=2, default=str))
+    print(f"result written to {written.name} (write-once; existing results are never overwritten)", file=sys.stderr)
 
 
 if __name__ == "__main__":

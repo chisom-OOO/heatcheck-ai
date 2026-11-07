@@ -166,3 +166,65 @@ def test_registration_closed_once_family_frozen(tmp_path, small_dev_season):
     with pytest.raises(ExposureRefused, match="different registered family"):
         Custodian(ev / "custodian_ledger.jsonl").register(epoch_id=CF.EPOCH_ID, family_id=CF.FAMILY_ID,
                                                          plan_hash="another-plan", code_hash=CF.code_hash())
+
+
+# --------------------------------------------------------------------------- seal binding: data must match exactly
+def _tamper_copy(src: Path, dst: Path, db: str, sql: str) -> Path:
+    dst.mkdir()
+    for name in ("public.sqlite", "restricted_labels.sqlite"):
+        (dst / name).write_bytes((src / name).read_bytes())
+    con = sqlite3.connect(dst / db); con.execute(sql); con.commit(); con.close()
+    return dst
+
+
+TAMPERS = {
+    "games": ("public.sqlite", "UPDATE games SET home_tricode = 'XXX' WHERE rowid = 1"),
+    "events": ("public.sqlite", "UPDATE events SET shot_distance = shot_distance + 1 WHERE rowid = "
+                                "(SELECT min(rowid) FROM events WHERE is_field_goal = 1)"),
+    "events_row_added": ("public.sqlite", "INSERT INTO events SELECT * FROM events WHERE rowid = 1"),
+    "exclusions": ("public.sqlite", "INSERT INTO exclusions VALUES ('0022300001', 'tamper')"),
+    "quarantine": ("public.sqlite", "DELETE FROM quarantine"),
+    "game_labels": ("restricted_labels.sqlite", "UPDATE game_labels SET home_win = 1 - home_win WHERE rowid = 1"),
+    "shot_labels": ("restricted_labels.sqlite", "UPDATE shot_labels SET made = 1 - made WHERE rowid = 1"),
+}
+
+
+@real
+@pytest.mark.parametrize("which", sorted(TAMPERS))
+def test_final_refuses_unless_data_match_the_seal_exactly(tmp_path, small_dev_season, which):
+    """Any change to any sealed table makes final refuse BEFORE reserving: ledger unchanged, no result."""
+    data, ids = small_dev_season
+    ev = tmp_path / "evidence"; ev.mkdir()
+    _seal_small(ev, data, ids)
+    CF.freeze(data, ev, overrides=SMALL)
+    db, sql = TAMPERS[which]
+    bad = _tamper_copy(data, tmp_path / "bad", db, sql)
+    ledger = (ev / "custodian_ledger.jsonl").read_bytes()
+    with pytest.raises(CF.Refused, match="sealed data"):
+        CF.final(bad, ev, "pytest")
+    assert (ev / "custodian_ledger.jsonl").read_bytes() == ledger
+    assert not (ev / CF.SUBDIR / "final_result.json").exists()
+
+
+DATA_2024 = os.environ.get("HC_DATA_2024")
+real2024 = pytest.mark.skipif(not DATA_2024, reason="NOT_RUN: set HC_DATA_2024 to a 2024-25 build")
+
+
+@real2024
+def test_real_2024_build_matches_frozen_seal():
+    fam = json.loads((ROOT / "evidence" / CF.SUBDIR / "family.json").read_text())
+    assert store.logical_table_hashes(Path(DATA_2024), store.SEASON_TABLES) == fam["sealed_data_hashes"]
+
+
+@real2024
+def test_real_2024_tampered_copy_is_refused_on_a_ledger_copy(tmp_path):
+    """Against the REAL frozen family, on a COPY of evidence/: a one-label change is refused before reserve."""
+    import shutil
+    ev = tmp_path / "evidence"; shutil.copytree(ROOT / "evidence", ev)
+    bad = _tamper_copy(Path(DATA_2024), tmp_path / "bad", "restricted_labels.sqlite",
+                       "UPDATE game_labels SET home_win = 1 - home_win WHERE rowid = 1")
+    ledger = (ev / "custodian_ledger.jsonl").read_bytes()
+    with pytest.raises(CF.Refused, match="sealed data"):
+        CF.final(bad, ev, "pytest")
+    assert (ev / "custodian_ledger.jsonl").read_bytes() == ledger
+    assert not (ev / CF.SUBDIR / "final_result.json").exists()
