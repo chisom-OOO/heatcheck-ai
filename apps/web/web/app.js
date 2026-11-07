@@ -1,5 +1,6 @@
 // HeatCheck-Experience client. Formats engine JSON; never computes probabilities, statistics or quote units.
 // Untrusted text is always inserted with textContent (no innerHTML anywhere in this file).
+import * as referee from "./referee.js";
 import { createVoice } from "./voice.js";
 
 const $ = (id) => document.getElementById(id);
@@ -329,32 +330,64 @@ async function cancelRun() {
 }
 
 // ------------------------------------------------------------------ 6 verdict
+// Renders the Referee evidence view (web/referee.js). Today's runs come from the stand-in engine and
+// are labelled so; a record opened from disk is rendered through the same view. PROVISIONAL until
+// Max's Referee evidence record format is delivered.
+const OUTCOME_CELL = { PASSED: ["pass", "✓ passed"], FAILED: ["fail", "✕ failed"], NOT_RUN: ["not-run", "– not run"],
+  ERROR: ["fail", "! error"], UNRECOGNISED: ["fail", "? unrecognised outcome"] };
+function valueEl(tag, v, attrs = {}) {
+  return el(tag, { ...attrs, class: [attrs.class, v && v.available ? null : "unavailable"].filter(Boolean).join(" ") || null, text: referee.show(v) });
+}
+function renderRefereeView(vm, { historical = false } = {}) {
+  $("verdict-card").hidden = false;
+  const src = vm.source === "STAND_IN_ENGINE"
+    ? el("div", { class: "banner warn" }, el("strong", { text: "Stand-in engine output, not a Referee record. " }),
+        "Shown in the Referee evidence layout so the screen is ready for the real record. ", el("span", { class: "hint", text: vm.format_status }))
+    : el("div", { class: "banner info" }, el("strong", { text: "Referee evidence record opened from a file. " }), el("span", { class: "hint", text: vm.format_status }));
+  $("ref-source").replaceChildren(src, el("div", { class: "row" }, vm.data_mode ? modeBadge(vm.data_mode) : el("span", { class: "chip", text: "data mode not recognised" }),
+    historical ? el("span", { class: "chip", text: "historical: claim changed since" }) : null));
+
+  const c = vm.claim;
+  $("ref-claim").replaceChildren(...(c ? [["Statement", c.statement], ["Claim ID", c.claim_id], ["Plan hash", c.plan_hash], ["Revision", c.revision]]
+    .flatMap(([k, v]) => [el("dt", { text: k }), valueEl("dd", v, { class: k === "Plan hash" ? "mono" : null })])
+    : [el("dt", { text: "Claim" }), el("dd", { class: "unavailable", text: "unavailable: no claim in this record" })]));
+
+  const tb = $("attacks").tBodies[0];
+  tb.replaceChildren(...(vm.attacks.length ? vm.attacks.map((a) => {
+    const [cls, label] = OUTCOME_CELL[a.outcome] || OUTCOME_CELL.UNRECOGNISED;
+    return el("tr", {}, valueEl("td", a.test_id, { class: "mono" }), el("td", { class: cls, text: label }),
+      valueEl("td", a.statistic, { class: "num" }), valueEl("td", a.p_value, { class: "num" }),
+      el("td", {}, valueEl("span", a.method), a.reason ? el("span", { class: "hint", text: " " + a.reason }) : null));
+  }) : [el("tr", {}, el("td", { colspan: "5", class: "unavailable", text: "No attacks reported." }))]));
+
+  const vd = vm.verdict;
+  $("verdict").replaceChildren(el("div", { class: `decision ${vd.recognised ? vd.decision : "UNRECOGNISED"}${historical ? " historical" : ""}` },
+    el("span", { class: "icon", "aria-hidden": "true", text: vd.icon }),
+    el("div", {}, el("div", { class: "label", text: vd.decision }), el("div", { text: vd.plain }),
+      vd.reason ? el("p", { class: "why hint", text: vd.reason }) : null,
+      el("p", { class: "hint", text: "A claim that does not survive is not proof of luck: it did not survive this protocol on this data." }))));
+
+  $("ref-evidence").replaceChildren(...(vm.evidence.length ? vm.evidence.map((e) => el("li", {}, el("span", { class: "k", text: e.label }), valueEl("span", e.value, { class: "v" })))
+    : [el("li", { class: "unavailable", text: "No evidence items in this record." })]));
+  $("ref-problems-count").textContent = `(${vm.problems.length})`;
+  $("ref-problems").replaceChildren(...vm.problems.map((p) => el("li", { text: p })));
+  $("ref-problems-wrap").hidden = !vm.problems.length;
+  announce(`Referee view: ${vd.decision}. ${vm.attacks.length} attacks listed.`);
+}
+async function openRefereeFile(file) {
+  let rec;
+  try { rec = JSON.parse(await file.text()); } catch (e) { rec = null; announce("That file is not valid JSON."); }
+  const vm = referee.fromRecord(rec);
+  if (rec === null) vm.problems.unshift(`${file.name}: not valid JSON`);
+  renderRefereeView(vm);
+  $("btn-reveal").hidden = true; $("standin-extras").hidden = true;
+  for (const id of ["dl-json", "dl-csv"]) { $(id).removeAttribute("href"); $(id).hidden = true; }   // a file record is not a server run
+}
 function renderVerdict(r) {
-  const res = r.result; $("verdict-card").hidden = false;
-  const [icon, plain] = decisionMeta(res.decision);
-  const historical = r.revision !== S.revision;
-  const box = el("div", { class: `decision ${res.decision}${historical ? " historical" : ""}` },
-    el("span", { class: "icon", "aria-hidden": "true", text: icon }),
-    el("div", {}, el("div", { class: "label", text: res.decision }), el("div", { text: plain }), el("p", { class: "why hint", text: res.reason }),
-      el("div", { class: "row" }, modeBadge(res.data_mode || "SYNTHETIC"), el("span", { class: "chip", text: "revision " + r.revision }),
-        historical ? el("span", { class: "chip", text: "historical: claim changed since" }) : null,
-        res.engine ? el("span", { class: "chip mono", text: res.engine }) : null)));
-  const v = $("verdict"); v.replaceChildren(box);
-  if (res.effect_estimate !== undefined) {
-    v.append(el("div", { class: "row" },
-      el("div", {}, el("div", { class: "big", text: (res.effect_estimate >= 0 ? "+" : "") + (100 * res.effect_estimate).toFixed(1) + " pp" }),
-        el("div", { class: "hint", text: `estimate · 95% interval ${res.interval ? res.interval.map((x) => (100 * x).toFixed(1)).join(" to ") + " pp" : "unavailable"} · ${res.interval_method}` })),
-      el("div", {}, el("div", { class: "big", text: String(res.eligible_positions) }), el("div", { class: "hint", text: `eligible streak positions of ${res.attempts} attempts, ${res.sequences} shooters` }))));
-    v.append(el("p", { class: "hint", text: `Units: ${res.effect_units}. Practical floor ${res.practical_effect_floor}. α ${res.alpha}. A failed claim is not proof of luck: it did not survive this protocol on this data.` }));
-  }
-  const tb = $("attacks").tBodies[0]; tb.replaceChildren();
-  for (const a of res.attacks || []) {
-    tb.append(el("tr", {}, el("td", { class: "mono", text: a.test_id }),
-      el("td", { class: "num", text: Array.isArray(a.statistic) ? a.statistic.map((x) => fmt(x, 4)).join(" / ") : fmt(a.statistic, 4) }),
-      el("td", { class: "num", text: a.p_value === null ? "n/a" : fmt(a.p_value, 4) }),
-      el("td", { class: a.pass ? "pass" : "fail", text: a.pass ? "✓ passed" : "✕ failed" }),
-      el("td", { text: `${a.null_method_assumptions}. ${a.note}` })));
-  }
+  const res = r.result;
+  const plan = S.plan && S.plan.canonical_plan_hash === r.plan_hash ? S.plan : null;   // never show another revision's claim
+  renderRefereeView(referee.fromStandInRun(r, plan), { historical: r.revision !== S.revision });
+  $("standin-extras").hidden = false; $("dl-json").hidden = false; $("dl-csv").hidden = false;
   $("dl-json").href = `/api/export/${r.run_id}?session_id=${S.session}`;
   $("dl-csv").href = `/api/export/${r.run_id}?session_id=${S.session}&format=csv`;
   $("btn-reveal").hidden = !(res.data_mode === "SYNTHETIC" && res.attacks && res.attacks.length);
@@ -616,6 +649,7 @@ async function boot() {
   $("btn-run").addEventListener("click", runLoop);
   $("btn-cancel").addEventListener("click", cancelRun);
   $("btn-reveal").addEventListener("click", reveal);
+  $("ref-file").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) openRefereeFile(f); e.target.value = ""; });
   $("btn-mic").addEventListener("click", () => voice.toggle());
   $("btn-stop-speak").addEventListener("click", () => voice.stopSpeaking());
   $("btn-mk-propose").addEventListener("click", marketPropose);

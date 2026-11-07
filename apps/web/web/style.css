@@ -137,6 +137,12 @@ th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid var(-
 th { color: var(--ink-3); font-weight: 600; font-size: .76rem; }
 td.num { text-align: right; font-family: var(--mono); font-size: .78rem; }
 .pass { color: var(--good-ink); font-weight: 700; } .fail { color: var(--crit-ink); font-weight: 700; }
+.not-run, .unavailable { color: var(--ink-3); font-style: italic; }
+ul.evidence { list-style: none; padding: 0; margin: .4rem 0; font-size: .86rem; display: grid; gap: .2rem; }
+ul.evidence li { display: grid; grid-template-columns: minmax(10rem, max-content) minmax(0, 1fr); gap: .9rem; }
+ul.evidence .k { color: var(--ink-3); }
+ul.evidence .v { overflow-wrap: anywhere; font-family: var(--mono); font-size: .78rem; }
+label.btnlike:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .history { list-style: none; padding: 0; margin: 0; font-size: .85rem; }
 .history li { display: flex; gap: .5rem; flex-wrap: wrap; align-items: baseline; padding: .35rem 0; border-bottom: 1px solid var(--line); }
