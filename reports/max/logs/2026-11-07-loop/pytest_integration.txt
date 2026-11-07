@@ -1,0 +1,21 @@
+# HEAD 0013e531da3899b0e487b85a4248661afc871e72
+$ uv run --frozen pytest -q tests/integration -rA -p no:cacheprovider
+..............                                                           [100%]
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive
+PASSED tests/integration/test_agent_loop.py::test_planted_leagues_are_detected
+PASSED tests/integration/test_agent_loop.py::test_truth_never_reaches_view_or_evidence
+PASSED tests/integration/test_agent_loop.py::test_ledger_retry_is_idempotent_and_tamper_evident
+PASSED tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[{"claim_id": "HOT-HAND-ANYTHING", "rationale": "x"}]
+PASSED tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[{"claim_id": "HH-K3", "rationale": "x", "alpha": 0.5}]
+PASSED tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[the player is clearly clutch]
+PASSED tests/integration/test_agent_loop.py::test_omitted_mandatory_attack_blocks
+PASSED tests/integration/test_agent_loop.py::test_referee_ignores_persuasive_rationale
+PASSED tests/integration/test_agent_loop.py::test_game_prediction_claim_is_blocked_without_season_view
+PASSED tests/integration/test_agent_loop.py::test_real_game_decision_follows_independent_sample_count
+PASSED tests/integration/test_research_bridge.py::test_bridge_loads_research_code_unchanged
+PASSED tests/integration/test_research_bridge.py::test_bridge_rows_validate_on_reference_events
+PASSED tests/integration/test_research_bridge.py::test_real_game_bundle_rebuilds_byte_identically
+14 passed in 109.48s (0:01:49)
+exit=0
