@@ -18,6 +18,12 @@ empty before the first local checkpoint. The user authorised initial local
 committing after creation. Push URL and hook remain blocked; no publication.
 The obsolete BreakPoint working tree/history was archived separately before
 removal; it is not imported as HeatCheck application code.
+Update 7 November 2026 (Max): shared data format heatcheck-records/1 frozen in
+docs/DATA_FORMAT.md with a stdlib validator in heatcheck/contracts, a SYNTHETIC
+reference bundle and contract tests; pure quote-eligibility selection started (M-002).
+First assignments R-001 and E-001 are in docs/tasks/. These are contract/tooling checks:
+no NBA data, quote capture or gate G01-G18 has run.
+
 Next implementation task after scope/eligibility instruction: freeze one schema,
 derive independent tiny cases, and build one real claim -> registered tests ->
 referee -> immutable evidence slice with separate review. Old BreakPoint P0
