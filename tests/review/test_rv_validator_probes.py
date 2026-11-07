@@ -20,12 +20,6 @@ from tests.review.review_support import first, of_type, reference_raw, reference
 REJECT = (BundleError, RecordError, ValueError)
 
 
-def deferred(rv_id: str, decision: str):
-    """Known, recorded validator gap. strict=True: an unexpected PASS (the gap was fixed)
-    fails the run so the marker is removed, and any NEW problem still fails normally."""
-    return pytest.mark.xfail(strict=True, raises=(AssertionError, pytest.fail.Exception),
-                             reason=f"{rv_id} known gap; {decision}")
-
 
 
 def bundle_result(tmp_path: Path, recs: list[dict], created_utc: str = "2026-11-07T12:00:00Z"):
@@ -96,14 +90,14 @@ def test_rv_l4_source_hashes_include_target_shot_rejected(tmp_path, recs):
     assert_rejected(tmp_path, recs, "feature inputs list the target shot's own EVENT hash")
 
 
-@deferred("RV-L5", "docs/DECISIONS.md 2026-11-07 (Max): not in the user's list, also unfixed")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_l5_target_id_resolves_to_no_event_rejected(tmp_path, recs):
     fr = first(recs, "FEATURE_ROW")
     fr["body"]["target_id"] = "syn:G0001:shot:e999"
     assert_rejected(tmp_path, recs, "PRE_SHOT_MAKE target_id names no shot in the bundle")
 
 
-@deferred("RV-L6", "docs/DECISIONS.md 2026-11-07 (Max): not in the user's list, also unfixed")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_l6_source_hashes_reference_unknown_records_rejected(tmp_path, recs):
     fr = first(recs, "FEATURE_ROW")
     fr["body"]["source_record_hashes"] = ["f" * 64]
@@ -137,7 +131,7 @@ def test_rv_g2_feature_row_target_from_other_game_rejected(tmp_path, recs):
     assert_rejected(tmp_path, recs, "FEATURE_ROW for game G0002 targets a G0001 shot")
 
 
-@deferred("RV-G3", "docs/DECISIONS.md 2026-11-07 (Max): not in the user's list, also unfixed")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_g3_team_win_label_team_not_in_game_rejected(tmp_path, recs):
     lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
     lab["record_id"] = "syn:G0001:team_win:r1"
@@ -195,7 +189,7 @@ def test_rv_o2_shot_made_label_contradicts_event_rejected(tmp_path, recs):
     assert_rejected(tmp_path, recs, "SHOT_MADE label contradicts EVENT.shot.made")
 
 
-@deferred("RV-O3", "docs/DECISIONS.md 2026-11-07 (Max): not in the user's list, also unfixed")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_o3_team_win_contradicts_final_score_rejected(tmp_path, recs):
     lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
     lab["record_id"] = "syn:G0001:team_win:r1"
@@ -210,7 +204,7 @@ def test_rv_o4_final_tie_rejected(tmp_path, recs):
     assert_rejected(tmp_path, recs, "FINAL NBA game cannot end tied")
 
 
-@deferred("RV-O5", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_o5_quote_level_derived_complement_rejected(recs):
     q = first(recs, "QUOTE")
     q["body"]["levels"][1]["derivation"] = "DERIVED_COMPLEMENT"
@@ -226,7 +220,7 @@ def test_rv_o6_bid_ask_swapped_ok_rejected(recs):
         validate_record(q)
 
 
-@deferred("RV-O7", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected(tmp_path, recs):
     m2 = copy.deepcopy(first(recs, "VENUE_MAPPING"))
     m2["record_id"] = m2["body"]["mapping_id"] = "map:syn:G0001:M1-NO"
@@ -245,7 +239,7 @@ def test_rv_u1_cents_price_rejected(recs):
         validate_record(q)
 
 
-@deferred("RV-U2", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
 def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
     """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
@@ -253,7 +247,7 @@ def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
     assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
 
 
-@deferred("RV-U3", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_u3_zero_size_level_rejected(recs):
     q = first(recs, "QUOTE")
     q["body"]["levels"][0]["size"] = "0"
@@ -287,7 +281,7 @@ def test_rv_u6_received_before_fetch_fractional_rejected(recs):
         validate_record(q)
 
 
-@deferred("RV-U7", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_u7_provider_time_after_received_rejected(recs):
     """Provider stamp 5 h after receipt: the signature of local time mislabelled as UTC."""
     q = first(recs, "QUOTE")
@@ -344,7 +338,7 @@ def test_rv_u9_manifest_created_utc_is_validated(tmp_path, recs):
 # =========================================================================== stale quotes
 
 
-@deferred("RV-S1", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected(recs):
     q = first(recs, "QUOTE")
     q["body"]["provider_time_utc"] = "2023-12-31T22:00:00Z"  # received 2024-01-01T00:00:00Z
@@ -352,7 +346,7 @@ def test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected(recs):
         validate_record(q)  # needs STALE or a configured freshness threshold
 
 
-@deferred("RV-S2", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_s2_ok_quote_with_one_day_fetch_window_rejected(recs):
     q = first(recs, "QUOTE")
     q["body"]["fetch_start_utc"] = "2023-12-31T00:00:00Z"
@@ -391,7 +385,7 @@ def test_rv_t1_verified_unknown_overtime_rejected(recs):
         validate_record(first(recs, "VENUE_MAPPING"))
 
 
-@deferred("RV-T2", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_t2_verified_regulation_only_for_team_wins_rejected(recs):
     """Research §143: a full-game TEAM_WINS target and a regulation-only contract differ."""
     _verified(recs, overtime_convention="REGULATION_ONLY")
@@ -399,7 +393,7 @@ def test_rv_t2_verified_regulation_only_for_team_wins_rejected(recs):
         validate_record(first(recs, "VENUE_MAPPING"))
 
 
-@deferred("RV-T3", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_t3_verified_unknown_cancel_postpone_rejected(recs):
     """ACCEPTANCE G10: 'regulation/overtime/cancel mapping; unknowns block'."""
     _verified(recs, cancel_postpone_convention="UNKNOWN")
@@ -407,7 +401,7 @@ def test_rv_t3_verified_unknown_cancel_postpone_rejected(recs):
         validate_record(first(recs, "VENUE_MAPPING"))
 
 
-@deferred("RV-T4", "docs/DECISIONS.md 2026-11-07 (Max): deferred, market-related (user instruction)")
+@pytest.mark.xfail(strict=True, reason="Deferred: docs/DECISIONS.md")
 def test_rv_t4_verified_without_rules_hash_rejected(tmp_path, recs):
     _verified(recs)
     first(recs, "VENUE_MARKET")["body"]["rules_text_sha256"] = None
