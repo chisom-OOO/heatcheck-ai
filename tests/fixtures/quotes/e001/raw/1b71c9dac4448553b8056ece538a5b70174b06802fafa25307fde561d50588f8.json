@@ -1,0 +1,23 @@
+{
+  "id": "fixture-pm-1",
+  "version": "v2",
+  "question": "Knicks vs. Celtics",
+  "events": [
+    {
+      "id": "fixture-pm-event-1"
+    }
+  ],
+  "outcomes": "[\"Knicks\", \"Celtics\"]",
+  "clobTokenIds": null,
+  "positionIds": [
+    "111001",
+    "222002"
+  ],
+  "gameStartTime": "2026-11-08 00:30:00+00",
+  "endDateIso": "2026-11-08",
+  "description": "This market resolves to the team that wins the game, including any overtime. If the game is postponed, the market stays open until it is played; if cancelled, it resolves 50-50.",
+  "orderPriceMinTickSize": 0.01,
+  "active": true,
+  "closed": false,
+  "acceptingOrders": true
+}
