@@ -24,6 +24,7 @@ from heatcheck.contracts.records import (
     canonical_bytes,
     encode_records,
     loads_strict,
+    parse_utc,
     record_hash,
     sha256_hex,
     validate_record,
@@ -209,6 +210,10 @@ def _check_references(directory: Path, records: list[dict[str, Any]]) -> None:
             mapping = mappings.get(b["mapping_id"])
             if mapping is None:
                 raise BundleError(f"{rid} references unknown mapping {b['mapping_id']}")
+            # RV-U8: the raw book must have been retrieved inside the quote's fetch window.
+            retrieved = parse_utc(snapshots[b["raw_snapshot_id"]]["body"]["retrieved_utc"])
+            if not parse_utc(b["fetch_start_utc"]) <= retrieved <= parse_utc(b["received_utc"]):
+                raise BundleError(f"{rid} raw snapshot retrieved_utc is outside its fetch window")
             market = markets[mapping["body"]["venue_market_record_id"]]["body"]
             if (b["venue"], b["market_id"], b["contract_id"]) != (
                 market["venue"],

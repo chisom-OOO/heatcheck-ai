@@ -49,13 +49,13 @@ def build() -> tuple[dict, bytes, dict[str, bytes]]:
     pbp_sha, book_sha = sha256_hex(pbp_payload), sha256_hex(book_payload)
     raw = {f"raw/{pbp_sha}.json": pbp_payload, f"raw/{book_sha}.json": book_payload}
 
-    def snapshot(sha: str, data: bytes, provider: str, source: str) -> dict:
+    def snapshot(sha: str, data: bytes, provider: str, source: str, retrieved: str) -> dict:
         return rec("RAW_SNAPSHOT", sha, {
             "snapshot_sha256": sha,
             "provider": provider,
             "source": source,
             "redacted_params": {},
-            "retrieved_utc": "2026-11-07T12:00:00Z",
+            "retrieved_utc": retrieved,
             "byte_count": len(data),
             "media_type": "application/json",
             "schema_version": "synthetic-1",
@@ -176,8 +176,12 @@ def build() -> tuple[dict, bytes, dict[str, bytes]]:
         "raw_snapshot_id": book_sha,
     })
     records = [
-        snapshot(pbp_sha, pbp_payload, "synthetic", "tools/make_reference_bundle.py"),
-        snapshot(book_sha, book_payload, "synthetic", "tools/make_reference_bundle.py"),
+        # Play-by-play is retrospective (retrieved after the game); the book is retrieved
+        # inside its quote's fetch window (RV-U8).
+        snapshot(pbp_sha, pbp_payload, "synthetic", "tools/make_reference_bundle.py",
+                 "2026-11-07T12:00:00Z"),
+        snapshot(book_sha, book_payload, "synthetic", "tools/make_reference_bundle.py",
+                 "2024-01-01T00:00:00.200Z"),
         game, e1, e2, e3, feature, label, market, mapping, quote,
     ]
     manifest, body = build_manifest(
