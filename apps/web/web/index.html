@@ -123,19 +123,30 @@
       </article>
 
       <article class="card" aria-labelledby="h-verdict" id="verdict-card" hidden>
-        <h2 id="h-verdict"><span class="step">6</span> Referee decision</h2>
+        <h2 id="h-verdict"><span class="step">6</span> Referee evidence record</h2>
+        <div id="ref-source" role="note"></div>
+        <h3 id="h-ref-claim">Claim</h3>
+        <dl id="ref-claim" class="kv" aria-labelledby="h-ref-claim"></dl>
+        <h3 id="h-ref-attacks">Attacks run</h3>
+        <div class="tablewrap"><table id="attacks" aria-labelledby="h-ref-attacks"><thead><tr><th scope="col">Check</th><th scope="col">Outcome</th><th scope="col">Statistic</th><th scope="col">p</th><th scope="col">Method and assumptions</th></tr></thead><tbody></tbody></table></div>
+        <h3>Verdict</h3>
         <div id="verdict"></div>
+        <h3 id="h-ref-evidence">Evidence</h3>
+        <ul id="ref-evidence" class="evidence" aria-labelledby="h-ref-evidence"></ul>
+        <details id="ref-problems-wrap"><summary>Gaps in this record <span id="ref-problems-count"></span></summary><ul id="ref-problems"></ul></details>
         <div class="row">
           <button id="btn-reveal">Reveal hidden truth</button>
           <a id="dl-json" class="btnlike" download>Export run (JSON)</a>
           <a id="dl-csv" class="btnlike" download>Export tests (CSV)</a>
+          <label class="btnlike" for="ref-file">Open a Referee record (JSON)</label>
+          <input id="ref-file" type="file" accept=".json,application/json" class="sr-only">
         </div>
         <div id="reveal-view"></div>
-        <h3>Registered checks</h3>
-        <div class="tablewrap"><table id="attacks"><thead><tr><th scope="col">Check</th><th scope="col">Statistic</th><th scope="col">p</th><th scope="col">Result</th><th scope="col">Assumption</th></tr></thead><tbody></tbody></table></div>
-        <h3>Raw versus shrunk talent <small class="muted">make rate per anonymised shooter, 90% posterior interval</small></h3>
-        <div class="viz-root"><div id="talent-chart" class="chart"></div></div>
-        <details><summary>Talent table</summary><div class="tablewrap"><table id="talent-table"></table></div></details>
+        <details id="standin-extras" open><summary>Stand-in engine extras (not part of a Referee record)</summary>
+          <h3>Raw versus shrunk talent <small class="muted">make rate per anonymised shooter, 90% posterior interval</small></h3>
+          <div class="viz-root"><div id="talent-chart" class="chart"></div></div>
+          <details><summary>Talent table</summary><div class="tablewrap"><table id="talent-table"></table></div></details>
+        </details>
       </article>
 
       <article class="card" aria-labelledby="h-hist">
