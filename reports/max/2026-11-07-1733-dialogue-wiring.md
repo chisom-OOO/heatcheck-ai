@@ -1,6 +1,6 @@
 # Max report: Meta free dialogue wired in (Heater, Challenger, guarded Ref, /api/dialogue)
 
-Written 2026-11-07 17:32 UTC on branch `max/integrate-r001-e001`. The code commit is
+Written 2026-11-07 17:33 UTC (commit time of 82c3f1e) on branch `max/integrate-r001-e001`. The code commit is
 `f0c7b95`. Raw logs:
 - `logs/2026-11-07-dialogue-wiring/` (suite, dialogue tests, ruff);
 - `logs/2026-11-07-dialogue-live/` (the live turn, its usage log and its evidence entry).
