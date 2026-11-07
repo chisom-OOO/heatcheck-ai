@@ -172,6 +172,8 @@ This shows how often the machine finds real effects and how often it raises fals
   `GAME_HOME_WIN_SPLIT` is refused in synthetic mode.
 - `period` labels in a synthetic league are drawn uniformly from {1, 2, 3, 4} by a separate random stream,
   independent of everything else. Every `period` idea is therefore a **planted null**.
+- Synthetic leagues have no overtime, so a `period` idea with level `"OT"` is **refused** in synthetic mode
+  (the whole request is refused, as for any invalid idea). It is valid in development mode.
 
 **Truth hiding.**
 - The family function receives only the league view: outcomes, player-game ids, shot values, synthetic
