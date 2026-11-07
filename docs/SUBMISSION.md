@@ -10,7 +10,8 @@ tamper-evident ledger.
 - **Elo vs base rate** (2023–24, 300 held-out games): survives, narrowly (Holm p 0.046).
 - **Rest/back-to-back:** refused by its own pre-registered rule despite p 0.049, because its confidence
   interval includes zero.
-- **2024–25:** sealed before any test, then tested for the first time: **[PLACEHOLDER — not yet run]**.
+- **2024–25, sealed before any test and tested once:** home advantage survives (Holm p 0.0054); one-shot
+  momentum and the hot hand are not shown (p = 1.0 each).
 
 **What review caught:** independent review found that the final step accepted tampered outcome labels as a
 "retry" (RV-R1). This was fixed, and the replay reproduced every digit.
@@ -184,6 +185,34 @@ This demonstrates the pipeline. It is not an NBA research result. The loop's BLO
 the ledger as history. The dialogue now answers the rest claim from the recorded 2023–24 final
 (INSUFFICIENT_EVIDENCE).
 
+### 4.5 The idea machine: testing its own ideas (exploratory)
+
+Source: `reports/research/2026-11-07-2234-idea-family.md` on `research/idea-family`.
+
+HeatCheck can generate and test its own ideas within a strict grammar (`docs/IDEA_GRAMMAR.md`):
+- two templates: home-win rate split by one game feature, and make rate after a shot condition;
+- enumerated parameters only.
+
+A family of ideas is hashed and frozen **before** anything is computed. Holm correction then runs across the
+whole family. A survivor is labelled `CANDIDATE`, never `SURVIVED_PROTOCOL`. It reads only 2023–24
+development games, never the spent final games or the sealed 2024–25 season.
+
+- **Development data, 12 example ideas written by Research** (not proposer output):
+  - Both planned positive controls became CANDIDATE: strong Elo favourites win more, and 3-pointers go in
+    less often (Holm p 0.012 each).
+  - Two period ideas were also CANDIDATE: 4th-quarter shots go in less often than within-player-game
+    shuffling predicts, and 1st-quarter shots more often. These are associations; shot difficulty is not
+    controlled.
+  - No streak idea came close.
+- **Planted-truth league** (simulated hot-hand effect γ = 0.30, 13 shot ideas):
+  - Truth was withheld from the tests and revealed only after the results were written.
+  - The machine found **1 of 9** planted effects and raised **0 false candidates**.
+  - The directly planted after-3-makes idea had raw p 0.020. **Holm across 13 ideas** raised it to 0.24,
+    so it was missed. The only effect found was the large built-in 3-point difference.
+  - Testing many ideas at once costs power; a proposer should send few, focused ideas.
+- **Null league** (no planted effect): 12 of 12 nulls correctly not flagged, 0 false candidates.
+- These are single leagues, so the figures are counts, not rates.
+
 ## 5. The sealed 2024–25 confirmatory test
 
 To get a result that cannot have been tuned on the data, the whole 2024–25 regular season was sealed
@@ -219,22 +248,44 @@ script `reports/research/logs/rebuild/rebuild_2024-25.sh`; log `reports/research
 The confirmatory script refuses to run if a single byte of the sealed tables differs. It refuses before
 reserving anything, and a test tampers each table in turn to check this (same report, §4).
 
-**Results: NOT YET RUN.** Everything between the markers below is a placeholder. The confirmatory test is
-reserved for the live demo and needs explicit authorisation. It will be replaced with the recorded output of
-`confirmatory.py final` (`evidence/confirmatory-2024-25/final_result.json`), unchanged.
+**Results: run once, recorded.** Before the run, the custodian ledger held zero reservations on the 2024-25
+season; the test was run once, by a session that wrote none of the code.
 
-<!-- BEGIN PLACEHOLDER: 2024-25 confirmatory results — do not fill by hand -->
+Source: `handoff/research-20261107/evidence/confirmatory-2024-25/final_result.json` on
+`review/confirmatory-run@5f0a432`, copied exactly. The run report is
+`reports/review/2026-11-07-2232-confirmatory-run.md`.
+
+**Who ran it and how:**
+- The operator was the adviser Claude session, standing in for the independent reviewer whose machine
+  failed. Authorisation was given in writing.
+- Before the run:
+  - the sealed season was rebuilt independently on a machine that did not produce the seal: 6/6 tables
+    matched;
+  - Max's dry run returned READY with 11/11 checks passing;
+  - the ledger held lines 1–5 only (sha256 `51dbc04a…`), with no reservation on `EPOCH-CONF-2024-25-001`.
+- The run appended exactly one reserve and one spend (ledger sha256 `b9d6a0b2…` after).
+- Afterwards, Max's `verify_final_result` passed.
 
 | Hypothesis | Sample | Estimate | 95% CI | p (one-sided) | Holm p | Verdict |
 |---|---|---|---|---|---|---|
-| CONF-HA home advantage | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
-| CONF-MOM one-shot momentum | [PLACEHOLDER] | [PLACEHOLDER] | n/a | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
-| CONF-HH hot hand | [PLACEHOLDER] | [PLACEHOLDER] | n/a | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
+| CONF-HA home advantage | 1,224 games (5 neutral-site and 1 quarantined game excluded) | home-win rate 0.5449; mean excess over 0.5 = +0.0449 | [+0.0160, +0.0752] | 0.0018 | 0.0054 | **SURVIVED_PROTOCOL** |
+| CONF-MOM one-shot momentum | 219,274 FGA (70 excluded: unresolved order) | P(make after make) 0.4667 vs after miss 0.4709; T = −0.0043, permutation null mean +0.0067 | n/a | 1.0 | 1.0 | **INSUFFICIENT_EVIDENCE** |
+| CONF-HH hot hand (3 makes) | 219,274 FGA | P(make after 3 makes) 0.47265 vs after 3 misses 0.47266; T = −0.00001, null mean +0.0175 | n/a | 1.0 | 1.0 | **INSUFFICIENT_EVIDENCE** |
 
-Exposure receipt: [PLACEHOLDER] · Authorised by: [PLACEHOLDER] · Run at (UTC): [PLACEHOLDER] ·
-Result file sha256: [PLACEHOLDER]
+- Exposure receipt: `5cbb3222-181d-439d-9202-02a8d8030e4e` (`receipt_was_retry: false`).
+- Authorised by: Leo Nichols.
+- Run at (UTC): 2026-11-07, started 22:28:06Z, finished 22:30:38Z (`created_at_utc` 22:30:37.861303Z).
+- Result file sha256: `d16245990d09663917743122d5edb8e032e570c630d979454ecb4c718f626dd3`.
 
-<!-- END PLACEHOLDER -->
+**What it means:**
+- **Home advantage survived** every condition of its registered rule: Holm p < 0.05, the CI excludes 0,
+  and the excess is above the 1-point floor. The analysis covered 174 days in 24 non-overlapping 7-day
+  blocks.
+- **Momentum and hot hand are INSUFFICIENT_EVIDENCE, not NOT_SUPPORTED.** No equivalence test was
+  pre-registered, so the frozen rule cannot conclude "no effect", only "not shown". In both, the observed
+  difference is *below* what within-player-game shuffling alone produces. This matches the 2023–24
+  development results.
+- 2024–25 outcomes are public (pseudo-out-of-sample), and the block-bootstrap p-value is approximate.
 
 ## 6. Independent review and what it caught
 
