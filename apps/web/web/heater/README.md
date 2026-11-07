@@ -1,8 +1,15 @@
 # Heater
 
-HeatCheck's animated pundit. Open `states.html` on the web app (`/heater/states.html`) to see:
-- every state in its own cell;
-- the full per-question sequence on a real evidence record.
+HeatCheck's animated pundit.
+
+- **Demo page:** `/demo.html` (`apps/web/web/demo.html`). It is built for a judge watching for 10 seconds:
+  - Heater on the left;
+  - his take in a speech bubble;
+  - the Ref's plain-English ruling;
+  - a verdict stamp that lands as Heater changes pose;
+  - one input with a mic button and three example chips.
+  - The internals (claim ids, registry text, phases, record picker, voice toggle, hash status) are in a drawer opened with `?debug=1`. `?voice=0` mutes speech, and `?ask=…` asks on load.
+- **State sheet (dev page):** `/heater/states.html` shows every state in its own cell and the full sequence on a real evidence record.
 
 ## Art
 
@@ -40,17 +47,20 @@ All motion is CSS on top of the image (`heater.css`):
 
 ## Lines
 
-The Ref's verdict and every number come from the evidence record.
+**The Ref.** The verdict and every number come from the evidence record. `refPlain()` in `heater-model.js` writes the plain words first and the numbers second. It fills the `ref_templates` from the record's own fields:
+- the permutation p-value, rounded to two decimals;
+- `n_attempts` and `n_games`;
+- the sample-size counts;
+- `min_n_each_side`.
 
-Heater's line is a hot take:
-- It comes from `web/heater_personality.json`, served at `/heater_personality.json`.
-- Until that file is added, the line comes from the labelled placeholder lines in `heater-model.js`.
-- Later, it will come from Max's dialogue endpoint.
+The raw reason, the attacks, the effect, the receipt and the hashes are under "Show the evidence".
 
-Accepted file shapes:
-- `{"HH-K2": ["…"], "default": ["…"]}`;
-- the same table under `"lines"`;
-- the same table under `"claims"`.
+**Heater.** The line comes from the dialogue API's `heater_text` when Max's server answers on `127.0.0.1:8770`. Otherwise it comes from `heater/heater_personality.json`:
+- `claims` gives the take;
+- `react` gives his reaction after the verdict;
+- `verdict_stamps` gives the stamp text.
+
+**Offline routing.** With the API down, a question is routed to a claim by keywords (`routeQuestion`). The page then shows the newest ledger entry for that claim. A claim with no entry gets "No ruling yet" and a grey "NOT TESTED YET" stamp, never an invented verdict.
 
 ## Tests
 

@@ -190,6 +190,7 @@ export async function mount(root, { state = "idle", hold = false } = {}) {
   root.replaceChildren();
   const fig = el("div", "h-fig");
   const body = el("div", "h-body");
+  body.append(el("div", "h-spot"));   // optional light behind the pose (demo page turns it on)
   for (let i = 0; i < 2; i++) {
     const img = el("img", "h-pose");
     img.alt = "";
@@ -219,14 +220,19 @@ export async function mount(root, { state = "idle", hold = false } = {}) {
 /** Heater's hot-take lines from web/heater_personality.json, or the labelled placeholder
  *  lines while that file is absent. Returns {table, source}. */
 export async function loadLines() {
-  try {
-    const r = await fetch(new URL("../heater_personality.json", import.meta.url));
-    if (r.ok) {
-      const table = linesTable(await r.json());
-      if (table) return { table, source: "heater_personality.json" };
-    }
-  } catch { /* fall through to placeholders */ }
+  const doc = await loadPersonality();
+  const table = doc && linesTable(doc);
+  if (table) return { table, source: "heater_personality.json" };
   return { table: PLACEHOLDER_LINES, source: "placeholder lines (heater_personality.json not present yet)" };
+}
+
+/** The whole personality file (heater/heater_personality.json), or null when absent. */
+export async function loadPersonality() {
+  try {
+    const r = await fetch(new URL("./heater_personality.json", import.meta.url));
+    if (r.ok) return await r.json();
+  } catch { /* absent or unreadable */ }
+  return null;
 }
 
 /** Build (once) and update a speech card element from a card model and phase. */

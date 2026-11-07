@@ -18,6 +18,7 @@ import socket
 import subprocess
 import sys
 import time
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -31,6 +32,14 @@ STATES = {
     "vindicated": 450, "cooled": 2000, "unsure": 900, "blocked": 900,
 }
 CLAIMS = ["HH-K3", "HH-K2", "GP-REST"]
+WIDE = {"width": 1440, "height": 900}
+PHONE = {"width": 390, "height": 1100}
+DEMO = [
+    ("hot-hand", "Is the hot hand real?", WIDE),
+    ("home", "Do home teams win more?", WIDE),
+    ("rest", "Does rest matter?", WIDE),
+    ("hot-hand-phone", "Is the hot hand real?", PHONE),
+]
 
 
 def free_port() -> int:
@@ -84,13 +93,25 @@ def main(argv: list[str]) -> int:
                 path = OUT / f"card-{claim}.png"
                 page.locator("#shot").screenshot(path=str(path))
                 written.append(path)
+            # the demo page: one full question-to-verdict exchange per example chip
+            for name, q, vp in DEMO:
+                demo = browser.new_page(viewport=vp)
+                demo.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+                demo.goto(f"{base}/demo.html?voice=0&ask={urllib.parse.quote(q)}")
+                demo.wait_for_selector("body[data-phase='done']", timeout=60000)
+                demo.wait_for_timeout(1600)   # let the cooled sink and the stamp settle
+                path = OUT / f"demo-{name}.png"
+                demo.screenshot(path=str(path))
+                written.append(path)
+                demo.close()
             browser.close()
     finally:
         srv.terminate()
         srv.wait(timeout=10)
-    # The only expected console error is the 404 from probing /api/evidence on a server
-    # started without a ledger; anything else is reported.
-    unexpected = [e for e in errors if "404" not in e]
+    # Expected console errors: the 404 from probing /api/evidence on a server started without
+    # a ledger, and the refused connection to the dialogue API when it is not running (the demo
+    # then answers offline). Anything else is reported.
+    unexpected = [e for e in errors if "404" not in e and "ERR_CONNECTION_REFUSED" not in e]
     print(json.dumps({"written": [str(p.relative_to(APP)) for p in written],
                       "console_errors": errors, "unexpected_errors": unexpected}, indent=2))
     return 1 if unexpected else 0

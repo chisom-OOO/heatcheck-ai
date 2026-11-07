@@ -45,10 +45,10 @@ test("pose images present", { todo: missingPoses.length ? `missing: ${missingPos
   assert.deepEqual(missingPoses, []);
 });
 
-test("every pose image present is a WebP of 1024 px height", () => {
+test("every pose image present is a 687x1024 WebP", () => {
   for (const p of M.POSES.filter((x) => !missingPoses.includes(x))) {
     const [w, h] = webpSize(readFileSync(join(H, "poses", `${p}.webp`)));
-    assert.equal(h, 1024, `${p}: ${w}x${h}`);
+    assert.deepEqual([w, h], [687, 1024], p);
   }
 });
 
@@ -59,7 +59,8 @@ test("the SVG rig is gone: no heater.svg and no SVG mount", () => {
 });
 
 test("CSS: 200 ms crossfade, #12121A stage, radial edge mask, every state, reduced motion", () => {
-  assert.match(css, /\.h-pose\s*\{[^}]*transition: opacity 200ms/);
+  assert.match(css, /:is\(\.h-pose, \.h-slice\) \{ transition: opacity 200ms ease/);
+  assert.match(css, /\.h-pose\.on \{ opacity: 1; \}/);
   assert.match(css, /--stage: #12121A/);
   assert.match(css, /mask-image: var\(--mask\)/);
   assert.match(css, /--mask: radial-gradient\(/);
@@ -124,6 +125,64 @@ test("personality file formats: table, {lines}, {claims}, default fallback, rota
   assert.equal(M.heaterLineFor("HH-K2", t, 1), "B!");
   assert.equal(M.heaterLineFor("GP-REST", t), "Generic!");
   assert.equal(M.heaterLineFor("GP-REST", { X: ["x"] }), M.PLACEHOLDER_LINES["*"][0]);
+});
+
+const PERSONALITY = JSON.parse(readFileSync(join(H, "heater_personality.json"), "utf8"));
+const WEB = join(ROOT, "web");
+
+test("Ref in plain English: words first, numbers second, every number from the record", () => {
+  const k2 = byClaim("HH-K2");
+  assert.equal(M.refPlain(k2, PERSONALITY).text,
+    "The data says no. Making two in a row didn't make the next shot more likely (p = 0.24, 181 shots, one game).");
+  const perm = k2.identity.attack_results.find((a) => a.test_id_version.startsWith("A-PERMUTATION-NULL@"));
+  assert.equal(M.fmtP(perm.p_value), "0.24");
+  assert.equal(M.refPlain(byClaim("HH-K3"), PERSONALITY).text,
+    "Can't tell yet. Too few shots came right after three makes in a row to compare (14 after three makes, 18 after three misses; 30 of each needed). Not enough evidence either way.");
+  assert.equal(M.refPlain(byClaim("GP-REST"), PERSONALITY).text,
+    "No ruling. This test needs season-long game results, and those aren't loaded yet.");
+  for (const e of entries()) {
+    const { text, plain } = M.refPlain(e, PERSONALITY);
+    assert.ok(plain, e.identity.claim.claim_id);
+    const record = JSON.stringify(e);
+    for (const n of text.match(/\d[\d.,]*/g) || []) {
+      const v = n.replace(/[.,]$/, "");
+      const inRecord = record.includes(v) || (v.includes(".") && record.match(/\d+\.\d+/g).some((x) => M.fmtP(Number(x)) === v));
+      assert.ok(inRecord, `${e.identity.claim.claim_id}: ${n} not from the record`);
+    }
+  }
+});
+
+test("stamps, takes and reactions come from heater_personality.json", () => {
+  assert.deepEqual(M.stampFor("NOT_SUPPORTED", PERSONALITY), { text: "NOT SUPPORTED", kind: "not-supported" });
+  assert.deepEqual(M.stampFor("INSUFFICIENT_EVIDENCE", PERSONALITY), { text: "NOT ENOUGH EVIDENCE", kind: "insufficient" });
+  assert.deepEqual(M.stampFor("SURVIVED_PROTOCOL", PERSONALITY), { text: "SURVIVED", kind: "survived" });
+  assert.equal(M.stampFor("BLOCKED", PERSONALITY).text, PERSONALITY.verdict_stamps.BLOCKED);
+  assert.equal(M.stampFor(null).kind, "untested");
+  assert.equal(M.takeFor("HH-K2", PERSONALITY), "Two in a row? He's HEATING UP! Give him the ball!");
+  assert.equal(M.takeFor("NOT-A-CLAIM", PERSONALITY), PERSONALITY.claims.NONE);
+  assert.equal(M.reactFor("NOT_SUPPORTED", PERSONALITY, 1), PERSONALITY.react.NOT_SUPPORTED[1]);
+  assert.equal(M.reactFor("UNKNOWN", PERSONALITY), "");
+});
+
+test("offline routing of the example questions", () => {
+  assert.equal(M.routeQuestion("Is the hot hand real?"), "HH-K2");
+  assert.equal(M.routeQuestion("Three in a row, is he hot?"), "HH-K3");
+  assert.equal(M.routeQuestion("Do home teams win more?"), "CONF-HA");
+  assert.equal(M.routeQuestion("Does rest matter?"), "GP-REST");
+  assert.equal(M.routeQuestion("Who is the GOAT?"), "NONE");
+  assert.equal(M.latestFor(entries(), "HH-K2").identity.decision, "NOT_SUPPORTED");
+  assert.equal(M.latestFor(entries(), "CONF-HA"), null);
+  for (const id of Object.keys(PERSONALITY.claims)) assert.ok(M.CLAIM_TITLES[id], `display title for ${id}`);
+});
+
+test("demo page: no debug text in the default view", () => {
+  const html = readFileSync(join(WEB, "demo.html"), "utf8");
+  assert.doesNotMatch(html, /HH-K|GP-|CONF-|<select|type="checkbox"|hashes|placeholder lines|Phase/);
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)|style=|<style/);
+  assert.match(html, /Ask Heater anything about the NBA…/);
+  for (const chip of ["Is the hot hand real?", "Do home teams win more?", "Does rest matter?"]) assert.ok(html.includes(chip), chip);
+  const js2 = readFileSync(join(WEB, "demo.js"), "utf8");
+  assert.match(js2, /params\.get\("debug"\) === "1"/);
 });
 
 test("every committed record maps to a state and a chip without problems", () => {

@@ -305,7 +305,7 @@ MIME = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=ut
         ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".json": "application/json",
         ".png": "image/png", ".webp": "image/webp", ".ico": "image/x-icon", ".jsonl": "application/x-ndjson; charset=utf-8"}
 CSP = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; "
-       "media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+       "media-src 'self' blob:; connect-src 'self' http://127.0.0.1:8770 http://localhost:8770; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
 
 
 class Handler(BaseHTTPRequestHandler):

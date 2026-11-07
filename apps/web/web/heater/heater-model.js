@@ -151,6 +151,137 @@ export function cardModel(entry, { verified = false, lines = PLACEHOLDER_LINES, 
   };
 }
 
+// ------------------------------------------------------------------ demo page: plain English
+
+/** Display titles for registered claims (shown instead of registry text). */
+export const CLAIM_TITLES = Object.freeze({
+  "HH-K2": "Hot hand: two makes in a row",
+  "HH-K3": "Hot hand: three makes in a row",
+  "CONF-HH": "Hot hand: three makes in a row (final test)",
+  "CONF-MOM": "Momentum: one make in a row",
+  "CONF-HA": "Home-court advantage",
+  "GP-REST": "Rest days and back-to-backs",
+  "GP-ELO": "The better team wins",
+  NONE: "Not a registered claim",
+});
+
+/** Offline question -> claim routing, used only when the dialogue API is unavailable. */
+export function routeQuestion(q) {
+  const s = String(q || "").toLowerCase();
+  const streak = /hot hand|in a row|straight|streak|heating up|on fire|consecutive/.test(s);
+  if (streak && /\b(three|3)\b/.test(s)) return "HH-K3";
+  if (streak) return "HH-K2";
+  if (/momentum/.test(s)) return "CONF-MOM";
+  if (/\bhome\b|home[- ]court|crowd/.test(s)) return "CONF-HA";
+  if (/\brest\b|rested|back[- ]to[- ]back|tired|fatigue|days off/.test(s)) return "GP-REST";
+  if (/\belo\b|better team|favou?rites?\b|underdog/.test(s)) return "GP-ELO";
+  return "NONE";
+}
+
+/** The newest ledger entry for a claim (entries are in append order). */
+export function latestFor(entries, claimId) {
+  for (let i = (entries || []).length - 1; i >= 0; i--) {
+    if (entries[i]?.identity?.claim?.claim_id === claimId) return entries[i];
+  }
+  return null;
+}
+
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+const word = (n) => (Number.isInteger(n) && n >= 0 && n <= 10 ? WORDS[n] : String(n));
+/** p-values to two decimals (0.239 -> "0.24"); tiny ones as "< 0.001". */
+export const fmtP = (p) => (p < 0.001 ? "< 0.001" : (Math.round(p * 100) / 100).toFixed(2));
+const attack = (entry, id) => entry.identity.attack_results.find((a) => String(a.test_id_version || "").startsWith(`${id}@`));
+const DATA_PLAIN = {
+  GAME_SEASON_VIEW: "season-long game results",
+  SHOT_VIEW: "shot-by-shot data",
+};
+
+export const DEFAULT_PERSONALITY = Object.freeze({
+  verdict_stamps: {
+    SURVIVED_PROTOCOL: "SURVIVED", NOT_SUPPORTED: "NOT SUPPORTED", INSUFFICIENT_EVIDENCE: "NOT ENOUGH EVIDENCE",
+    DATA_INVALID: "DATA INVALID", BLOCKED: "NO RULING",
+  },
+  ref_templates: {
+    SURVIVED_PROTOCOL: "It holds up. {plain_finding} ({stat_summary}). That passes our pre-registered tests; it is not a guarantee.",
+    NOT_SUPPORTED: "The data says no. {plain_finding} ({stat_summary}).",
+    INSUFFICIENT_EVIDENCE: "Can't tell yet. {plain_finding} ({stat_summary}). Not enough evidence either way.",
+    DATA_INVALID: "No ruling. The data failed its checks: {reason}.",
+    BLOCKED: "No ruling. {reason}.",
+  },
+});
+
+const fill = (tpl, vals) => tpl.replace(/\{(\w+)\}/g, (_, k) => (k in vals ? vals[k] : `{${k}}`));
+const stripDot = (s) => String(s).replace(/[.\s]+$/, "");
+
+/** The Ref's plain-English line for a ledger entry: plain words first, numbers second, every
+ *  number read from the record (p-values rounded to two decimals, small counts as words).
+ *  Returns {text, plain: boolean}; plain is false when only the raw reason could be used. */
+export function refPlain(entry, personality = DEFAULT_PERSONALITY) {
+  const id = entry.identity;
+  const d = id.decision;
+  const tpl = (personality?.ref_templates || {})[d] || DEFAULT_PERSONALITY.ref_templates[d];
+  const plan = isObj(id.claim.plan) ? id.claim.plan : {};
+  const params = isObj(plan.params) ? plan.params : {};
+  const data = isObj(id.data) ? id.data : {};
+  if (d === "BLOCKED" || d === "DATA_INVALID") {
+    const m = /^no (\w+) implemented/.exec(id.reason || "");
+    const reason = m && DATA_PLAIN[m[1]]
+      ? `This test needs ${DATA_PLAIN[m[1]]}, and those aren't loaded yet`
+      : stripDot(id.reason || "no reason on record");
+    return { text: fill(tpl || "No ruling. {reason}.", { reason }), plain: Boolean(m && DATA_PLAIN[m[1]]) };
+  }
+  if (plan.kind === "SHOT_ASSOCIATION" && Number.isInteger(params.k) && tpl) {
+    const kw = word(params.k);
+    const games = data.n_games === 1 ? "one game" : `${fmtCount(data.n_games)} games`;
+    const perm = attack(entry, "A-PERMUTATION-NULL");
+    const size = attack(entry, "A-SAMPLE-SIZE");
+    if (d === "INSUFFICIENT_EVIDENCE" && size && isObj(size.details)) {
+      const sd = size.details;
+      return {
+        text: fill(tpl, {
+          plain_finding: `Too few shots came right after ${kw} makes in a row to compare`,
+          stat_summary: `${fmtCount(sd.n_after_makes)} after ${kw} makes, ${fmtCount(sd.n_after_misses)} after ${kw} misses; ${fmtCount(params.min_n_each_side)} of each needed`,
+        }),
+        plain: true,
+      };
+    }
+    if ((d === "NOT_SUPPORTED" || d === "SURVIVED_PROTOCOL") && perm && typeof perm.p_value === "number") {
+      return {
+        text: fill(tpl, {
+          plain_finding: d === "NOT_SUPPORTED"
+            ? `Making ${kw} in a row didn't make the next shot more likely`
+            : `Making ${kw} in a row did make the next shot more likely`,
+          stat_summary: `p = ${fmtP(perm.p_value)}, ${fmtCount(data.n_attempts)} shots, ${games}`,
+        }),
+        plain: true,
+      };
+    }
+  }
+  const verdict = (CHIP[d] ? CHIP[d][0] : d).toLowerCase();
+  return { text: `${verdict[0].toUpperCase()}${verdict.slice(1)}. ${stripDot(id.reason || "No reason on record")}.`, plain: false };
+}
+
+/** The verdict stamp's text and colour class. */
+export function stampFor(decision, personality = DEFAULT_PERSONALITY) {
+  const text = (personality?.verdict_stamps || {})[decision] || DEFAULT_PERSONALITY.verdict_stamps[decision];
+  const kind = { SURVIVED_PROTOCOL: "survived", NOT_SUPPORTED: "not-supported", INSUFFICIENT_EVIDENCE: "insufficient",
+    BLOCKED: "blocked", DATA_INVALID: "blocked" }[decision];
+  return text && kind ? { text, kind } : { text: "NOT TESTED YET", kind: "untested" };
+}
+
+/** Heater's take for a claim from the personality file ("claims": id -> line or [lines]). */
+export function takeFor(claimId, personality, turn = 0) {
+  const t = linesTable({ claims: personality?.claims }) || PLACEHOLDER_LINES;
+  return heaterLineFor(claimId in t ? claimId : "NONE", { ...t, "*": t.NONE || PLACEHOLDER_LINES["*"] }, turn);
+}
+
+/** Heater's reaction to a verdict ("react": decision -> [lines]). */
+export function reactFor(decision, personality, turn = 0) {
+  const r = personality?.react?.[decision];
+  const arr = (Array.isArray(r) ? r : [r]).filter(isStr);
+  return arr.length ? arr[Math.abs(turn) % arr.length] : "";
+}
+
 /** True for a word Heater should hit hard: two or more capitals, e.g. "HOT", "HH-K3". */
 export function isEmphasis(word) {
   return /^[A-Z][A-Z0-9-]*[A-Z0-9][!?.,:;]*$/.test(word);

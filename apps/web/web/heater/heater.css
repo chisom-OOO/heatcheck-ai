@@ -2,7 +2,7 @@
    motion on top. State class on the root: .st-<name>. Layers:
      .h-root  stage (#12121A), clips everything to its own box
      .h-fig   state motion (idle bob, vindicated pop, cooled sink, CAPS shake)
-     .h-body  word bounce (squash) and colour filters (glow, desaturate)
+     .h-body  word bounce (squash); colour filters sit on the images themselves
      .h-pose  two stacked images, crossfaded in 200 ms; .h-slice copies for the glitch
    Every image has a soft radial edge mask so no image rectangle shows on the stage. */
 
@@ -41,7 +41,8 @@
   -webkit-mask-composite: source-in; mask-composite: intersect;
   user-select: none; pointer-events: none;
 }
-.h-pose { opacity: 0; transition: opacity 200ms ease; }
+.h-spot { display: none; }
+.h-pose { opacity: 0; }
 .h-pose.on { opacity: 1; }
 .h-missing {
   position: absolute; left: 8px; right: 8px; top: 8px; margin: 0;
@@ -83,7 +84,7 @@
 @keyframes h-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 /* ------------------------------------------------------------------ listening / thinking */
-.st-listening .h-body { filter: brightness(calc(.9 + var(--mic) * .35)); transition: filter 90ms linear; }
+.st-listening :is(.h-pose, .h-slice) { filter: brightness(calc(.9 + var(--mic) * .35)); transition: opacity 200ms ease, filter 90ms linear; }
 .st-thinking .h-fig { animation: h-sway 2.6s ease-in-out infinite; }
 @keyframes h-sway { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.6deg) translateY(-2px); } }
 
@@ -121,7 +122,7 @@
   67%  { opacity: 1; transform: translateX(calc(var(--gx) * -0.3)); filter: drop-shadow(2px 0 0 var(--gc)); }
   84%, 100% { opacity: 0; transform: none; filter: none; }
 }
-.st-heat_check .h-body { animation: h-jitter 600ms steps(1, end) both; }
+.st-heat_check .h-pose { animation: h-jitter 600ms steps(1, end) both; }
 @keyframes h-jitter {
   0%   { filter: hue-rotate(-12deg) contrast(1.15); }
   33%  { filter: none; }
@@ -142,7 +143,7 @@
 }
 /* screenshot hook (states.html?shot=heat_check&freeze=1): hold one glitch frame mid-scan */
 .h-freeze.st-heat_check .h-slice { animation: none; opacity: 1; transform: translateX(var(--gx)); filter: drop-shadow(3px 0 0 var(--gc)); }
-.h-freeze.st-heat_check .h-body { animation: none; filter: contrast(1.15); }
+.h-freeze.st-heat_check .h-pose { animation: none; filter: contrast(1.15); }
 .h-freeze.st-heat_check::after { animation: none; opacity: .9; top: 46%; }
 
 /* ------------------------------------------------------------------ vindicated: scale-pop and glow */
@@ -159,7 +160,7 @@
   background: radial-gradient(closest-side, rgba(255, 150, 40, .55), rgba(255, 110, 20, .18) 60%, transparent);
   mix-blend-mode: screen; opacity: 0; transition: opacity .3s ease;
 }
-.st-vindicated .h-body { filter: brightness(1.12) saturate(1.1); }
+.st-vindicated :is(.h-pose, .h-slice) { filter: brightness(1.12) saturate(1.1); }
 .st-vindicated .h-fig::after { opacity: 1; animation: h-glow 1.4s ease-in-out infinite alternate; }
 @keyframes h-glow { from { opacity: .55; } to { opacity: 1; } }
 .st-vindicated .h-spark { --d: .9s; }
@@ -167,17 +168,17 @@
 /* ------------------------------------------------------------------ cooled: slow sink and desaturate */
 .st-cooled .h-fig { animation: h-sink 1.5s ease-in both; }
 @keyframes h-sink { from { transform: translateY(0); } to { transform: translateY(16px) scale(.985); } }
-.st-cooled .h-body { filter: grayscale(.75) saturate(.5) brightness(.72); transition: filter 1.5s ease-in; }
-.h-body { transition: filter .4s ease; }
+.st-cooled :is(.h-pose, .h-slice) { filter: grayscale(.75) saturate(.5) brightness(.88); transition: opacity 200ms ease, filter 1.5s ease-in; }
+:is(.h-pose, .h-slice) { transition: opacity 200ms ease, filter .4s ease; }
 .st-cooled .h-spark { --d: 2.8s; background: var(--ember); }
 .st-cooled .h-spark:nth-child(n+3) { display: none; }      /* fewer sparks when cooled */
-.h-root.reignite .h-body { transition: filter 1s ease-out; }
+.h-root.reignite :is(.h-pose, .h-slice) { transition: opacity 200ms ease, filter 1s ease-out; }
 
 /* ------------------------------------------------------------------ unsure / blocked (stand-in poses) */
 .st-unsure .h-fig { animation: h-wobble 1.6s ease-in-out infinite; }
 @keyframes h-wobble { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
 .st-unsure .h-spark:nth-child(n+5) { display: none; }
-.st-blocked .h-body { filter: saturate(.6) brightness(.85); }
+.st-blocked :is(.h-pose, .h-slice) { filter: saturate(.6) brightness(.85); }
 .st-blocked .h-spark { display: none; }
 
 /* ------------------------------------------------------------------ speech card */
@@ -238,6 +239,6 @@
 @media (prefers-reduced-motion: reduce) {
   .h-root, .h-root *, .h-root::after, .h-root *::after { animation: none !important; }
   .h-root .h-sparks, .h-root .h-glitch { display: none !important; }
-  .h-root.st-heat_check .h-body { filter: sepia(.3) hue-rotate(130deg) !important; }
+  .h-root.st-heat_check .h-pose { filter: sepia(.3) hue-rotate(130deg) !important; }
   .h-root.st-vindicated .h-fig::after { opacity: .8 !important; }
 }
