@@ -8,25 +8,23 @@ Order of one turn (``Dialogue.turn``):
    enum, validated again here; on any failure a deterministic keyword stand-in.
 2. NONE: no test runs, nothing is written to the ledger. Heater may answer in character; the
    Ref text is a fixed template saying no registered test exists.
-3. Otherwise the loop runs that registered claim: the Challenger (LLM choosing among eligible
-   optional attacks, mandatory attacks always added; stand-in on failure) and the
+3. If the ledger holds a recorded, custodian-receipted Research result for the claim
+   (heatcheck/agents/recorded.py: the 2023-24 GAME_PREDICTION final, later the confirmatory
+   final), that entry answers it: nothing runs and nothing is written.
+4. Otherwise the loop runs that registered claim: the Challenger (add-only) and the
    deterministic Referee. The evidence entry is written to the append-only ledger.
-4. Heater reacts and the Ref phrases the verdict, in parallel. The Ref's text passes
-   ``ref_guard``: every number and verdict word must come from the evidence record, else the
-   deterministic template is used. Heater's text passes the number part of the guard.
+   Confirmatory claims (CONF-*) without a recorded final go to ``ConfirmatoryLane`` instead,
+   which in its default dry-run mode runs and writes nothing.
+5. The Ref's text is a deterministic template built from the evidence entry (no model call).
+   Heater (the only model-written text) reacts in character; its text passes the number guard
+   against the record, else Heater's fixed line is used.
 
-Confirmatory claims (CONF-HA, CONF-MOM, CONF-HH; Research's sealed 2024-25 family) skip step 3:
-the Referee hands them to ``ConfirmatoryLane``. In its default dry-run mode nothing runs and
-nothing is written; the turn reports that the final test has not been run, with the dry-run
-checks, and no verdict.
-
-No LLM output reaches ``decide()``. Every LLM call has an 8 s deadline and a deterministic
-fallback, so a turn always returns all four fields.
+No LLM output reaches ``decide()`` or the Ref. Every model call has an 8 s deadline and a
+deterministic fallback, so a turn always returns all fields.
 """
 
 from __future__ import annotations
 
-import concurrent.futures as cf
 import hashlib
 import json
 import re
@@ -43,6 +41,8 @@ from heatcheck.agents.confirmatory import (
 )
 from heatcheck.agents.llm import LLMUnavailable, MetaChat, prompt_sha256
 from heatcheck.agents.loop import run_once
+from heatcheck.agents.recorded import RECORDED_ONLY_STATEMENTS, find_recorded
+from heatcheck.agents.recorded import SOURCE as RECORDED_SOURCE
 from heatcheck.agents.registry import ATTACKS, CLAIMS, Claim, catalogue
 from heatcheck.agents.roles import (
     DeterministicChallenger,
@@ -53,6 +53,7 @@ from heatcheck.agents.roles import (
     view_capabilities,
 )
 from heatcheck.agents.views import ShotView
+from heatcheck.api.display_titles import display_title
 from heatcheck.contracts.records import loads_strict
 from heatcheck.ledger.evidence import EvidenceLedger
 
@@ -76,13 +77,23 @@ def confirmatory_statements() -> dict[str, str]:
 
 
 def mapping_catalogue() -> list[dict]:
-    """What a question may map to: development claims, then the confirmatory family."""
+    """What a question may map to: registry claims, recorded-only claims (GP-ELO), then the
+    confirmatory family."""
     return ([{"claim_id": c["claim_id"], "statement": c["statement"]} for c in catalogue()]
+            + [{"claim_id": h, "statement": t} for h, t in RECORDED_ONLY_STATEMENTS.items()]
             + [{"claim_id": h, "statement": t} for h, t in confirmatory_statements().items()])
 
 
+def mappable_ids() -> set[str]:
+    return {c["claim_id"] for c in mapping_catalogue()}
+
+
 def statement_of(claim_id: str) -> str:
-    return CLAIMS[claim_id].statement if claim_id in CLAIMS else confirmatory_statements()[claim_id]
+    if claim_id in CLAIMS:
+        return CLAIMS[claim_id].statement
+    if claim_id in RECORDED_ONLY_STATEMENTS:
+        return RECORDED_ONLY_STATEMENTS[claim_id]
+    return confirmatory_statements()[claim_id]
 
 
 
@@ -94,6 +105,8 @@ def keyword_map(question: str) -> str:
         return NONE
     if re.search(r"\bhome[- ](court|teams?|advantage)\b", q):
         return "CONF-HA"
+    if re.search(r"\belo\b|base[- ]rate|coin[- ]?flip", q):
+        return "GP-ELO"
     if re.search(r"\b(rest|back[- ]to[- ]backs?|days? off|b2b)\b", q):
         return "GP-REST"
     streak = re.search(r"hot hand|streak|in a row|straight|consecutive|heat(ing)? up|on fire", q)
@@ -131,7 +144,7 @@ def parse_mapping(text: str) -> str:
     cid = obj["claim_id"]
     if not isinstance(cid, str):
         raise ValueError(f"claim_id must be a string, not {type(cid).__name__}")
-    if cid != NONE and cid not in CLAIMS and cid not in CONFIRMATORY_IDS:
+    if cid != NONE and cid not in mappable_ids():
         raise ValueError(f"claim_id {cid!r} is not registered")
     return cid
 
@@ -285,8 +298,8 @@ def ref_facts(entry: dict) -> dict:
     """The part of an evidence entry the Ref may talk about. Hashes are excluded so their hex
     digits cannot license invented numbers."""
     i = entry["identity"]
-    if i.get("lane") == LANE_CONFIRMATORY:
-        return confirmatory_facts(entry)
+    if i.get("source") == RECORDED_SOURCE:
+        return recorded_facts(entry)
     claim = CLAIMS[i["claim"]["claim_id"]]
     return {
         "claim_id": claim.claim_id, "statement": claim.statement, "decision": i["decision"],
@@ -299,34 +312,25 @@ def ref_facts(entry: dict) -> dict:
     }
 
 
-def confirmatory_facts(entry: dict) -> dict:
-    """Ref facts for a CONFIRMATORY entry, in the same shape as ``ref_facts``."""
+def recorded_facts(entry: dict) -> dict:
+    """Ref facts for an entry recorded from Research's receipted results (no hashes)."""
     i = entry["identity"]
     r = i["result"]
+    detail = r.get("detail") or {}
+    n_games = i["data"].get("n_games") or r.get("n_games") or detail.get("n_games")
+    season = i["data"].get("season")
     return {
         "claim_id": i["claim"]["claim_id"], "statement": i["claim"]["statement"],
         "decision": i["decision"], "reason": i["reason"], "limits": i["limits"],
-        "lane": LANE_CONFIRMATORY,
-        "data": {"data_mode": i["data"]["data_mode"], "season": i["data"]["season"],
-                 "n_attempts": r.get("n_fga"), "n_groups": None, "n_games": r.get("n_games")},
-        "params": {k: v for k, v in i["claim"]["plan"]["params"].items() if k != "seed"},
-        "attacks": [], "result": r, "p_holm": i["p_holm"],
+        "lane": i["lane"], "phase": i["phase"],
+        "data": {"data_mode": i["data"].get("data_mode"), "season": season,
+                 "n_attempts": detail.get("n_fga"), "n_groups": None, "n_games": n_games},
+        "params": {}, "attacks": [],
+        "result": {k: v for k, v in r.items() if k != "detail"},
+        "source_note": (f"Source: Research's recorded {i['phase'].lower()} run"
+                        + (f" on {n_games} unseen {season} games" if n_games and season else "")
+                        + ", under a custodian exposure receipt; copied here, not recomputed."),
     }
-
-
-def ref_brief(facts: dict) -> dict:
-    """The compact subset sent to the LLM for phrasing (fewer prompt and reasoning tokens).
-    The guard still checks against the full ``facts``.
-
-    Sample counts are sent only when a test actually ran on that sample: for a BLOCKED claim
-    the loaded shot data are not the claim's data, and the live run of 2026-11-07 showed the
-    model attaching them to it ("field_goal_attempts at 181" for GP-REST). The guard cannot
-    catch that, because it checks numbers, not what they refer to."""
-    brief = {"claim": facts["statement"], "verdict": facts["decision"], "reason": facts["reason"]}
-    if facts["decision"] != "BLOCKED":
-        brief["field_goal_attempts"] = facts["data"]["n_attempts"]
-        brief["games"] = facts["data"]["n_games"]
-    return brief
 
 
 def _record_text(facts: dict) -> str:
@@ -406,8 +410,14 @@ PLAIN = {"SURVIVED_PROTOCOL": "Survived the registered checks (SURVIVED_PROTOCOL
 
 
 def ref_template(facts: dict) -> str:
-    return (f"{PLAIN[facts['decision']]}. Claim {facts['claim_id']}: {facts['statement']} "
-            f"Reason: {facts['reason']}.")
+    """The Ref's words: deterministic, built only from the evidence record (no model call).
+    Numbers appear only inside the record's own reason and source note, verbatim."""
+    statement = facts["statement"].rstrip(".")
+    text = (f"{PLAIN[facts['decision']]}. {display_title(facts['claim_id'])} "
+            f"({facts['claim_id']}). What was tested: {statement}. Why: {facts['reason']}.")
+    if facts.get("source_note"):
+        text += " " + facts["source_note"]
+    return text
 
 
 CONF_PENDING_REF = (
@@ -432,12 +442,8 @@ def dry_run_summary(report: dict) -> str:
 NO_TEST_REF = ("No registered test exists for this question, so nothing was run and there is no "
                "verdict. Registered claims: {ids}.")
 
-REF_SYSTEM = (
-    "You are the Ref, a calm, exact referee. Restate the evidence record's verdict for a fan in "
-    "two or three plain sentences. Use the verdict wording '{phrase}'. Copy any number exactly "
-    "as written in the record and use no other numbers. Do not say proven, confirmed, myth, "
-    "real, fake or significant. Do not add facts that are not in the record."
-)
+NO_RECORD_REF = ("{title} ({cid}) is answered only by a recorded Research result, and none is in "
+                 "this evidence ledger, so there is no verdict here.")
 
 # --------------------------------------------------------------------------- Heater
 
@@ -480,16 +486,31 @@ class Dialogue:
     confirmatory: ConfirmatoryLane | None = None  # None: default dry-run lane
 
     def turn(self, question: str) -> dict[str, Any]:
-        sources: dict[str, str] = {}
+        sources: dict[str, str] = {"ref": "TEMPLATE"}
         claim_id, sources["mapping"], map_identity = self._map(question)
         if claim_id == NONE:
             ref_text = NO_TEST_REF.format(ids=", ".join(c["claim_id"] for c in mapping_catalogue()))
             heater_text, sources["heater"] = self._heater(question, None, None, None)
             sources["ref"] = "TEMPLATE_NO_REGISTERED_TEST"
             return {"heater_text": heater_text, "ref_text": ref_text, "evidence_record_id": None,
-                    "verdict": None, "claim_id": NONE, "lane": None, "sources": sources}
+                    "verdict": None, "claim_id": NONE, "claim_title": display_title(NONE),
+                    "lane": None, "evidence_source": None, "sources": sources}
+        # A recorded, receipted final result answers its claim; nothing is rerun or rewritten.
+        recorded = find_recorded(self.ledger, claim_id)
+        if recorded is not None:
+            sources["challenger"] = "NOT_APPLICABLE (recorded final result)"
+            return self._respond(question, claim_id, recorded, sources)
         if claim_id in CONFIRMATORY_IDS:
             return self._confirmatory_turn(question, claim_id, map_identity, sources)
+        if claim_id in RECORDED_ONLY_STATEMENTS:
+            heater_text, sources["heater"] = self._heater(question, claim_id, None, None,
+                                                          pending=True)
+            sources["ref"] = "TEMPLATE_NO_RECORDED_RESULT"
+            return {"heater_text": heater_text,
+                    "ref_text": NO_RECORD_REF.format(title=display_title(claim_id), cid=claim_id),
+                    "evidence_record_id": None, "verdict": None, "claim_id": claim_id,
+                    "claim_title": display_title(claim_id), "lane": None,
+                    "evidence_source": None, "sources": sources}
         challenger = LLMChallenger(self.llm) if self.llm else DeterministicChallenger()
         entry = run_once(self.view, self.ledger, view_identity=self.view_identity,
                          jone=MappedDiscoverer(claim_id, question, map_identity),
@@ -498,28 +519,35 @@ class Dialogue:
         note = f"fallback: {note}" if note else getattr(challenger, "note", None)
         sources["challenger"] = challenger.identity.get("kind", "DETERMINISTIC_STANDIN") + (
             f" ({note})" if note else "")
-        # What is displayed is what ran: claim and verdict come from the evidence entry, and a
-        # mismatch with the mapping is an internal error, never shown (RV-AL6).
-        ran = entry["identity"]["claim"]["claim_id"]
-        if ran != claim_id:
-            raise RuntimeError(f"evidence claim {ran!r} differs from the mapped claim {claim_id!r}")
+        return self._respond(question, claim_id, entry, sources)
+
+    def _respond(self, question, claim_id, entry, sources) -> dict[str, Any]:
+        # What is displayed is what ran or was recorded: claim and verdict come from the
+        # evidence entry, and a mismatch with the mapping is an internal error (RV-AL6).
+        ident = entry["identity"]
+        if ident["claim"]["claim_id"] != claim_id:
+            raise RuntimeError(f"evidence claim {ident['claim']['claim_id']!r} differs from the "
+                               f"mapped claim {claim_id!r}")
         facts = ref_facts(entry)
-        with cf.ThreadPoolExecutor(max_workers=2) as pool:
-            h = pool.submit(self._heater, question, claim_id, facts["decision"], facts)
-            r = pool.submit(self._ref, facts)
-            heater_text, sources["heater"] = h.result()
-            ref_text, sources["ref"] = r.result()
-        return {"heater_text": heater_text, "ref_text": ref_text,
-                "evidence_record_id": entry["evidence_id"], "verdict": entry["identity"]["decision"],
-                "claim_id": ran, "lane": entry["identity"]["lane"], "sources": sources}
+        ref_text = ref_template(facts)
+        heater_text, sources["heater"] = self._heater(question, claim_id, facts["decision"], facts)
+        out = {"heater_text": heater_text, "ref_text": ref_text,
+               "evidence_record_id": entry["evidence_id"], "verdict": ident["decision"],
+               "claim_id": claim_id, "claim_title": display_title(claim_id),
+               "lane": ident.get("lane"),
+               "evidence_source": ident.get("source", "AGENT_LOOP"), "sources": sources}
+        if ident.get("source") == RECORDED_SOURCE:
+            out["phase"] = ident["phase"]
+            out["custodian_receipt_id"] = ident["custodian"]["receipt_id"]
+        return out
 
     def _confirmatory_turn(self, question, claim_id, map_identity, sources) -> dict[str, Any]:
         lane = self.confirmatory or ConfirmatoryLane()
         disc = MappedDiscoverer(claim_id, question, map_identity)
         proposer = {**disc.identity, "rationale": f"user question sha256:{disc.question_sha256}"}
         out = lane.evaluate(claim_id, self.ledger, proposer)
-        sources["challenger"] = "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)"
         if "dry_run" in out:
+            sources["challenger"] = "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)"
             report = out["dry_run"]
             ref_text = CONF_PENDING_REF.format(cid=claim_id, season="2024-25",
                                                statement=statement_of(claim_id),
@@ -528,23 +556,13 @@ class Dialogue:
                                                           pending=True)
             sources["ref"] = "TEMPLATE_CONFIRMATORY_NOT_RUN"
             return {"heater_text": heater_text, "ref_text": ref_text, "evidence_record_id": None,
-                    "verdict": None, "claim_id": claim_id, "lane": LANE_CONFIRMATORY,
+                    "verdict": None, "claim_id": claim_id, "claim_title": display_title(claim_id),
+                    "lane": LANE_CONFIRMATORY, "evidence_source": None,
                     "confirmatory_status": report["state"],
                     "dry_run": {"ready": report["ready"], "checks": report["checks"]},
                     "sources": sources}
-        entry = out["entry"]
-        if entry["identity"]["claim"]["claim_id"] != claim_id:
-            raise RuntimeError("confirmatory evidence claim differs from the mapped claim")
-        facts = ref_facts(entry)
-        with cf.ThreadPoolExecutor(max_workers=2) as pool:
-            h = pool.submit(self._heater, question, claim_id, facts["decision"], facts)
-            r = pool.submit(self._ref, facts)
-            heater_text, sources["heater"] = h.result()
-            ref_text, sources["ref"] = r.result()
-        return {"heater_text": heater_text, "ref_text": ref_text,
-                "evidence_record_id": entry["evidence_id"], "verdict": entry["identity"]["decision"],
-                "claim_id": claim_id, "lane": LANE_CONFIRMATORY, "confirmatory_status": "FINAL_DONE",
-                "sources": sources}
+        sources["challenger"] = "NOT_APPLICABLE (recorded final result)"
+        return self._respond(question, claim_id, out["entry"], sources)
 
     # -- pieces
 
@@ -586,20 +604,4 @@ class Dialogue:
         bad = number_violations(text, facts or {})
         if bad:
             return fallback, f"TEMPLATE (guard rejected numbers {bad})"
-        return text, "LLM"
-
-    def _ref(self, facts: dict) -> tuple[str, str]:
-        template = ref_template(facts)
-        if not self.llm:
-            return template, "TEMPLATE"
-        phrase = PLAIN[facts["decision"]].split(" (")[0].lower()
-        messages = [{"role": "system", "content": REF_SYSTEM.format(phrase=phrase)},
-                    {"role": "user", "content": json.dumps(ref_brief(facts))}]
-        try:
-            text = self.llm.complete("ref", messages).text.strip()
-        except LLMUnavailable as e:
-            return template, f"TEMPLATE (fallback: {e.reason[:120]})"
-        problems = ref_guard(text, facts)
-        if problems:
-            return template, f"TEMPLATE (guard rejected: {'; '.join(problems)[:200]})"
         return text, "LLM"

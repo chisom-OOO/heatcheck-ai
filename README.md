@@ -28,8 +28,9 @@ This one command:
    `heatcheck-records/1` bundle. Finally it checks that the bundle's `records_sha256` equals
    the data identity in the committed evidence ledger. All of this is written to git-ignored
    `data/`, because raw redistribution rights are unverified.
-2. It copies the committed evidence ledger to `logs/demo/evidence.jsonl` (git-ignored). The
-   committed file is never written.
+2. It copies the committed evidence ledger `evidence/evidence.jsonl` to
+   `logs/demo/evidence.jsonl` (git-ignored). The committed file is never written. If an older
+   demo ledger lacks committed entries, the launcher says so; run once with `--fresh-ledger`.
 3. It starts two local servers and opens both pages:
    - `http://127.0.0.1:8770/`: the **dialogue console**. Ask Heater (the Discoverer) a
      question; the Ref answers from the evidence ledger. This is Max's API test page for
@@ -46,14 +47,18 @@ Ctrl+C stops both servers.
 | `--setup-only` | Build the data and the ledger, then exit. |
 | `--fresh-ledger` | Reset the demo ledger to the committed one. |
 
-With `META_API_KEY` set in the environment, Heater, the question mapping and the Ref's
-phrasing use live Meta model calls (`muse-spark-1.3`, minimal reasoning). Spend is logged
-per call to `logs/llm_usage.jsonl`. The key stays in the server process.
+With `META_API_KEY` set in the environment, the question mapping and Heater use live Meta
+model calls (`muse-spark-1.3`, minimal reasoning). The Ref never calls a model: its text is a
+deterministic template built from the evidence entry. Spend is logged per call to
+`logs/llm_usage.jsonl`. The key stays in the server process. The endpoint contract is in
+`docs/DIALOGUE_API.md`.
 
 Known limits:
 - Experience's UI does not yet send questions to `/api/dialogue`; the console page does.
-- The registered tests run on one real game. HH-K3 needs more data and is
-  INSUFFICIENT_EVIDENCE; HH-K2 is NOT_SUPPORTED; GP-REST is BLOCKED (no game-season view).
+- The hot-hand tests (HH-K3, HH-K2) run live on one real game: HH-K3 needs more data and is
+  INSUFFICIENT_EVIDENCE; HH-K2 is NOT_SUPPORTED.
+- GP-REST (INSUFFICIENT_EVIDENCE) and GP-ELO (SURVIVED_PROTOCOL) answer from Research's
+  recorded 2023-24 final (custodian receipt 3e238d2d), copied into the ledger, not recomputed.
 - Confirmatory claims (CONF-*) answer in dry-run mode: no verdict until the single recorded
   final run.
 

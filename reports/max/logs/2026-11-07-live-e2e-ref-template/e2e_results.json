@@ -1,0 +1,303 @@
+{
+  "turns": [
+    {
+      "case": "INSUFFICIENT_EVIDENCE (agent loop)",
+      "question": "Is the hot hand real? Do guys hit more after three straight makes than after three straight misses?",
+      "expected_claim": "HH-K3",
+      "mapped_claim": "HH-K3",
+      "mapping_ok": true,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "INSUFFICIENT_EVIDENCE",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "5665ead61130de4187b78a273424a305932bce78ccf3f2e7c1aab3c8e17b71c3",
+      "sources": {
+        "ref": "TEMPLATE",
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN (LLM not called: every applicable registered attack is already required)",
+        "heater": "LLM"
+      },
+      "heater_text": "LISTEN FOLKS the Ref says we just DON'T KNOW yet! I FEEL the hot hand in my soul, but that is just my opinion, BABY! Let's keep watching and find out!",
+      "ref_text": "Insufficient evidence (INSUFFICIENT_EVIDENCE). Hot hand: three makes in a row (HH-K3). What was tested: Within a player-game, a field goal after 3 straight makes is made more often than one after 3 straight misses, beyond what within-stratum shuffling produces. Why: after-3-makes n=14, after-3-misses n=18, need >= 30 each.",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE",
+      "evidence_source": "AGENT_LOOP",
+      "guard_fallback": false,
+      "wall_ms": 6732.5,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 2388.2,
+          "first_text_ms": null,
+          "prompt_tokens": 473,
+          "completion_tokens": 273,
+          "reasoning_tokens": 255,
+          "est_cost_usd": 0.0017515
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3411.2,
+          "first_text_ms": 3166.9,
+          "prompt_tokens": 226,
+          "completion_tokens": 324,
+          "reasoning_tokens": 273,
+          "est_cost_usd": 0.0016595
+        }
+      ],
+      "turn_cost_usd": 0.003411
+    },
+    {
+      "case": "NOT_SUPPORTED (agent loop)",
+      "question": "After a player makes two in a row, is the next shot more likely to go in than after two misses in a row?",
+      "expected_claim": "HH-K2",
+      "mapped_claim": "HH-K2",
+      "mapping_ok": true,
+      "verdict": "NOT_SUPPORTED",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "NOT_SUPPORTED",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "8f70d006b0a6af7250e42cab2c1313ae1cc6083ddc42f2c92e184c4a36b70456",
+      "sources": {
+        "ref": "TEMPLATE",
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN (LLM not called: every applicable registered attack is already required)",
+        "heater": "LLM"
+      },
+      "heater_text": "OH BABY I love this one! The Ref says NOT SUPPORTED, so we live with the call! What a showdown, folks!",
+      "ref_text": "Not supported by the registered checks (NOT_SUPPORTED). Hot hand: two makes in a row (HH-K2). What was tested: Same as HH-K3 with streak length 2. Why: p=0.2390 (alpha 0.05), bias-corrected effect +0.0740 (floor 0.01).",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE",
+      "evidence_source": "AGENT_LOOP",
+      "guard_fallback": false,
+      "wall_ms": 6145.9,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1540.8,
+          "first_text_ms": null,
+          "prompt_tokens": 479,
+          "completion_tokens": 133,
+          "reasoning_tokens": 115,
+          "est_cost_usd": 0.001164
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3889.5,
+          "first_text_ms": 3555.8,
+          "prompt_tokens": 207,
+          "completion_tokens": 375,
+          "reasoning_tokens": 337,
+          "est_cost_usd": 0.0018525
+        }
+      ],
+      "turn_cost_usd": 0.003017
+    },
+    {
+      "case": "SURVIVED_PROTOCOL (recorded final)",
+      "question": "Does an Elo rating predict who wins better than just going with how often home teams win?",
+      "expected_claim": "GP-ELO",
+      "mapped_claim": "GP-ELO",
+      "mapping_ok": true,
+      "verdict": "SURVIVED_PROTOCOL",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "SURVIVED_PROTOCOL",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "cebfede72181611526cf1f22063b65741efc02fe752169b324d043b7033df7d3",
+      "sources": {
+        "ref": "TEMPLATE",
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (recorded final result)",
+        "heater": "LLM"
+      },
+      "heater_text": "OH BABY, THE ELO CAME TO PLAY! The Ref says it survived, and I LOVE that fight! Give me ratings over gut feelings EVERY SINGLE NIGHT!",
+      "ref_text": "Survived the registered checks (SURVIVED_PROTOCOL). Elo vs the home-win base rate (GP-ELO). What was tested: A frozen Elo forecast has lower mean log loss than the home-win base-rate forecast on unseen 2023-24 final-split games. Why: Holm p<0.05, CI>0, mean>=floor. Source: Research's recorded final run on 300 unseen 2023-24 games, under a custodian exposure receipt; copied here, not recomputed.",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE",
+      "evidence_source": "RECORDED_RESEARCH_RESULT",
+      "guard_fallback": false,
+      "wall_ms": 5388.6,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 2252.1,
+          "first_text_ms": null,
+          "prompt_tokens": 471,
+          "completion_tokens": 158,
+          "reasoning_tokens": 140,
+          "est_cost_usd": 0.00126025
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3095.3,
+          "first_text_ms": 2712.1,
+          "prompt_tokens": 217,
+          "completion_tokens": 267,
+          "reasoning_tokens": 223,
+          "est_cost_usd": 0.001406
+        }
+      ],
+      "turn_cost_usd": 0.002666
+    },
+    {
+      "case": "INSUFFICIENT_EVIDENCE (recorded final)",
+      "question": "Do back-to-backs and rest days change who wins?",
+      "expected_claim": "GP-REST",
+      "mapped_claim": "GP-REST",
+      "mapping_ok": true,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "INSUFFICIENT_EVIDENCE",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "6a67b1820c0869128c6f65ba7289a55c21cb4fc5ee600105302078c7091b2e8d",
+      "sources": {
+        "ref": "TEMPLATE",
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (recorded final result)",
+        "heater": "LLM"
+      },
+      "heater_text": "Listen, tired legs FEEL like a total GAME-CHANGER! The Ref says the evidence ISN'T THERE YET, so we roll with it! That's just my opinion, people!",
+      "ref_text": "Insufficient evidence (INSUFFICIENT_EVIDENCE). Rest and back-to-backs on top of Elo (GP-REST). What was tested: Rest-day difference and back-to-backs improve pre-tip win forecasts over Elo. Why: CI includes values on both sides of the decision thresholds. Source: Research's recorded final run on 300 unseen 2023-24 games, under a custodian exposure receipt; copied here, not recomputed.",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE",
+      "evidence_source": "RECORDED_RESEARCH_RESULT",
+      "guard_fallback": false,
+      "wall_ms": 4199.2,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1548.7,
+          "first_text_ms": null,
+          "prompt_tokens": 465,
+          "completion_tokens": 142,
+          "reasoning_tokens": 124,
+          "est_cost_usd": 0.00118475
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 2633.0,
+          "first_text_ms": 2352.2,
+          "prompt_tokens": 200,
+          "completion_tokens": 263,
+          "reasoning_tokens": 216,
+          "est_cost_usd": 0.00136775
+        }
+      ],
+      "turn_cost_usd": 0.002553
+    },
+    {
+      "case": "NONE (no registered test)",
+      "question": "Who is the best free throw shooter in the league?",
+      "expected_claim": "NONE",
+      "mapped_claim": "NONE",
+      "mapping_ok": true,
+      "verdict": null,
+      "lane": null,
+      "committed_verdict": null,
+      "verdict_matches_committed": null,
+      "evidence_record_id": null,
+      "sources": {
+        "ref": "TEMPLATE_NO_REGISTERED_TEST",
+        "mapping": "LLM",
+        "heater": "LLM"
+      },
+      "heater_text": "LISTEN, folks! My gut says the smoothest stroke is pure magic, but that's just my opinion! No test, no crown, JUST VIBES!",
+      "ref_text": "No registered test exists for this question, so nothing was run and there is no verdict. Registered claims: HH-K3, HH-K2, GP-REST, GP-ELO, CONF-HA, CONF-MOM, CONF-HH.",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE_NO_REGISTERED_TEST",
+      "evidence_source": null,
+      "guard_fallback": false,
+      "wall_ms": 4224.9,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1543.6,
+          "first_text_ms": null,
+          "prompt_tokens": 464,
+          "completion_tokens": 122,
+          "reasoning_tokens": 107,
+          "est_cost_usd": 0.0010985
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 2676.0,
+          "first_text_ms": 2547.9,
+          "prompt_tokens": 181,
+          "completion_tokens": 335,
+          "reasoning_tokens": 293,
+          "est_cost_usd": 0.00165
+        }
+      ],
+      "turn_cost_usd": 0.002749
+    },
+    {
+      "case": "CONFIRMATORY (dry run, no verdict)",
+      "question": "Do home teams really win more than half their games?",
+      "expected_claim": "CONF-HA",
+      "mapped_claim": "CONF-HA",
+      "mapping_ok": true,
+      "verdict": null,
+      "lane": "CONFIRMATORY",
+      "committed_verdict": null,
+      "verdict_matches_committed": null,
+      "evidence_record_id": null,
+      "sources": {
+        "ref": "TEMPLATE_CONFIRMATORY_NOT_RUN",
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)",
+        "heater": "LLM"
+      },
+      "heater_text": "OH, I LOVE THIS QUESTION! The crowd is BUZZING! We'll let the Ref make the call!",
+      "ref_text": "CONF-HA is a pre-registered confirmatory claim on the sealed 2024-25 season: In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games. Its single final test has not been run, so there is no verdict yet. It runs once, recorded, after the reviewer verifies the seal. Dry run: plans, code and seal match; the sealed data were not checked on this machine.",
+      "heater_fell_back": false,
+      "ref_source": "TEMPLATE_CONFIRMATORY_NOT_RUN",
+      "evidence_source": null,
+      "guard_fallback": false,
+      "wall_ms": 5396.2,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1648.7,
+          "first_text_ms": null,
+          "prompt_tokens": 464,
+          "completion_tokens": 123,
+          "reasoning_tokens": 105,
+          "est_cost_usd": 0.00110275
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3717.3,
+          "first_text_ms": 3620.2,
+          "prompt_tokens": 225,
+          "completion_tokens": 472,
+          "reasoning_tokens": 441,
+          "est_cost_usd": 0.00228725
+        }
+      ],
+      "turn_cost_usd": 0.00339
+    }
+  ],
+  "usage_total": {
+    "calls": 12,
+    "ok": 12,
+    "est_cost_usd": 0.017785,
+    "tokens": {
+      "prompt": 4072,
+      "completion": 2987,
+      "reasoning": 2629
+    }
+  },
+  "cap_usd": 0.5,
+  "committed_ledger": "evidence\\evidence.jsonl"
+}

@@ -75,9 +75,13 @@ async function ask() {
     const h = el("div", "card heater"); h.append(el("div", "who", "Heater"), el("p", "", d.heater_text));
     const f = el("div", "card ref"); f.append(el("div", "who", "The Ref"), el("p", "", d.ref_text));
     const meta = el("div", "card"); const dl = el("dl");
-    const rows = [["verdict", d.verdict ?? "none (no verdict)"], ["claim", d.claim_id], ["lane", d.lane ?? "–"],
-                  ["evidence id", d.evidence_record_id ?? "none (nothing written)"],
-                  ["confirmatory", d.confirmatory_status ?? "–"], ["turn time", ms + " ms"]];
+    const rows = [["verdict", d.verdict ?? "none (no verdict)"], ["claim", `${d.claim_title} (${d.claim_id})`],
+                  ["lane", d.lane ?? "–"], ["evidence source", d.evidence_source ?? "–"],
+                  ["evidence id", d.evidence_record_id ?? "none (nothing written)"]];
+    if (d.phase) rows.push(["phase", d.phase]);
+    if (d.custodian_receipt_id) rows.push(["custodian receipt", d.custodian_receipt_id]);
+    if (d.confirmatory_status) rows.push(["confirmatory", d.confirmatory_status]);
+    rows.push(["turn time", ms + " ms"]);
     for (const [k, v] of Object.entries(d.sources || {})) rows.push(["source: " + k, v]);
     for (const [k, v] of rows) { dl.append(el("dt", "", k), el("dd", k === "evidence id" ? "mono" : "", String(v))); }
     meta.append(dl);

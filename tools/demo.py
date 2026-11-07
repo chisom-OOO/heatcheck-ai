@@ -45,7 +45,7 @@ INCOMING = ROOT / "incoming" / "research-20261107"
 RAW = ROOT / "data" / "raw" / "research-20261107"
 PROCESSED = ROOT / "data" / "processed" / "research-20261107"
 BUNDLE = ROOT / "data" / "bundles" / "r001-nba-0022300061"
-COMMITTED_LEDGER = ROOT / "reports" / "max" / "logs" / "2026-11-07-al-fixes" / "evidence_real_game_v2.jsonl"
+COMMITTED_LEDGER = ROOT / "evidence" / "evidence.jsonl"
 DEMO_LEDGER = ROOT / "logs" / "demo" / "evidence.jsonl"
 UPSTREAM = "https://raw.githubusercontent.com/shufinskiy/nba_data/{commit}/datasets/{name}"
 API_PORT, UI_PORT = 8770, 8765
@@ -123,6 +123,14 @@ def ensure_ledger(fresh: bool) -> None:
     if fresh or not DEMO_LEDGER.exists():
         shutil.copyfile(COMMITTED_LEDGER, DEMO_LEDGER)
         say(f"demo ledger {DEMO_LEDGER.relative_to(ROOT)} copied from the committed ledger")
+        return
+    from heatcheck.ledger.evidence import EvidenceLedger
+    have = {e["evidence_id"] for e in EvidenceLedger.open_readonly(DEMO_LEDGER).all()}
+    missing = [e for e in EvidenceLedger.open_readonly(COMMITTED_LEDGER).all()
+               if e["evidence_id"] not in have]
+    if missing:
+        say(f"WARNING: the demo ledger lacks {len(missing)} committed entries (e.g. "
+            f"{missing[0]['identity']['claim']['claim_id']}); run once with --fresh-ledger")
 
 
 def port_free(port: int) -> bool:

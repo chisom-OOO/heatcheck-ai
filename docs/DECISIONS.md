@@ -90,3 +90,24 @@
   - The final step is not run. It runs once, recorded, after the reviewer verifies the seal.
     It must run on Linux/macOS (Research's custodian uses fcntl) with a rebuilt 2024-25 data
     dir whose bytes match the seal.
+
+- **2026-11-07 ~20:45 UTC: deterministic Ref, recorded Research finals, display titles (user instruction, Max).**
+  - The Ref no longer calls a model. Its text is a template built only from the evidence
+    entry; numbers appear only verbatim from the record (no rounding). Heater is the only
+    model-written text and keeps the number guard. The model is still used for question mapping.
+  - Research's 2023-24 GAME_PREDICTION final (receipt 3e238d2d) is recorded in
+    `evidence/evidence.jsonl` without recomputation: H1 → GP-REST (INSUFFICIENT_EVIDENCE),
+    H2 → GP-ELO (SURVIVED_PROTOCOL). Entries bind the result, plan, amendment and replay
+    files and the exact custodian lines (reserve, spend, replay) by sha256. Recording checks
+    the plan and amendment self-hashes, the receipt's reserve (with the plan hash) and spend,
+    and that the reviewer-verified replay has identical decisions.
+  - GP-ELO is a recorded-only claim id. It is not added to the registry, so no registry plan
+    hash changes. Its statement is Max's restatement of the H2 estimand in Research's plan,
+    and the entry labels it as such. The GP-REST ↔ H1 mapping is Max's.
+  - The dialogue prefers a recorded final entry over running the loop for that claim.
+  - The confirmatory final goes through the same recorder (`ConfirmatoryLane` →
+    `recorded.record`).
+  - Display titles (`heatcheck/api/display_titles.py`) are presentation only. They are never
+    in a plan, a hash or an identity, and the registry text is unchanged.
+  - The endpoint contract for Experience is in `docs/DIALOGUE_API.md`. Max's 8770 console
+    page stays as the fallback.

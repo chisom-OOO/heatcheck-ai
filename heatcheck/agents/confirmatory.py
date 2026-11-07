@@ -29,7 +29,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from heatcheck.contracts.records import PROTOCOL_VERSION, sha256_hex
 from heatcheck.ledger.evidence import EvidenceLedger
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,9 +40,6 @@ CONFIRMATORY_IDS = ("CONF-HA", "CONF-MOM", "CONF-HH")
 LANE_CONFIRMATORY = "CONFIRMATORY"
 LANE_DEVELOPMENT = "DEVELOPMENT"
 SEASON_TABLES = ("games", "events", "exclusions", "quarantine", "game_labels", "shot_labels")
-MAX_CODE_FILES = ["heatcheck/agents/confirmatory.py"]
-REFEREE_IDENTITY = {"kind": "DETERMINISTIC_CODE", "rule": "research:" + SCRIPT + " final",
-                    "version": "1"}
 
 
 class ConfirmatoryRefused(RuntimeError):
@@ -226,40 +222,27 @@ def verify_final_result(result: dict, evidence: Path) -> dict:
     return fam
 
 
-def code_identity() -> dict[str, str]:
-    return {p: sha256_hex((ROOT / p).read_bytes()) for p in MAX_CODE_FILES}
-
-
-def confirmatory_identity(hid: str, result: dict, result_sha256: str, fam: dict, plan: dict,
-                          proposer: dict) -> dict:
-    dec = result["decisions"][hid]
-    return {
-        "protocol_version": PROTOCOL_VERSION,
-        "lane": LANE_CONFIRMATORY,
-        "channel": plan["channel"],
-        "claim": {"claim_id": hid, "statement": plan["claim"], "plan": plan,
-                  "canonical_plan_hash": plan["canonical_plan_hash"]},
-        "family": {"family_id": fam["family_id"], "canonical_family_hash": fam["canonical_family_hash"],
-                   "multiplicity": fam["multiplicity"], "seal_id": fam["seal_id"]},
-        "data": {"data_mode": result["data_mode"], "season": result["season"],
-                 "final_epoch_id": result["final_epoch_id"], "data_hashes": result["data_hashes"],
-                 "input_hash": result["input_hash"], "n_sealed_games": fam["n_sealed_games"],
-                 "pseudo_out_of_sample": result["pseudo_out_of_sample"]},
-        "custodian": {"exposure_receipt_id": result["exposure_receipt_id"],
-                      "receipt_was_retry": result["receipt_was_retry"],
-                      "ledger_history_of_receipt": result["ledger_history_of_receipt"]},
-        "proposer": proposer,
-        "referee": REFEREE_IDENTITY,
-        "authorised_by": result["authorised_by"],
-        "code": {**code_identity(), "research:code_hash": fam["code_hash"]},
-        "research_result": {"file": f"{SUBDIR}/final_result.json", "sha256": result_sha256,
-                            "created_at_utc": result["created_at_utc"]},
-        "result": result["results"][hid],
-        "decision": dec["decision"],
-        "reason": dec["reason"],
-        "p_holm": dec["p_holm"],
-        "limits": " ".join(result["caveats"]),
-    }
+def confirmatory_source(result: dict, fam: dict, evidence: Path):
+    """The recorded-result description of a verified confirmatory final (heatcheck/agents/
+    recorded.py): the same recorder as Research's GAME_PREDICTION final."""
+    from heatcheck.agents.recorded import Hypothesis, RecordedSource
+    hyps = []
+    for hid in CONFIRMATORY_IDS:
+        plan = json.loads((Path(evidence) / SUBDIR / f"{hid}.plan.json").read_text(encoding="utf-8"))
+        hyps.append(Hypothesis(hid, hid, plan["claim"], f"Research frozen plan {hid}",
+                               channel=plan["channel"]))
+    return RecordedSource(
+        source_id=f"research:{fam['family_id']}:FINAL", lane=LANE_CONFIRMATORY, phase="FINAL",
+        channel="MIXED", result_file=f"{SUBDIR}/final_result.json",
+        receipt_id=result["exposure_receipt_id"], plan_hash=fam["canonical_family_hash"],
+        hypotheses=tuple(hyps),
+        files=(f"{SUBDIR}/final_result.json", f"{SUBDIR}/family.json",
+               *(f"{SUBDIR}/{h}.plan.json" for h in CONFIRMATORY_IDS)),
+        data={"season": result["season"], "final_epoch_id": result["final_epoch_id"],
+              "input_hash": result["input_hash"], "n_sealed_games": fam["n_sealed_games"],
+              "seal_id": fam["seal_id"], "authorised_by": result["authorised_by"],
+              "multiplicity": fam["multiplicity"]},
+    )
 
 
 def _default_runner(argv: list[str], cwd: Path) -> subprocess.CompletedProcess:
@@ -308,20 +291,11 @@ class ConfirmatoryLane:
             p = self.runner(self.final_argv(), Path(self.handoff))
             if p.returncode != 0:
                 raise ConfirmatoryRefused(f"final exited {p.returncode}: {(p.stderr or '')[-300:]}")
-        raw = result_path.read_bytes()
-        result = json.loads(raw)
+        from heatcheck.agents.recorded import record
+        result = json.loads(result_path.read_bytes())
         fam = verify_final_result(result, self.evidence)
-        entries = {}
-        for hid in CONFIRMATORY_IDS:
-            plan = json.loads((Path(self.evidence) / SUBDIR / f"{hid}.plan.json").read_text(encoding="utf-8"))
-            ident = confirmatory_identity(hid, result, _sha256(raw), fam, plan,
-                                          proposer if hid == claim_id else
-                                          {"role": "referee", "note": f"recorded with {claim_id}: "
-                                           "one family run covers all three hypotheses"})
-            existing = [e for e in ledger.all() if e["identity"].get("lane") == LANE_CONFIRMATORY
-                        and e["identity"]["claim"]["claim_id"] == hid
-                        and e["identity"]["research_result"]["sha256"] == _sha256(raw)]
-            entries[hid] = existing[0] if existing else ledger.put(ident)[0]
+        entries = record(confirmatory_source(result, fam, self.evidence), ledger, self.evidence,
+                         proposers={claim_id: proposer})
         return {"entry": entries[claim_id], "entries": entries}
 
 

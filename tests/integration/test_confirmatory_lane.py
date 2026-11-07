@@ -165,17 +165,20 @@ def _synthetic_result(ev: Path, receipt: str = "synthetic-receipt") -> dict:
 
 
 class FakeRunner:
-    def __init__(self, ev: Path, result: dict | None = None):
+    def __init__(self, ev: Path, result: dict | None = None, plan_hash: str | None = None):
         self.ev, self.calls, self.result = ev, [], result
+        # Research's final reserves with plan_hash = the family hash (scripts/confirmatory.py).
+        self.plan_hash = plan_hash or FAMILY["canonical_family_hash"]
 
     def __call__(self, argv, cwd):
         self.calls.append(argv)
         res = self.result or _synthetic_result(self.ev)
         (self.ev / C.SUBDIR / "final_result.json").write_text(json.dumps(res))
         with open(self.ev / "custodian_ledger.jsonl", "a") as f:
-            for t in ("reserve", "spend"):
-                f.write(json.dumps({"type": t, "receipt_id": res["exposure_receipt_id"],
-                                    "epoch_id": FAMILY["final_epoch_id"]}) + "\n")
+            f.write(json.dumps({"type": "reserve", "receipt_id": res["exposure_receipt_id"],
+                                "epoch_id": FAMILY["final_epoch_id"],
+                                "plan_hash": self.plan_hash}) + "\n")
+            f.write(json.dumps({"type": "spend", "receipt_id": res["exposure_receipt_id"]}) + "\n")
 
         class P:
             returncode, stderr = 0, ""
@@ -220,7 +223,13 @@ def test_final_records_all_three_once_marked_confirmatory(tmp_path):
     assert {e["identity"]["lane"] for e in entries} == {"CONFIRMATORY"}
     assert out["entry"]["identity"]["claim"]["claim_id"] == "CONF-MOM"
     assert out["entries"]["CONF-HA"]["identity"]["decision"] == "SURVIVED_PROTOCOL"
-    assert out["entry"]["identity"]["family"]["canonical_family_hash"] == FAMILY["canonical_family_hash"]
+    ident = out["entry"]["identity"]
+    assert ident["source"] == "RECORDED_RESEARCH_RESULT" and ident["phase"] == "FINAL"
+    assert ident["claim"]["research_plan_hash"] == FAMILY["canonical_family_hash"]
+    assert ident["custodian"]["receipt_id"] == "synthetic-receipt"
+    assert [x["type"] for x in ident["custodian"]["ledger_lines"]] == ["reserve", "spend"]
+    assert ident["files"][0]["path"] == f"{C.SUBDIR}/final_result.json"
+    assert ident["channel"] == "SHOT_ASSOCIATION"
     # A second question reuses the finished, verified run: no rerun, no new entries.
     out2 = lane.evaluate("CONF-HA", ledger, {"role": "discoverer"})
     assert len(runner.calls) == 1 and len(ledger.all()) == 3
@@ -288,3 +297,14 @@ def test_development_loop_entries_are_marked_development(tmp_path):
     ledger = EvidenceLedger(tmp_path / "ev.jsonl")
     entry = run_once(None, ledger, view_identity={"bundle": "none"})
     assert entry["identity"]["lane"] == "DEVELOPMENT"
+
+
+def test_final_whose_reservation_names_another_plan_is_refused(tmp_path):
+    from heatcheck.agents.recorded import RecordRefused
+    h, ev = _copy_handoff(tmp_path)
+    ledger = EvidenceLedger(tmp_path / "ev.jsonl")
+    lane = _lane(h, ev, tmp_path, FakeRunner(ev, plan_hash="0" * 64), mode="final",
+                 authorised_by="pytest")
+    with pytest.raises(RecordRefused, match="different plan hash"):
+        lane.evaluate("CONF-HA", ledger, {})
+    assert ledger.all() == []

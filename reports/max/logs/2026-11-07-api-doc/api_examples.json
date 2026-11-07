@@ -1,0 +1,204 @@
+{
+  "responses": {
+    "loop_HH-K2": {
+      "status": 200,
+      "cors": "http://127.0.0.1:8765",
+      "body": {
+        "heater_text": "Heater here, and OUCH. The Ref says not supported. I'll be back with a hotter take.",
+        "ref_text": "Not supported by the registered checks (NOT_SUPPORTED). Hot hand: two makes in a row (HH-K2). What was tested: Same as HH-K3 with streak length 2. Why: p=0.2390 (alpha 0.05), bias-corrected effect +0.0740 (floor 0.01).",
+        "evidence_record_id": "2acb0c90dce58af95c64b990ebf83aafe46cd48c1aa8e456594a8039658f57ab",
+        "verdict": "NOT_SUPPORTED",
+        "claim_id": "HH-K2",
+        "claim_title": "Hot hand: two makes in a row",
+        "lane": "DEVELOPMENT",
+        "evidence_source": "AGENT_LOOP",
+        "sources": {
+          "ref": "TEMPLATE",
+          "mapping": "KEYWORD_STANDIN",
+          "challenger": "DETERMINISTIC_STANDIN",
+          "heater": "TEMPLATE"
+        }
+      }
+    },
+    "recorded_GP-REST": {
+      "status": 200,
+      "cors": "http://127.0.0.1:8765",
+      "body": {
+        "heater_text": "Heater here! The Ref wants more evidence before ruling. Patience is NOT my game, but rules are rules.",
+        "ref_text": "Insufficient evidence (INSUFFICIENT_EVIDENCE). Rest and back-to-backs on top of Elo (GP-REST). What was tested: Rest-day difference and back-to-backs improve pre-tip win forecasts over Elo. Why: CI includes values on both sides of the decision thresholds. Source: Research's recorded final run on 300 unseen 2023-24 games, under a custodian exposure receipt; copied here, not recomputed.",
+        "evidence_record_id": "6a67b1820c0869128c6f65ba7289a55c21cb4fc5ee600105302078c7091b2e8d",
+        "verdict": "INSUFFICIENT_EVIDENCE",
+        "claim_id": "GP-REST",
+        "claim_title": "Rest and back-to-backs on top of Elo",
+        "lane": "DEVELOPMENT",
+        "evidence_source": "RECORDED_RESEARCH_RESULT",
+        "sources": {
+          "ref": "TEMPLATE",
+          "mapping": "KEYWORD_STANDIN",
+          "challenger": "NOT_APPLICABLE (recorded final result)",
+          "heater": "TEMPLATE"
+        },
+        "phase": "FINAL",
+        "custodian_receipt_id": "3e238d2d-030e-45b4-aae7-db0787ecb873"
+      }
+    },
+    "none": {
+      "status": 200,
+      "cors": "http://127.0.0.1:8765",
+      "body": {
+        "heater_text": "Heater here, and I've got OPINIONS! But the Ref says there's no registered test for that one, so take this as pure hot air.",
+        "ref_text": "No registered test exists for this question, so nothing was run and there is no verdict. Registered claims: HH-K3, HH-K2, GP-REST, GP-ELO, CONF-HA, CONF-MOM, CONF-HH.",
+        "evidence_record_id": null,
+        "verdict": null,
+        "claim_id": "NONE",
+        "claim_title": "No registered test",
+        "lane": null,
+        "evidence_source": null,
+        "sources": {
+          "ref": "TEMPLATE_NO_REGISTERED_TEST",
+          "mapping": "KEYWORD_STANDIN",
+          "heater": "TEMPLATE"
+        }
+      }
+    },
+    "confirmatory_dry_run_CONF-HA": {
+      "status": 200,
+      "cors": "http://127.0.0.1:8765",
+      "body": {
+        "heater_text": "Heater here! That one's locked in the vault for its one big official run. No peeking, no verdict yet. I'm DYING to know.",
+        "ref_text": "CONF-HA is a pre-registered confirmatory claim on the sealed 2024-25 season: In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games. Its single final test has not been run, so there is no verdict yet. It runs once, recorded, after the reviewer verifies the seal. Dry run: plans, code and seal match; the sealed data were not checked on this machine.",
+        "evidence_record_id": null,
+        "verdict": null,
+        "claim_id": "CONF-HA",
+        "claim_title": "Home advantage (2024-25, confirmatory)",
+        "lane": "CONFIRMATORY",
+        "evidence_source": null,
+        "confirmatory_status": "UNRUN_NOT_READY",
+        "dry_run": {
+          "ready": false,
+          "checks": [
+            {
+              "check": "family_manifest",
+              "status": "PASS",
+              "detail": "family.json self-hash 684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0"
+            },
+            {
+              "check": "family_hypotheses",
+              "status": "PASS",
+              "detail": "hypotheses ['CONF-HA', 'CONF-HH', 'CONF-MOM']"
+            },
+            {
+              "check": "plan:CONF-HA",
+              "status": "PASS",
+              "detail": "plan hash 6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13 vs family 6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13"
+            },
+            {
+              "check": "plan:CONF-MOM",
+              "status": "PASS",
+              "detail": "plan hash f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503 vs family f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503"
+            },
+            {
+              "check": "plan:CONF-HH",
+              "status": "PASS",
+              "detail": "plan hash 46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3 vs family 46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3"
+            },
+            {
+              "check": "research_code",
+              "status": "PASS",
+              "detail": "recomputed ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e vs frozen ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e over 9 files"
+            },
+            {
+              "check": "seal",
+              "status": "PASS",
+              "detail": "1 seal(s) for EPOCH-CONF-2024-25-001; family seal 870135b5-07a2-4748-b580-d99d7cebee7c"
+            },
+            {
+              "check": "registration",
+              "status": "PASS",
+              "detail": "1 registration(s) for EPOCH-CONF-2024-25-001"
+            },
+            {
+              "check": "exposure",
+              "status": "PASS",
+              "detail": "0 reservation(s) on EPOCH-CONF-2024-25-001: UNRUN"
+            },
+            {
+              "check": "sealed_data",
+              "status": "NOT_CHECKED",
+              "detail": "no 2024-25 data directory on this machine; the seal accepts only identical bytes (rebuild with build_confirmatory.py)"
+            },
+            {
+              "check": "platform",
+              "status": "FAIL",
+              "detail": "Research's custodian needs fcntl: run final on Linux/macOS, not Windows"
+            }
+          ]
+        },
+        "sources": {
+          "ref": "TEMPLATE_CONFIRMATORY_NOT_RUN",
+          "mapping": "KEYWORD_STANDIN",
+          "challenger": "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)",
+          "heater": "TEMPLATE"
+        }
+      }
+    }
+  },
+  "errors": {
+    "empty_object": {
+      "status": 400,
+      "body": {
+        "error": "body must be exactly {\"question\": string}"
+      }
+    },
+    "empty_question": {
+      "status": 400,
+      "body": {
+        "error": "question must be a non-empty string"
+      }
+    },
+    "not_string": {
+      "status": 400,
+      "body": {
+        "error": "question must be a non-empty string"
+      }
+    },
+    "not_json": {
+      "status": 400,
+      "body": {
+        "error": "body is not JSON"
+      }
+    },
+    "too_long": {
+      "status": 400,
+      "body": {
+        "error": "question longer than 500 characters"
+      }
+    },
+    "extra_field": {
+      "status": 400,
+      "body": {
+        "error": "body must be exactly {\"question\": string}"
+      }
+    },
+    "no_body": {
+      "status": 400,
+      "body": {
+        "error": "missing or oversized body"
+      }
+    },
+    "wrong_path": {
+      "status": 404,
+      "body": {
+        "error": "not found"
+      }
+    },
+    "preflight": {
+      "status": 204,
+      "headers": {
+        "Access-Control-Allow-Origin": "http://localhost:8765",
+        "Access-Control-Allow-Methods": "GET, POST",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
+    }
+  }
+}

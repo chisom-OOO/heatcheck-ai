@@ -23,6 +23,7 @@ import pytest
 pytest.importorskip("pandas")
 
 from heatcheck.agents.dialogue import (  # noqa: E402
+    HEATER_FALLBACK,
     NO_TEST_REF,
     Dialogue,
     LLMChallenger,
@@ -162,25 +163,32 @@ def test_template_always_passes_guard(view, tmp_path, decision):
     assert ref_guard(ref_template(facts), facts) == []
 
 
-def test_ref_with_invented_number_falls_back_to_template(view, tmp_path):
+def test_ref_is_deterministic_and_never_calls_the_model(view, tmp_path):
+    """The Ref is a template built from the evidence entry. Even when the model would return
+    an invented number for a Ref call, no Ref call is made and the template is shown."""
     t = FakeTransport(ref="NOT_SUPPORTED and insufficient evidence aside, shooters hit 61.3% when hot.")
-    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand, 3 in a row?")
-    entry_facts = ref_facts(EvidenceLedger(tmp_path / "l.jsonl").get(out["evidence_record_id"]))
-    assert out["ref_text"] == ref_template(entry_facts)
-    assert out["sources"]["ref"].startswith("TEMPLATE (guard rejected")
+    ledger = EvidenceLedger(tmp_path / "l.jsonl")
+    out = Dialogue(view, ledger, llm(tmp_path, t)).turn("hot hand, 3 in a row?")
+    facts = ref_facts(ledger.get(out["evidence_record_id"]))
+    assert out["ref_text"] == ref_template(facts) and out["sources"]["ref"] == "TEMPLATE"
+    assert "61.3" not in out["ref_text"]
+    assert ref_guard(out["ref_text"], facts) == []   # the template passes the guard itself
+    kinds = [((c.get("response_format") or {}).get("json_schema") or {}).get("name") or
+             ("heater" if c.get("stream") else "ref") for c in t.calls]
+    assert kinds == ["claim_mapping", "heater"]
 
 
-def test_ref_llm_text_shown_when_guard_passes(view, tmp_path):
-    det, entry = deterministic_entry(view, tmp_path)
-    facts = ref_facts(entry)
-    phrase = {"SURVIVED_PROTOCOL": "survived", "NOT_SUPPORTED": "not supported",
-              "INSUFFICIENT_EVIDENCE": "insufficient evidence", "DATA_INVALID": "data invalid",
-              "BLOCKED": "blocked"}[facts["decision"]]
-    good = f"The Ref has ruled: {phrase}. That's based on {facts['data']['n_attempts']} field-goal attempts."
-    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, FakeTransport(ref=good))) \
-        .turn("hot hand three in a row")
-    assert out["verdict"] == facts["decision"]
-    assert out["ref_text"] == good and out["sources"]["ref"] == "LLM"
+def test_heater_with_invented_number_falls_back_to_fixed_line(view, tmp_path):
+    t = FakeTransport(heater="SHOOTERS HIT 61.3% WHEN HOT, FOLKS!")
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    assert out["sources"]["heater"].startswith("TEMPLATE (guard rejected numbers")
+    assert out["heater_text"] == HEATER_FALLBACK[out["verdict"]]
+
+
+def test_ref_template_shows_display_title_and_reason(view, tmp_path):
+    _, entry = deterministic_entry(view, tmp_path)
+    text = ref_template(ref_facts(entry))
+    assert "Hot hand: three makes in a row (HH-K3)" in text and "Why: " in text
 
 
 # --------------------------------------------------------------------------- mapping / NONE
@@ -288,11 +296,12 @@ def test_timeout_falls_back_within_deadline(view, tmp_path):
         .turn("hot hand, three in a row?")
     assert set(out) >= {"heater_text", "ref_text", "evidence_record_id", "verdict"}
     assert out["evidence_record_id"] and out["verdict"]
-    for k in ("mapping", "heater", "ref"):
+    for k in ("mapping", "heater"):
         assert "fallback" in out["sources"][k], out["sources"]
+    assert out["sources"]["ref"] == "TEMPLATE"
     assert "LLM not called" in out["sources"]["challenger"]
     log = [json.loads(x) for x in (tmp_path / "usage.jsonl").read_text().splitlines()]
-    assert [r["status"] for r in log].count("TIMEOUT") == 3
+    assert [r["status"] for r in log].count("TIMEOUT") == 2
     # Each provider wait ends at its 0.3 s deadline, not at the 1 s reply. (The turn's total also
     # includes the permutation test on this league, so it is not bounded here.)
     assert all(r["latency_ms"] < 600 for r in log), [r["latency_ms"] for r in log]
@@ -301,7 +310,7 @@ def test_timeout_falls_back_within_deadline(view, tmp_path):
 def test_http_error_and_missing_key_fall_back(view, tmp_path, monkeypatch):
     out = Dialogue(view, EvidenceLedger(tmp_path / "a.jsonl"), llm(tmp_path, FakeTransport(fail_code=500))) \
         .turn("hot hand three straight")
-    assert out["verdict"] and "HTTP_500" in out["sources"]["ref"]
+    assert out["verdict"] and "HTTP_500" in out["sources"]["heater"]
     monkeypatch.delenv("META_API_KEY", raising=False)
     nokey = MetaChat(transport=FakeTransport(), usage_log=tmp_path / "u2.jsonl")
     with pytest.raises(LLMUnavailable, match="META_API_KEY not set"):
@@ -329,11 +338,11 @@ def test_usage_logged_per_call_without_key_or_prompt(view, tmp_path):
     Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("secret question about hot hand streak")
     raw = (tmp_path / "usage.jsonl").read_text()
     rows = [json.loads(x) for x in raw.splitlines()]
-    assert sorted(r["role"] for r in rows) == ["discoverer_map", "heater", "ref"]
+    assert sorted(r["role"] for r in rows) == ["discoverer_map", "heater"]   # Ref: no model
     assert all(r["prompt_tokens"] == 50 and r["completion_tokens"] == 40 and r["est_cost_usd"] > 0 for r in rows)
     assert FAKE_KEY not in raw and "secret question" not in raw
     s = usage_summary(tmp_path / "usage.jsonl")
-    assert s["calls"] == 3 and s["tokens"]["prompt"] == 150
+    assert s["calls"] == 2 and s["tokens"]["prompt"] == 100
     assert all(a == f"Bearer {FAKE_KEY}" for a in t.seen_auth)
     body = json.dumps(t.calls)
     assert FAKE_KEY not in body and all(c["reasoning_effort"] == "minimal" for c in t.calls)
@@ -350,10 +359,11 @@ def test_endpoint_returns_four_fields_and_rejects_bad_requests(view, tmp_path):
     try:
         req = urllib.request.Request(url, data=json.dumps({"question": "hot hand, three straight?"}).encode(),
                                      headers={"Content-Type": "application/json", "Origin": "http://127.0.0.1:8765"})
-        with urllib.request.urlopen(req, timeout=10) as r:
+        with urllib.request.urlopen(req, timeout=60) as r:   # the turn runs permutation tests
             out = json.loads(r.read())
             assert r.headers["Access-Control-Allow-Origin"] == "http://127.0.0.1:8765"
-        assert {"heater_text", "ref_text", "evidence_record_id", "verdict"} <= set(out)
+        assert {"heater_text", "ref_text", "evidence_record_id", "verdict", "claim_id",
+                "claim_title", "lane", "evidence_source", "sources"} <= set(out)
         assert FAKE_KEY not in json.dumps(out)
         for bad in (b"{}", b'{"question": ""}', b'{"question": 5}', b"nope",
                     json.dumps({"question": "x" * 501}).encode(), b'{"question":"a","extra":1}'):
@@ -366,15 +376,6 @@ def test_endpoint_returns_four_fields_and_rejects_bad_requests(view, tmp_path):
 
 def test_no_test_template_lists_registered_claims():
     assert "HH-K3" in NO_TEST_REF.format(ids="HH-K3, HH-K2, GP-REST")
-
-
-def test_ref_brief_omits_sample_counts_for_blocked():
-    """Live run 2026-11-07: with counts in the brief, the model said GP-REST was BLOCKED 'with
-    field_goal_attempts at 181', attaching the shot sample to a claim that never ran on it."""
-    from heatcheck.agents.dialogue import ref_brief
-    base = {"statement": "s", "reason": "r", "data": {"n_attempts": 181, "n_games": 1}}
-    assert "field_goal_attempts" not in ref_brief({**base, "decision": "BLOCKED"})
-    assert ref_brief({**base, "decision": "NOT_SUPPORTED"})["field_goal_attempts"] == 181
 
 
 def test_console_page_served_and_other_paths_404():

@@ -20,9 +20,10 @@ Model rules:
 | 17:27 | First live dialogue turn (4 calls, 1 HTTP 400 `uniqueItems`) | 3 / 4 | 0.006536 | `logs/2026-11-07-dialogue-live/llm_usage.jsonl` |
 | 19:54 | Live end-to-end, 5 turns (this report) | 13 / 13 | 0.027300 | `logs/2026-11-07-live-e2e/llm_usage.jsonl` |
 | 19:56 | BLOCKED turn rerun after the `ref_brief` fix (1 Heater TIMEOUT) | 2 + 1 timed out / 3 | 0.002615, plus ≤ 0.0044 for the timed-out call (usage not returned) | `logs/2026-11-07-live-e2e-blocked-rerun/llm_usage.jsonl` |
-| **Total** | | | **≈ 0.043 logged; ≤ 0.050 with upper bounds** | |
+| 20:40 | Live end-to-end, 6 turns, deterministic Ref (mapping + Heater only) | 12 / 12 | 0.017785 | `logs/2026-11-07-live-e2e-ref-template/llm_usage.jsonl` |
+| **Total** | | | **≈ 0.061 logged; ≤ 0.068 with upper bounds** | |
 
-Remaining under the $5 approval: at least $4.95.
+Remaining under the $5 approval: at least $4.93.
 
 The demo (`demo.cmd`) makes live calls whenever `META_API_KEY` is set. Those calls are logged
 to `logs/llm_usage.jsonl` (git-ignored) and are not in this table. A turn costs about

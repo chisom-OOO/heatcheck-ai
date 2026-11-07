@@ -19,6 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from heatcheck.agents.dialogue import Dialogue
+from heatcheck.api.display_titles import DISPLAY_TITLES
 
 CONSOLE = Path(__file__).with_name("console.html")
 
@@ -65,7 +66,10 @@ def make_handler(dialogue: Dialogue):
             self.wfile.write(body)
 
         def do_GET(self):
-            """GET / serves the console page (static file, no data embedded)."""
+            """GET / serves the console page (static file, no data embedded);
+            GET /api/display-titles returns the presentation-only claim title map."""
+            if self.path == "/api/display-titles":
+                return self._send(200, {"display_titles": DISPLAY_TITLES})
             if self.path not in ("/", "/index.html"):
                 return self._send(404, {"error": "not found"})
             body = CONSOLE.read_bytes()
@@ -80,7 +84,7 @@ def make_handler(dialogue: Dialogue):
         def do_OPTIONS(self):
             self.send_response(204)
             self._cors()
-            self.send_header("Access-Control-Allow-Methods", "POST")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST")
             self.send_header("Access-Control-Allow-Headers", "Content-Type")
             self.end_headers()
 

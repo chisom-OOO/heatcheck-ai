@@ -3,10 +3,10 @@ with real Meta model calls. Costs money: run only with the user's approval.
 
     uv run --frozen python tools/live_dialogue_e2e.py <out_dir> [--cap-usd 1.00] [--only CASE]
 
-* Works on a COPY of the committed ledger reports/max/logs/2026-11-07-al-fixes/
-  evidence_real_game_v2.jsonl; the committed file is never written.
+* Works on a COPY of the committed ledger evidence/evidence.jsonl; the committed file is never written.
 * For each turn, records the response, wall time, per-call latency, tokens and cost from the
-  usage log, and whether the Heater or Ref text fell back to a template (and why).
+  usage log, and whether Heater's text fell back to its fixed line (and why). The Ref is a
+  deterministic template (no model call).
 * Checks the turn's verdict against the committed entry for the same claim (the Referee is
   deterministic, so they must agree).
 * Stops before a turn if the spend logged in <out_dir>/llm_usage.jsonl has reached the cap.
@@ -30,15 +30,18 @@ from heatcheck.contracts.bundle import load_bundle  # noqa: E402
 from heatcheck.ledger.evidence import EvidenceLedger  # noqa: E402
 
 BUNDLE = ROOT / "data" / "bundles" / "r001-nba-0022300061"
-COMMITTED = ROOT / "reports" / "max" / "logs" / "2026-11-07-al-fixes" / "evidence_real_game_v2.jsonl"
+COMMITTED = ROOT / "evidence" / "evidence.jsonl"
 
 # (label, question, expected claim). Questions are written by Max; the mapping is the model's.
 CASES = [
-    ("INSUFFICIENT_EVIDENCE", "Is the hot hand real? Do guys hit more after three straight makes "
-     "than after three straight misses?", "HH-K3"),
-    ("NOT_SUPPORTED", "After a player makes two in a row, is the next shot more likely to go in "
-     "than after two misses in a row?", "HH-K2"),
-    ("BLOCKED", "Do back-to-backs and rest days change who wins?", "GP-REST"),
+    ("INSUFFICIENT_EVIDENCE (agent loop)", "Is the hot hand real? Do guys hit more after three "
+     "straight makes than after three straight misses?", "HH-K3"),
+    ("NOT_SUPPORTED (agent loop)", "After a player makes two in a row, is the next shot more "
+     "likely to go in than after two misses in a row?", "HH-K2"),
+    ("SURVIVED_PROTOCOL (recorded final)", "Does an Elo rating predict who wins better than just "
+     "going with how often home teams win?", "GP-ELO"),
+    ("INSUFFICIENT_EVIDENCE (recorded final)", "Do back-to-backs and rest days change who wins?",
+     "GP-REST"),
     ("NONE (no registered test)", "Who is the best free throw shooter in the league?", "NONE"),
     ("CONFIRMATORY (dry run, no verdict)", "Do home teams really win more than half their games?",
      "CONF-HA"),
@@ -92,7 +95,8 @@ def main(argv: list[str]) -> int:
             "evidence_record_id": resp["evidence_record_id"],
             "sources": resp["sources"], "heater_text": resp["heater_text"], "ref_text": resp["ref_text"],
             "heater_fell_back": not resp["sources"].get("heater", "").startswith("LLM"),
-            "ref_fell_back": not resp["sources"].get("ref", "").startswith("LLM"),
+            "ref_source": resp["sources"].get("ref"),
+            "evidence_source": resp.get("evidence_source"),
             "guard_fallback": any("guard rejected" in str(v) for v in resp["sources"].values()),
             "wall_ms": wall,
             "calls": [{k: c[k] for k in ("role", "status", "latency_ms", "first_text_ms",
