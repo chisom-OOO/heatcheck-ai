@@ -80,3 +80,67 @@ user explicitly releases pushing.
 ### Checkpoint log
 
 (append entries using the template in `docs/tasks/README.md`)
+
+### 2026-11-07T16:12Z PATCH_READY on experience/e-001-quote-fixture@(this commit; parent 8210fda)
+Source: SYNTHETIC fallback. Live Polymarket/Kalshi GETs were not authorised in this session,
+so no capture was made and G12 stays NOT_RUN. Payloads are carried over from the earlier
+Experience build (`heatcheck-experience.zip`, sha256
+c646c751454b696228e706f9035394f29ad2660802cdc1b6d11b49845f537a90, `server/venue_fixtures.py`)
+and its read-only Polymarket/Kalshi adapter (`server/venues.py`). Reconciled to
+heatcheck-records/1:
+- DIRECT levels only. Dropped the old adapter's Kalshi derived YES ask, midpoint, spread and
+  best bid/ask; Kalshi quotes store the contract's own bids, plus a reason.
+- Legacy integer-cent Kalshi books are now refused, not converted.
+- Statuses map to OK/EMPTY/ERROR(crossed)/PAUSED.
+- Timestamps use `Z` and ids are `syn:`/`syn-team:`.
+- The non-venue `_provider_time` field is dropped.
+- Polymarket metadata gains `events[0].id`.
+- The ZIP's `contracts/Shared_Protocol.json` is semantically identical to this repo's.
+
+Not integrated, because E-001 puts them out of scope: the ZIP's UI, voice, extension, fixture
+research engine, comparison cards and stand-in quote normaliser. They remain in the ZIP for a
+later task.
+
+Platform: Windows 10.0.26200, Python 3.12.13, uv 0.11.26; checkout path kept short (Windows MAX_PATH).
+
+Commands run (exact) and exit codes:
+- `uv sync --frozen --group dev` 0
+- `uv run python tools/check_scaffold.py` 0 (PASS)
+- `uv run ruff check .` 0 (All checks passed)
+- `uv run pytest -q` 0 (100 passed: 44 existing + 56 E-001)
+- `uv run python tools/make_reference_bundle.py --check` 0
+- A1 `uv run python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001` 0 (PASS)
+- A2 `uv run pytest tests/experience/test_e001_replay.py` 0 (5 passed; socket patched to raise)
+- A3–A5 `uv run pytest tests/experience -q` 0 (56 passed)
+- `uv run python tests/experience/make_e001_bundle.py --check` 0 (reproducible)
+
+Mutation checks:
+- `price()` accepting anything: 4 refusal tests fail.
+- Replay skipping its raw hash check: A3 fails. A direct per-file hash test was then added.
+
+Raw output excerpt / artifact paths and sha256:
+- `tests/fixtures/quotes/e001/records.jsonl` b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+  [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2], 16.5 KB in total.
+- `tests/fixtures/quotes/e001/manifest.json` 063f2a3a6f56abefb5f5a99b5e7585fa98f39e9b0a355819c36a971c06476e75
+
+Gates touched and status:
+- G11: fixture-scope E-001 criteria A1–A6 pass on SYNTHETIC data only. This is not a gate PASS;
+  it needs Max's replay and Research's price-unit review.
+- G12: NOT_RUN (no live capture).
+- G10: mappings are PROPOSED only.
+- All other gates are untouched.
+
+Defects found and root cause:
+- The earlier build's adapter derived complements and midpoints inside the adapter, which
+  conflicts with DATA_FORMAT §3. Fixed by storing DIRECT levels only.
+- Repo checks fail under a long Windows checkout path (MAX_PATH): `uv sync` cannot write
+  `.venv`, and pytest cannot open fixtures. This is environmental, with no code change. Use a
+  short path or enable long paths.
+
+Questions for Max:
+1. Synthetic records keep `venue = POLYMARKET/KALSHI` because the payloads use those venues'
+   shapes, with `data_mode = SYNTHETIC`. Should they be `SYNTHETIC_VENUE` instead?
+2. Capture metadata (fetch_start/received/target) lives in a `heatcheck-capture/1` log stored
+   as a RAW_SNAPSHOT under `raw/`. Should this become a schema field?
+3. Should CI also run `tests/experience/make_e001_bundle.py --check`? `.github/` is outside
+   Experience paths.

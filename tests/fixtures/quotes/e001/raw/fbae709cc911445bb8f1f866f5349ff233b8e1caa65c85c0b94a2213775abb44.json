@@ -1,0 +1,54 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "SYNTHETIC",
+  "adapter_version": "experience-adapters/1",
+  "captures": [
+    {
+      "venue": "POLYMARKET",
+      "kind": "MARKET",
+      "payload_sha256": "1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8",
+      "source": "AUTHORED, not fetched; shape of GET https://gamma-api.polymarket.com/markets/slug/fixture-nba-nyk-bos-2026-11-08",
+      "fetch_start_utc": "2026-11-07T15:59:59.500Z",
+      "received_utc": "2026-11-07T15:59:59.640Z"
+    },
+    {
+      "venue": "POLYMARKET",
+      "kind": "BOOK",
+      "payload_sha256": "4f7956f1d1e96f9897ec9e10a3ff66633f3e88360aee654df6566785fa999a60",
+      "market_payload_sha256": "1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8",
+      "source": "AUTHORED, not fetched; shape of GET https://clob.polymarket.com/book?token_id=222002",
+      "fetch_start_utc": "2026-11-07T16:00:00Z",
+      "received_utc": "2026-11-07T16:00:00.120Z",
+      "target": {
+        "game_id": "syn:FIX-G0001",
+        "team_id": "syn-team:BOS",
+        "contract_id": "222002",
+        "expected_label": "Celtics"
+      }
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "payload_sha256": "ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3",
+      "source": "AUTHORED, not fetched; shape of GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+      "fetch_start_utc": "2026-11-07T16:00:01Z",
+      "received_utc": "2026-11-07T16:00:01.210Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "payload_sha256": "a92f676d989d9e652b3357541d7881b1fe82d7eadaed91b5108170a64da6f30b",
+      "market_payload_sha256": "ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3",
+      "source": "AUTHORED, not fetched; shape of GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS/orderbook",
+      "fetch_start_utc": "2026-11-07T16:00:01.300Z",
+      "received_utc": "2026-11-07T16:00:01.450Z",
+      "target": {
+        "game_id": "syn:FIX-G0001",
+        "team_id": "syn-team:BOS",
+        "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+        "expected_label": "YES (Boston Celtics)"
+      }
+    }
+  ],
+  "note": "SYNTHETIC capture log: every time and payload in it is invented."
+}

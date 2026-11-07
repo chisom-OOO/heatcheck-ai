@@ -1,0 +1,29 @@
+{
+  "market": "0xfixture",
+  "asset_id": "222002",
+  "timestamp": "1794067200050",
+  "hash": "fixture",
+  "bids": [
+    {
+      "price": "0.52",
+      "size": "900"
+    },
+    {
+      "price": "0.53",
+      "size": "410"
+    }
+  ],
+  "asks": [
+    {
+      "price": "0.58",
+      "size": "700"
+    },
+    {
+      "price": "0.57",
+      "size": "350"
+    }
+  ],
+  "tick_size": "0.01",
+  "min_order_size": "5",
+  "last_trade_price": "0.55"
+}
