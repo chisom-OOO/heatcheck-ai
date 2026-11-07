@@ -6,10 +6,7 @@
 tests/fixtures/** -text
 data/bundles/** -text
 *.jsonl -text
-<<<<<<< HEAD
 # Team handoffs are imported byte-for-byte; their code hashes cover exact bytes.
 incoming/** -text
-=======
 # Research handoff working copy: frozen code hashes cover exact bytes.
 handoff/** -text
->>>>>>> dfb5d64
