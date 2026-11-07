@@ -1,0 +1,55 @@
+{
+ "capabilities": {
+  "adapter_version": "0.2-capture-2026-11-07",
+  "discovery": "by explicit market ticker; event search is not implemented",
+  "operations": [
+   "market_by_ticker",
+   "orderbook"
+  ],
+  "read_only": true,
+  "trading": false,
+  "venue": "kalshi"
+ },
+ "data_mode": "SYNTHETIC",
+ "event_id": "KXNBAGAME-FIX26NOV08NYKBOS",
+ "market_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+ "market_status": "OPEN",
+ "nba_event_identity": {
+  "close_time": null,
+  "game_start_utc": "2026-11-08T00:30:00Z"
+ },
+ "outcome_contract_ids": [
+  {
+   "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+   "label": "YES",
+   "yes_means": "Boston Celtics"
+  },
+  {
+   "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:no",
+   "label": "NO"
+  }
+ ],
+ "outcome_convention": "binary YES/NO; book returns YES bids and NO bids only; YES ask is derived as 1 - best NO bid",
+ "price_quantity_grid": {
+  "price_unit": "PROBABILITY_DOLLARS",
+  "quantity_unit": "contracts (fixed-point string)",
+  "tick": "0.01"
+ },
+ "provenance": {
+  "attempts": 1,
+  "bytes": 656,
+  "clock": "authored fixture clock",
+  "fetch_start_utc": "2026-11-07T23:58:01Z",
+  "raw_hash": "776ff356553dcce5ea7b2e9f4746d168b80f652aef0c3901ee4c77003d8afc5f",
+  "received_at_utc": "2026-11-07T23:58:01Z",
+  "transport": "fixture",
+  "url": "https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS"
+ },
+ "rules_hash": "d598e2d6b4eb0514d1f04e931be61dd31581c60ff24e5cc2d73395bf1c29bfcd",
+ "rules_text": "If the Boston Celtics win the New York Knicks vs Boston Celtics game scheduled for Nov 8, 2026, including any overtime, then the market resolves to Yes.\nIf the game is postponed, the market remains open until the rescheduled game is played. If the game is cancelled, the market resolves per the exchange's cancellation rules.",
+ "settlement_source": null,
+ "title": "New York Knicks at Boston Celtics: Winner?",
+ "venue": "kalshi",
+ "venue_api_version": "kalshi-trade-api/v2",
+ "yes_sub_title": "Boston Celtics"
+}

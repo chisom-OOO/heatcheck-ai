@@ -1,0 +1,56 @@
+{
+ "adapter_version": "0.2-capture-2026-11-07",
+ "ask_is_derived": true,
+ "best_ask": "0.5800",
+ "best_bid": "0.5200",
+ "captured_at": null,
+ "clock_uncertainty": "provider and local clocks not synchronised; book fetches across venues are not atomic",
+ "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+ "crossed": false,
+ "data_mode": "SYNTHETIC",
+ "fetch_start_utc": "2026-11-07T23:58:01Z",
+ "levels": {
+  "asks": [
+   {
+    "derived": true,
+    "price": "0.5800",
+    "qty": "80.00",
+    "raw_side": "no_bid"
+   },
+   {
+    "derived": true,
+    "price": "0.6000",
+    "qty": "200.00",
+    "raw_side": "no_bid"
+   }
+  ],
+  "bids": [
+   {
+    "derived": false,
+    "price": "0.5200",
+    "qty": "120.00",
+    "raw_side": "yes_bid"
+   },
+   {
+    "derived": false,
+    "price": "0.5100",
+    "qty": "300.00",
+    "raw_side": "yes_bid"
+   }
+  ]
+ },
+ "liquidity_ids": [],
+ "market_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+ "midpoint": "0.5500",
+ "midpoint_unavailable_reason": null,
+ "normalized_side": "yes_bid_and_derived_yes_ask",
+ "price_unit": "PROBABILITY_DOLLARS",
+ "provider_time": "2026-11-07T23:58:00Z",
+ "quantity_unit": "contracts (fixed-point string)",
+ "raw_hash": "a4fda946af83aabb4b05ba7d3fc91b9402c880dc9821299a2605ae9fd5546125",
+ "received_at_utc": "2026-11-07T23:58:01Z",
+ "source_url": "https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS/orderbook",
+ "spread": "0.0600",
+ "status": "OK",
+ "venue": "kalshi"
+}

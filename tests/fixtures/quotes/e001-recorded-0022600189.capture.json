@@ -1,0 +1,19 @@
+{
+  "data_mode": "RECORDED_MARKET",
+  "note": "Public read-only GET capture authorised by the user (relaying Max) on 2026-11-07. No account, key or authenticated endpoint. One NBA game: DEN at IND, 2026-11-07, NBA Mexico City Game (neutral site; IND is the listed home team).",
+  "game": {
+    "game_id": "nba:0022600189",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {"nba_com": "0022600189"},
+    "home_team_id": "nba-team:1610612754",
+    "away_team_id": "nba-team:1610612743",
+    "scheduled_tip_utc": "2026-11-07T22:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "https://www.nba.com/game/den-vs-ind-0022600189 page data (__NEXT_DATA__ gameId, gameTimeUTC, homeTeam/awayTeam teamId), read in a browser at about 2026-11-07T16:25Z. Not stored as raw; NBA.com redistribution rights unverified. Research owns the canonical game table."
+  },
+  "targets": [
+    {"venue": "POLYMARKET", "slug": "nba-den-ind-2026-11-07", "team_id": "nba-team:1610612754", "expected_label": "Pacers"},
+    {"venue": "KALSHI", "ticker": "KXNBAGAME-26NOV07DENIND-IND", "team_id": "nba-team:1610612754", "expected_label": "YES (Indiana)"}
+  ]
+}

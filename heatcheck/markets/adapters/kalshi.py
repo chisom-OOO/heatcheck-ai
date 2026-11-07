@@ -61,9 +61,13 @@ def parse_market(raw: bytes, capture: Capture) -> dict:
     ):
         if not isinstance(value, str) or not value:
             raise AdapterError(f"market payload lacks {name}")
-    no_means = m.get("no_sub_title")
+    # ``no_sub_title`` names the same subject as YES (e.g. "Indiana"), not what NO means,
+    # so the NO outcome is labelled plainly. Recorded 2026-11-07 capture confirms this.
     rules = rules_text(raw)
     tick = m.get("tick_size_dollars")
+    ranges = m.get("price_ranges")
+    if tick is None and isinstance(ranges, list) and len(ranges) == 1:
+        tick = ranges[0].get("step") if isinstance(ranges[0], dict) else None
     sources = m.get("settlement_sources")
     source = None
     if isinstance(sources, list) and sources and isinstance(sources[0], dict):
@@ -80,7 +84,7 @@ def parse_market(raw: bytes, capture: Capture) -> dict:
             "title": title,
             "outcomes": [
                 {"contract_id": f"{ticker}:yes", "label": f"YES ({yes_means})"},
-                {"contract_id": f"{ticker}:no", "label": f"NO ({no_means})" if no_means else "NO"},
+                {"contract_id": f"{ticker}:no", "label": "NO"},
             ],
             "rules_text_sha256": sha256_hex(rules.encode("utf-8")) if rules else None,
             "settlement_source": source,
