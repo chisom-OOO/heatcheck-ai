@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeatCheck</title>
+<link rel="stylesheet" href="heater/heater.css">
+<link rel="stylesheet" href="demo.css">
+<script type="module" src="demo.js"></script>
+</head>
+<body class="demo">
+<main class="stage">
+  <svg class="court" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <circle cx="800" cy="450" r="110"></circle>
+    <line x1="800" y1="0" x2="800" y2="900"></line>
+    <path d="M0 160 H330 V740 H0"></path>
+    <path d="M0 90 H140 A360 360 0 0 1 140 810 H0"></path>
+    <path d="M1600 160 H1270 V740 H1600"></path>
+    <path d="M1600 90 H1460 A360 360 0 0 0 1460 810 H1600"></path>
+  </svg>
+
+  <section class="hero" aria-label="Heater">
+    <div id="heater"></div>
+  </section>
+
+  <section class="talk" aria-live="polite">
+    <p class="brand">HEAT<span>CHECK</span></p>
+    <div class="bubble" id="bubble" hidden>
+      <p class="bubble-text" id="take"></p>
+      <p class="bubble-react" id="react" hidden></p>
+    </div>
+    <article class="ref" id="ref" hidden>
+      <header><span class="ref-badge">THE REF</span><span class="ref-title" id="ref-title"></span></header>
+      <p class="ref-text" id="ref-text"></p>
+      <div class="stamp" id="stamp" hidden></div>
+      <details class="evidence" id="evidence" hidden>
+        <summary>Show the evidence</summary>
+        <div id="evidence-body"></div>
+      </details>
+    </article>
+    <p class="hint" id="hint">Ask Heater a question. The Ref checks his take against real NBA data.</p>
+  </section>
+
+  <form class="ask" id="ask" autocomplete="off">
+    <div class="ask-row">
+      <label class="sr-only" for="q">Your question</label>
+      <input id="q" name="q" type="text" maxlength="200" placeholder="Ask Heater anything about the NBA…">
+      <button type="button" class="mic" id="btn-mic" aria-pressed="false" aria-label="Ask with your voice">🎙</button>
+      <button type="submit" class="go" id="go">Ask</button>
+    </div>
+    <div class="chips" id="chips">
+      <button type="button" class="chip">Is the hot hand real?</button>
+      <button type="button" class="chip">Do home teams win more?</button>
+      <button type="button" class="chip">Does rest matter?</button>
+    </div>
+    <p class="mic-status" id="mic-status" aria-live="polite"></p>
+  </form>
+</main>
+</body>
+</html>
