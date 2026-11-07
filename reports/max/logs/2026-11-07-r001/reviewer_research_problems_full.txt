@@ -1,0 +1,499 @@
+total problems: 491
+  181  nba:#:shot:#: feature name 'prev#_all_made' suggests outcome data
+  181  nba:#:shot:#: feature name 'prev_shot_made' suggests outcome data
+   67  nba:#:shot:#: player_prior_attempts_in_game=# reviewer recomputed #
+   60  nba:#:shot:#: player_prior_makes_in_game=# reviewer recomputed #
+    1  nba:#: GAME_FINAL_SCORE reconciliation is UNVERIFIED (A# not met)
+    1  # shots have no SHOT_MADE label, e#g# ['#', '#', '#']
+--- full list ---
+nba:0022300061: GAME_FINAL_SCORE reconciliation is UNVERIFIED (A3 not met)
+32 shots have no SHOT_MADE label, e.g. ['30', '49', '50']
+nba:0022300061:shot:101: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:101: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:103: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:103: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:105: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:105: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:10: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:10: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:11: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:11: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:124: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:124: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:131: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:131: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:132: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:132: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:134: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:134: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:136: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:136: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:13: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:13: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:146: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:146: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:14: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:14: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:150: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:150: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:154: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:154: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:160: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:160: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:162: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:162: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:168: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:168: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:16: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:16: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:170: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:170: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:172: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:172: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:173: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:173: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:177: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:177: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:177: player_prior_attempts_in_game=1.0 reviewer recomputed 3
+nba:0022300061:shot:177: player_prior_makes_in_game=0.0 reviewer recomputed 2
+nba:0022300061:shot:179: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:179: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:18: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:18: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:193: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:193: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:193: player_prior_attempts_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:193: player_prior_makes_in_game=1.0 reviewer recomputed 3
+nba:0022300061:shot:196: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:196: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:206: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:206: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:209: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:209: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:209: player_prior_attempts_in_game=7.0 reviewer recomputed 8
+nba:0022300061:shot:20: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:20: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:210: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:210: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:210: player_prior_attempts_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:210: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:212: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:212: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:214: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:214: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:223: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:223: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:223: player_prior_attempts_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:223: player_prior_makes_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:224: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:224: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:224: player_prior_attempts_in_game=8.0 reviewer recomputed 9
+nba:0022300061:shot:22: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:22: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:233: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:233: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:233: player_prior_attempts_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:233: player_prior_makes_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:239: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:239: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:241: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:241: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:241: player_prior_attempts_in_game=9.0 reviewer recomputed 11
+nba:0022300061:shot:243: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:243: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:244: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:244: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:245: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:245: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:247: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:247: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:249: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:249: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:24: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:24: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:251: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:251: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:251: player_prior_attempts_in_game=10.0 reviewer recomputed 12
+nba:0022300061:shot:253: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:253: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:25: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:25: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:266: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:266: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:266: player_prior_attempts_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:266: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:272: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:272: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:272: player_prior_attempts_in_game=9.0 reviewer recomputed 13
+nba:0022300061:shot:272: player_prior_makes_in_game=4.0 reviewer recomputed 8
+nba:0022300061:shot:273: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:273: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:273: player_prior_attempts_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:273: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:27: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:27: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:280: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:280: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:282: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:282: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:282: player_prior_attempts_in_game=10.0 reviewer recomputed 14
+nba:0022300061:shot:282: player_prior_makes_in_game=5.0 reviewer recomputed 9
+nba:0022300061:shot:284: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:284: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:286: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:286: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:287: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:287: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:291: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:291: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:300: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:300: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:302: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:302: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:305: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:305: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:307: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:307: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:307: player_prior_attempts_in_game=11.0 reviewer recomputed 15
+nba:0022300061:shot:307: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:309: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:309: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:309: player_prior_attempts_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:309: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:312: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:312: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:312: player_prior_attempts_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:312: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:314: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:314: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:317: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:317: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:317: player_prior_attempts_in_game=12.0 reviewer recomputed 16
+nba:0022300061:shot:317: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:319: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:319: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:320: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:320: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:320: player_prior_attempts_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:320: player_prior_makes_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:322: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:322: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:322: player_prior_attempts_in_game=13.0 reviewer recomputed 17
+nba:0022300061:shot:322: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:324: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:324: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:326: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:326: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:32: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:32: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:334: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:334: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:334: player_prior_attempts_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:334: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:335: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:335: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:337: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:337: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:339: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:339: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:341: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:341: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:344: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:344: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:344: player_prior_attempts_in_game=5.0 reviewer recomputed 6
+nba:0022300061:shot:344: player_prior_makes_in_game=3.0 reviewer recomputed 4
+nba:0022300061:shot:349: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:349: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:34: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:34: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:351: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:351: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:353: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:353: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:353: player_prior_attempts_in_game=11.0 reviewer recomputed 15
+nba:0022300061:shot:353: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:355: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:355: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:355: player_prior_attempts_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:355: player_prior_makes_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:358: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:358: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:358: player_prior_attempts_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:358: player_prior_makes_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:35: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:35: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:360: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:360: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:362: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:362: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:370: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:370: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:370: player_prior_attempts_in_game=14.0 reviewer recomputed 18
+nba:0022300061:shot:370: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:377: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:377: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:377: player_prior_attempts_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:377: player_prior_makes_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:37: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:37: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:381: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:381: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:381: player_prior_attempts_in_game=15.0 reviewer recomputed 19
+nba:0022300061:shot:381: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:383: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:383: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:383: player_prior_attempts_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:383: player_prior_makes_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:385: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:385: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:385: player_prior_attempts_in_game=9.0 reviewer recomputed 11
+nba:0022300061:shot:385: player_prior_makes_in_game=2.0 reviewer recomputed 3
+nba:0022300061:shot:387: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:387: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:387: player_prior_attempts_in_game=9.0 reviewer recomputed 11
+nba:0022300061:shot:387: player_prior_makes_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:389: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:389: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:389: player_prior_attempts_in_game=12.0 reviewer recomputed 16
+nba:0022300061:shot:389: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:391: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:391: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:391: player_prior_attempts_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:391: player_prior_makes_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:393: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:393: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:39: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:39: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:402: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:402: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:405: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:405: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:405: player_prior_attempts_in_game=13.0 reviewer recomputed 17
+nba:0022300061:shot:405: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:407: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:407: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:409: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:409: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:414: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:414: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:415: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:415: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:415: player_prior_attempts_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:415: player_prior_makes_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:417: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:417: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:424: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:424: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:429: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:429: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:436: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:436: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:436: player_prior_attempts_in_game=16.0 reviewer recomputed 20
+nba:0022300061:shot:436: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:439: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:439: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:439: player_prior_attempts_in_game=15.0 reviewer recomputed 19
+nba:0022300061:shot:439: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:43: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:43: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:445: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:445: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:449: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:449: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:449: player_prior_attempts_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:449: player_prior_makes_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:450: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:450: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:451: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:451: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:451: player_prior_attempts_in_game=17.0 reviewer recomputed 21
+nba:0022300061:shot:451: player_prior_makes_in_game=8.0 reviewer recomputed 10
+nba:0022300061:shot:452: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:452: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:454: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:454: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:454: player_prior_attempts_in_game=9.0 reviewer recomputed 11
+nba:0022300061:shot:454: player_prior_makes_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:45: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:45: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:462: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:462: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:465: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:465: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:481: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:481: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:484: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:484: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:484: player_prior_attempts_in_game=10.0 reviewer recomputed 12
+nba:0022300061:shot:484: player_prior_makes_in_game=3.0 reviewer recomputed 4
+nba:0022300061:shot:487: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:487: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:489: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:489: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:495: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:495: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:498: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:498: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:500: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:500: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:502: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:502: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:504: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:504: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:504: player_prior_attempts_in_game=11.0 reviewer recomputed 13
+nba:0022300061:shot:504: player_prior_makes_in_game=4.0 reviewer recomputed 5
+nba:0022300061:shot:506: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:506: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:508: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:508: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:509: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:509: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:509: player_prior_attempts_in_game=10.0 reviewer recomputed 12
+nba:0022300061:shot:509: player_prior_makes_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:510: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:510: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:512: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:512: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:512: player_prior_attempts_in_game=0.0 reviewer recomputed 2
+nba:0022300061:shot:512: player_prior_makes_in_game=0.0 reviewer recomputed 1
+nba:0022300061:shot:514: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:514: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:514: player_prior_attempts_in_game=1.0 reviewer recomputed 3
+nba:0022300061:shot:514: player_prior_makes_in_game=0.0 reviewer recomputed 1
+nba:0022300061:shot:516: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:516: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:516: player_prior_attempts_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:516: player_prior_makes_in_game=0.0 reviewer recomputed 1
+nba:0022300061:shot:51: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:51: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:528: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:528: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:528: player_prior_attempts_in_game=16.0 reviewer recomputed 20
+nba:0022300061:shot:528: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:530: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:530: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:530: player_prior_attempts_in_game=18.0 reviewer recomputed 22
+nba:0022300061:shot:530: player_prior_makes_in_game=9.0 reviewer recomputed 11
+nba:0022300061:shot:541: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:541: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:543: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:543: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:543: player_prior_attempts_in_game=10.0 reviewer recomputed 12
+nba:0022300061:shot:543: player_prior_makes_in_game=6.0 reviewer recomputed 8
+nba:0022300061:shot:546: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:546: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:546: player_prior_attempts_in_game=19.0 reviewer recomputed 23
+nba:0022300061:shot:546: player_prior_makes_in_game=10.0 reviewer recomputed 12
+nba:0022300061:shot:548: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:548: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:550: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:550: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:550: player_prior_attempts_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:550: player_prior_makes_in_game=1.0 reviewer recomputed 2
+nba:0022300061:shot:55: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:55: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:566: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:566: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:566: player_prior_attempts_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:566: player_prior_makes_in_game=1.0 reviewer recomputed 2
+nba:0022300061:shot:574: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:574: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:574: player_prior_attempts_in_game=9.0 reviewer recomputed 13
+nba:0022300061:shot:574: player_prior_makes_in_game=3.0 reviewer recomputed 6
+nba:0022300061:shot:576: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:576: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:576: player_prior_attempts_in_game=11.0 reviewer recomputed 13
+nba:0022300061:shot:576: player_prior_makes_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:578: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:578: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:578: player_prior_attempts_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:578: player_prior_makes_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:57: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:57: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:57: player_prior_attempts_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:57: player_prior_makes_in_game=1.0 reviewer recomputed 3
+nba:0022300061:shot:581: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:581: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:585: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:585: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:585: player_prior_attempts_in_game=12.0 reviewer recomputed 14
+nba:0022300061:shot:585: player_prior_makes_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:587: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:587: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:58: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:58: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:590: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:590: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:590: player_prior_attempts_in_game=11.0 reviewer recomputed 13
+nba:0022300061:shot:590: player_prior_makes_in_game=7.0 reviewer recomputed 9
+nba:0022300061:shot:594: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:594: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:596: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:596: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:596: player_prior_attempts_in_game=10.0 reviewer recomputed 14
+nba:0022300061:shot:596: player_prior_makes_in_game=3.0 reviewer recomputed 6
+nba:0022300061:shot:598: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:598: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:601: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:601: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:608: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:608: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:608: player_prior_attempts_in_game=20.0 reviewer recomputed 24
+nba:0022300061:shot:608: player_prior_makes_in_game=11.0 reviewer recomputed 13
+nba:0022300061:shot:60: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:60: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:612: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:612: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:612: player_prior_attempts_in_game=14.0 reviewer recomputed 18
+nba:0022300061:shot:612: player_prior_makes_in_game=6.0 reviewer recomputed 10
+nba:0022300061:shot:625: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:625: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:629: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:629: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:62: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:62: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:62: player_prior_attempts_in_game=4.0 reviewer recomputed 5
+nba:0022300061:shot:646: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:646: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:646: player_prior_attempts_in_game=21.0 reviewer recomputed 25
+nba:0022300061:shot:646: player_prior_makes_in_game=12.0 reviewer recomputed 14
+nba:0022300061:shot:648: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:648: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:649: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:649: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:64: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:64: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:64: player_prior_attempts_in_game=3.0 reviewer recomputed 5
+nba:0022300061:shot:64: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:662: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:662: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:66: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:66: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:76: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:76: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:7: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:7: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:80: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:80: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:80: player_prior_attempts_in_game=4.0 reviewer recomputed 6
+nba:0022300061:shot:80: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:82: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:82: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:84: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:84: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:86: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:86: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:86: player_prior_attempts_in_game=5.0 reviewer recomputed 6
+nba:0022300061:shot:89: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:89: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:89: player_prior_attempts_in_game=6.0 reviewer recomputed 7
+nba:0022300061:shot:93: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:93: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:95: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:95: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:95: player_prior_attempts_in_game=5.0 reviewer recomputed 7
+nba:0022300061:shot:95: player_prior_makes_in_game=2.0 reviewer recomputed 4
+nba:0022300061:shot:97: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:97: feature name 'prev_shot_made' suggests outcome data
+nba:0022300061:shot:99: feature name 'prev3_all_made' suggests outcome data
+nba:0022300061:shot:99: feature name 'prev_shot_made' suggests outcome data

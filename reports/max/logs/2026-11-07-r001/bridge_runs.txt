@@ -1,0 +1,18 @@
+$ rm -rf data/bundles/r001-nba-0022300061 && uv run --frozen python tools/bridge_r001_game.py data/processed/research-20261107  # run 1
+wrote C:\Users\chiso\Documents\Codex\GitHub\HeatCheck\data\bundles\r001-nba-0022300061 records_sha256=9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6 counts={'RAW_SNAPSHOT': 1, 'GAME': 1, 'EVENT': 535, 'FEATURE_ROW': 181, 'RESTRICTED_LABEL': 182}
+exclusions=32 native_vs_bridge_mismatches=0
+exit=0
+9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6 *data/bundles/r001-nba-0022300061/records.jsonl
+be3198dffe5fc1b6d4cf994d1c6d3bc1f0afd60f0ef2e97469262228fd7e3a41 *data/bundles/r001-nba-0022300061/manifest.json
+$ rm -rf ... && bridge  # run 2
+wrote C:\Users\chiso\Documents\Codex\GitHub\HeatCheck\data\bundles\r001-nba-0022300061 records_sha256=9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6 counts={'RAW_SNAPSHOT': 1, 'GAME': 1, 'EVENT': 535, 'FEATURE_ROW': 181, 'RESTRICTED_LABEL': 182}
+exclusions=32 native_vs_bridge_mismatches=0
+exit=0
+9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6 *data/bundles/r001-nba-0022300061/records.jsonl
+be3198dffe5fc1b6d4cf994d1c6d3bc1f0afd60f0ef2e97469262228fd7e3a41 *data/bundles/r001-nba-0022300061/manifest.json
+$ uv run --frozen python tools/bridge_r001_game.py data/processed/research-20261107 --check
+PASS: rebuild records_sha256=9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6
+exit=0
+$ uv run --frozen python -m heatcheck.contracts.bundle data/bundles/r001-nba-0022300061
+PASS data/bundles/r001-nba-0022300061: bundle r001-nba:0022300061 modes=['REAL_NBA_RETROSPECTIVE'] records_sha256=9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6 [EVENT=535, FEATURE_ROW=181, GAME=1, RAW_SNAPSHOT=1, RESTRICTED_LABEL=182]
+exit=0
