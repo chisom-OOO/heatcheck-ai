@@ -273,6 +273,31 @@ def _check_nba_consistency(
                         f"cutoff {cutoff['before_sequence']}"
                     )
 
+    # Made-shot points per (game, team), from the latest revision of each shot.
+    points: dict[tuple[str, str], int] = {}
+    for r in shots.values():
+        b = r["body"]
+        if b["shot"]["made"] and b["team_id"] is not None:
+            key = (b["game_id"], b["team_id"])
+            points[key] = points.get(key, 0) + b["shot"]["points_if_made"]
+    games_with_shots = {r["body"]["game_id"] for r in shots.values()}
+
+    for r in by_type["RESTRICTED_LABEL"].values():
+        b = r["body"]
+        rid = f"RESTRICTED_LABEL:{r['record_id']}"
+        game = games[b["game_id"]]["body"]
+        if b["label_kind"] == "GAME_FINAL_SCORE" and b["game_id"] in games_with_shots:
+            # RV-O1: a final score in the same bundle as the play-by-play must equal the
+            # made-shot totals with home/away identity preserved.
+            home = points.get((b["game_id"], game["home_team_id"]), 0)
+            away = points.get((b["game_id"], game["away_team_id"]), 0)
+            if (b["value"]["home_points"], b["value"]["away_points"]) != (home, away):
+                raise BundleError(
+                    f"{rid} final score home {b['value']['home_points']}-away "
+                    f"{b['value']['away_points']} contradicts EVENT made-shot totals "
+                    f"home {home}-away {away}"
+                )
+
 
 def main(argv: list[str]) -> int:
     if not argv:
