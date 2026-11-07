@@ -218,6 +218,15 @@ def _check_nba_consistency(
     by_type: dict[str, dict[str, dict[str, Any]]], games: dict[str, dict[str, Any]]
 ) -> None:
     """Cross-record NBA checks: events, feature rows and labels must agree with each other."""
+    # Latest revision of each shot EVENT, keyed by its target id <game_id>:shot:<event id>.
+    shots: dict[str, dict[str, Any]] = {}
+    for r in by_type["EVENT"].values():
+        b = r["body"]
+        if b["action"] == "SHOT":
+            key = f"{b['game_id']}:shot:{b['provider_event_id']}"
+            if key not in shots or b["revision"] > shots[key]["body"]["revision"]:
+                shots[key] = r
+
     for r in by_type["EVENT"].values():
         b = r["body"]
         game = games[b["game_id"]]["body"]
@@ -235,6 +244,15 @@ def _check_nba_consistency(
             # RV-G2: a shot target belongs to the row's own game (<game_id>:shot:<event id>).
             if not b["target_id"].startswith(f"{b['game_id']}:shot:"):
                 raise BundleError(f"{rid} target {b['target_id']} is not a shot of {b['game_id']}")
+            target = shots.get(b["target_id"])
+            cutoff = b["cutoff"]
+            if target is not None and cutoff["kind"] == "GAME_SEQUENCE":
+                # RV-L3: the cutoff may not fall after the target shot itself.
+                if cutoff["before_sequence"] > target["body"]["sequence"]:
+                    raise BundleError(
+                        f"{rid} cutoff before_sequence {cutoff['before_sequence']} is after its "
+                        f"target shot (sequence {target['body']['sequence']})"
+                    )
 
 
 def main(argv: list[str]) -> int:
