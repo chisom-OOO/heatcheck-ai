@@ -26,3 +26,33 @@
 - 7 November (Max): GAME tip times. scheduled_tip_utc is nullable; optional observed_tip_utc
   records the actual tip from play-by-play and is never a pre-tip cutoff. Shot target ids are
   required to be <game_id>:shot:<provider_event_id>.
+- 7 November (user decisions on the reviewer's questions, reports/review/2026-11-07-1642-r001-e001-replay.md §7;
+  recorded by Max):
+  - **RV-R1:** yes. The final step must refuse when the recomputed data hashes differ from the
+    plan's `data_hashes`. Research is fixing it on research/r001-guard-fixes, which Max merges
+    unchanged only after the reviewer confirms.
+  - **Free throws are out of scope.** SHOT_ASSOCIATION covers field-goal attempts only.
+    `player_prior_attempts_in_game` and `player_prior_makes_in_game` count field goals only
+    (docs/tasks/RESEARCH.md amended). The reviewer's recomputation that counts all shots,
+    finding 67 in reports/max/2026-11-07-1630-r001-bridge.md, should follow this definition.
+    Max's keyword stand-in in the dialogue maps free-throw questions to NONE.
+  - **Experience allowlist (RV-E1, RV-E2):** `check_request` matches whole path segments after
+    normalisation, and `propose_mapping` matches outcomes by team ID. Experience fixes this
+    after 20:00 UTC.
+  - **Deferred validator probes:** the user lists 16 probe cases as deferred:
+    - RV-O5, RV-O7, RV-U2 (×3), RV-U3, RV-U7, RV-S1, RV-S2, RV-T2, RV-T3, RV-T4;
+    - and now also RV-L5, RV-L6, RV-G3, RV-O3, which were "not in the user's list, also
+      unfixed" above.
+
+    The reviewer marks them xfail(strict) on review/independent-tests, and Max merges that
+    unchanged.
+- 7 November: rule 8 of CLAUDE.md/AGENTS.md was replaced (commit f880b69). Sessions push to
+  their own branches; nothing goes to main without the user's instruction; no force-push.
+- 7 November (Max): the Discoverer's display name is "Heater"; its role in code, protocol and
+  evidence stays `discoverer`. Free dialogue uses Meta `muse-spark-1.3` with reasoning
+  effort `minimal`. The Ref's LLM text is shown only if every number and verdict word is in
+  the evidence record; otherwise the template is shown. Every call has an 8 s deadline and a
+  deterministic fallback. The Referee's decision is never produced by an LLM.
+- 7 November (Max, user-agreed): the UI reads `heatcheck-referee-view/1`, a read-only
+  projection of a ledger entry (docs/REFEREE_VIEW_FORMAT.md). Ledger records are not
+  reshaped.
