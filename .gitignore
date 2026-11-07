@@ -19,3 +19,6 @@ data/bundles/*
 artifacts/models/*
 !artifacts/models/README.md
 replay/private/
+
+# Runtime logs (provider usage, local dialogue ledgers)
+/logs/
