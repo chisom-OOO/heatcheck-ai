@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600194",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600194"
+    },
+    "home_team_id": "nba-team:1610612756",
+    "away_team_id": "nba-team:1610612745",
+    "scheduled_tip_utc": "2026-11-08T02:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file."
+  },
+  "captures": [
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX",
+      "http_status": 200,
+      "payload_sha256": "36885070504a37954a86eeab6b53a6054a1cd38eb19fd665e2bc10fe50725097",
+      "fetch_start_utc": "2026-11-07T22:29:56.888494Z",
+      "received_utc": "2026-11-07T22:29:57.350176Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX/orderbook",
+      "http_status": 200,
+      "payload_sha256": "b89af8a68659c654a146faa5448caeb8d29a1f85cef555406ed343c2f5510cb8",
+      "fetch_start_utc": "2026-11-07T22:29:57.402013Z",
+      "received_utc": "2026-11-07T22:29:57.558095Z",
+      "market_payload_sha256": "36885070504a37954a86eeab6b53a6054a1cd38eb19fd665e2bc10fe50725097",
+      "target": {
+        "game_id": "nba:0022600194",
+        "team_id": "nba-team:1610612756",
+        "contract_id": "KXNBAGAME-26NOV07HOUPHX-PHX:yes",
+        "expected_label": "YES (Phoenix)"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600194 (HOU at PHX, tip 2026-11-08T02:00:00Z), KALSHI contract KXNBAGAME-26NOV07HOUPHX-PHX:yes labelled 'YES (Phoenix)' = home team wins. Received 2026-11-07T22:29:57.350176Z (market) and 2026-11-07T22:29:57.558095Z (book), local clock. Game list: game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.. Mapping PROPOSED for Max to verify. SAMPLE INPUT: the game list was hand-made; the venue prices are real. "
+}

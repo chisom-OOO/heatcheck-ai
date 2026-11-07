@@ -1,0 +1,22 @@
+{
+  "format": "heatcheck-live-forecast/1",
+  "label": "DESCRIPTIVE FORECAST (SAMPLE: hand-made placeholder values, not a forecast)",
+  "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+  "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
+  "data_cutoff_utc": "2026-11-07T22:00:00Z",
+  "source": {
+    "results": "SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.",
+    "fetched_utc": "SAMPLE: 2026-11-07T22:30:00Z (approximate browser read)",
+    "sha256": "SAMPLE: no source file was hashed",
+    "cross_check": "NOT_RUN"
+  },
+  "backtest_2024_25": {"log_loss": 0.0, "brier": 0.0, "games": 0},
+  "games": [
+    {"game_id": "nba:0022600190", "tip_utc": "2026-11-08T00:30:00Z", "home_team_id": "nba-team:1610612737", "away_team_id": "nba-team:1610612751", "home_team": "Atlanta Hawks", "away_team": "Brooklyn Nets", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0},
+    {"game_id": "nba:0022600191", "tip_utc": "2026-11-08T01:00:00Z", "home_team_id": "nba-team:1610612739", "away_team_id": "nba-team:1610612752", "home_team": "Cleveland Cavaliers", "away_team": "New York Knicks", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0},
+    {"game_id": "nba:0022600192", "tip_utc": "2026-11-08T01:00:00Z", "home_team_id": "nba-team:1610612760", "away_team_id": "nba-team:1610612764", "home_team": "Oklahoma City Thunder", "away_team": "Washington Wizards", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0},
+    {"game_id": "nba:0022600193", "tip_utc": "2026-11-08T01:30:00Z", "home_team_id": "nba-team:1610612744", "away_team_id": "nba-team:1610612753", "home_team": "Golden State Warriors", "away_team": "Orlando Magic", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0},
+    {"game_id": "nba:0022600194", "tip_utc": "2026-11-08T02:00:00Z", "home_team_id": "nba-team:1610612756", "away_team_id": "nba-team:1610612745", "home_team": "Phoenix Suns", "away_team": "Houston Rockets", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0},
+    {"game_id": "nba:0022600195", "tip_utc": "2026-11-08T03:00:00Z", "home_team_id": "nba-team:1610612757", "away_team_id": "nba-team:1610612759", "home_team": "Portland Trail Blazers", "away_team": "San Antonio Spurs", "p_home_win": 0.5, "elo_home": 1500.0, "elo_away": 1500.0}
+  ]
+}

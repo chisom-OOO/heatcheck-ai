@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600190",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600190"
+    },
+    "home_team_id": "nba-team:1610612737",
+    "away_team_id": "nba-team:1610612751",
+    "scheduled_tip_utc": "2026-11-08T00:30:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file."
+  },
+  "captures": [
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL",
+      "http_status": 200,
+      "payload_sha256": "5c006fd9b90967cd0047d2aecec5d6f40f68d446611a354a347124a40406fadf",
+      "fetch_start_utc": "2026-11-07T22:29:52.881706Z",
+      "received_utc": "2026-11-07T22:29:53.249538Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL/orderbook",
+      "http_status": 200,
+      "payload_sha256": "acfb57756df20e3c33cc47aea5bf1e2e3b0e7058c5ad80fd48fae4581bc2bcc6",
+      "fetch_start_utc": "2026-11-07T22:29:53.276124Z",
+      "received_utc": "2026-11-07T22:29:53.451129Z",
+      "market_payload_sha256": "5c006fd9b90967cd0047d2aecec5d6f40f68d446611a354a347124a40406fadf",
+      "target": {
+        "game_id": "nba:0022600190",
+        "team_id": "nba-team:1610612737",
+        "contract_id": "KXNBAGAME-26NOV07BKNATL-ATL:yes",
+        "expected_label": "YES (Atlanta)"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600190 (BKN at ATL, tip 2026-11-08T00:30:00Z), KALSHI contract KXNBAGAME-26NOV07BKNATL-ATL:yes labelled 'YES (Atlanta)' = home team wins. Received 2026-11-07T22:29:53.249538Z (market) and 2026-11-07T22:29:53.451129Z (book), local clock. Game list: game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.. Mapping PROPOSED for Max to verify. SAMPLE INPUT: the game list was hand-made; the venue prices are real. "
+}
