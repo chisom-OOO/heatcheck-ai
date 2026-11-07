@@ -21,7 +21,17 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
-from . import comparison, engine_fixture, evidence, files, ideas, intake, quotes, timefmt, venue_fixtures
+from . import (
+    comparison,
+    engine_fixture,
+    evidence,
+    files,
+    ideas,
+    intake,
+    quotes,
+    timefmt,
+    venue_fixtures,
+)
 from .authority import AuthorityError, Session, sha
 from .contracts import PROTOCOL_VERSION, ContractError, loads_strict, validate_envelope
 from .venues import UrllibTransport, VenueError, adapter
