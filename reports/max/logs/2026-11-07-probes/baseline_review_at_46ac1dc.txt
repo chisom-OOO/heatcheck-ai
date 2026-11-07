@@ -1,0 +1,542 @@
+ssss...................................sssss...FFFF.FFF....FFFFF.F.FFFF. [ 80%]
+.......FFFFF...FFF                                                       [100%]
+================================== FAILURES ===================================
+________________ test_rv_l3_cutoff_after_target_shot_rejected _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l3_cutoff_after_target0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l3_cutoff_after_target_shot_rejected(tmp_path, recs):
+        """Row for shot e3 (sequence 3) declares cutoff 4 and inputs up to 3: e3 itself is input."""
+        fr = first(recs, "FEATURE_ROW")
+        assert fr["body"]["target_id"].endswith(":e3")
+        fr["body"]["cutoff"]["before_sequence"] = 4
+        fr["body"]["max_input_sequence"] = 3
+>       assert_rejected(tmp_path, recs, "PRE_SHOT_MAKE cutoff is later than its own shot")
+
+tests\review\test_rv_validator_probes.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l3_cutoff_after_target0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'PRE_SHOT_MAKE cutoff is later than its own shot'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: PRE_SHOT_MAKE cutoff is later than its own shot
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+____________ test_rv_l4_source_hashes_include_target_shot_rejected ____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l4_source_hashes_inclu0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l4_source_hashes_include_target_shot_rejected(tmp_path, recs):
+        fr = first(recs, "FEATURE_ROW")
+        e3 = shot(recs, "e3")
+        fr["body"]["source_record_hashes"] = sorted(
+            {*fr["body"]["source_record_hashes"], record_hash(e3)})
+>       assert_rejected(tmp_path, recs, "feature inputs list the target shot's own EVENT hash")
+
+tests\review\test_rv_validator_probes.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l4_source_hashes_inclu0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "feature inputs list the target shot's own EVENT hash"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: feature inputs list the target shot's own EVENT hash
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________ test_rv_l5_target_id_resolves_to_no_event_rejected ______________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l5_target_id_resolves_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l5_target_id_resolves_to_no_event_rejected(tmp_path, recs):
+        fr = first(recs, "FEATURE_ROW")
+        fr["body"]["target_id"] = "syn:G0001:shot:e999"
+>       assert_rejected(tmp_path, recs, "PRE_SHOT_MAKE target_id names no shot in the bundle")
+
+tests\review\test_rv_validator_probes.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l5_target_id_resolves_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'PRE_SHOT_MAKE target_id names no shot in the bundle'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: PRE_SHOT_MAKE target_id names no shot in the bundle
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_________ test_rv_l6_source_hashes_reference_unknown_records_rejected _________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l6_source_hashes_refer0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l6_source_hashes_reference_unknown_records_rejected(tmp_path, recs):
+        fr = first(recs, "FEATURE_ROW")
+        fr["body"]["source_record_hashes"] = ["f" * 64]
+>       assert_rejected(tmp_path, recs, "source_record_hashes names a record not in the bundle")
+
+tests\review\test_rv_validator_probes.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_l6_source_hashes_refer0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'source_record_hashes names a record not in the bundle'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: source_record_hashes names a record not in the bundle
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_________________ test_rv_g1_event_team_not_in_game_rejected __________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g1_event_team_not_in_g0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_g1_event_team_not_in_game_rejected(tmp_path, recs):
+        shot(recs, "e2")["body"]["team_id"] = "syn-team:OTHER"
+>       assert_rejected(tmp_path, recs, "EVENT team_id is not home or away of its game")
+
+tests\review\test_rv_validator_probes.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g1_event_team_not_in_g0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'EVENT team_id is not home or away of its game'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: EVENT team_id is not home or away of its game
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+___________ test_rv_g2_feature_row_target_from_other_game_rejected ____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g2_feature_row_target_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_g2_feature_row_target_from_other_game_rejected(tmp_path, recs):
+        g2 = copy.deepcopy(first(recs, "GAME"))
+        g2["record_id"] = g2["body"]["game_id"] = "syn:G0002"
+        recs.append(g2)
+        fr = first(recs, "FEATURE_ROW")
+        fr["body"]["game_id"] = fr["body"]["cutoff"]["game_id"] = "syn:G0002"
+        # target_id still names syn:G0001's shot e3
+>       assert_rejected(tmp_path, recs, "FEATURE_ROW for game G0002 targets a G0001 shot")
+
+tests\review\test_rv_validator_probes.py:127: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g2_feature_row_target_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'FEATURE_ROW for game G0002 targets a G0001 shot'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: FEATURE_ROW for game G0002 targets a G0001 shot
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________ test_rv_g3_team_win_label_team_not_in_game_rejected _____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g3_team_win_label_team0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_g3_team_win_label_team_not_in_game_rejected(tmp_path, recs):
+        lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
+        lab["record_id"] = "syn:G0001:team_win:r1"
+        lab["body"].update(target_id="syn:G0001:team_win", label_kind="TEAM_WIN",
+                           value={"team_id": "syn-team:OTHER", "won": True})
+        recs.append(lab)
+>       assert_rejected(tmp_path, recs, "TEAM_WIN label for a team not in the game")
+
+tests\review\test_rv_validator_probes.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_g3_team_win_label_team0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'TEAM_WIN label for a team not in the game'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: TEAM_WIN label for a team not in the game
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+___________ test_rv_o1_final_score_swapped_against_events_rejected ____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o1_final_score_swapped0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o1_final_score_swapped_against_events_rejected(tmp_path, recs):
+        lab = first(recs, "RESTRICTED_LABEL")
+        assert lab["body"]["value"] == {"away_points": 0, "home_points": 2}
+        lab["body"]["value"] = {"away_points": 2, "home_points": 0}
+>       assert_rejected(tmp_path, recs, "GAME_FINAL_SCORE home/away reversed vs EVENT points")
+
+tests\review\test_rv_validator_probes.py:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o1_final_score_swapped0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'GAME_FINAL_SCORE home/away reversed vs EVENT points'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: GAME_FINAL_SCORE home/away reversed vs EVENT points
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+____________ test_rv_o2_shot_made_label_contradicts_event_rejected ____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o2_shot_made_label_con0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o2_shot_made_label_contradicts_event_rejected(tmp_path, recs):
+        lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
+        lab["record_id"] = "syn:G0001:shot:e2:r1"
+        lab["body"].update(target_id="syn:G0001:shot:e2", label_kind="SHOT_MADE",
+                           value={"made": False})  # EVENT e2 says made=True
+        recs.append(lab)
+>       assert_rejected(tmp_path, recs, "SHOT_MADE label contradicts EVENT.shot.made")
+
+tests\review\test_rv_validator_probes.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o2_shot_made_label_con0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'SHOT_MADE label contradicts EVENT.shot.made'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: SHOT_MADE label contradicts EVENT.shot.made
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+____________ test_rv_o3_team_win_contradicts_final_score_rejected _____________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o3_team_win_contradict0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o3_team_win_contradicts_final_score_rejected(tmp_path, recs):
+        lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
+        lab["record_id"] = "syn:G0001:team_win:r1"
+        lab["body"].update(target_id="syn:G0001:team_win", label_kind="TEAM_WIN",
+                           value={"team_id": "syn-team:AWAY", "won": True})  # away scored 0
+        recs.append(lab)
+>       assert_rejected(tmp_path, recs, "TEAM_WIN says the losing team won")
+
+tests\review\test_rv_validator_probes.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o3_team_win_contradict0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'TEAM_WIN says the losing team won'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: TEAM_WIN says the losing team won
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+________________________ test_rv_o4_final_tie_rejected ________________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o4_final_tie_rejected0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o4_final_tie_rejected(tmp_path, recs):
+        first(recs, "RESTRICTED_LABEL")["body"]["value"] = {"away_points": 2, "home_points": 2}
+>       assert_rejected(tmp_path, recs, "FINAL NBA game cannot end tied")
+
+tests\review\test_rv_validator_probes.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o4_final_tie_rejected0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'FINAL NBA game cannot end tied'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: FINAL NBA game cannot end tied
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________ test_rv_o5_quote_level_derived_complement_rejected ______________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o5_quote_level_derived_complement_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["levels"][1]["derivation"] = "DERIVED_COMPLEMENT"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:204: Failed
+__________ test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected __________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o7_both_outcomes_mappe0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected(tmp_path, recs):
+        m2 = copy.deepcopy(first(recs, "VENUE_MAPPING"))
+        m2["record_id"] = m2["body"]["mapping_id"] = "map:syn:G0001:M1-NO"
+        m2["body"]["contract_id"] = "M1-NO"  # label AWAY, but team_id still HOME
+        recs.append(m2)
+>       assert_rejected(tmp_path, recs, "YES and NO of one market both mapped to HOME TEAM_WINS")
+
+tests\review\test_rv_validator_probes.py:221: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_o7_both_outcomes_mappe0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'YES and NO of one market both mapped to HOME TEAM_WINS'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: YES and NO of one market both mapped to HOME TEAM_WINS
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+__________________ test_rv_u2_off_tick_price_rejected[0.537] __________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.537'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.537 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.537 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_________________ test_rv_u2_off_tick_price_rejected[0.0053] __________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje1')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.0053'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje1')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.0053 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.0053 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+__________________ test_rv_u2_off_tick_price_rejected[0.005] __________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje2')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.005'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u2_off_tick_price_reje2')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.005 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.005 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________________ test_rv_u3_zero_size_level_rejected _____________________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u3_zero_size_level_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["levels"][0]["size"] = "0"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:244: Failed
+______________ test_rv_u7_provider_time_after_received_rejected _______________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u7_provider_time_after_received_rejected(recs):
+        """Provider stamp 5 h after receipt: the signature of local time mislabelled as UTC."""
+        q = first(recs, "QUOTE")
+        q["body"]["provider_time_utc"] = "2024-01-01T05:00:01Z"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:278: Failed
+_________ test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected __________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u8_raw_snapshot_time_o0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected(tmp_path, recs):
+        """Quote fetched 2024-01-01T00:00; its raw book snapshot says retrieved 2026-11-07."""
+        q = first(recs, "QUOTE")
+        snap = next(r for r in recs if r["record_id"] == q["body"]["raw_snapshot_id"])
+        assert snap["body"]["retrieved_utc"] == "2026-11-07T12:00:00Z"
+>       assert_rejected(tmp_path, recs, "raw snapshot retrieved_utc outside quote fetch window")
+
+tests\review\test_rv_validator_probes.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u8_raw_snapshot_time_o0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'raw snapshot retrieved_utc outside quote fetch window'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: raw snapshot retrieved_utc outside quote fetch window
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+________________ test_rv_u9_manifest_created_utc_is_validated _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_u9_manifest_created_ut0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u9_manifest_created_utc_is_validated(tmp_path, recs):
+        err = bundle_result(tmp_path, recs, created_utc="yesterday afternoon")
+>       assert err is not None, "EXPECTED REJECT, ACTUAL PASS: manifest created_utc not a UTC stamp"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: manifest created_utc not a UTC stamp
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:292: AssertionError
+________ test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected _________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["provider_time_utc"] = "2023-12-31T22:00:00Z"  # received 2024-01-01T00:00:00Z
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:301: Failed
+___________ test_rv_s2_ok_quote_with_one_day_fetch_window_rejected ____________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_s2_ok_quote_with_one_day_fetch_window_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["fetch_start_utc"] = "2023-12-31T00:00:00Z"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:308: Failed
+_________ test_rv_t2_verified_regulation_only_for_team_wins_rejected __________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t2_verified_regulation_only_for_team_wins_rejected(recs):
+        """Research §143: a full-game TEAM_WINS target and a regulation-only contract differ."""
+        _verified(recs, overtime_convention="REGULATION_ONLY")
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:346: Failed
+____________ test_rv_t3_verified_unknown_cancel_postpone_rejected _____________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t3_verified_unknown_cancel_postpone_rejected(recs):
+        """ACCEPTANCE G10: 'regulation/overtime/cancel mapping; unknowns block'."""
+        _verified(recs, cancel_postpone_convention="UNKNOWN")
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:353: Failed
+_______________ test_rv_t4_verified_without_rules_hash_rejected _______________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_t4_verified_without_ru0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t4_verified_without_rules_hash_rejected(tmp_path, recs):
+        _verified(recs)
+        first(recs, "VENUE_MARKET")["body"]["rules_text_sha256"] = None
+>       assert_rejected(tmp_path, recs, "VERIFIED mapping whose market has no rules hash")
+
+tests\review\test_rv_validator_probes.py:360: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-440/test_rv_t4_verified_without_ru0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'VERIFIED mapping whose market has no rules hash'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: VERIFIED mapping whose market has no rules hash
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_EXPERIENCE_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\test_rv_candidates.py:56: NOT_RUN: no E-001 bundle
+SKIPPED [5] tests\review\test_rv_preshot_invariance.py:75: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+25 failed, 56 passed, 9 skipped in 2.57s
