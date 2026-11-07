@@ -211,6 +211,23 @@ def _check_references(directory: Path, records: list[dict[str, Any]]) -> None:
             ):
                 raise BundleError(f"{rid} venue/market/contract disagree with its mapping")
 
+    _check_nba_consistency(by_type, games)
+
+
+def _check_nba_consistency(
+    by_type: dict[str, dict[str, dict[str, Any]]], games: dict[str, dict[str, Any]]
+) -> None:
+    """Cross-record NBA checks: events, feature rows and labels must agree with each other."""
+    for r in by_type["EVENT"].values():
+        b = r["body"]
+        game = games[b["game_id"]]["body"]
+        # RV-G1: an event's team must be a participant of its game.
+        if b["team_id"] is not None and b["team_id"] not in (
+            game["home_team_id"],
+            game["away_team_id"],
+        ):
+            raise BundleError(f"EVENT:{r['record_id']} team_id is not home or away of its game")
+
 
 def main(argv: list[str]) -> int:
     if not argv:
