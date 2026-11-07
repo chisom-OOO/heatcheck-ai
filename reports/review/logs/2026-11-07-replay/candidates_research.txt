@@ -1,0 +1,59 @@
+............FFs..                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_candidate_builder_covers_free_throws ___________________
+
+no_network = None
+
+    def test_candidate_builder_covers_free_throws(no_network):  # noqa: F811
+        """R-001 deliverable 1: one PRE_SHOT_MAKE row per shot attempt. Free throws are shot
+        attempts in heatcheck-records/1 (action SHOT, kind FREE_THROW)."""
+        build = candidate_builder()
+        events = synthetic_game()
+        got = set(rows_by_shot(build(copy.deepcopy(events)), events))
+        fts = {e["body"]["provider_event_id"] for e in events
+               if e["body"]["action"] == "SHOT" and e["body"]["shot"]["kind"] == "FREE_THROW"}
+>       assert fts <= got, (f"EXPECTED a row per free throw (R-001 deliverable 1); ACTUAL none for "
+                            f"{sorted(fts - got)}. Needs a row or a Max-approved exclusion policy.")
+E       AssertionError: EXPECTED a row per free throw (R-001 deliverable 1); ACTUAL none for ['e18', 'e7', 'e8']. Needs a row or a Max-approved exclusion policy.
+E       assert {'e18', 'e7', 'e8'} <= {'e10', 'e11'...', 'e17', ...}
+E         
+E         Extra items in the left set:
+E         'e8'
+E         'e7'
+E         'e18'
+
+tests/review/test_rv_preshot_invariance.py:178: AssertionError
+__________________________ test_research_real_bundle ___________________________
+
+no_network = None
+
+    def test_research_real_bundle(no_network):  # noqa: F811
+        manifest, recs = require_bundle(ENV_RESEARCH_BUNDLE)
+        problems = research_problems(manifest, recs, real=True)
+>       assert not problems, _report(problems)
+E       AssertionError: EXPECTED no problems; ACTUAL:
+E           nba:0022300061: GAME_FINAL_SCORE reconciliation is UNVERIFIED (A3 not met)
+E           32 shots have no SHOT_MADE label, e.g. ['30', '49', '50']
+E       assert not ['nba:0022300061: GAME_FINAL_SCORE reconciliation is UNVERIFIED (A3 not met)', "32 shots have no SHOT_MADE label, e.g. ['30', '49', '50']"]
+
+tests/review/test_rv_candidates.py:34: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_is_invariant[syn_ot]
+PASSED tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_is_invariant[ref]
+PASSED tests/review/test_rv_preshot_invariance.py::test_negative_control_leaky_builder_is_caught[syn_ot]
+PASSED tests/review/test_rv_preshot_invariance.py::test_negative_control_leaky_builder_is_caught[ref]
+PASSED tests/review/test_rv_preshot_invariance.py::test_harness_is_sensitive_downstream
+PASSED tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_free_throw_and_overtime_values
+PASSED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_invariance
+PASSED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_downstream_sensitive
+PASSED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_ignores_input_order
+PASSED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_ignores_assist_attribution
+PASSED tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_passes_assist_check
+PASSED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_emits_valid_records
+PASSED tests/review/test_rv_candidates.py::test_experience_bundle
+PASSED tests/review/test_rv_candidates.py::test_experience_bundle_cli_validator
+SKIPPED [1] tests/review/review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+FAILED tests/review/test_rv_preshot_invariance.py::test_candidate_builder_covers_free_throws
+FAILED tests/review/test_rv_candidates.py::test_research_real_bundle - Assert...
+2 failed, 14 passed, 1 skipped in 28.14s

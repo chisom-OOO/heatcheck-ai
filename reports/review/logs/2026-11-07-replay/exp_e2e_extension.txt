@@ -1,0 +1,12 @@
+PASS  manifest requests only activeTab, scripting, storage
+PASS  host permission limited to the local workspace
+PASS  extension loads unpacked and popup renders
+PASS  popup validates pairing code
+PASS  restricted page (the extension page itself) is refused visibly  — This page can't be read (browser-restricted page, PDF viewer or store page): Cannot access contents of the page. Extension manifest must req
+PASS  popup has no script errors
+PASS  grab.js returns selected text and the intersecting table  — [{"rows":[["Player","FT"],["P001","7-8"],["P002","=cmd"]],"truncated":false}]
+PASS  no selection → nothing captured
+PASS  extension-origin POST accepted and stored with hash  — 201
+PASS  workspace shows the extension source as untrusted text
+
+10 passed, 0 failed

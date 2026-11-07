@@ -1,0 +1,17 @@
+## A1
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: .venv
+Installed 7 packages in 6ms
+PASS tests/fixtures/quotes/e001: bundle e001-syn-quote-fixture-1 modes=['SYNTHETIC'] records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit=0
+## reproducible
+PASS: E-001 bundle reproducible, records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+exit=0
+## A2-A5 tests
+56 passed in 0.28s
+## A6 lint
+All checks passed!
+## A6 modes/notes
+['SYNTHETIC'] EXPERIENCE | E-001 SYNTHETIC FALLBACK. No live or recorded capture was made: live Polymarket/Kalshi GET requests were not authorised for this session, so G12 stays NOT_RUN. There is no original capture time; every fetch_start/received/provider time is invented (2026-11-07T15:59:59.5Z..16:00:01.45Z) and lies befo
+## full suite at 38b66e5
+100 passed in 0.45s

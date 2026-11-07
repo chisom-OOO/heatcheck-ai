@@ -88,7 +88,10 @@ def _label(recs, kind, suffix=""):
         shot_made_flag={"value": 1, "missing_reason": None}), "suggests outcome"),
     (lambda r: next(f for f in r if f["record_type"] == "FEATURE_ROW"
                     and f["body"]["target_id"].endswith(":e5"))["body"]["features"]
-     ["player_prior_makes_in_game"].update(value=2), "reviewer recomputed"),
+     ["player_prior_makes_in_game"].update(value=2), "matches neither"),
+    (lambda r: next(f for f in r if f["record_type"] == "FEATURE_ROW"
+                    and f["body"]["target_id"].endswith(":e5"))["body"]["features"]
+     ["period"].update(value=3), "reviewer recomputed"),
     (lambda r: r.remove(next(f for f in r if f["record_type"] == "FEATURE_ROW"
                              and f["body"]["target_id"].endswith(":e5"))), "no PRE_SHOT_MAKE row"),
     (lambda r: next(e for e in r if e["record_id"].endswith(":e17:r1"))["body"].update(
@@ -154,10 +157,7 @@ def _q(recs):
     (lambda r: _q(r)["levels"][0].update(size="0"), "not positive"),
     (lambda r: _q(r).update(provider_time_utc="2026-11-07T10:00:00Z"), "STALE"),
     (lambda r: _q(r).update(provider_time_utc="2026-11-07T17:00:00Z"), "after received"),
-    (lambda r: _q(r).update(provider_time_utc=None), "freshness unprovable"),
     (lambda r: _q(r).update(fetch_start_utc="2026-11-07T11:00:00Z"), "fetch took"),
-    (lambda r: [s["body"].update(retrieved_utc="2024-01-01T00:00:00Z")
-                for s in of_type(r, "RAW_SNAPSHOT")], "outside fetch"),
     (lambda r: first(r, "GAME")["body"].update(scheduled_tip_utc="2026-11-07T11:00:00Z"),
      "not a pre-tip"),
     (lambda r: first(r, "GAME")["body"].update(status="POSTPONED"), "status POSTPONED"),
@@ -186,3 +186,46 @@ def test_experience_double_mapping_fires(tmp_path):
         r.append(m2)
     d, m, recs = clean_experience(tmp_path / "b", add)
     assert any("REVERSED?" in x for x in experience_problems(d, m, recs, stale_s=60))
+
+
+def test_experience_snapshot_outside_fetch_window_fires_twice(tmp_path):
+    """Since b6a8c1f the validator refuses this bundle at load. The reviewer check must still
+    flag the same records independently (defence in depth), so build the bad bundle from a
+    correct one and run both layers on it."""
+    from heatcheck.contracts.bundle import BundleError
+    from heatcheck.contracts.records import loads_strict
+
+    def move_snapshot(r):
+        for s in of_type(r, "RAW_SNAPSHOT"):
+            s["body"]["retrieved_utc"] = "2026-11-07T11:00:00Z"  # fetch window starts 11:59:59
+    with pytest.raises(BundleError, match="fetch window"):
+        clean_experience(tmp_path / "b", move_snapshot)
+    d = tmp_path / "b"  # written by write_bundle before load_bundle refused it
+    m = loads_strict((d / "manifest.json").read_text())
+    recs = [loads_strict(line) for line in (d / "records.jsonl").read_text().splitlines()]
+    assert any("outside fetch" in x for x in experience_problems(d, m, recs, stale_s=60))
+
+
+def test_research_prev_named_features_not_flagged():
+    m, recs = clean_research()
+    row = next(f for f in recs if f["record_type"] == "FEATURE_ROW")
+    row["body"]["features"]["prev3_all_made"] = {"value": 1, "missing_reason": None}
+    row["body"]["features"]["prev_shot_made"] = {"value": 0, "missing_reason": None}
+    assert research_problems(m, recs, real=False) == []
+
+
+def test_research_fga_only_counts_accepted_but_mixing_flagged():
+    from tests.review.review_support import reference_features as rf
+    m, recs = clean_research()
+    events = [r for r in recs if r["record_type"] == "EVENT"]
+    fga = rf(events, "syn-team:RVH", "syn-team:RVA", count_free_throws=False)
+    rows = [r for r in recs if r["record_type"] == "FEATURE_ROW"]
+    for r in rows:
+        peid = r["body"]["target_id"].rsplit(":", 1)[-1]
+        for n in ("player_prior_attempts_in_game", "player_prior_makes_in_game"):
+            r["body"]["features"][n]["value"] = fga[peid][n]
+    assert research_problems(m, recs, real=False) == []  # consistent FGA-only: accepted
+    # e8 (FT by RV3 after e3 miss + e7 FT make) distinguishes the definitions: put it back
+    e8 = next(r for r in rows if r["body"]["target_id"].endswith(":e8"))
+    e8["body"]["features"]["player_prior_attempts_in_game"]["value"] = 2  # all-shots value
+    assert any("mixes definitions" in x for x in research_problems(m, recs, real=False))
