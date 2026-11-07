@@ -1,0 +1,15 @@
+{
+  "heater_text": "LISTEN UP! The Ref says there just isn't enough proof on this one yet! I FEEL like the heater is real, but that's just my opinion!",
+  "ref_text": "There is insufficient evidence that within a player-game a field goal after 3 straight makes is made more often than one after 3 straight misses, beyond what within-stratum shuffling produces.\n\nThe record notes the comparison did not meet the needed size for each side.",
+  "evidence_record_id": "3ff5ed9fc4faf52a0f2f4dca495d85d672802fe715b9abed9bf4264e8af8b661",
+  "verdict": "INSUFFICIENT_EVIDENCE",
+  "claim_id": "HH-K3",
+  "sources": {
+    "mapping": "LLM",
+    "challenger": "DETERMINISTIC_STANDIN (fallback: HTTP_400: {\"error\":{\"code\":null,\"message\":\"JSON schema keyword `uniqueItems` is not supported for structured outputs\",\"param\":\"schema\",\"type\":\"invalid_request_error\"}})",
+    "heater": "LLM",
+    "ref": "LLM"
+  },
+  "_client_total_ms": 10398.3,
+  "_http_status": 200
+}
