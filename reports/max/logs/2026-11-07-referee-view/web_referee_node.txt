@@ -1,0 +1,19 @@
+✔ module is pure: no DOM or network globals used (1.2738ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (1.5359ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (0.3885ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.2311ms)
+✔ unknown attack outcome and non-finite numbers are flagged (0.3622ms)
+✔ other formats are read but flagged (0.2865ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (0.8534ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.1382ms)
+✔ view format: real projected entry maps with no gaps and statuses shown as supplied (0.8009ms)
+✔ view format: unknown status and missing provenance are flagged, nulls not zero-filled (0.5214ms)
+✔ view format: UNSUPPORTED attack shows 'did not execute', not zero (0.3881ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 97.32
