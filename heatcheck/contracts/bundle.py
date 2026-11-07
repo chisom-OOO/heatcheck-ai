@@ -228,6 +228,14 @@ def _check_nba_consistency(
         ):
             raise BundleError(f"EVENT:{r['record_id']} team_id is not home or away of its game")
 
+    for r in by_type["FEATURE_ROW"].values():
+        b = r["body"]
+        rid = f"FEATURE_ROW:{r['record_id']}"
+        if b["target_kind"] == "PRE_SHOT_MAKE":
+            # RV-G2: a shot target belongs to the row's own game (<game_id>:shot:<event id>).
+            if not b["target_id"].startswith(f"{b['game_id']}:shot:"):
+                raise BundleError(f"{rid} target {b['target_id']} is not a shot of {b['game_id']}")
+
 
 def main(argv: list[str]) -> int:
     if not argv:

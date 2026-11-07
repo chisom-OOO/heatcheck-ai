@@ -73,6 +73,9 @@ Unknown fields are rejected at every level. `data_mode` is one of `REAL_NBA_RETR
 | `VENUE_MAPPING` | Experience proposes, Max verifies | mapping_id, game_id, venue_market_record_id, contract_id, team_id, `outcome_direction`, `overtime_convention`, cancel/postpone, `status` | contract_id belongs to that market. team_id plays in that game. `VERIFIED` needs a known overtime rule. |
 | `QUOTE` | Experience | mapping_id, venue, market_id, contract_id, `levels [{side,price,size,derivation}]`, provider_time, `fetch_start_utc`, `received_utc`, adapter_version, `status`, raw_snapshot_id | received ≥ fetch start. An `OK` quote has levels and is not crossed. A non-OK quote has a reason. Levels are stored as the venue gave them (`DIRECT`). Derived complements are Research's normaliser output. Midpoint and last trade are never stored as a level. |
 
+Shot target ids are **required** to be `<game_id>:shot:<provider_event_id>` for
+`PRE_SHOT_MAKE` feature rows and `SHOT_MADE` labels, so a target always names its own game.
+
 Record id conventions (recommended; uniqueness per type is enforced):
 `EVENT` `<game_id>:<provider_event_id>:r<revision>`, `FEATURE_ROW`
 `<target_id>:<feature_version>`, `RESTRICTED_LABEL` `<target_id>:r<revision>`,
