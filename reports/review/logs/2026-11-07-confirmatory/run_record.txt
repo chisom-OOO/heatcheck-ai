@@ -1,0 +1,27 @@
+== CONFIRMATORY RUN RECORD
+authorised_by: Leo Nichols (in chat, 2026-11-07T22:27:57Z approx 22:27 Europe/London)
+operator: Claude (adviser session), Linux 6.18.44-fc-v310
+repo_commit: 741b4deb81d4d975e70101834ddd560594dcfdad (max/integrate-r001-e001)
+working_tree_clean: yes
+python: Python 3.13.18
+libs 2.5.3 3.0.5 1.18.1 1.9.1
+data: /tmp/claude-0/-home-claude/ddea1404-ecc5-56ba-9900-eb2a06df08d1/scratchpad/hc-rebuild/data2024 (independent rebuild, SEAL MATCH 6/6)
+-- before
+51dbc04a5f6918fc428a5d112f6858beeb798ce03cac006654a8f3f203b8a29c  /home/claude/heatcheck-ai/handoff/research-20261107/evidence/custodian_ledger.jsonl
+CONF-HA.plan.json
+CONF-HH.plan.json
+CONF-MOM.plan.json
+dev_results_2023-24.json
+family.json
+season_manifest_2024-25.json
+-- command (cwd /home/claude/heatcheck-ai/handoff/research-20261107)
+/tmp/claude-0/-home-claude/ddea1404-ecc5-56ba-9900-eb2a06df08d1/scratchpad/hc-rebuild/venv/bin/python -I scripts/confirmatory.py final /tmp/claude-0/-home-claude/ddea1404-ecc5-56ba-9900-eb2a06df08d1/scratchpad/hc-rebuild/data2024 /home/claude/heatcheck-ai/handoff/research-20261107/evidence --authorised-by Leo\ Nichols 
+start_utc: 2026-11-07T22:28:06.214Z
+end_utc: 2026-11-07T22:30:38.115Z
+exit_code: 0
+-- after
+b9d6a0b2fd5b59e6821d41cb07a1d9fa3c6bb3cc99b8a8ed163368aaf7aaef9e  /home/claude/heatcheck-ai/handoff/research-20261107/evidence/custodian_ledger.jsonl
+d16245990d09663917743122d5edb8e032e570c630d979454ecb4c718f626dd3  /home/claude/heatcheck-ai/handoff/research-20261107/evidence/confirmatory-2024-25/final_result.json
+ M handoff/research-20261107/evidence/custodian_ledger.jsonl
+?? handoff/research-20261107/evidence/confirmatory-2024-25/final_result.json
+?? handoff/research-20261107/evidence/custodian_ledger.lock

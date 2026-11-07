@@ -1,0 +1,50 @@
+cdnnba_2024.tar.xz: OK
+nbastats_2024.tar.xz: OK
+{
+  "hashes": {
+    "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+    "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+    "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+    "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+  },
+  "counts": {
+    "raw_rows": 686008,
+    "raw_games": 1230,
+    "duplicate_sequence": 0,
+    "duplicate_event_id": 0,
+    "clock_regress_steps": 2,
+    "neutral_site_games_flagged": 5,
+    "games_included": 1230,
+    "games_excluded": 0,
+    "events_included": 686008,
+    "field_goal_attempts": 219529,
+    "points_check_mismatch": 0,
+    "non_regular_season_ids_excluded": [],
+    "quarantined_game_ids": [
+      "0022400072"
+    ],
+    "games_sealable": 1230,
+    "events_sealable": 686008,
+    "field_goal_attempts_sealable": 219529
+  },
+  "reconciliation": {
+    "MATCH": 1229,
+    "SCORE_MISMATCH": 1
+  },
+  "exclusions": []
+}
+events       MATCH 6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada
+exclusions   MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+game_labels  MATCH f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2
+games        MATCH 46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193
+quarantine   MATCH 1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca
+shot_labels  MATCH 5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f
+SEAL MATCH
+..                                                                       [100%]
+2 passed, 14 deselected in 46.99s
+
+real	2m35.486s
+user	2m22.555s
+sys	0m7.372s
