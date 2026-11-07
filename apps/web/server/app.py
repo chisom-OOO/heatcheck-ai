@@ -305,7 +305,48 @@ MIME = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=ut
         ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".json": "application/json",
         ".png": "image/png", ".webp": "image/webp", ".ico": "image/x-icon", ".jsonl": "application/x-ndjson; charset=utf-8"}
 CSP = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; "
-       "media-src 'self' blob:; connect-src 'self' http://127.0.0.1:8770 http://localhost:8770; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+       "media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+
+# ------------------------------------------------------------------------------ Max's API pass-through
+# The page calls relative /api/... URLs only. Max's endpoints are forwarded to his dialogue server
+# with method, body and status unchanged, so the page is same-origin on any port and needs no CORS.
+UPSTREAM_DEFAULT = "http://127.0.0.1:8770"
+MAX_ENDPOINTS = {"dialogue", "investigate", "live-forecast", "display-titles"}
+UPSTREAM_TIMEOUT = 60  # Max's doc: client timeout of at least 30 s
+UPSTREAM_MAX_BODY = 4 * 1024 * 1024
+
+
+def upstream_base():
+    """Max's dialogue server. Loopback only: the pass-through never reaches another host."""
+    base = os.environ.get("HEATCHECK_DIALOGUE_API") or UPSTREAM_DEFAULT
+    u = urllib.parse.urlsplit(base)
+    if u.scheme != "http" or u.hostname not in ("127.0.0.1", "localhost") or not u.port or u.path not in ("", "/"):
+        raise ApiError(500, "BAD_UPSTREAM", "the dialogue API must be http://127.0.0.1:<port>")
+    return u.hostname, u.port
+
+
+def forward(h, method, path_qs):
+    """Send the request to Max's server and copy its status, Content-Type and body back unchanged."""
+    import http.client
+    host, port = upstream_base()
+    body = h._body(MAX_JSON) if method == "POST" else None
+    headers = {"Accept": h.headers.get("Accept") or "application/json"}
+    if body is not None:
+        headers["Content-Type"] = h.headers.get("Content-Type") or "application/json"
+    conn = http.client.HTTPConnection(host, port, timeout=UPSTREAM_TIMEOUT)
+    try:
+        conn.request(method, path_qs, body=body, headers=headers)
+        r = conn.getresponse()
+        data = r.read(UPSTREAM_MAX_BODY + 1)
+        status, ctype = r.status, r.getheader("Content-Type") or "application/octet-stream"
+    except (OSError, http.client.HTTPException) as e:
+        raise ApiError(502, "UPSTREAM_UNAVAILABLE",
+                       f"Max's dialogue API at http://{host}:{port} did not answer ({type(e).__name__})") from None
+    finally:
+        conn.close()
+    if len(data) > UPSTREAM_MAX_BODY:
+        raise ApiError(502, "UPSTREAM_TOO_LARGE", "the dialogue API response is too large")
+    h._send(status, data, ctype)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -425,7 +466,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _static(self, path):
         if path == "/":
-            path = "/index.html"
+            path = "/demo.html"  # the demo page; the older workspace UI stays at /index.html
         full = os.path.realpath(os.path.join(WEB, path.lstrip("/")))
         if not full.startswith(os.path.realpath(WEB) + os.sep) or not os.path.isfile(full):
             raise ApiError(404, "NOT_FOUND", "no such file")
@@ -439,6 +480,9 @@ class Handler(BaseHTTPRequestHandler):
     def _api(self, method, path):
         q = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(self.path).query))
         parts = path.strip("/").split("/")[1:]
+        if parts and parts[0] in MAX_ENDPOINTS:  # every method, so Max's own 4xx answers come back
+            qs = urllib.parse.urlsplit(self.path).query
+            return forward(self, method, path + (f"?{qs}" if qs else ""))
         key = (method, parts[0] if parts else "")
         r = ROUTES.get(key)
         if not r:
@@ -725,6 +769,50 @@ def r_evidence(h, args, q):
         raise ApiError(404 if e.status in ("NOT_CONFIGURED", "NOT_FOUND") else 409, e.status, str(e)) from None
 
 
+MAPPING_FIELDS = ("mapping_id", "game_id", "venue", "contract_id", "team_id", "label", "status", "two_sided")
+QUOTE_RUNS = os.path.join(ROOT, "..", "..", "data", "experience", "quotes")
+
+
+def newest_quote_index():
+    """The newest capture run's board.mappings.json (run directories are named by UTC start time)."""
+    try:
+        runs = sorted(d for d in os.listdir(QUOTE_RUNS) if re.fullmatch(r"\d{8}T\d{6}Z", d))
+    except OSError:
+        return None
+    for d in reversed(runs):
+        p = os.path.join(QUOTE_RUNS, d, "board.mappings.json")
+        if os.path.isfile(p):
+            return os.path.abspath(p)
+    return None
+
+
+def r_market_mappings(h, args, q):
+    """Which venue mapping ids the quote bundle holds, for the demo's market board (read-only).
+    The index is written by ``heatcheck.markets.live_quotes capture|index`` in the capture run
+    directory that Max's ``serve_dialogue --quote-bundle`` reads. Ids, labels and statuses, never prices:
+    every number on a card comes from Max's /api/investigate."""
+    path = os.environ.get("HEATCHECK_QUOTE_INDEX") or newest_quote_index()
+    if not path:
+        raise ApiError(404, "NOT_CONFIGURED", "no quote mapping index configured (--quote-index)")
+    try:
+        with open(path, encoding="utf-8") as f:
+            idx = json.load(f)
+    except FileNotFoundError:
+        raise ApiError(404, "NOT_FOUND", f"{os.path.basename(path)} not found") from None
+    except (OSError, ValueError) as e:
+        raise ApiError(409, "DATA_INVALID", f"quote mapping index unreadable ({type(e).__name__})") from None
+    if not isinstance(idx, dict) or idx.get("format") != "heatcheck-quote-mappings/1" or not isinstance(idx.get("mappings"), list):
+        raise ApiError(409, "DATA_INVALID", "not a heatcheck-quote-mappings/1 index")
+    rows = []
+    for m in idx["mappings"]:
+        if not isinstance(m, dict) or not all(k in m for k in MAPPING_FIELDS):
+            raise ApiError(409, "DATA_INVALID", "a mapping row lacks a required field")
+        rows.append({k: m[k] for k in MAPPING_FIELDS})
+    h._send(200, {"format": idx["format"], "run": idx.get("run"), "captured": idx.get("captured"),
+                  "is_sample_game_list": bool((idx.get("forecast_input") or {}).get("is_sample")),
+                  "mappings": rows})
+
+
 def r_gates(h, args, q):
     with open(os.path.join(EVIDENCE, "acceptance_ledger.json")) as f:
         h._send(200, json.load(f))
@@ -755,6 +843,7 @@ ROUTES = {
     ("GET", "venues"): r_venues_health,
     ("GET", "gates"): r_gates,
     ("GET", "evidence"): r_evidence,
+    ("GET", "market-mappings"): r_market_mappings,
 }
 
 
@@ -766,11 +855,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--ledger", help="existing Referee evidence ledger (.jsonl) to show read-only")
+    ap.add_argument("--quote-index", help="board.mappings.json written by live_quotes index (market board); "
+                                          "default: the newest data/experience/quotes/*/board.mappings.json")
+    ap.add_argument("--api", help=f"Max's dialogue server for the /api pass-through (default {UPSTREAM_DEFAULT})")
     a = ap.parse_args()
     if a.ledger:
         os.environ["HEATCHECK_LEDGER"] = os.path.abspath(a.ledger)
+    if a.quote_index:
+        os.environ["HEATCHECK_QUOTE_INDEX"] = os.path.abspath(a.quote_index)
+    if a.api:
+        os.environ["HEATCHECK_DIALOGUE_API"] = a.api
+    upstream_base()  # refuse a non-loopback upstream at start-up
     srv = make_server(a.port)
-    print(f"HeatCheck-Experience on http://127.0.0.1:{a.port}  (code {CODE_HASH[:12]})")
+    print(f"HeatCheck-Experience on http://127.0.0.1:{a.port}/  (demo page; code {CODE_HASH[:12]})")
+    print(f"  /api/{{{','.join(sorted(MAX_ENDPOINTS))}}} -> {os.environ.get('HEATCHECK_DIALOGUE_API') or UPSTREAM_DEFAULT}")
     srv.serve_forever()
 
 

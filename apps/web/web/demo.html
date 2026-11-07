@@ -24,7 +24,11 @@
   </section>
 
   <section class="talk" aria-live="polite">
-    <p class="brand">HEAT<span>CHECK</span></p>
+    <div class="topbar">
+      <p class="brand">HEAT<span>CHECK</span></p>
+      <button type="button" class="view-toggle" id="btn-board" aria-pressed="false">Tonight's games</button>
+    </div>
+    <section class="board" id="board" hidden aria-label="Tonight's games: forecast against market"></section>
     <div class="bubble" id="bubble" hidden>
       <p class="bubble-text" id="take"></p>
       <p class="bubble-react" id="react" hidden></p>

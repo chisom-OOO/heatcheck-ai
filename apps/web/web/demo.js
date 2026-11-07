@@ -2,22 +2,25 @@
 // real evidence record, and the verdict stamp lands as Heater changes pose.
 //
 // Answer source, in order:
-//   1. Max's dialogue API (POST http://127.0.0.1:8770/api/dialogue) for Heater's line, the
-//      claim and the evidence id;
+//   1. Max's dialogue API (POST /api/dialogue, same origin: the UI server passes it through to
+//      Max's server) for Heater's line, the claim and the evidence id;
 //   2. offline: question -> claim by keywords, Heater's line from heater_personality.json.
 // The Ref's words and every number always come from the evidence record (GET /api/evidence,
 // or the byte-copy fixture of Max's ledger). ?debug=1 opens a drawer with the internals.
 
 import { loadPersonality, mount } from "./heater/heater.js";
 import {
-  CLAIM_TITLES, DEFAULT_PERSONALITY, TIMING, fmtP, latestFor, parseJsonl, reactFor, refPlain,
-  routeQuestion, stampFor, stateForDecision, takeFor,
+  CLAIM_TITLES, DEFAULT_PERSONALITY, NEVER_SEEN, TIMING, fmtP, latestFor, parseJsonl, reactFor,
+  refPlain, routeQuestion, stampFor, stateForDecision, takeFor,
 } from "./heater/heater-model.js";
+import { loadBoard, renderBoard } from "./market/board.js";
+import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
 import { createVoice } from "./voice.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
-const DIALOGUE_URL = params.get("dialogue") || "http://127.0.0.1:8770/api/dialogue";
+// Relative URLs only: same origin on any port, no CORS. server/app.py forwards Max's endpoints.
+const DIALOGUE_URL = "/api/dialogue";
 const FIXTURE = new URL("./heater/fixtures/evidence_real_game.jsonl", import.meta.url);
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -54,7 +57,7 @@ async function loadLedger() {
 
 async function askDialogue(question) {
   const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), 9000);
+  const t = setTimeout(() => ctl.abort(), 30000);  // Max's doc: client timeout of at least 30 s
   try {
     const r = await fetch(DIALOGUE_URL, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }), signal: ctl.signal });
@@ -86,8 +89,26 @@ async function answer(question) {
     log(`API verdict ${api.verdict} != record ${entry.identity.decision}; the record wins`);
   }
   if (!entry) entry = null;
+  // The API ruled but this page's ledger copy lacks the entry (e.g. the UI server shows another
+  // ledger file): show the API's own verdict and deterministic Ref text, never "not tested".
+  const apiOnly = !entry && !forced && api?.verdict
+    ? { verdict: api.verdict, refText: api.ref_text, lane: api.lane, evidenceId: api.evidence_record_id }
+    : null;
+  if (apiOnly) log(`record ${api.evidence_record_id} not in this page's ledger; using the API's verdict and Ref text`);
   const take = (!forced && api?.heater_text) || takeFor(claimId, state.personality, state.turn);
-  return { claimId, entry, take, takeSource: !forced && api?.heater_text ? "dialogue API" : state.personalitySource };
+  return { claimId, entry, apiOnly, take, takeSource: !forced && api?.heater_text ? "dialogue API" : state.personalitySource };
+}
+
+/** The Ref's words: plain text from the record; else the API's own text (with the sealed-season
+ *  note for a confirmatory result); else "no ruling yet". */
+function refLineFor(a) {
+  if (a.entry) return refPlain(a.entry, state.personality).text;
+  if (a.apiOnly) {
+    const t = String(a.apiOnly.refText || "").trim();
+    return a.apiOnly.lane === "CONFIRMATORY" && !t.includes(NEVER_SEEN)
+      ? `${t} It was ${NEVER_SEEN}.` : t;
+  }
+  return "No ruling yet. We haven't run a test for this one, so there's nothing to report.";
 }
 
 // ------------------------------------------------------------------ rendering
@@ -118,22 +139,39 @@ function evidenceDetails(entry, verified) {
     if (v instanceof Node) dd.append(v); else dd.textContent = v;
     dl.append(dt, dd);
   };
-  row("Claim", id.claim.plan?.statement || id.claim.claim_id);
+  row("Claim", id.claim.plan?.statement || id.claim.statement || id.claim.claim_id);
   row("Verdict", `${id.decision}: ${id.reason || ""}`);
-  const perm = id.attack_results.find((a) => String(a.test_id_version).startsWith("A-PERMUTATION-NULL@"));
+  const attacks = Array.isArray(id.attack_results) ? id.attack_results : [];
+  const perm = attacks.find((a) => String(a.test_id_version).startsWith("A-PERMUTATION-NULL@"));
   if (perm && typeof perm.effect_estimate === "number") {
     row("Effect", `${perm.effect_estimate >= 0 ? "+" : ""}${perm.effect_estimate.toFixed(4)} (bias-corrected; p = ${fmtP(perm.p_value)}, ${perm.details?.B_effective ?? "?"} permutations)`);
   }
   const d = id.data || {};
-  if (d.data_mode) row("Data", `${String(d.data_mode).toLowerCase().replaceAll("_", " ")} · ${d.n_attempts ?? "?"} shots · ${d.n_games ?? "?"} game(s)`);
-  const ul = document.createElement("ul");
-  for (const a of id.attack_results) {
-    const li = document.createElement("li");
-    li.textContent = `${String(a.test_id_version).replace(/@\d+$/, "")}: ${a.status} — ${a.reason || ""}`;
-    ul.append(li);
-  }
-  row(`Attacks (${id.attack_results.length})`, id.attack_results.length ? ul : "none run");
   const code = (s) => { const c = document.createElement("code"); c.textContent = s; return c; };
+  if (id.source === "RECORDED_RESEARCH_RESULT") {
+    // a receipted Research final copied into the ledger: no attacks were run by the Referee
+    const r = id.result || {};
+    const det = r.detail || {};
+    row("Source", "Research's recorded final run, copied into the ledger, not recomputed");
+    row("Season", `${d.season || "?"} · ${String(id.lane || "").toLowerCase()} lane${d.pseudo_out_of_sample ? " · pseudo-out-of-sample" : ""}`);
+    const nums = [];
+    if (typeof r.p_holm === "number") nums.push(`Holm p = ${fmtP(r.p_holm)}`);
+    if (typeof r.p_one_sided === "number") nums.push(`one-sided p = ${fmtP(r.p_one_sided)}`);
+    if (Array.isArray(det.ci95)) nums.push(`95% CI [${det.ci95.map((x) => x.toFixed(4)).join(", ")}]`);
+    if (Number.isInteger(det.n_games)) nums.push(`${det.n_games.toLocaleString("en-US")} games`);
+    if (Number.isInteger(det.n_fga)) nums.push(`${det.n_fga.toLocaleString("en-US")} shots`);
+    if (nums.length) row("Result", nums.join(" · "));
+    if (id.custodian?.receipt_id) row("Custodian receipt", code(id.custodian.receipt_id));
+  } else {
+    if (d.data_mode) row("Data", `${String(d.data_mode).toLowerCase().replaceAll("_", " ")} · ${d.n_attempts ?? "?"} shots · ${d.n_games ?? "?"} game(s)`);
+    const ul = document.createElement("ul");
+    for (const a of attacks) {
+      const li = document.createElement("li");
+      li.textContent = `${String(a.test_id_version).replace(/@\d+$/, "")}: ${a.status} — ${a.reason || ""}`;
+      ul.append(li);
+    }
+    row(`Attacks (${attacks.length})`, attacks.length ? ul : "none run");
+  }
   row("Receipt", code(entry.evidence_id));
   if (id.claim.canonical_plan_hash) row("Plan hash", code(id.claim.canonical_plan_hash));
   if (d.arrays_sha256) row("Data hash", code(d.arrays_sha256));
@@ -148,6 +186,7 @@ async function ask(question) {
   if (!question || state.busy) return;
   state.busy = true;
   setBusy(true);
+  setView("talk");
   document.body.dataset.phase = "asking";
   const h = state.heater;
   const turn = state.turn++;
@@ -181,10 +220,8 @@ async function ask(question) {
   h.setState("thinking");
 
   // 3. the Ref's ruling, plain words first, numbers from the record
-  const decision = a.entry ? a.entry.identity.decision : null;
-  const refLine = a.entry
-    ? refPlain(a.entry, state.personality).text
-    : "No ruling yet. We haven't run a test for this one, so there's nothing to report.";
+  const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
+  const refLine = refLineFor(a);
   ui.ref.classList.remove("checking");
   ui.refText.textContent = refLine;
   document.body.dataset.phase = "ref";
@@ -220,6 +257,98 @@ async function ask(question) {
 function setBusy(b) {
   ui.go.disabled = b;
   ui.chips.forEach((c) => { c.disabled = b; });
+  ui.boardBtn.disabled = b;
+}
+
+// ------------------------------------------------------------------ market board
+ui.board = $("board");
+ui.boardBtn = $("btn-board");
+
+function setView(view) {
+  document.body.dataset.view = view;
+  const board = view === "board";
+  ui.board.hidden = !board;
+  ui.boardBtn.setAttribute("aria-pressed", String(board));
+  ui.boardBtn.textContent = board ? "Back to Heater" : "Tonight's games";
+  if (board) { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; }
+}
+
+async function openBoard() {
+  setView("board");
+  if (!state.board) {                       // investigate each game once per page view
+    ui.board.replaceChildren(Object.assign(document.createElement("p"), { className: "board-note", textContent: "Loading tonight's games…" }));
+    state.heater.setState("thinking");
+    state.board = await loadBoard({ log });
+    state.heater.setState("idle");
+  }
+  renderBoard(ui.board, state.board, { onAsk: (g) => askMarket(g) });
+}
+
+function marketDetails(resp) {
+  const dl = document.createElement("dl");
+  const row = (k, v) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  };
+  row("Verdict", resp.verdict);
+  row("Data", resp.data_note);
+  row("Compared as of", `${fmtUtc(resp.as_of_utc, { seconds: true })} (${resp.mode})`);
+  for (const c of resp.challenger_checks || []) row(c.check_id, `${c.status}: ${c.detail}`);
+  if (resp.thesis?.text) row("Rest thesis", resp.thesis.text);
+  row("Ref text", resp.ref_text);
+  row("Receipt", resp.evidence_id || "not recorded");
+  return dl;
+}
+
+/** Heater explains one card; the Ref words Max's verdict; the stamp lands. */
+async function askMarket(g) {
+  const resp = g.resp;
+  if (!resp || state.busy) return;
+  state.busy = true;
+  setBusy(true);
+  setView("talk");
+  reset();
+  voice.stopSpeaking();
+  const h = state.heater;
+  log(`market card ${g.row.game_id}: ${resp.verdict}`);
+  h.setState("listening");
+  await sleep(350);
+  h.setState("thinking");
+  await sleep(TIMING.thinkingMin);
+  document.body.dataset.phase = "take";
+  const take = heaterPlain(resp.heater_text, resp.forecast?.inputs_used);
+  ui.take.textContent = take;
+  ui.bubble.hidden = false;
+  restartAnim(ui.bubble);
+  h.setState("hot_take");
+  await h.speak(take, "heater", { voiceOn: state.voiceOn });
+  document.body.dataset.phase = "check";
+  ui.refTitle.textContent = `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`;
+  ui.refText.textContent = "Checking the tape";
+  ui.ref.classList.add("checking");
+  ui.ref.hidden = false;
+  restartAnim(ui.ref);
+  await h.play("heat_check", TIMING.heat_check);
+  h.setState("thinking");
+  const line = marketRefPlain(resp);
+  ui.ref.classList.remove("checking");
+  ui.refText.textContent = line;
+  document.body.dataset.phase = "ref";
+  await h.speak(line, "ref", { voiceOn: state.voiceOn });
+  const stamp = marketStamp(resp);
+  ui.stamp.className = `stamp ${stamp.kind}`;
+  ui.stamp.textContent = stamp.text;
+  ui.stamp.hidden = false;
+  restartAnim(ui.stamp);
+  ui.ref.classList.add("slammed");
+  h.setState(marketEndState(resp), { restart: true });
+  ui.evidenceBody.replaceChildren(marketDetails(resp));
+  ui.evidence.hidden = false;
+  document.body.dataset.phase = "done";
+  log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);
+  state.busy = false;
+  setBusy(false);
 }
 
 // ------------------------------------------------------------------ voice input
@@ -305,9 +434,15 @@ async function main() {
   log(`ledger: ${state.ledger.entries.length} entries from ${state.ledger.source}`);
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });
   ui.chips.forEach((c) => c.addEventListener("click", () => { ui.q.value = c.textContent; ask(c.textContent); }));
+  ui.boardBtn.addEventListener("click", () => {
+    if (document.body.dataset.view === "board") { setView("talk"); ui.hint.hidden = Boolean(state.current); }
+    else openBoard();
+  });
+  setView("talk");
   if (DEBUG) buildDebug();
   document.body.dataset.ready = "1";
   if (params.get("ask")) { ui.q.value = params.get("ask"); ask(params.get("ask")); }
+  else if (params.get("board") === "1") openBoard();
 }
 
 main().catch((e) => {

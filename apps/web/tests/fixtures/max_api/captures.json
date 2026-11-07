@@ -1,0 +1,1013 @@
+{
+ "format": "experience-max-api-captures/1",
+ "captured_with": {
+  "server": "heatcheck.api.dialogue_server.serve (Max), template mode, no LLM",
+  "repo_head": "355820716bf6955c22fe462c102a22eeb80113c6",
+  "mode": "RECORDED",
+  "forecast": "tests/fixtures/live/forecasts.SAMPLE.json",
+  "quotes": "data/experience/quotes/20261107T222950Z",
+  "verifications": "data/max/mapping_verifications",
+  "ledger": "temporary copy of evidence/evidence.jsonl"
+ },
+ "note": "Real responses from Max's server code, captured by apps/web/tools/capture_max_api.py. Volatile fields (recorded_at_utc, evidence ids of investigation entries) are as captured.",
+ "exchanges": [
+  {
+   "name": "live_forecast_sample",
+   "method": "GET",
+   "path": "/api/live-forecast",
+   "request": null,
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "status": "OK",
+    "is_sample": true,
+    "file_sha256": "c68bba240e5e294c365c12b947026c188dc05b4dc6ec099bc0d5d506a616a403",
+    "forecast": {
+     "format": "heatcheck-live-forecast/1",
+     "label": "DESCRIPTIVE FORECAST",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z",
+     "source": {
+      "results": "SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.",
+      "fetched_utc": "SAMPLE",
+      "sha256": "SAMPLE",
+      "cross_check": "NOT_RUN"
+     },
+     "backtest_2024_25": {
+      "log_loss": 0.0,
+      "brier": 0.0,
+      "games": 0
+     },
+     "games": [
+      {
+       "game_id": "nba:0022600190",
+       "tip_utc": "2026-11-08T00:30:00Z",
+       "home_team_id": "nba-team:1610612737",
+       "away_team_id": "nba-team:1610612751",
+       "home_team": "Atlanta Hawks",
+       "away_team": "Brooklyn Nets",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      },
+      {
+       "game_id": "nba:0022600191",
+       "tip_utc": "2026-11-08T01:00:00Z",
+       "home_team_id": "nba-team:1610612739",
+       "away_team_id": "nba-team:1610612752",
+       "home_team": "Cleveland Cavaliers",
+       "away_team": "New York Knicks",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      },
+      {
+       "game_id": "nba:0022600192",
+       "tip_utc": "2026-11-08T01:00:00Z",
+       "home_team_id": "nba-team:1610612760",
+       "away_team_id": "nba-team:1610612764",
+       "home_team": "Oklahoma City Thunder",
+       "away_team": "Washington Wizards",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      },
+      {
+       "game_id": "nba:0022600193",
+       "tip_utc": "2026-11-08T01:30:00Z",
+       "home_team_id": "nba-team:1610612744",
+       "away_team_id": "nba-team:1610612753",
+       "home_team": "Golden State Warriors",
+       "away_team": "Orlando Magic",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      },
+      {
+       "game_id": "nba:0022600194",
+       "tip_utc": "2026-11-08T02:00:00Z",
+       "home_team_id": "nba-team:1610612756",
+       "away_team_id": "nba-team:1610612745",
+       "home_team": "Phoenix Suns",
+       "away_team": "Houston Rockets",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      },
+      {
+       "game_id": "nba:0022600195",
+       "tip_utc": "2026-11-08T03:00:00Z",
+       "home_team_id": "nba-team:1610612757",
+       "away_team_id": "nba-team:1610612759",
+       "home_team": "Portland Trail Blazers",
+       "away_team": "San Antonio Spurs",
+       "p_home_win": 0.5,
+       "elo_home": 1500.0,
+       "elo_away": 1500.0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "display_titles",
+   "method": "GET",
+   "path": "/api/display-titles",
+   "request": null,
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "display_titles": {
+     "HH-K3": "Hot hand: three makes in a row",
+     "HH-K2": "Hot hand: two makes in a row",
+     "GP-REST": "Rest and back-to-backs on top of Elo",
+     "GP-ELO": "Elo vs the home-win base rate",
+     "CONF-HA": "Home advantage (2024-25, confirmatory)",
+     "CONF-MOM": "One-shot momentum (2024-25, confirmatory)",
+     "CONF-HH": "Hot hand: three in a row (2024-25, confirmatory)",
+     "NONE": "No registered test"
+    }
+   }
+  },
+  {
+   "name": "dialogue_home_advantage",
+   "method": "POST",
+   "path": "/api/dialogue",
+   "request": {
+    "question": "Do home teams win more?"
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "heater_text": "Heater here! The Ref says it SURVIVED the checks. I'm not saying I called it... but I'm saying it LOUDLY.",
+    "ref_text": "Survived the registered checks (SURVIVED_PROTOCOL). Home advantage (2024-25, confirmatory) (CONF-HA). What was tested: In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games. Why: Holm p<0.05, CI>0, mean>=floor. Source: Research's recorded final run on 1224 unseen 2024-25 games, under a custodian exposure receipt; copied here, not recomputed.",
+    "evidence_record_id": "b81af39ab4400d47250c35c897f4016566e7f6b9e4fe7458389650ae41aa0e63",
+    "verdict": "SURVIVED_PROTOCOL",
+    "claim_id": "CONF-HA",
+    "claim_title": "Home advantage (2024-25, confirmatory)",
+    "lane": "CONFIRMATORY",
+    "evidence_source": "RECORDED_RESEARCH_RESULT",
+    "sources": {
+     "ref": "TEMPLATE",
+     "mapping": "KEYWORD_RULE (home advantage -> CONF-HA)",
+     "challenger": "NOT_APPLICABLE (recorded final result)",
+     "heater": "TEMPLATE"
+    },
+    "phase": "FINAL",
+    "custodian_receipt_id": "5cbb3222-181d-439d-9202-02a8d8030e4e"
+   }
+  },
+  {
+   "name": "dialogue_rest",
+   "method": "POST",
+   "path": "/api/dialogue",
+   "request": {
+    "question": "Do back-to-backs and rest days change who wins?"
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "heater_text": "Heater here! The Ref wants more evidence before ruling. Patience is NOT my game, but rules are rules.",
+    "ref_text": "Insufficient evidence (INSUFFICIENT_EVIDENCE). Rest and back-to-backs on top of Elo (GP-REST). What was tested: Rest-day difference and back-to-backs improve pre-tip win forecasts over Elo. Why: CI includes values on both sides of the decision thresholds. Source: Research's recorded final run on 300 unseen 2023-24 games, under a custodian exposure receipt; copied here, not recomputed.",
+    "evidence_record_id": "6a67b1820c0869128c6f65ba7289a55c21cb4fc5ee600105302078c7091b2e8d",
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "claim_id": "GP-REST",
+    "claim_title": "Rest and back-to-backs on top of Elo",
+    "lane": "DEVELOPMENT",
+    "evidence_source": "RECORDED_RESEARCH_RESULT",
+    "sources": {
+     "ref": "TEMPLATE",
+     "mapping": "KEYWORD_STANDIN",
+     "challenger": "NOT_APPLICABLE (recorded final result)",
+     "heater": "TEMPLATE"
+    },
+    "phase": "FINAL",
+    "custodian_receipt_id": "3e238d2d-030e-45b4-aae7-db0787ecb873"
+   }
+  },
+  {
+   "name": "dialogue_bad_body",
+   "method": "POST",
+   "path": "/api/dialogue",
+   "request": {
+    "question": "x",
+    "extra": 1
+   },
+   "request_raw": null,
+   "status": 400,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "error": "body must be exactly {\"question\": string}"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600190_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600190",
+    "mapping_id": "map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:52.672912Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600190",
+     "tip_utc": "2026-11-08T00:30:00Z",
+     "home_team": "Atlanta Hawks",
+     "away_team": "Brooklyn Nets"
+    },
+    "team": "Atlanta Hawks",
+    "flag": "FORECAST_BELOW_BID",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113:df3011353069a496",
+     "venue": "POLYMARKET",
+     "best_bid": "0.71",
+     "best_ask": "0.72",
+     "received_utc": "2026-11-07T22:29:52.672912Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Atlanta Hawks at 50.0% to win. That is below the market's bid of 71.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600190: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612737 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612737: best bid 0.71, best ask 0.72 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T00:30:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "5ca10be840dee79e0bdd6abedcd5730583a8f32a30ba28e32e9e71cd2d55e241",
+    "recorded_at_utc": "2026-11-07T23:18:46.280579Z"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600191_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600191",
+    "mapping_id": "map:nba:0022600191:POLYMARKET:60955229673760716456263204416898543673892689428977581401929964569716185748287",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:53.685969Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600191",
+     "tip_utc": "2026-11-08T01:00:00Z",
+     "home_team": "Cleveland Cavaliers",
+     "away_team": "New York Knicks"
+    },
+    "team": "Cleveland Cavaliers",
+    "flag": "FORECAST_ABOVE_ASK",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600191:POLYMARKET:60955229673760716456263204416898543673892689428977581401929964569716185748287:fd2b36911dcfd5aa",
+     "venue": "POLYMARKET",
+     "best_bid": "0.35",
+     "best_ask": "0.36",
+     "received_utc": "2026-11-07T22:29:53.685969Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Cleveland Cavaliers at 50.0% to win. That is above the market's ask of 36.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600191: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612739 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612739: best bid 0.35, best ask 0.36 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T01:00:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "be732de5c492d49206174866f4bf434d033eeba23697ff560972e2bca415c49d",
+    "recorded_at_utc": "2026-11-07T23:18:46.371140Z"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600192_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600192",
+    "mapping_id": "map:nba:0022600192:POLYMARKET:66537882599737940156471066272898803866527274084473053049426291500098109418778",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:54.677440Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600192",
+     "tip_utc": "2026-11-08T01:00:00Z",
+     "home_team": "Oklahoma City Thunder",
+     "away_team": "Washington Wizards"
+    },
+    "team": "Oklahoma City Thunder",
+    "flag": "FORECAST_BELOW_BID",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600192:POLYMARKET:66537882599737940156471066272898803866527274084473053049426291500098109418778:7f299b5f3df6a805",
+     "venue": "POLYMARKET",
+     "best_bid": "0.82",
+     "best_ask": "0.83",
+     "received_utc": "2026-11-07T22:29:54.677440Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Oklahoma City Thunder at 50.0% to win. That is below the market's bid of 82.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600192: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612760 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612760: best bid 0.82, best ask 0.83 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T01:00:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "67f2ecbb02a5ae4cfed2ec05b73cd4b9a913736be6d6f558b7fb3b9908fbc4a6",
+    "recorded_at_utc": "2026-11-07T23:18:46.501897Z"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600193_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600193",
+    "mapping_id": "map:nba:0022600193:POLYMARKET:23904303204222395938248616518334978671748463657071577968878478247188605665854",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:55.927878Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600193",
+     "tip_utc": "2026-11-08T01:30:00Z",
+     "home_team": "Golden State Warriors",
+     "away_team": "Orlando Magic"
+    },
+    "team": "Golden State Warriors",
+    "flag": "FORECAST_BELOW_BID",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600193:POLYMARKET:23904303204222395938248616518334978671748463657071577968878478247188605665854:5c22f9a618b62048",
+     "venue": "POLYMARKET",
+     "best_bid": "0.72",
+     "best_ask": "0.73",
+     "received_utc": "2026-11-07T22:29:55.927878Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Golden State Warriors at 50.0% to win. That is below the market's bid of 72.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600193: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612744 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612744: best bid 0.72, best ask 0.73 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T01:30:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "77311aa62006051842610aecad3cd91d122ff6cc70faf917071310c3f44b57d3",
+    "recorded_at_utc": "2026-11-07T23:18:46.595495Z"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600194_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600194",
+    "mapping_id": "map:nba:0022600194:POLYMARKET:10104737213854710263895946005185957401288376283963812623329700694279202258427",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:56.700690Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600194",
+     "tip_utc": "2026-11-08T02:00:00Z",
+     "home_team": "Phoenix Suns",
+     "away_team": "Houston Rockets"
+    },
+    "team": "Phoenix Suns",
+    "flag": "FORECAST_ABOVE_ASK",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600194:POLYMARKET:10104737213854710263895946005185957401288376283963812623329700694279202258427:e55f8ee20c3a8fd7",
+     "venue": "POLYMARKET",
+     "best_bid": "0.29",
+     "best_ask": "0.3",
+     "received_utc": "2026-11-07T22:29:56.700690Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Phoenix Suns at 50.0% to win. That is above the market's ask of 30.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600194: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612756 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612756: best bid 0.29, best ask 0.3 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T02:00:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "dffbc3449e17a66451813500dec375dd20b458f6eeb49d151cee75233eecca96",
+    "recorded_at_utc": "2026-11-07T23:18:46.706418Z"
+   }
+  },
+  {
+   "name": "investigate_nba:0022600195_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600195",
+    "mapping_id": "map:nba:0022600195:POLYMARKET:100938068625435351729413355008380181702901748373348600743777690605897615529768",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:57.739873Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600195",
+     "tip_utc": "2026-11-08T03:00:00Z",
+     "home_team": "Portland Trail Blazers",
+     "away_team": "San Antonio Spurs"
+    },
+    "team": "Portland Trail Blazers",
+    "flag": "FORECAST_ABOVE_ASK",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600195:POLYMARKET:100938068625435351729413355008380181702901748373348600743777690605897615529768:26360b9d84d5c2e6",
+     "venue": "POLYMARKET",
+     "best_bid": "0.34",
+     "best_ask": "0.35",
+     "received_utc": "2026-11-07T22:29:57.739873Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Portland Trail Blazers at 50.0% to win. That is above the market's ask of 35.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600195: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612757 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612757: best bid 0.34, best ask 0.35 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T03:00:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "0c04afe7e1dc0bdf3536a90206930926bf3ffc39c42c06118a39def7f6208805",
+    "recorded_at_utc": "2026-11-07T23:18:46.888417Z"
+   }
+  },
+  {
+   "name": "investigate_kalshi",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600190",
+    "mapping_id": "map:nba:0022600190:KALSHI:KXNBAGAME-26NOV07BKNATL-ATL:yes",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:53.451129Z",
+    "data_note": "SAMPLE forecast: values are invented, not a real forecast.",
+    "is_sample": true,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600190",
+     "tip_utc": "2026-11-08T00:30:00Z",
+     "home_team": "Atlanta Hawks",
+     "away_team": "Brooklyn Nets"
+    },
+    "team": "Atlanta Hawks",
+    "flag": "NO_TWO_SIDED_QUOTE",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600190:KALSHI:KXNBAGAME-26NOV07BKNATL-ATL:yes:acfb57756df20e3c",
+     "venue": "KALSHI",
+     "best_bid": "0.7100",
+     "best_ask": null,
+     "received_utc": "2026-11-07T22:29:53.451129Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Atlanta Hawks at 50.0% to win. There is no market quote with both a bid and an ask to set it against. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600190: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "FAIL",
+      "detail": "mapping PROPOSED: contract rules not verified against the game"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "FAIL",
+      "detail": "one-sided book (bid 0.7100, ask None); a midpoint or last trade is never shown as a price you could get"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T00:30:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     },
+     {
+      "check_id": "FORECAST_SAMPLE",
+      "status": "FAIL",
+      "detail": "forecast file is a hand-made SAMPLE; its values are invented"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Can't compare",
+    "ref_text": "Can't compare. OUTCOME_MATCH: mapping PROPOSED: contract rules not verified against the game; QUOTE_SIDE: one-sided book (bid 0.7100, ask None); a midpoint or last trade is never shown as a price you could get; FORECAST_SAMPLE: forecast file is a hand-made SAMPLE; its values are invented.",
+    "evidence_id": "0b17ffd6200aa9f67f28544446ae731671633d6a06290c9449c3b02cf6698ab4",
+    "recorded_at_utc": "2026-11-07T23:18:47.038387Z"
+   }
+  },
+  {
+   "name": "investigate_unknown_game",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0000000000",
+    "mapping_id": "map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 404,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "error": "nba:0000000000 is not in the live forecast file"
+   }
+  },
+  {
+   "name": "unknown_path",
+   "method": "GET",
+   "path": "/api/nope",
+   "request": null,
+   "request_raw": null,
+   "status": 404,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "error": "not found"
+   }
+  },
+  {
+   "name": "investigate_test_forecast_pm",
+   "method": "POST",
+   "path": "/api/investigate",
+   "request": {
+    "game_id": "nba:0022600190",
+    "mapping_id": "map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113",
+    "message": ""
+   },
+   "request_raw": null,
+   "status": 200,
+   "content_type": "application/json; charset=utf-8",
+   "body": {
+    "format": "heatcheck-market-investigation/1",
+    "mode": "RECORDED",
+    "as_of_utc": "2026-11-07T22:29:52.672912Z",
+    "data_note": "RECORDED game: quote evaluated as of its capture time, not live.",
+    "is_sample": false,
+    "label": "DESCRIPTIVE FORECAST",
+    "game": {
+     "game_id": "nba:0022600190",
+     "tip_utc": "2026-11-08T00:30:00Z",
+     "home_team": "Atlanta Hawks",
+     "away_team": "Brooklyn Nets"
+    },
+    "team": "Atlanta Hawks",
+    "flag": "FORECAST_BELOW_BID",
+    "forecast": {
+     "p_team_win": "0.5",
+     "model": "TEST FIXTURE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
+     "inputs_used": [
+      "elo_rating_home",
+      "elo_rating_away",
+      "home_court"
+     ],
+     "data_cutoff_utc": "2026-11-07T22:00:00Z"
+    },
+    "quote": {
+     "record_id": "quote:map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113:df3011353069a496",
+     "venue": "POLYMARKET",
+     "best_bid": "0.71",
+     "best_ask": "0.72",
+     "received_utc": "2026-11-07T22:29:52.672912Z",
+     "status": "OK"
+    },
+    "heater_text": "The model has Atlanta Hawks at 50.0% to win. That is below the market's bid of 71.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+    "heater_source": "TEMPLATE",
+    "hypothetical": false,
+    "challenger_checks": [
+     {
+      "check_id": "GAME_MATCH",
+      "status": "PASS",
+      "detail": "nba:0022600190: same teams and tip time in both sources"
+     },
+     {
+      "check_id": "OUTCOME_MATCH",
+      "status": "PASS",
+      "detail": "contract pays if nba-team:1610612737 wins (INCLUDES_OVERTIME)"
+     },
+     {
+      "check_id": "QUOTE_FRESH",
+      "status": "PASS",
+      "detail": "latest quote 0s old, limit 60s"
+     },
+     {
+      "check_id": "QUOTE_SIDE",
+      "status": "PASS",
+      "detail": "YES contract on nba-team:1610612737: best bid 0.71, best ask 0.72 (probability dollars); not an executable order"
+     },
+     {
+      "check_id": "FORECAST_CUTOFF",
+      "status": "PASS",
+      "detail": "data cutoff 2026-11-07T22:00:00Z is before tip 2026-11-08T00:30:00Z"
+     },
+     {
+      "check_id": "MISSING_INPUTS",
+      "status": "INFO",
+      "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+     },
+     {
+      "check_id": "MARKET_SKILL_EVIDENCE",
+      "status": "INFO",
+      "detail": "no evaluation shows this model beats the market; none has been run"
+     }
+    ],
+    "thesis": null,
+    "verdict": "Worth investigating · Edge unverified",
+    "ref_text": "Worth investigating · Edge unverified. The forecast and the quote are for the same game, team and outcome, and the quote is fresh. No evaluation shows this model beats the market, so a gap between them is a question to investigate, not a finding.",
+    "evidence_id": "60d19773f36416fd3f0ba34d69a899c063edfe847e98c75d01561ba49e2b4bc0",
+    "recorded_at_utc": "2026-11-07T23:18:47.773636Z"
+   },
+   "test_forecast": true
+  }
+ ]
+}
