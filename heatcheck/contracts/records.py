@@ -279,10 +279,14 @@ GAME = _object(
         "provider_ids": _str_map(TOKEN, _string),
         "home_team_id": TEAM_ID,
         "away_team_id": TEAM_ID,
-        "scheduled_tip_utc": _utc,
+        # Scheduled tip as published before the game; null when the source does not supply it.
+        "scheduled_tip_utc": _nullable(_utc),
         "status": _enum("SCHEDULED", "FINAL", "POSTPONED", "CANCELLED", "UNKNOWN"),
         "source_snapshot_ids": _list(SHA, min_len=1, unique=True),
-    }
+    },
+    # Actual tip observed in play-by-play (e.g. first period-start event). Known only after the
+    # game starts, so it must never serve as a pre-tip cutoff. Optional key for compatibility.
+    {"observed_tip_utc": _nullable(_utc)},
 )
 
 SHOT = _object(
@@ -503,8 +507,11 @@ def _semantic_checks(rtype: str, mode: str, body: dict[str, Any]) -> None:
         value = body.get(key)
         if isinstance(value, str) and not _id_namespace_ok(value, mode):
             raise RecordError(f"$.body.{key}", f"id namespace does not match data_mode {mode}")
-    if rtype == "GAME" and body["home_team_id"] == body["away_team_id"]:
-        raise RecordError("$.body.away_team_id", "home and away teams must differ")
+    if rtype == "GAME":
+        if body["home_team_id"] == body["away_team_id"]:
+            raise RecordError("$.body.away_team_id", "home and away teams must differ")
+        if body["scheduled_tip_utc"] is None and body.get("observed_tip_utc") is None:
+            raise RecordError("$.body", "need scheduled_tip_utc or observed_tip_utc")
     if rtype == "EVENT":
         shot = body["shot"]
         if (body["action"] == "SHOT") != (shot is not None):
