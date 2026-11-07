@@ -279,12 +279,44 @@ def test_rv_u7_provider_time_after_received_rejected(recs):
         validate_record(q)
 
 
-def test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected(tmp_path, recs):
-    """Quote fetched 2024-01-01T00:00; its raw book snapshot says retrieved 2026-11-07."""
+def _quote_snapshot(recs: list[dict]) -> dict:
     q = first(recs, "QUOTE")
-    snap = next(r for r in recs if r["record_id"] == q["body"]["raw_snapshot_id"])
-    assert snap["body"]["retrieved_utc"] == "2026-11-07T12:00:00Z"
-    assert_rejected(tmp_path, recs, "raw snapshot retrieved_utc outside quote fetch window")
+    return next(r for r in recs if r["record_id"] == q["body"]["raw_snapshot_id"])
+
+
+def test_rv_u8_control_snapshot_inside_fetch_window_passes(tmp_path, recs):
+    """Precondition on the corrected fixture (b6a8c1f): it is valid as committed, with the book
+    snapshot retrieved inside [fetch_start_utc, received_utc]. Edges are inclusive."""
+    from heatcheck.contracts.records import parse_utc
+
+    q = first(recs, "QUOTE")["body"]
+    ret = parse_utc(_quote_snapshot(recs)["body"]["retrieved_utc"])
+    assert parse_utc(q["fetch_start_utc"]) <= ret <= parse_utc(q["received_utc"])
+    assert bundle_result(tmp_path, recs) is None
+    for edge in (q["fetch_start_utc"], q["received_utc"]):
+        _quote_snapshot(recs)["body"]["retrieved_utc"] = edge
+        assert bundle_result(tmp_path / edge.replace(":", ""), recs) is None, edge
+
+
+@pytest.mark.parametrize("retrieved", [
+    "2026-11-07T12:00:00Z",       # retrospective retrieval, years after the quote
+    "2023-12-31T23:59:59.999Z",   # 1 ms before fetch_start_utc (2024-01-01T00:00:00Z)
+    "2024-01-01T00:00:00.251Z",   # 1 ms after received_utc (…00.250Z)
+    "2024-01-01T05:00:00.200Z",   # local (UTC-5) time stored as UTC
+], ids=["years_later", "1ms_before_fetch", "1ms_after_receipt", "tz_shift_5h"])
+def test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected(tmp_path, recs, retrieved):
+    """Mutate the correct fixture into a bad one: the book snapshot is moved outside the
+    quote's fetch window. Does not depend on any particular committed fixture value."""
+    _quote_snapshot(recs)["body"]["retrieved_utc"] = retrieved
+    assert_rejected(tmp_path, recs, f"raw snapshot retrieved {retrieved} outside fetch window")
+
+
+def test_rv_u8_quote_pointing_at_pbp_snapshot_rejected(tmp_path, recs):
+    """Quote re-pointed at the play-by-play snapshot (retrieved 2026-11-07) instead of its book."""
+    q = first(recs, "QUOTE")["body"]
+    other = next(r for r in of_type(recs, "RAW_SNAPSHOT") if r["record_id"] != q["raw_snapshot_id"])
+    q["raw_snapshot_id"] = other["record_id"]
+    assert_rejected(tmp_path, recs, "quote raw snapshot is a different, later retrieval")
 
 
 def test_rv_u9_manifest_created_utc_is_validated(tmp_path, recs):

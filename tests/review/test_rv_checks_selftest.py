@@ -156,8 +156,6 @@ def _q(recs):
     (lambda r: _q(r).update(provider_time_utc="2026-11-07T17:00:00Z"), "after received"),
     (lambda r: _q(r).update(provider_time_utc=None), "freshness unprovable"),
     (lambda r: _q(r).update(fetch_start_utc="2026-11-07T11:00:00Z"), "fetch took"),
-    (lambda r: [s["body"].update(retrieved_utc="2024-01-01T00:00:00Z")
-                for s in of_type(r, "RAW_SNAPSHOT")], "outside fetch"),
     (lambda r: first(r, "GAME")["body"].update(scheduled_tip_utc="2026-11-07T11:00:00Z"),
      "not a pre-tip"),
     (lambda r: first(r, "GAME")["body"].update(status="POSTPONED"), "status POSTPONED"),
@@ -186,3 +184,21 @@ def test_experience_double_mapping_fires(tmp_path):
         r.append(m2)
     d, m, recs = clean_experience(tmp_path / "b", add)
     assert any("REVERSED?" in x for x in experience_problems(d, m, recs, stale_s=60))
+
+
+def test_experience_snapshot_outside_fetch_window_fires_twice(tmp_path):
+    """Since b6a8c1f the validator refuses this bundle at load. The reviewer check must still
+    flag the same records independently (defence in depth), so build the bad bundle from a
+    correct one and run both layers on it."""
+    from heatcheck.contracts.bundle import BundleError
+    from heatcheck.contracts.records import loads_strict
+
+    def move_snapshot(r):
+        for s in of_type(r, "RAW_SNAPSHOT"):
+            s["body"]["retrieved_utc"] = "2026-11-07T11:00:00Z"  # fetch window starts 11:59:59
+    with pytest.raises(BundleError, match="fetch window"):
+        clean_experience(tmp_path / "b", move_snapshot)
+    d = tmp_path / "b"  # written by write_bundle before load_bundle refused it
+    m = loads_strict((d / "manifest.json").read_text())
+    recs = [loads_strict(line) for line in (d / "records.jsonl").read_text().splitlines()]
+    assert any("outside fetch" in x for x in experience_problems(d, m, recs, stale_s=60))
