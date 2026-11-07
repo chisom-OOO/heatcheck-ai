@@ -1,11 +1,14 @@
 """Serve POST /api/dialogue on 127.0.0.1 for Experience's UI.
 
     uv run --frozen python tools/serve_dialogue.py data/bundles/r001-nba-0022300061 \
-        --ledger logs/dialogue_evidence.jsonl [--port 8770] [--no-llm]         [--live-forecast data/live/forecasts.json]         [--quote-bundle DIR [--recorded] [--investigation-ledger logs/market_investigations.jsonl]]
+        --ledger logs/dialogue_evidence.jsonl [--port 8770] [--no-llm]         [--live-forecast data/live/forecasts.json]         [--quote-bundle DIR [--recorded] [--investigation-ledger logs/market_investigations.jsonl]
+         [--verifications data/max/mapping_verifications]]
 
 --live-forecast is served read-only at GET /api/live-forecast, re-validated per request.
 --quote-bundle enables POST /api/investigate (read-only MARKET_COMPARISON investigation) on that
-heatcheck-records/1 quote bundle. --recorded evaluates each quote as of its capture time and
+heatcheck-records/1 quote bundle, or every bundle under that directory (the bundle holding the
+newest quote for the requested mapping is used). Max's verified mappings are applied from
+--verifications (default data/max/mapping_verifications). --recorded evaluates each quote as of its capture time and
 labels every response "RECORDED game" (the 03:00 fallback); otherwise quotes are compared live.
 
 The Meta key is read from META_API_KEY in this process's environment. Without it, or with
@@ -62,7 +65,9 @@ def main(argv: list[str]) -> int:
         inv = InvestigationConfig(
             market_bundle=Path(argv[argv.index("--quote-bundle") + 1]),
             ledger=EvidenceLedger(inv_ledger), mode="RECORDED" if "--recorded" in argv else "LIVE",
-            thesis_lookup=lambda: find_recorded(dialogue.ledger, "GP-REST"), heater_llm=heater)
+            thesis_lookup=lambda: find_recorded(dialogue.ledger, "GP-REST"), heater_llm=heater,
+            verifications=(Path(argv[argv.index("--verifications") + 1]) if "--verifications" in argv
+                           else ROOT / "data" / "max" / "mapping_verifications"))
     srv = serve(dialogue, port, lf, inv)
     print(f"dialogue API on http://127.0.0.1:{srv.server_address[1]}/api/dialogue")
     srv.serve_forever()

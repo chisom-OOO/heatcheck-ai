@@ -273,6 +273,34 @@ def test_route_recorded_mode_end_to_end(tmp_path):
     assert code == 404
 
 
+VERIFICATIONS = ROOT / "data" / "max" / "mapping_verifications"
+
+
+def test_route_recorded_with_max_verification_is_worth_investigating(tmp_path):
+    fc = tmp_path / "forecasts.json"
+    fc.write_text(json.dumps(forecast_doc()), encoding="utf-8")
+    cfg = InvestigationConfig(market_bundle=BUNDLE, ledger=EvidenceLedger(tmp_path / "inv.jsonl"),
+                              mode="RECORDED", verifications=VERIFICATIONS)
+    code, out = run_investigation({"game_id": GAME, "mapping_id": POLY, "message": "why?"}, fc, cfg)
+    assert code == 200 and out["verdict"] == VERDICT_WORTH, out["ref_text"]
+    ident = cfg.ledger.get(out["evidence_id"])["identity"]
+    assert ident["quote"]["mapping_status"] == "VERIFIED"
+    # Kalshi has no verification and only bids: still Can't compare.
+    code, out = run_investigation({"game_id": GAME, "mapping_id": KALSHI, "message": "?"}, fc, cfg)
+    assert out["verdict"] == VERDICT_CANT
+
+
+def test_route_searches_bundle_directory_and_live_staleness(tmp_path):
+    fc = tmp_path / "forecasts.json"
+    fc.write_text(json.dumps(forecast_doc()), encoding="utf-8")
+    cfg = InvestigationConfig(market_bundle=[ROOT / "tests" / "fixtures" / "quotes"],
+                              ledger=EvidenceLedger(tmp_path / "inv.jsonl"), mode="LIVE",
+                              verifications=VERIFICATIONS, clock=lambda: "2026-11-07T16:25:00Z")
+    code, out = run_investigation({"game_id": GAME, "mapping_id": POLY, "message": "why?"}, fc, cfg)
+    assert code == 200 and out["verdict"] == VERDICT_CANT
+    assert "STALE" in {c["check_id"]: c for c in out["challenger_checks"]}["QUOTE_FRESH"]["detail"]
+
+
 def test_route_without_forecast_cannot_compare(tmp_path):
     cfg = InvestigationConfig(market_bundle=BUNDLE, ledger=EvidenceLedger(tmp_path / "inv.jsonl"))
     req = {"game_id": GAME, "mapping_id": POLY, "message": ""}
@@ -285,3 +313,17 @@ def test_route_without_forecast_cannot_compare(tmp_path):
 def test_route_rejects_bad_body(body):
     with pytest.raises(ValueError):
         validate_investigate_request(body)
+
+
+@pytest.mark.parametrize("as_of", ["2026-11-07T16:21:17.710454Z", "2026-11-07T16:21:30Z",
+                                   "2026-11-07T16:30:00Z", "2026-11-07T16:00:00Z"])
+def test_latest_quote_matches_eligibility_rule_on_verified_mapping(bundle, as_of):
+    from heatcheck.agents.market_investigation import latest_quote
+    from heatcheck.contracts.eligibility import LIVE_MAX_AGE, select_quote_for_cutoff
+    _, recs = bundle
+    recs = verified(recs)
+    mapping = next(r for r in recs if r["record_type"] == "VENUE_MAPPING" and r["body"]["mapping_id"] == POLY)
+    quotes = [r for r in recs if r["record_type"] == "QUOTE" and r["body"]["mapping_id"] == POLY]
+    a = select_quote_for_cutoff(mapping, quotes, as_of, LIVE_MAX_AGE)
+    b = latest_quote(quotes, as_of, LIVE_MAX_AGE)
+    assert (a.status, a.quote_record_id, a.age_seconds) == (b.status, b.quote_record_id, b.age_seconds)

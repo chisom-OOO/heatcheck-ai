@@ -35,7 +35,11 @@ from heatcheck.agents.dialogue import Dialogue
 from heatcheck.agents.market_investigation import InvestigationInputError, investigate
 from heatcheck.api.display_titles import DISPLAY_TITLES
 from heatcheck.contracts.bundle import BundleError, load_bundle
-from heatcheck.contracts.live_forecast import LiveForecastError, parse_live_forecast
+from heatcheck.contracts.live_forecast import (
+    LiveForecastError,
+    parse_live_forecast,
+    validate_live_forecast,
+)
 from heatcheck.contracts.records import RecordError
 from heatcheck.ledger.evidence import EvidenceLedger
 
@@ -83,16 +87,67 @@ def live_forecast_payload(path: Path | None) -> dict:
 class InvestigationConfig:
     """Sources for POST /api/investigate. Every request re-reads and re-validates both files."""
 
-    market_bundle: Path
+    market_bundle: Path | list[Path]  # a bundle, or a directory searched for bundles
     ledger: EvidenceLedger
     mode: str = "LIVE"  # LIVE: compare as of now; RECORDED: as of the quote's capture time
     thesis_lookup: object | None = None  # () -> recorded GP-REST entry or None
     heater_llm: object | None = None  # (system, user) -> str
     clock: object | None = None  # () -> "YYYY-MM-DDTHH:MM:SS.ffffffZ"
+    verifications: Path | None = None  # Max's heatcheck-mapping-verification/1 documents
 
 
 def _now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def discover_bundles(roots: Path | list[Path]) -> list[Path]:
+    """Each root is a bundle (has manifest.json) or a directory searched recursively for them."""
+    out = []
+    for root in [roots] if isinstance(roots, Path) else list(roots):
+        root = Path(root)
+        if (root / "manifest.json").is_file():
+            out.append(root)
+        elif root.is_dir():
+            out.extend(sorted(p.parent for p in root.rglob("manifest.json")))
+    return out
+
+
+def load_verifications(vdir: Path | None) -> list[dict]:
+    if vdir is None or not Path(vdir).is_dir():
+        return []
+    docs = []
+    for f in sorted(Path(vdir).glob("*.json")):
+        docs.extend(json.loads(f.read_text(encoding="utf-8")).get("verifications", []))
+    return docs
+
+
+def select_bundle(cfg: InvestigationConfig, mapping_id: str, as_of: str | None):
+    """The bundle holding the newest quote for ``mapping_id`` (received by ``as_of`` when given),
+    with Max's verified mappings applied. Returns (records, records_sha256, newest_received,
+    problems)."""
+    from heatcheck.contracts.mapping_verification import apply_verifications
+    from heatcheck.contracts.records import parse_utc
+    docs = load_verifications(cfg.verifications)
+    best, problems = None, []
+    for b in discover_bundles(cfg.market_bundle):
+        try:
+            manifest, recs = load_bundle(b)
+        except (BundleError, RecordError, ValueError, OSError) as e:
+            problems.append(f"{b.name}: {str(e)[:120]}")
+            continue
+        got = [parse_utc(r["body"]["received_utc"]) for r in recs
+               if r["record_type"] == "QUOTE" and r["body"]["mapping_id"] == mapping_id]
+        if as_of is not None:
+            got = [t for t in got if t <= parse_utc(as_of)]
+        if not got:
+            continue
+        if best is None or max(got) > best[2]:
+            recs, notes = apply_verifications(recs, manifest["records_sha256"], docs)
+            problems.extend(notes)
+            best = (recs, manifest["records_sha256"], max(got))
+    if best is None:
+        return None, None, None, problems
+    return (*best, problems)
 
 
 def validate_investigate_request(raw: bytes) -> dict:
@@ -115,25 +170,22 @@ def run_investigation(req: dict, live_forecast: Path | None, cfg: InvestigationC
     if fc["status"] != "OK":
         return 200, {"verdict": "Can't compare", "ref_text": f"Can't compare. Forecast {fc['status']}: {fc['reason']}.",
                      "evidence_id": None}
-    lf = parse_live_forecast(live_forecast.read_bytes())
-    try:
-        manifest, records = load_bundle(cfg.market_bundle)
-    except (BundleError, RecordError, ValueError, OSError) as e:
-        return 200, {"verdict": "Can't compare", "evidence_id": None,
-                     "ref_text": f"Can't compare. Quote source unavailable or invalid: {str(e)[:200]}."}
-    if cfg.mode == "RECORDED":
-        got = [r["body"]["received_utc"] for r in records
-               if r["record_type"] == "QUOTE" and r["body"]["mapping_id"] == req["mapping_id"]]
-        if not got:
+    # The exact bytes hashed in fc (one read), not a second read of the file.
+    lf = validate_live_forecast(fc["forecast"])
+    as_of = None if cfg.mode == "RECORDED" else (cfg.clock or _now)()
+    records, records_sha, newest, problems = select_bundle(cfg, req["mapping_id"], as_of)
+    if records is None:
+        why = "; ".join(problems[:3]) or f"no quote for mapping {req['mapping_id']}"
+        if cfg.mode == "RECORDED" and not problems:
             return 404, {"error": f"no recorded quote for mapping {req['mapping_id']}"}
-        from heatcheck.contracts.records import parse_utc
-        as_of = max(got, key=parse_utc)
-    else:
-        as_of = (cfg.clock or _now)()
+        return 200, {"verdict": "Can't compare", "evidence_id": None,
+                     "ref_text": f"Can't compare. Quote source: {why[:300]}."}
+    if as_of is None:
+        as_of = newest.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     thesis = cfg.thesis_lookup() if cfg.thesis_lookup else None
     try:
         out, identity = investigate(lf, fc["file_sha256"], req["game_id"], req["mapping_id"], records,
-                                    manifest["records_sha256"], req["message"], as_of, mode=cfg.mode,
+                                    records_sha, req["message"], as_of, mode=cfg.mode,
                                     thesis_entry=thesis, heater_llm=cfg.heater_llm)
     except InvestigationInputError as e:
         return 404, {"error": str(e)}

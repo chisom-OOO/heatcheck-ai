@@ -31,7 +31,7 @@ from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
 from heatcheck.agents.dialogue import number_violations
-from heatcheck.contracts.eligibility import LIVE_MAX_AGE, select_quote_for_cutoff
+from heatcheck.contracts.eligibility import LIVE_MAX_AGE, QuoteSelection
 from heatcheck.contracts.live_forecast import LiveForecast
 from heatcheck.contracts.records import PROTOCOL_VERSION, parse_utc, validate_record, validate_utc
 
@@ -246,8 +246,10 @@ def challenger_checks(
     # 3. Quote freshness and side. Always evaluated, even when the mapping failed.
     quotes = _by_type(market_records, "QUOTE")
     mapped_quotes = [q for q in quotes if q["body"]["mapping_id"] == mapping_id]
-    sel_mapping = {**mapping, "body": {**mb, "status": "VERIFIED"}}  # freshness only; check 2 owns status
-    sel = select_quote_for_cutoff(sel_mapping, mapped_quotes, as_of_utc, max_age)
+    # Freshness is judged even for an unverified mapping (OUTCOME_MATCH owns the status), so the
+    # same selection rule as select_quote_for_cutoff is applied directly, without forging a
+    # VERIFIED copy of the mapping.
+    sel = latest_quote(mapped_quotes, as_of_utc, max_age)
     quote = next((q for q in mapped_quotes if q["record_id"] == sel.quote_record_id), None)
     card["quote"] = quote
     fproblems = []
@@ -300,6 +302,23 @@ def challenger_checks(
         checks.append(Check("FORECAST_SAMPLE", "FAIL",
                             "forecast file is a hand-made SAMPLE; its values are invented"))
     return checks, card
+
+
+def latest_quote(quotes: list[dict], as_of_utc: str, max_age: timedelta) -> QuoteSelection:
+    """select_quote_for_cutoff's rule without the mapping-status gate: the latest quote received
+    at or before ``as_of_utc``; non-OK latest is reported, never skipped; older than max_age is STALE."""
+    as_of = parse_utc(as_of_utc)
+    cands = [(parse_utc(q["body"]["received_utc"]), q["record_id"], q) for q in quotes
+             if parse_utc(q["body"]["received_utc"]) <= as_of]
+    if not cands:
+        return QuoteSelection("NO_QUOTE_BY_CUTOFF", None, "no quote received at or before the comparison time", None)
+    received, rid, q = max(cands, key=lambda c: (c[0], c[1]))
+    age = (as_of - received).total_seconds()
+    if q["body"]["status"] != "OK":
+        return QuoteSelection("QUOTE_NOT_OK", rid, f"latest quote status {q['body']['status']}", age)
+    if as_of - received > max_age:
+        return QuoteSelection("STALE", rid, f"quote age {age}s exceeds {max_age}", age)
+    return QuoteSelection("ELIGIBLE", rid, "latest OK quote received by the comparison time", age)
 
 
 GATING = ("GAME_MATCH", "OUTCOME_MATCH", "QUOTE_FRESH", "QUOTE_SIDE", "FORECAST_CUTOFF", "FORECAST_SAMPLE")
