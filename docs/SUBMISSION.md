@@ -1,5 +1,23 @@
 # HeatCheck: telling real effects from lucky patterns in NBA data
 
+## Summary
+
+HeatCheck is an AI researcher that tests its own ideas and separates robust discoveries from lucky findings,
+using NBA data. Heater, an AI pundit, proposes claims; a Challenger attacks them; a deterministic Referee
+decides by pre-registered rules and records every verdict in a tamper-evident ledger.
+
+- **Elo vs base rate** (2023–24, 300 held-out games): survives, narrowly (Holm p 0.046).
+- **Rest/back-to-back:** refused by its own pre-registered rule despite p 0.049, because its confidence
+  interval includes zero.
+- **2024–25:** sealed before any test, then tested for the first time: **[PLACEHOLDER — not yet run]**.
+
+**What review caught:** independent review found that the final step accepted tampered outcome labels as a
+"retry" (RV-R1). This was fixed, and the replay reproduced every digit.
+
+**Demo:** `.\demo.cmd` (see README on `max/integrate-r001-e001`).
+
+---
+
 Draft for the judges, 7 November 2026. Every number below is copied from a committed evidence file or report.
 The source is given next to each result. Nothing here is a projection.
 
@@ -18,7 +36,8 @@ with market prices is descriptive only.
 
 A claim goes through four steps. Only the last two decide anything.
 
-1. **Discoverer (runtime role "Jone") proposes.** It may only propose a claim from a registry of claims
+1. **Heater proposes.** (Heater is the user-facing name; the internal role is the Discoverer.) It may only
+   propose a claim from a registry of claims
    that have a defined test. A proposal that is not exactly a registered claim id is refused.
 2. **Challenger attacks.** It selects the registered attacks: ways the claim could be wrong, such as
    too small a sample, a null-distribution check, or shot selection. The Referee computes the attacks the
@@ -31,13 +50,23 @@ A claim goes through four steps. Only the last two decide anything.
    the original entry. An edited, deleted, inserted or reordered line is detected on read. The chain alone
    cannot detect lines cut from the end; comparing its head with a value recorded elsewhere can.
 
+**Heater and the Ref.** Heater is the user-facing voice of the Discoverer: an AI-generated, original pundit
+character who improvises hot takes through the language model. Heater is instructed never to state
+statistics or numbers, never to contradict the Ref, and never to name or imitate a real commentator. Its
+text also passes the number guard. The Referee ("the Ref") is deterministic
+and never improvises. Its verdict comes only from the fixed rule and the ledger entry. The model may phrase
+the Ref's plain-English explanation, but that text must pass a guard that every number appears in the
+evidence record. Otherwise a fixed template is shown.
+
 **What is built today** (Max's branch `max/integrate-r001-e001`):
 - The proposer in the loop is a deterministic stand-in.
 - A model-backed Challenger exists, but it can only add attacks. Under the current registry every applicable
   attack is already required, so it is not called.
-- A language model (Meta `muse-spark-1.3`) is used in the live dialogue for two things only: mapping a
-  user's question to a registered claim, and phrasing the explanation. A guard checks that every number
-  in the model's text appears in the evidence record.
+- A language model (Meta `muse-spark-1.3`) is used in the live dialogue for three things: mapping a
+  user's question to a registered claim, Heater's in-character reactions, and phrasing the Ref's
+  explanation. A guard checks that every number in the model's text appears in the evidence record.
+- The proposer in the agent loop (above) is still the deterministic stand-in. Heater speaks in the
+  dialogue; it does not yet choose claims by model.
 - In a live end-to-end test, the model mapped 6 of 6 questions correctly, and every verdict equalled the
   committed ledger entry (`reports/max/2026-11-07-2009-live-e2e-and-demo.md`).
 - The model never changes a verdict.
@@ -227,7 +256,30 @@ The same review process also caught:
 - **RV-E1…E8:** robustness findings in the read-only market-quote adapter, handled on the Experience
   branches.
 
-## 7. Known limits
+## 7. How this was built
+
+- **Four Claude coding sessions, each with its own role.**
+  - Integration ("Max"): orchestration, API, contracts, ledger.
+  - Research: data, statistics, custodian, pre-registration.
+  - Experience: UI, Heater character, read-only market adapters.
+  - Independent reviewer: replays and adversarial tests. It is not an author of the code it reviews.
+
+  They coordinated only through GitHub branches and committed reports. Every status report records the
+  commit, the commands, the raw output and PASS/FAIL/NOT_RUN for each check. One session integrated the work.
+- **Models.** Meta `muse-spark-1.3` produces Heater's dialogue and routes questions to registered claims. It
+  also phrases the Ref's explanations under the number guard. Heater's character art was generated with
+  Gemini. No model decides a verdict.
+- **Prepared before the event.** These were committed on 7 November:
+  - the repository scaffold and tooling configuration, derived from a 6 November preparation scaffold;
+  - the three role specifications (commit `5be39a7`, 12:07 UTC);
+  - the data pipeline specification (`c1944de`, 15:04 UTC).
+
+  An earlier Discoverer plan is dated 14 October. The organisers' ruling on pre-event reuse is not recorded
+  (`ELIGIBILITY.md`).
+- **HeatCheck replaced an earlier idea, BreakPoint.** Its working tree was archived separately. None of its
+  code or results is used here.
+
+## 8. Known limits
 
 - **Only one game is bridged into the shared record format.** The season-level analyses run in Research's
   own table format. Only `nba:0022300061` has been translated into the shared `heatcheck-records/1` bundle
