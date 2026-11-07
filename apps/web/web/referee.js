@@ -1,6 +1,9 @@
 // Referee evidence view model. Pure functions: no DOM, no network, no statistics.
 //
-// PROVISIONAL. Max owns the Referee evidence record format and has not delivered it yet. Until
+// UPDATE (Max, 2026-11-07): Max's format is now delivered as heatcheck-referee-view/1
+// (docs/REFEREE_VIEW_FORMAT.md); fromRecord() reads it first. Pending Experience review.
+// The provisional reader below is kept for old files.
+// (original note) PROVISIONAL. Max owns the Referee evidence record format and has not delivered it yet. Until
 // then this module defines the four things the UI shows (claim, attacks run, verdict, evidence)
 // and two adapters into that view:
 //   fromRecord(record)        a record in the provisional shape below (replace when Max's lands)
@@ -18,6 +21,12 @@
 
 export const FORMAT_STATUS = "PROVISIONAL: awaiting Max's Referee evidence record format";
 export const PROVISIONAL_FORMAT = "provisional-experience/0";
+// Max's read-only projection of a ledger entry (docs/REFEREE_VIEW_FORMAT.md). Added by Max on
+// 2026-11-07 while Experience was rate-limited; pending Experience review.
+export const VIEW_FORMAT = "heatcheck-referee-view/1";
+export const VIEW_FORMAT_STATUS = "heatcheck-referee-view/1: projection of a Referee evidence ledger entry";
+// Attack status in a view says whether the attack RAN, not whether the claim passed it.
+export const ATTACK_STATUSES = ["EXECUTED", "FAILED", "UNSUPPORTED"];
 
 export const VERDICTS = {
   SURVIVED_PROTOCOL: ["✓", "Survived every registered check"],
@@ -80,13 +89,78 @@ function attackView(a, i, problems) {
   };
 }
 
-/** View model from a provisional Referee evidence record. Never throws on bad content. */
+function viewAttack(a, i, problems) {
+  const where = `attacks_run[${i}]`;
+  if (!isObj(a)) { problems.push(`${where} is not an object`); return null; }
+  let outcome = a.status;
+  if (!ATTACK_STATUSES.includes(outcome)) {
+    problems.push(`${where}.status ${JSON.stringify(outcome ?? null)} is not one of ${ATTACK_STATUSES.join("/")}`);
+    outcome = "UNRECOGNISED";
+  }
+  const ran = outcome === "EXECUTED";
+  return {
+    test_id: field(a, "test_id", problems, where),
+    outcome,   // EXECUTED / FAILED / UNSUPPORTED, shown as supplied (never mapped to PASSED)
+    statistic: ran || a.statistic != null ? numberOrText(a.statistic, "statistic") : UNAVAILABLE("attack did not execute"),
+    p_value: ran || a.p_value != null ? numberOrText(a.p_value, "p-value") : UNAVAILABLE("attack did not execute"),
+    method: a.method ? shown(String(a.method)) : UNAVAILABLE("method not stated"),
+    reason: a.reason ? String(a.reason) : null,
+  };
+}
+
+/** View model from Max's heatcheck-referee-view/1 projection. Never throws on bad content. */
+function fromView(record) {
+  const problems = [];
+  const dataMode = DATA_MODES.includes(record.data_mode) ? record.data_mode : null;
+  if (!dataMode) problems.push(`data_mode ${JSON.stringify(record.data_mode ?? null)} not recognised`);
+  let claim = null;
+  if (isObj(record.claim)) {
+    const c = record.claim;
+    claim = {
+      claim_id: field(c, "claim_id", problems, "claim"),
+      statement: field(c, "statement", problems, "claim"),
+      plan_hash: field(c, "plan_hash", problems, "claim"),
+      // Registered claims have no user revision: not applicable, not a gap.
+      revision: c.revision === null || c.revision === undefined
+        ? UNAVAILABLE(`not applicable (registered claim, version ${c.version ?? "not stated"})`)
+        : shown(c.revision),
+    };
+  } else problems.push("claim missing");
+
+  let attacks = [];
+  if (Array.isArray(record.attacks_run)) {
+    attacks = record.attacks_run.map((a, i) => viewAttack(a, i, problems)).filter(Boolean);
+    if (!attacks.length) problems.push("attacks_run is empty: no attack was reported");
+  } else problems.push("attacks_run missing");
+
+  const v = isObj(record.verdict) ? record.verdict : {};
+  if (!isObj(record.verdict)) problems.push("verdict missing");
+  const verdict = verdictView(v.decision, v.reason, problems);
+
+  let evidence = [];
+  if (Array.isArray(record.evidence)) {
+    evidence = record.evidence.map((e, i) => isObj(e)
+      ? { label: String(e.label ?? `evidence[${i}]`), value: numberOrText(e.value, "value"), kind: String(e.kind ?? "other") }
+      : (problems.push(`evidence[${i}] is not an object`), null)).filter(Boolean);
+    if (!evidence.length) problems.push("evidence is empty");
+  } else problems.push("evidence missing");
+  const d = isObj(record.derived_from) ? record.derived_from : null;
+  if (!d || !d.evidence_id) problems.push("derived_from.evidence_id missing: cannot trace this view to a ledger entry");
+
+  return { source: "REFEREE_RECORD", format_status: VIEW_FORMAT_STATUS, data_mode: dataMode, claim, attacks, verdict, evidence,
+           evidence_id: d && d.evidence_id ? String(d.evidence_id) : null,
+           roles: isObj(record.roles) ? record.roles : null, limits: record.limits ? String(record.limits) : null, problems };
+}
+
+/** View model from a Referee record: Max's heatcheck-referee-view/1, or the older
+ *  provisional-experience/0 shape (still read, labelled provisional). Never throws on bad content. */
 export function fromRecord(record) {
   const problems = [];
   if (!isObj(record)) {
     return { source: "REFEREE_RECORD", format_status: FORMAT_STATUS, data_mode: null, claim: null, attacks: [],
              verdict: verdictView(null, null, problems), evidence: [], problems: ["record is not a JSON object", ...problems] };
   }
+  if (record.format === VIEW_FORMAT) return fromView(record);
   if (record.format !== PROVISIONAL_FORMAT) {
     problems.push(`format ${JSON.stringify(record.format ?? null)} is not ${PROVISIONAL_FORMAT}; fields may be misread`);
   }
