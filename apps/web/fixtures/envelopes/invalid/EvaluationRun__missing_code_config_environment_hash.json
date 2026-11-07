@@ -1,0 +1,29 @@
+{
+ "confirmed_revision": 1,
+ "counts_coverage": {
+  "attempts": 9000,
+  "eligible_positions": 4599,
+  "sequences": 30
+ },
+ "created_at_utc": "2026-11-07T15:42:18.952925+00:00",
+ "data_hashes": [
+  "c83ed434f5ad10ea4a47dee8477655873e62c06311a01982585105b21128eedc"
+ ],
+ "data_mode": "SYNTHETIC",
+ "decision": "SURVIVED_PROTOCOL",
+ "engine": "fixture-local-0.2",
+ "exposure_receipt_id": null,
+ "final_epoch_id": null,
+ "model_prompt_response_ids": [],
+ "owner_context": "session fixture- / experience-local",
+ "plan_hash": "66c14d173ee3d7e7b4f2ddb465e73d3bcef9c7d4af963405c55737d5892214b1",
+ "raw_output_hashes": [
+  "90b93a18e5b75d95acac0400ffd352921cfb3243cc655768701cfb346d8165ce"
+ ],
+ "reason": "every registered check passed and the estimate clears the practical floor",
+ "run_id": "963554383c20475d",
+ "seed_manifest": {
+  "analysis_rng_seed": 1234,
+  "generator_seed": "sealed by custodian until reveal"
+ }
+}
