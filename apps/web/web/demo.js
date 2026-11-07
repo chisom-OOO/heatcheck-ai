@@ -15,6 +15,8 @@ import {
 } from "./heater/heater-model.js";
 import { loadBoard, renderBoard } from "./market/board.js";
 import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
+import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
+import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
 import { createVoice } from "./voice.js";
 
 const params = new URLSearchParams(location.search);
@@ -258,20 +260,114 @@ function setBusy(b) {
   ui.go.disabled = b;
   ui.chips.forEach((c) => { c.disabled = b; });
   ui.boardBtn.disabled = b;
+  ui.ideasBtn.disabled = b;
 }
 
-// ------------------------------------------------------------------ market board
+// ------------------------------------------------------------------ views: talk, market board, idea board
 ui.board = $("board");
 ui.boardBtn = $("btn-board");
+ui.ideas = $("ideas");
+ui.ideasBtn = $("btn-ideas");
+const VIEWS = {
+  board: { section: () => ui.board, button: () => ui.boardBtn, label: "Tonight's games" },
+  ideas: { section: () => ui.ideas, button: () => ui.ideasBtn, label: "Idea board" },
+};
 
 function setView(view) {
   document.body.dataset.view = view;
-  const board = view === "board";
-  ui.board.hidden = !board;
-  ui.boardBtn.setAttribute("aria-pressed", String(board));
-  ui.boardBtn.textContent = board ? "Back to Heater" : "Tonight's games";
-  if (board) { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; }
+  for (const [name, v] of Object.entries(VIEWS)) {
+    const on = view === name;
+    v.section().hidden = !on;
+    v.button().setAttribute("aria-pressed", String(on));
+    v.button().textContent = on ? "Back to Heater" : v.label;
+  }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; }
 }
+
+function toggleView(view, open) {
+  if (document.body.dataset.view === view) { setView("talk"); ui.hint.hidden = Boolean(state.current); }
+  else open();
+}
+
+// ------------------------------------------------------------------ idea board
+async function openIdeas() {
+  setView("ideas");
+  if (!state.ideas) {
+    ui.ideas.replaceChildren(Object.assign(document.createElement("p"), { className: "board-note", textContent: "Loading the idea board…" }));
+    state.ideas = await loadIdeas();
+    log(`ideas: ${state.ideas.status} ${state.ideas.families.length} families${state.ideas.reason ? ` (${state.ideas.reason})` : ""}`);
+  }
+  renderIdeas(ui.ideas, state.ideas, { onAsk: (r, f) => askIdea(r, f) });
+}
+
+function ideaDetails(r, f) {
+  const dl = document.createElement("dl");
+  const row = (k, v) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  };
+  row("Verdict", `${r.verdict} (exploratory, never SURVIVED_PROTOCOL)`);
+  row("Idea", `${r.template} ${JSON.stringify(r.params)}`);
+  row("Test", `permutation, B = ${r.B_effective ?? f.B}; observed ${r.T}, null mean ${r.null_mean}`);
+  row("p", `raw ${r.p_raw}, Holm ${r.p_holm} (${f.multiplicity || `Holm across ${f.n_ideas}`})`);
+  row("Data", f.data_scope || "");
+  row("Registered", `${fmtUtc(f.registered_utc, { seconds: true })}, before any result (${f.registration_hash.slice(0, 12)}…)`);
+  row("Results", `${fmtUtc(f.created_utc, { seconds: true })} (sha256 ${f.results_sha256.slice(0, 12)}…)`);
+  row("Idea hash", r.idea_hash);
+  row("Checked here", f.checks.join("; "));
+  return dl;
+}
+
+/** Heater pitches one idea; the Ref words Research's verdict; the stamp lands. */
+async function askIdea(r, f) {
+  if (state.busy) return;
+  state.busy = true;
+  setBusy(true);
+  setView("talk");
+  reset();
+  voice.stopSpeaking();
+  const h = state.heater;
+  log(`idea ${r.idea_hash.slice(0, 8)}: ${r.verdict}`);
+  h.setState("listening");
+  await sleep(350);
+  h.setState("thinking");
+  await sleep(TIMING.thinkingMin);
+  document.body.dataset.phase = "take";
+  const take = heaterIdeaLine(r);
+  ui.take.textContent = take;
+  ui.bubble.hidden = false;
+  restartAnim(ui.bubble);
+  h.setState("hot_take");
+  await h.speak(take, "heater", { voiceOn: state.voiceOn });
+  document.body.dataset.phase = "check";
+  ui.refTitle.textContent = `Idea board · ${ideaTitle(r)}`;
+  ui.refText.textContent = "Checking the tape";
+  ui.ref.classList.add("checking");
+  ui.ref.hidden = false;
+  restartAnim(ui.ref);
+  await h.play("heat_check", TIMING.heat_check);
+  h.setState("thinking");
+  const line = refIdeaText(r, f);
+  ui.ref.classList.remove("checking");
+  ui.refText.textContent = line;
+  document.body.dataset.phase = "ref";
+  await h.speak(line, "ref", { voiceOn: state.voiceOn });
+  const stamp = ideaStamp(r);
+  ui.stamp.className = `stamp ${stamp.kind}`;
+  ui.stamp.textContent = stamp.text;
+  ui.stamp.hidden = false;
+  restartAnim(ui.stamp);
+  ui.ref.classList.add("slammed");
+  h.setState(ideaEndState(r), { restart: true });
+  ui.evidenceBody.replaceChildren(ideaDetails(r, f));
+  ui.evidence.hidden = false;
+  document.body.dataset.phase = "done";
+  state.busy = false;
+  setBusy(false);
+}
+
+// ------------------------------------------------------------------ market board
 
 async function openBoard() {
   setView("board");
@@ -434,15 +530,14 @@ async function main() {
   log(`ledger: ${state.ledger.entries.length} entries from ${state.ledger.source}`);
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });
   ui.chips.forEach((c) => c.addEventListener("click", () => { ui.q.value = c.textContent; ask(c.textContent); }));
-  ui.boardBtn.addEventListener("click", () => {
-    if (document.body.dataset.view === "board") { setView("talk"); ui.hint.hidden = Boolean(state.current); }
-    else openBoard();
-  });
+  ui.boardBtn.addEventListener("click", () => toggleView("board", openBoard));
+  ui.ideasBtn.addEventListener("click", () => toggleView("ideas", openIdeas));
   setView("talk");
   if (DEBUG) buildDebug();
   document.body.dataset.ready = "1";
   if (params.get("ask")) { ui.q.value = params.get("ask"); ask(params.get("ask")); }
   else if (params.get("board") === "1") openBoard();
+  else if (params.get("ideas") === "1") openIdeas();
 }
 
 main().catch((e) => {
