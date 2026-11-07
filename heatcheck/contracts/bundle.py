@@ -24,6 +24,7 @@ from heatcheck.contracts.records import (
     canonical_bytes,
     encode_records,
     loads_strict,
+    record_hash,
     sha256_hex,
     validate_record,
 )
@@ -226,6 +227,7 @@ def _check_nba_consistency(
             key = f"{b['game_id']}:shot:{b['provider_event_id']}"
             if key not in shots or b["revision"] > shots[key]["body"]["revision"]:
                 shots[key] = r
+    event_by_hash = {record_hash(r): r for r in by_type["EVENT"].values()}
 
     for r in by_type["EVENT"].values():
         b = r["body"]
@@ -252,6 +254,23 @@ def _check_nba_consistency(
                     raise BundleError(
                         f"{rid} cutoff before_sequence {cutoff['before_sequence']} is after its "
                         f"target shot (sequence {target['body']['sequence']})"
+                    )
+            # RV-L4: no input may be the target shot's own EVENT, or a same-game EVENT at or
+            # after the cutoff sequence.
+            for h in b["source_record_hashes"]:
+                ev = event_by_hash.get(h)
+                if ev is None:
+                    continue
+                if target is not None and h == record_hash(target):
+                    raise BundleError(f"{rid} lists its own target shot EVENT as an input")
+                if (
+                    cutoff["kind"] == "GAME_SEQUENCE"
+                    and ev["body"]["game_id"] == b["game_id"]
+                    and ev["body"]["sequence"] >= cutoff["before_sequence"]
+                ):
+                    raise BundleError(
+                        f"{rid} input EVENT sequence {ev['body']['sequence']} is not before the "
+                        f"cutoff {cutoff['before_sequence']}"
                     )
 
 
