@@ -1,5 +1,11 @@
 # Max report: Referee view format `heatcheck-referee-view/1` and Experience's `fromRecord()`
 
+> **Withdrawn, 18:00 UTC (user instruction).** The task was dropped: Experience's
+> `experience/referee-ui-integrate@496901c` reads the ledger as-is, and it is merged
+> unchanged in `89d3868`. Commit `954c0d5` was reverted in `60b5b10`, which removed the doc,
+> projection, fixture, tool, tests and the `referee.js`/`app.js` edits. This report is kept
+> as a record of what was built and then removed.
+
 Written 2026-11-07 17:37 UTC on branch `max/integrate-r001-e001`. The code commit is
 `954c0d5`. Raw logs are in `logs/2026-11-07-referee-view/`. The user agreed the read-only view
 approach. Experience was rate-limited until 20:00 UTC, so Max changed `fromRecord()`.

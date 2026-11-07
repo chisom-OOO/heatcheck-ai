@@ -56,3 +56,21 @@
 - 7 November (Max, user-agreed): the UI reads `heatcheck-referee-view/1`, a read-only
   projection of a ledger entry (docs/REFEREE_VIEW_FORMAT.md). Ledger records are not
   reshaped.
+- 7 November, 18:00 (user, recorded by Max):
+  - **View format withdrawn.** The `heatcheck-referee-view/1` entry above is superseded.
+    Experience's UI reads the ledger as-is (experience/referee-ui-integrate@496901c, merged
+    unchanged). Max's projection commit 954c0d5 was reverted in 60b5b10.
+  - **Experience's questions:**
+    - Keep the attack status name `UNSUPPORTED`.
+    - STALE is 60 s for live display and 600 s for historical comparison. This was confirmed
+      as correct.
+    - `EvidenceLedger.open_readonly()` is added (commit c8831e6) for read-only callers such as
+      apps/web/server/evidence.py.
+    - The UI says "hashes verified" until the ledger hash chain exists. The chain now exists
+      (c8831e6), so Experience may change the label once its reader verifies the chain.
+  - **Reviewer agent-loop findings, fixed before the LLM wiring:**
+    - RV-AL6: strict parsing (b2e6537).
+    - RV-AL4/AL5: the Referee enforces mandatory + applicable attacks; the Challenger can add,
+      never remove (b2e6537).
+    - RV-AL1/AL2: the ledger is hash-chained (c8831e6). The two committed ledgers were
+      migrated by adding chain fields only.
