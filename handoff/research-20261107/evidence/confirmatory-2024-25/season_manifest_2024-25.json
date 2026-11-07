@@ -1,0 +1,93 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "manifest_type": "confirmatory_season_manifest",
+  "season": "2024-25",
+  "competition": "NBA_REGULAR_SEASON",
+  "created_utc": "2026-11-07T17:52:07.176221Z",
+  "transformation_revision": {
+    "canonical.py": "970451282443704284d39dfe78f931195a96d4630b0b9ecd87dd55b9ea49d923",
+    "build_confirmatory.py": "9b1f723cca3dc32540dba369bbabcaf25b6179638d1854bc30461a7f79e4ce9e"
+  },
+  "raw_snapshots": [
+    {
+      "provider": "cdnnba",
+      "upstream": "https://github.com/shufinskiy/nba_data",
+      "upstream_revision": "46488f0f8e1cab58fc1256511ea808166a443a15",
+      "path_in_upstream": "datasets/cdnnba_2024.tar.xz",
+      "retrieval_utc": "2026-11-07T17:51:10.773475Z",
+      "payload_sha256": "35a82e6b29821adb22b8474dea8c51e08847d8e00690d1d5ffde7d000e0087d1",
+      "byte_count": 18886652,
+      "members": [
+        "cdnnba_2024.csv"
+      ],
+      "schema_version": "canonical/1",
+      "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9)."
+    },
+    {
+      "provider": "nbastats",
+      "upstream": "https://github.com/shufinskiy/nba_data",
+      "upstream_revision": "46488f0f8e1cab58fc1256511ea808166a443a15",
+      "path_in_upstream": "datasets/nbastats_2024.tar.xz",
+      "retrieval_utc": "2026-11-07T17:51:11.276341Z",
+      "payload_sha256": "8f370da00ad0a6d4157921bd161d56ea32647a165d906516f2b36384a6a4989a",
+      "byte_count": 8583784,
+      "members": [
+        "nbastats_2024.csv"
+      ],
+      "schema_version": "canonical/1",
+      "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9)."
+    }
+  ],
+  "pinned_archives": {
+    "cdnnba_2024.tar.xz": {
+      "sha256": "35a82e6b29821adb22b8474dea8c51e08847d8e00690d1d5ffde7d000e0087d1",
+      "bytes": 18886652,
+      "git_blob": "4ff09ac1238a28a0e213c0f4e950b6848cf6f230"
+    },
+    "nbastats_2024.tar.xz": {
+      "sha256": "8f370da00ad0a6d4157921bd161d56ea32647a165d906516f2b36384a6a4989a",
+      "bytes": 8583784,
+      "git_blob": "acda11afb5fdb4cbee610e62b66e19915ef3de22"
+    }
+  },
+  "logical_table_hashes": {
+    "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+    "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+    "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+    "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+  },
+  "record_counts": {
+    "raw_rows": 686008,
+    "raw_games": 1230,
+    "duplicate_sequence": 0,
+    "duplicate_event_id": 0,
+    "clock_regress_steps": 2,
+    "neutral_site_games_flagged": 5,
+    "games_included": 1230,
+    "games_excluded": 0,
+    "events_included": 686008,
+    "field_goal_attempts": 219529,
+    "points_check_mismatch": 0,
+    "non_regular_season_ids_excluded": [],
+    "quarantined_game_ids": [
+      "0022400072"
+    ],
+    "games_sealable": 1230,
+    "events_sealable": 686008,
+    "field_goal_attempts_sealable": 219529
+  },
+  "reconciliation": {
+    "MATCH": 1229,
+    "SCORE_MISMATCH": 1
+  },
+  "external_crosscheck": {
+    "balldontlie": "NOT_RUN: no user key; coverage UNVERIFIED_EXTERNAL"
+  },
+  "exclusions": [],
+  "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9).",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "pseudo_out_of_sample": true,
+  "access_note": "Sealed final data. Only counts/hashes printed; no claim or outcome statistic computed."
+}

@@ -140,3 +140,9 @@ Protocol `heatcheck-nba/1`. Decisions taken by HeatCheck-Research on 2026-11-07 
   table and excluded from every confirmatory sample. Values are never edited to make sources agree.
 - Decided before the seal and before the plans were frozen. The rule is added to the registered sample
   definitions.
+
+## D20 — Erratum: times in D14–D19 (appended 2026-11-07 ~17:55 UTC by the container clock)
+- The approximate times written into D14–D18 ("~17:55 UTC") and D19 ("~18:05 UTC") were estimates and are
+  too late. The authoritative times are the commit times: D14–D18 in `c05f540` (2026-11-07T17:42:17Z), D19 in
+  `491e09e` (17:51:09Z). The order is unchanged: design (D17) committed 17:42Z → seal 17:52:37Z →
+  development run → plans frozen. Entries are not edited in place.

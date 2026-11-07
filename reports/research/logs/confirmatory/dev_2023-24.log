@@ -1,0 +1,89 @@
+code commit 491e09e6e4f8026b5ddd79ab584d617e77445eba
+$ python -I scripts/confirmatory.py dev $DATA2023 evidence
+{
+  "protocol_version": "heatcheck-nba/1",
+  "lane": "CONFIRMATORY",
+  "phase": "DEVELOPMENT",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "season": "2023-24",
+  "pseudo_out_of_sample": true,
+  "games": 930,
+  "split_manifest_hash": "30fded21be74e8b4fe0992908a402b8ef471c18414c5674ad7c90d1291508fcf",
+  "results": {
+    "_quarantined_games_excluded": [],
+    "CONF-HA": {
+      "n_games": 926,
+      "neutral_excluded": 4,
+      "status": "EXECUTED",
+      "mean": 0.052915766738660906,
+      "home_win_rate": 0.5529157667386609,
+      "ci95": [
+        0.01716646294951797,
+        0.08829612091149662
+      ],
+      "p_one_sided": 0.0014998500149985001,
+      "days": 135,
+      "nonoverlap_blocks": 19
+    },
+    "CONF-MOM": {
+      "n_fga": 165710,
+      "hits_after_makes": 33479,
+      "n_after_makes": 70543,
+      "hits_after_misses": 36472,
+      "n_after_misses": 76290,
+      "status": "EXECUTED",
+      "T": -0.0034805539792798212,
+      "p_make_after_makes": 0.47458996640347023,
+      "p_make_after_misses": 0.47807052038275005,
+      "null_mean": 0.00709032031697281,
+      "null_sd": 0.0023310944069994846,
+      "B_effective": 999,
+      "p_one_sided": 1.0,
+      "fga_excluded_ordering_unresolved": 210
+    },
+    "CONF-HH": {
+      "n_fga": 165710,
+      "hits_after_makes": 6114,
+      "n_after_makes": 12666,
+      "hits_after_misses": 7306,
+      "n_after_misses": 15295,
+      "status": "EXECUTED",
+      "T": 0.005037174321093019,
+      "p_make_after_makes": 0.4827096162955945,
+      "p_make_after_misses": 0.4776724419745015,
+      "null_mean": 0.019128791720128446,
+      "null_sd": 0.004772950865775937,
+      "B_effective": 999,
+      "p_one_sided": 0.998,
+      "fga_excluded_ordering_unresolved": 210
+    }
+  },
+  "development_decisions_if_rule_applied": {
+    "CONF-HA": {
+      "decision": "INSUFFICIENT_EVIDENCE",
+      "reason": "926 eligible games < 1000",
+      "p_one_sided": 0.0014998500149985001,
+      "p_holm": 0.0044995500449955
+    },
+    "CONF-HH": {
+      "decision": "INSUFFICIENT_EVIDENCE",
+      "reason": "not rejected at Holm 0.05; no equivalence test registered",
+      "p_one_sided": 0.998,
+      "p_holm": 1.0
+    },
+    "CONF-MOM": {
+      "decision": "INSUFFICIENT_EVIDENCE",
+      "reason": "not rejected at Holm 0.05; no equivalence test registered",
+      "p_one_sided": 1.0,
+      "p_holm": 1.0
+    }
+  },
+  "note": "Exploratory. Same code and parameters as the registered family; not a confirmatory result.",
+  "code_hash": "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e",
+  "created_utc": "2026-11-07T17:54:24.355876Z"
+}
+
+real	1m9.636s
+user	1m8.780s
+sys	0m0.835s
+exit=0
