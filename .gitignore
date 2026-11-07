@@ -1,0 +1,19 @@
+# Private configuration and generated environments
+.env
+.env.*
+!.env.example
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+node_modules/
+dist/
+data/raw/*
+!data/raw/README.md
+data/processed/*
+!data/processed/README.md
+artifacts/models/*
+!artifacts/models/README.md
+replay/private/

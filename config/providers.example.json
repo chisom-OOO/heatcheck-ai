@@ -1,0 +1,10 @@
+{
+  "status": "example only; no provider calls configured",
+  "reasoning": "Meta model selected from actual account entitlement",
+  "speech_to_text": "Meta Muse Voice Transcribe if available",
+  "speech_output": "browser TTS planned",
+  "keys": "server environment only; no key values in this file",
+  "spend_authorisation": false,
+  "market_mode": "read_only_nba_comparison",
+  "live_connectors_verified": false
+}

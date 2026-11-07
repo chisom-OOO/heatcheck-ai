@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "status": "PROPOSED ACCEPTANCE FRAMEWORK, ALL GATES UNEXECUTED",
+  "gates": [
+    {
+      "id": "G01",
+      "name": "Data/provenance",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Raw hashes, schema/completeness, totals/IDs and source/use notes; no invented fields",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G02",
+      "name": "Temporal correctness",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Future-perturbation, availability cutoff, one-row/game, event boundaries and exposure audit",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G03",
+      "name": "Statistical oracles",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Conjugate moments, score fixtures, exact tiny null and explicit undefined cases",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G04",
+      "name": "Registered adversarial tests",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Mandatory applicable attacks execute; missing prerequisites block; changes logged",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G05",
+      "name": "Harness truth isolation",
+      "owner": "Research/Max",
+      "status": "NOT_RUN",
+      "required_evidence": "Actual access-denial tests; no truth leakage; labels match estimands",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G06",
+      "name": "Null and power",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Independent replicated null/planted/weak/confounded cases; uncertainty and actual counts",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G07",
+      "name": "Calibration separation",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Disjoint train/tune/calibration/final groups; held-out family, base rates and scope disclosed",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G08",
+      "name": "Final-data/adaptivity",
+      "owner": "Max/Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Frozen family/epoch, persistent record-level exposure registry and atomic unlock; new-ID/renamed-file/restart bypass probes; full family reported",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G09",
+      "name": "Forecast comparison",
+      "owner": "Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Identical eligible games/fallbacks; baseline, proper scores, dependence assumptions, coverage",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G10",
+      "name": "NBA event mapping",
+      "owner": "Max/Research",
+      "status": "NOT_RUN",
+      "required_evidence": "Exact game/participants/date/outcome and regulation/overtime/cancel mapping; unknowns block",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G11",
+      "name": "Quote normalization",
+      "owner": "Research/Experience",
+      "status": "NOT_RUN",
+      "required_evidence": "Independent quote-side/unit/tick/quantity fixtures; difference is descriptive, no profit claim",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G12",
+      "name": "Read-only live adapters",
+      "owner": "Experience",
+      "status": "NOT_RUN",
+      "required_evidence": "Actual permitted metadata/book fetch; stale/empty/error modes, timestamps and raw hashes",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G13",
+      "name": "Authority/immutability",
+      "owner": "Max",
+      "status": "NOT_RUN",
+      "required_evidence": "Exact confirmation, retry identity, stale edits, historical evidence and export stability",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G14",
+      "name": "Injection/resource/security",
+      "owner": "All",
+      "status": "NOT_RUN",
+      "required_evidence": "Malicious source/file/URL, bounded tools/jobs/audio, private keys and no order capability",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G15",
+      "name": "Real interface/voice",
+      "owner": "Experience",
+      "status": "NOT_RUN",
+      "required_evidence": "Actual browser/mic flow, correction/cancel/permissions/error/export; logs and environment",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G16",
+      "name": "Separate review/replay",
+      "owner": "Max",
+      "status": "NOT_RUN",
+      "required_evidence": "Reviewer other than author replays exact scope; root causes repaired and rechecked",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G17",
+      "name": "Demo and claims",
+      "owner": "All",
+      "status": "NOT_RUN",
+      "required_evidence": "Every spoken headline linked to actual evidence/mode/limits; recorded fallback labelled",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    },
+    {
+      "id": "G18",
+      "name": "Eligibility/submission",
+      "owner": "User/Max",
+      "status": "NOT_RUN",
+      "required_evidence": "Actual event rules/reuse/AI and submission requirements recorded; no concealed preparation",
+      "source_identity": null,
+      "evidence": [],
+      "reviewer": null
+    }
+  ]
+}

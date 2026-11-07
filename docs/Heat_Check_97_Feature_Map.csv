@@ -1,0 +1,98 @@
+source_id,feature,merged_priority,owner,implementation_note
+HC01,Bulk historical PBP and shots,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC02,Current-season ingestion,CONDITIONAL,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC03,Canonical shot schema,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC04,Free-throw trip schema,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC05,Game/team features,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC06,Data reconciliation,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC07,Frozen snapshots,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC08,Sealed final-data service,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC09,Difficulty model,CORE,Research,Exclude post-outcome assisted field; train-only fit.
+HC10,Natural-experiment catalogue,CONDITIONAL,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC11,Hierarchical league generator,CORE,Research,Realism does not establish transfer.
+HC12,Realistic schedule/sample counts,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC13,Planted mechanisms,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC14,Effect heterogeneity,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC15,Planted false confounders,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC16,Masked effects,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC17,Pure null leagues,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC18,Hidden truth manifest,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC19,Effect/sample-size dials,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC20,Multiple generator families,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC21,Semi-synthetic generator,CONDITIONAL,Research,Conditional validity/label leakage must be checked.
+HC22,Held-out generator family,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC23,Vectorised simulation,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC24,Seeded replay,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC25,Fidelity diagnostics,CORE,Research,"Describe fidelity, not proof of calibration transfer."
+HC26,Beta-binomial shrinkage,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC27,Variance/reliability decomposition,CORE,Research,Model/population/unequal-count assumptions explicit.
+HC28,Stabilisation points,STRONG,Research,No universal half-luck threshold.
+HC29,Split-half reliability,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC30,Full hierarchical Bayes,LATER,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC31,Posterior predictive leaderboards,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC32,Team-luck diagnostics,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC33,Year-to-year persistence,STRONG,Research,"Persistence is evidence, not definition of all skill."
+HC34,Regression-to-mean forecast,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC35,Dynamic talent,LATER,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC36,Structured claim plan,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC37,Hashed registration,CORE,Max/shared,"Register before protected testing, disclose prior exploration."
+HC38,Deterministic tool registry,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC39,Folklore/data-driven proposals,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC40,Power/detectability,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC41,Online FDR/e-processes,LATER,Max/shared,Not implemented by incrementing a counter; separate valid protocol.
+HC42,Refinement ledger,CORE,Max/shared,Count refinements; no automatic statistical correction claim.
+HC43,Natural-language claims,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC44,Vault budget,CORE,Max/shared,Use frozen final family; query limit alone is not error control.
+HC45,Adversarial p-hacker benchmark,STRONG,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC46,Design-valid permutation null,CORE,Research,Exchangeability/null assumptions and discrete p-value tests.
+HC47,Finite-sequence streak bias,CORE,Research,No naive zero-null or universal fixed correction.
+HC48,Difficulty-conditional analysis,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC49,Trait reliability attack,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC50,Time replication,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC51,Cross-population replication,CONDITIONAL,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC52,Selection simulation,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC53,Specification curve,CORE,Research,Descriptive unless valid global procedure implemented.
+HC54,Valid negative controls,CORE,Research,Jersey/weekday not assumed null; randomised controls preferred.
+HC55,Planted positive controls,CORE,Research,Known planted truth; not guaranteed real-data positives.
+HC56,Influence analysis,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC57,Confounder scan,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC58,Simpson stratification,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC59,Confounding E-value,LATER,Research,Confounding E-value differs from testing e-value.
+HC60,Leakage checks,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC61,Multiplicity policy,CORE,Research,One declared method per valid family; Holm default finite confirmation.
+HC62,Effect plausibility,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC63,Survivorship/threshold selection,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC64,Learned attack policy,LATER,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC65,Bounded rebuttal,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC66,Evidence-linked challenge report,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC67,Three-way research verdict,CORE,Max/shared,Use SURVIVED_PROTOCOL/NOT_SUPPORTED/INSUFFICIENT_EVIDENCE plus invalid/blocked.
+HC68,Data-needed estimate,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC69,Simulator-conditioned support score,CORE,Research,No simulated-score-to-real-NBA probability claim.
+HC70,Calibration/FDR/power metrics,CORE,Research,FDR and power with league-level uncertainty; precision undefined at R=0.
+HC71,Detectability curves,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC72,Attack ablation,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC73,Identical-data baselines,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC74,Held-out-family results,CORE,Research,No tuning on held-out family.
+HC75,Complete ledger,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC76,Real NBA studies,CORE,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC77,Literature comparison,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC78,Locked prospective prediction,CONDITIONAL,Max/shared,"Future outcomes pending, not created during hackathon."
+HC79,Stabilisation artifact,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC80,Evidence dashboard,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC81,Challenged-claim graveyard,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC82,Blind challenge,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC83,Ask Jone intake,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC84,Talent explorer,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC85,Forking-paths meter,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC86,Live evidence plots,STRONG,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC87,Tool trace replay,CORE,Experience,Implement only with scope-specific evidence; current status NOT_RUN.
+HC88,Stats/null/coverage tests,CORE,Research,"Discrete/conservative p-values need valid super-uniformity checks, not automatic KS-uniformity."
+HC89,Deterministic evidence replay,CORE,Max/shared,Store provider responses; generation may be stochastic.
+HC90,Provider cost limits,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC91,Versioned experiment config,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC92,Parallel harness execution,STRONG,Research,Implement only with scope-specific evidence; current status NOT_RUN.
+HC93,Actual role isolation,CORE,Max/shared,Test actual permission boundaries; logical isolation labelled.
+HC94,Frozen final evaluation protocol,CORE,Max/shared,Local hash/time is not automatic external publication.
+HC95,Red-team headline results,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC96,Limitations,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.
+HC97,Pipeline-configuration counts,CORE,Max/shared,Implement only with scope-specific evidence; current status NOT_RUN.

@@ -1,0 +1,184 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "status": "SPECIFICATION_ONLY; implement strict validators and tests before use",
+  "coding_roles": {
+    "HeatCheck-Max": "orchestration/API/contracts/ledger/integration",
+    "HeatCheck-Research": "data/statistics/attacks/simulator/calibration/quote normalization",
+    "HeatCheck-Experience": "interface/voice/capture/public NBA adapters/interaction checks"
+  },
+  "machines": "three separate computers; no automatic cross-account communication configured",
+  "runtime_roles": {
+    "discoverer": "development-only structured proposals",
+    "challenger": "registered adversarial tests; no final/truth reads",
+    "referee": "deterministic protocol code, not LLM voting",
+    "custodian": "restricted final/simulation truth evaluation"
+  },
+  "claim_channels": [
+    "SHOT_ASSOCIATION",
+    "GAME_PREDICTION",
+    "MARKET_COMPARISON"
+  ],
+  "decision_states": [
+    "SURVIVED_PROTOCOL",
+    "NOT_SUPPORTED",
+    "INSUFFICIENT_EVIDENCE",
+    "DATA_INVALID",
+    "BLOCKED"
+  ],
+  "data_modes": [
+    "REAL_NBA_RETROSPECTIVE",
+    "SYNTHETIC",
+    "LIVE_MARKET",
+    "RECORDED_MARKET"
+  ],
+  "required_envelopes": {
+    "ClaimPlan": [
+      "protocol_version",
+      "claim_id",
+      "revision",
+      "kind",
+      "statement",
+      "estimand",
+      "population",
+      "target_horizon_cutoff",
+      "effect_units",
+      "direction",
+      "feature_catalogue_hash",
+      "baseline_hash",
+      "data_hashes",
+      "split_manifest_hash",
+      "primary_metric_test",
+      "practical_effect_floor",
+      "mandatory_attacks",
+      "final_family_id",
+      "final_epoch_id",
+      "compute_budget",
+      "creator_model_prompt",
+      "canonical_plan_hash"
+    ],
+    "AttackResult": [
+      "claim_plan_hash",
+      "test_id_version",
+      "parameters_hash",
+      "input_hashes",
+      "scope",
+      "status",
+      "reason",
+      "statistic",
+      "effect_estimate",
+      "interval",
+      "p_value",
+      "null_method_assumptions",
+      "evidence_hash"
+    ],
+    "EvaluationRun": [
+      "run_id",
+      "owner_context",
+      "confirmed_revision",
+      "plan_hash",
+      "final_epoch_id",
+      "exposure_receipt_id",
+      "code_config_environment_hash",
+      "data_hashes",
+      "seed_manifest",
+      "model_prompt_response_ids",
+      "counts_coverage",
+      "raw_output_hashes",
+      "decision",
+      "reason",
+      "created_at_utc"
+    ],
+    "MarketSpec": [
+      "venue_api_version",
+      "market_id",
+      "event_id",
+      "outcome_contract_ids",
+      "title",
+      "nba_event_identity",
+      "rules_hash",
+      "settlement_source",
+      "outcome_convention",
+      "price_quantity_grid",
+      "capabilities"
+    ],
+    "BookSnapshot": [
+      "venue",
+      "market_id",
+      "contract_id",
+      "normalized_side",
+      "price_unit",
+      "quantity_unit",
+      "levels",
+      "liquidity_ids",
+      "provider_time",
+      "fetch_start_utc",
+      "received_at_utc",
+      "clock_uncertainty",
+      "raw_hash",
+      "adapter_version",
+      "status"
+    ],
+    "EventMapping": [
+      "mapping_id",
+      "forecast_game_id",
+      "market_spec_hash",
+      "participants_date",
+      "regulation_overtime_convention",
+      "cancel_postpone_convention",
+      "outcome_direction",
+      "trusted_reviewer",
+      "status",
+      "reason"
+    ],
+    "MarketComparison": [
+      "comparison_id",
+      "confirmed_plan_hash",
+      "forecast_evidence_hash",
+      "event_mapping_hash",
+      "book_snapshot_hash",
+      "quote_type_unit",
+      "forecast_probability",
+      "observed_quote",
+      "signed_probability_difference",
+      "timestamps_freshness",
+      "data_mode",
+      "status",
+      "blocked_reasons"
+    ]
+  },
+  "numeric_semantics": {
+    "probabilities": "explicit meaning, [0,1], no NaN/Infinity",
+    "statistics": "float with nullable unsupported interval/p-value and explicit reason",
+    "prices_quantities_fees": "Decimal/integer quote ticks with declared units; no trading or fee optimization",
+    "positive_prediction_improvement": "mean(loss_baseline - loss_candidate)",
+    "market_difference": "forecast_probability minus an explicitly typed normalized quote; descriptive only, not profit"
+  },
+  "security": {
+    "provider_keys": "server-side/private; never print secrets",
+    "source_content": "untrusted data, not execution instructions",
+    "tool_registry": "allowlisted deterministic operations only",
+    "venue_operations": "public/read-only GET; no funded orders or wallet signing",
+    "final_data": "freeze/exposure audit/access log; do not claim historical data are untouched merely because files are sealed"
+  },
+  "adaptivity": {
+    "development": "logged exploration allowed",
+    "final": "finite family frozen before outcomes; post-exposure edits are new exploratory research",
+    "calibration": "split by league/group; held-out family never tuned",
+    "trust": "simulator-conditioned, no automatic real-NBA probability claim"
+  },
+  "final_unlock_policy": {
+    "identity": "one immutable final_family_id and final_epoch_id bound to code/config/record partition before unlock",
+    "exposure_registry": "persistent custodian ledger keyed to underlying record/game/group IDs, not only filenames or snapshot hashes",
+    "transition": "atomically reserve before work; mark spent before any labels/scores leave restricted evaluator",
+    "overlap": "new family IDs, renamed files or revised snapshots of exposed records cannot create a fresh confirmatory epoch",
+    "retry": "identical job replay/retry retains original identity/exposure receipt and is not a new final evaluation",
+    "development_epoch": "may be null for a development-only plan; final runs require valid reserved epoch"
+  },
+  "publication": "No push/deployment/outside messages or paid signup authorised by this pack; current user permissions and official event rules govern",
+  "scope_removed": [
+    "statistical arbitrage",
+    "general-market opportunity scanner",
+    "payoff portfolio search",
+    "trade ranking/position sizing/execution"
+  ]
+}
