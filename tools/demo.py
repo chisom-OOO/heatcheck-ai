@@ -8,6 +8,8 @@ Options:
   --no-browser    do not open the browser
   --setup-only    build the data and the demo ledger, then exit
   --fresh-ledger  start the demo ledger again from the committed one
+  --recorded-market  market card compares each recorded quote as of its capture time and says
+                  "RECORDED game" on screen (the cut-off fallback); default compares live
 
 First run (a few minutes, about 46 MB downloaded):
   1. Download the three pinned public archives (shufinskiy/nba_data at the commit in Research's
@@ -22,6 +24,10 @@ Then:
     never written). The dialogue API appends to it; the UI shows it read-only.
   * http://127.0.0.1:8770/  dialogue console (ask Heater; Max's API test page)
   * http://127.0.0.1:8765/  Experience's UI (Referee evidence ledger view)
+  * Market card: GET /api/live-forecast and POST /api/investigate on the dialogue API, using
+    Research's data/live/forecasts.json (if present; otherwise the card says Can't compare),
+    Experience's quote bundles under data/experience/quotes and Max's verified mappings in
+    data/max/mapping_verifications. Investigations go to logs/demo/market_investigations.jsonl.
 Ctrl+C stops both servers.
 """
 
@@ -47,6 +53,10 @@ PROCESSED = ROOT / "data" / "processed" / "research-20261107"
 BUNDLE = ROOT / "data" / "bundles" / "r001-nba-0022300061"
 COMMITTED_LEDGER = ROOT / "evidence" / "evidence.jsonl"
 DEMO_LEDGER = ROOT / "logs" / "demo" / "evidence.jsonl"
+LIVE_FORECAST = ROOT / "data" / "live" / "forecasts.json"
+QUOTES = ROOT / "data" / "experience" / "quotes"
+VERIFICATIONS = ROOT / "data" / "max" / "mapping_verifications"
+INVESTIGATIONS = ROOT / "logs" / "demo" / "market_investigations.jsonl"
 UPSTREAM = "https://raw.githubusercontent.com/shufinskiy/nba_data/{commit}/datasets/{name}"
 API_PORT, UI_PORT = 8770, 8765
 
@@ -167,8 +177,15 @@ def main(argv: list[str]) -> int:
     say("Heater and Ref: " + ("live Meta model calls (spend is logged to logs/llm_usage.jsonl)"
                               if use_llm else "deterministic templates (no model calls)"))
     api = subprocess.Popen([sys.executable, str(ROOT / "tools" / "serve_dialogue.py"), str(BUNDLE),
-                            "--ledger", str(DEMO_LEDGER), "--port", str(API_PORT)]
+                            "--ledger", str(DEMO_LEDGER), "--port", str(API_PORT),
+                            "--live-forecast", str(LIVE_FORECAST), "--quote-bundle", str(QUOTES),
+                            "--verifications", str(VERIFICATIONS),
+                            "--investigation-ledger", str(INVESTIGATIONS)]
+                           + (["--recorded"] if "--recorded-market" in argv else [])
                            + ([] if use_llm else ["--no-llm"]), cwd=ROOT)
+    say("market card: forecast " + (str(LIVE_FORECAST.relative_to(ROOT)) if LIVE_FORECAST.exists()
+                                     else "MISSING (Research's data/live/forecasts.json not present)")
+        + "; quotes " + ("RECORDED as of capture" if "--recorded-market" in argv else "LIVE (60 s limit)"))
     ui = subprocess.Popen([sys.executable, "-m", "server.app", "--port", str(UI_PORT),
                            "--ledger", str(DEMO_LEDGER)], cwd=ROOT / "apps" / "web")
     try:
