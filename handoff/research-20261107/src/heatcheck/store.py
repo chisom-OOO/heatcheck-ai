@@ -57,6 +57,7 @@ TABLES = {  # table -> (database file stem, sort keys); mirrors scripts/build_da
     "events": ("public", ["game_id", "sequence"]),
     "exclusions": ("public", ["game_id"]),
     "games_2022": ("public", ["game_id"]),
+    "quarantine": ("public", ["game_id"]),
     "game_labels": ("restricted_labels", ["game_id"]),
     "shot_labels": ("restricted_labels", ["target_id"]),
     "game_labels_2022": ("restricted_labels", ["game_id"]),
@@ -77,12 +78,15 @@ def logical_frame(df: pd.DataFrame) -> pd.DataFrame:
     return d
 
 
-SEASON_TABLES = ("games", "events", "exclusions", "game_labels", "shot_labels")   # one-season build
+SEASON_TABLES = ("games", "events", "exclusions", "quarantine", "game_labels", "shot_labels")   # one-season build
+BUILD_2023_TABLES = ("games", "events", "exclusions", "games_2022", "game_labels", "shot_labels",
+                     "game_labels_2022")   # scripts/build_dataset.py output; the GAME_PREDICTION plan's data_hashes
 
 
 def logical_table_hashes(data_dir: Path, tables=None) -> dict[str, str]:
-    """Recompute logical table hashes from the actual SQLite files in `data_dir` (default: all TABLES)."""
+    """Recompute logical table hashes from the actual SQLite files in `data_dir`
+    (default: the 2023-24 build's tables, BUILD_2023_TABLES)."""
     from .util import frame_hash
-    names = list(TABLES) if tables is None else list(tables)
+    names = list(BUILD_2023_TABLES) if tables is None else list(tables)
     return {t: frame_hash(logical_frame(read(Path(data_dir) / f"{TABLES[t][0]}.sqlite", t)), TABLES[t][1])
             for t in names}

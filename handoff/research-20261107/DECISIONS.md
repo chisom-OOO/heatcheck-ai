@@ -131,3 +131,12 @@ Protocol `heatcheck-nba/1`. Decisions taken by HeatCheck-Research on 2026-11-07 
 - `confirmatory.py final` requires `--authorised-by <name>` and is not run in preparation. It is reserved for
   the live demo. A frozen confirmatory family cannot be amended; a code change after freezing makes `final`
   refuse.
+
+## D19 — Reconciliation mismatch quarantines a game (appended 2026-11-07 ~18:05 UTC)
+- The first 2024-25 build (code `c05f540`) reported reconciliation `MATCH 1229, SCORE_MISMATCH 1` against
+  nbastats. Only the count was seen; the game's scores were deliberately not inspected, so no sealed outcome
+  was opened. Rule (as R-001 deliverable 4): a game whose reconciliation is not `MATCH` is QUARANTINED. It
+  stays in the sealed season, so its records stay protected, but it is listed in a hashed `quarantine`
+  table and excluded from every confirmatory sample. Values are never edited to make sources agree.
+- Decided before the seal and before the plans were frozen. The rule is added to the registered sample
+  definitions.

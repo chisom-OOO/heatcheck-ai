@@ -94,7 +94,9 @@ def small_dev_season(tmp_path_factory):
     store.publish(d / "public.sqlite", {"games": lf["games"][lf["games"].game_id.isin(ids)],
                                         "events": store.logical_frame(ev),
                                         "exclusions": pd.DataFrame({"game_id": pd.Series(dtype=str),
-                                                                    "reason": pd.Series(dtype=str)})})
+                                                                    "reason": pd.Series(dtype=str)}),
+                                        "quarantine": pd.DataFrame({"game_id": [ids[0]],
+                                                                    "reason": ["TEST quarantine"]})})
     store.publish(d / "restricted_labels.sqlite",
                   {"game_labels": lf["game_labels"][lf["game_labels"].game_id.isin(ids)],
                    "shot_labels": lf["shot_labels"][lf["shot_labels"].game_id.isin(ids)]}, restricted=True)
@@ -122,6 +124,8 @@ def test_end_to_end_seal_freeze_final_on_temporary_ledger(tmp_path, small_dev_se
     assert r["results"]["CONF-HA"]["n_games"] > 0 and r["results"]["CONF-HH"]["n_fga"] > 0
     assert all(v["decision"] == "INSUFFICIENT_EVIDENCE" for v in r["decisions"].values())  # below sample minimums
     assert [e["type"] for e in r["ledger_history_of_receipt"]] == ["reserve", "spend"]
+    assert r["results"]["_quarantined_games_excluded"] == [ids[0]]                    # D19
+    assert r["results"]["CONF-HA"]["n_games"] + r["results"]["CONF-HA"]["neutral_excluded"] == len(ids) - 1
     first = r["exposure_receipt_id"]
     CF.final(data, ev, "pytest")                                         # identical retry: same receipt
     assert json.loads((ev / CF.SUBDIR / "final_result.json").read_text())["exposure_receipt_id"] == first

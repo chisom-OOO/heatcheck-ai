@@ -50,8 +50,8 @@ HYPOTHESES = {
         "claim": "In 2024-25 NBA regular-season games not played at a neutral site, the designated home team "
                  "wins more than half of the games.",
         "estimand": "mean over eligible games of (home_win - 0.5); home_win includes overtime",
-        "sample": "every sealed 2024-25 regular-season game with neutral_site == false (builder exclusions and "
-                  "listed neutral sites removed); one row per game",
+        "sample": "every sealed 2024-25 regular-season game with neutral_site == false (builder exclusions, "
+                  "quarantined games (D19) and listed neutral sites removed); one row per game",
         "test": "moving-block bootstrap over calendar days (kernels.moving_block_bootstrap): block 7 days, "
                 "B=10000, seed 20261108; one-sided p = (1 + #{centred boot >= mean}) / (B + 1)",
         "null": "mean(home_win) - 0.5 <= 0 (home teams win at most half of eligible games)",
@@ -66,8 +66,9 @@ HYPOTHESES = {
         "claim": "In 2024-25, within a player's game, a field-goal attempt is more likely to be made after a "
                  "made field goal than after a missed one, beyond what within-player-game shuffling produces.",
         "estimand": "pooled P(make | previous FGA in same player-game made) - P(make | previous FGA missed)",
-        "sample": "every 2024-25 field-goal attempt in sealed games (free throws out of scope, D12) with a "
-                  "known shooter and resolved event order (shots in a period with a clock regression excluded, D3)",
+        "sample": "every 2024-25 field-goal attempt in sealed, non-quarantined games (D19; free throws out of "
+                  "scope, D12) with a known shooter and resolved event order (shots in a period with a clock "
+                  "regression excluded, D3)",
         "test": "permutation: outcomes shuffled within (player, game, shot value 2/3) strata, statistic "
                 "recomputed, B=999, seed 20261109; one-sided p = (1 + #{T* >= T}) / (B + 1) (kernels.mc_pvalue)",
         "null": "outcomes are exchangeable within (player, game, shot value): no dependence on the previous shot",
@@ -157,8 +158,11 @@ def streak_test(f: pd.DataFrame, p: dict) -> dict:
             "p_one_sided": K.mc_pvalue(t, null)}
 
 
-def run_family(games, game_labels, events, shot_labels, plans: dict) -> dict:
-    res = {}
+def run_family(games, game_labels, events, shot_labels, plans: dict, quarantined=frozenset()) -> dict:
+    q = set(quarantined)   # D19: quarantined games are excluded from every sample
+    games, game_labels = games[~games.game_id.isin(q)], game_labels[~game_labels.game_id.isin(q)]
+    events, shot_labels = events[~events.game_id.isin(q)], shot_labels[~shot_labels.game_id.isin(q)]
+    res = {"_quarantined_games_excluded": sorted(q)}
     for hid, plan in plans.items():
         if plan["params"]["kind"] == "home_advantage":
             res[hid] = home_advantage(games, game_labels, plan["params"])
@@ -167,6 +171,10 @@ def run_family(games, game_labels, events, shot_labels, plans: dict) -> dict:
         if plan["params"]["kind"] == "streak":
             res[hid] = {**streak_test(f, plan["params"]), "fga_excluded_ordering_unresolved": excluded}
     return res
+
+
+def _quarantined(data: Path) -> list[str]:
+    return sorted(store.read(data / "public.sqlite", "quarantine").game_id)
 
 
 def decide(res: dict, plans: dict) -> dict:
@@ -337,7 +345,7 @@ def final(data: Path, evidence: Path, authorised_by: str):
     gl = store.read(data / "restricted_labels.sqlite", "game_labels")
     sl = store.read(data / "restricted_labels.sqlite", "shot_labels")
     ev = _read_events(data, ids)
-    res = run_family(games, gl, ev, sl, plans)
+    res = run_family(games, gl, ev, sl, plans, _quarantined(data))
     decisions = decide(res, plans)
     cust.spend(receipt["receipt_id"])   # spent BEFORE results leave the evaluator
     result = {"protocol_version": PROTOCOL, "run_type": "EvaluationRun", "phase": "FINAL", "lane": "CONFIRMATORY",

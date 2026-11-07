@@ -4,7 +4,7 @@ Usage: python -I scripts/build_confirmatory.py <repo_dir> <out_dir> <extracted_d
 
 <repo_dir> holds datasets/cdnnba_2024.tar.xz, datasets/nbastats_2024.tar.xz and COMMIT. Archives must match
 PINNED below (sha256, byte count and the git blob id listed in the upstream commit's tree), or the build stops.
-Writes public.sqlite {games, events, exclusions}, restricted_labels.sqlite {game_labels, shot_labels},
+Writes public.sqlite {games, events, exclusions, quarantine}, restricted_labels.sqlite {game_labels, shot_labels},
 reconciliation_2024.csv and manifest.json. Prints ONLY counts, hashes and reconciliation status counts:
 no outcome statistic (win rate, make rate, score) is computed or printed. The builder reads outcome
 fields mechanically to derive labels and to reconcile final scores.
@@ -71,7 +71,15 @@ def main(repo: Path, out: Path, extracted: Path):
                            ignore_index=True)
 
     rec = canonical.reconcile_nbastats(games, game_labels, extracted / "nbastats_2024.csv")
-    store.publish(out / "public.sqlite", {"games": games, "events": events, "exclusions": exclusions})
+    # DECISIONS D19: a reconciliation mismatch quarantines the game. It stays in the sealed season (its
+    # outcomes are never opened) but is excluded from every confirmatory sample. Values are never edited.
+    bad_rec = rec[rec.status != "MATCH"].sort_values("game_id")
+    quarantine = pd.DataFrame({"game_id": bad_rec.game_id.astype(str).tolist(),
+                               "reason": [f"QUARANTINED: reconciliation {s} against nbastats (same-organisation "
+                                          "source); excluded from every confirmatory sample; values not edited"
+                                          for s in bad_rec.status]}, columns=["game_id", "reason"])
+    store.publish(out / "public.sqlite", {"games": games, "events": events, "exclusions": exclusions,
+                                          "quarantine": quarantine})
     store.publish(out / "restricted_labels.sqlite", {"game_labels": game_labels, "shot_labels": shot_labels},
                   restricted=True)
     rec.to_csv(out / "reconciliation_2024.csv", index=False, lineterminator="\n")
@@ -80,13 +88,15 @@ def main(repo: Path, out: Path, extracted: Path):
         "games": frame_hash(games, ["game_id"]),
         "events": frame_hash(events, ["game_id", "sequence"]),
         "exclusions": frame_hash(exclusions, ["game_id"]),
+        "quarantine": frame_hash(quarantine, ["game_id"]),
         "game_labels": frame_hash(game_labels, ["game_id"]),
         "shot_labels": frame_hash(shot_labels, ["target_id"]),
     }
     stored = store.logical_table_hashes(out, store.SEASON_TABLES)
     if stored != hashes:
         raise SystemExit(f"REFUSED: stored tables do not round-trip to the built hashes: {stored} != {hashes}")
-    diag = dict(b.diagnostics, non_regular_season_ids_excluded=bad, games_sealable=int(len(games)),
+    diag = dict(b.diagnostics, non_regular_season_ids_excluded=bad, quarantined_game_ids=quarantine.game_id.tolist(),
+                games_sealable=int(len(games)),
                 events_sealable=int(len(events)), field_goal_attempts_sealable=int(len(shot_labels)))
     manifest = {
         "protocol_version": PROTOCOL, "manifest_type": "confirmatory_season_manifest",
