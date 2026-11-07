@@ -45,22 +45,28 @@ FEATURE_MAP = {
 _TRIP = re.compile(r"(\d+) of (\d+)")
 
 
-def research_features() -> ModuleType:
-    """Load Research's features.py unchanged, under an alias package name."""
-    name = f"{ALIAS}.features"
-    if name in sys.modules:
-        return sys.modules[name]
-    pkg_spec = importlib.util.spec_from_file_location(
-        ALIAS, RESEARCH_SRC / "__init__.py", submodule_search_locations=[str(RESEARCH_SRC)]
-    )
-    pkg = importlib.util.module_from_spec(pkg_spec)
-    sys.modules[ALIAS] = pkg
-    pkg_spec.loader.exec_module(pkg)
-    spec = importlib.util.spec_from_file_location(name, RESEARCH_SRC / "features.py")
+def research_module(name: str) -> ModuleType:
+    """Load one Research module (e.g. 'features', 'kernels', 'simulate') unchanged, under an
+    alias package so Research's top-level name does not shadow this repository's."""
+    full = f"{ALIAS}.{name}"
+    if full in sys.modules:
+        return sys.modules[full]
+    if ALIAS not in sys.modules:
+        pkg_spec = importlib.util.spec_from_file_location(
+            ALIAS, RESEARCH_SRC / "__init__.py", submodule_search_locations=[str(RESEARCH_SRC)]
+        )
+        pkg = importlib.util.module_from_spec(pkg_spec)
+        sys.modules[ALIAS] = pkg
+        pkg_spec.loader.exec_module(pkg)
+    spec = importlib.util.spec_from_file_location(full, RESEARCH_SRC / f"{name}.py")
     mod = importlib.util.module_from_spec(spec)
-    sys.modules[name] = mod
+    sys.modules[full] = mod
     spec.loader.exec_module(mod)
     return mod
+
+
+def research_features() -> ModuleType:
+    return research_module("features")
 
 
 def latest_revisions(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
