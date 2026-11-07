@@ -1,6 +1,6 @@
 """Build the frozen 2023-24 canonical dataset + manifest + reconciliation report.
 
-Usage: python -I scripts/build_dataset.py <repo_dir> <out_dir>
+Usage: python -I scripts/build_dataset.py <repo_dir> <out_dir> <extracted_dir>
 Deterministic: rerunning on the same snapshot yields identical logical table hashes.
 """
 import json
@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 import pandas as pd  # noqa: E402
 
 from heatcheck import canonical, store  # noqa: E402
-from heatcheck.util import PROTOCOL, frame_hash, sha256_file, utc_now_iso  # noqa: E402
+from heatcheck.util import PROTOCOL, frame_hash, sha256_file, upstream_revision, utc_now_iso  # noqa: E402
 
 RIGHTS = ("nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. "
           "Internal research use only; do not redistribute raw files (DECISIONS D9).")
@@ -21,12 +21,7 @@ UPSTREAM = "https://github.com/shufinskiy/nba_data"
 
 
 def main(repo: Path, out: Path, extracted: Path):
-    import subprocess
-    try:
-        rev = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True,
-                                      stderr=subprocess.DEVNULL).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        rev = (repo / "COMMIT").read_text().strip()   # bundled copy without .git
+    rev = upstream_revision(repo)   # COMMIT file first; never a parent repository's HEAD
     out.mkdir(parents=True, exist_ok=True)
     snaps = [canonical.register_raw(repo / "datasets" / f, out / "rawstore", provider=p, upstream=UPSTREAM,
                                     revision=rev, rights_note=RIGHTS)

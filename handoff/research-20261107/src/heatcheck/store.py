@@ -77,8 +77,12 @@ def logical_frame(df: pd.DataFrame) -> pd.DataFrame:
     return d
 
 
-def logical_table_hashes(data_dir: Path) -> dict[str, str]:
-    """Recompute every logical table hash from the actual SQLite files in `data_dir`."""
+SEASON_TABLES = ("games", "events", "exclusions", "game_labels", "shot_labels")   # one-season build
+
+
+def logical_table_hashes(data_dir: Path, tables=None) -> dict[str, str]:
+    """Recompute logical table hashes from the actual SQLite files in `data_dir` (default: all TABLES)."""
     from .util import frame_hash
-    return {t: frame_hash(logical_frame(read(Path(data_dir) / f"{db}.sqlite", t)), keys)
-            for t, (db, keys) in TABLES.items()}
+    names = list(TABLES) if tables is None else list(tables)
+    return {t: frame_hash(logical_frame(read(Path(data_dir) / f"{TABLES[t][0]}.sqlite", t)), TABLES[t][1])
+            for t in names}

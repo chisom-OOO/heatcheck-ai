@@ -42,6 +42,35 @@ def frame_hash(df: pd.DataFrame, sort_by: list[str]) -> str:
     return sha256_bytes(csv.encode())
 
 
+class UpstreamRevisionError(RuntimeError):
+    pass
+
+
+def upstream_revision(repo: str | Path) -> str:
+    """Upstream commit of a raw data checkout. Reads ``<repo>/COMMIT`` first. Falls back to git only when
+    ``repo`` is itself the top level of a git checkout: ``git -C`` walks up the directories, so a
+    bundled copy inside another repository must never resolve to that parent's HEAD."""
+    import os
+    import re
+    import subprocess
+    repo = Path(repo)
+    commit_file = repo / "COMMIT"
+    if commit_file.exists():
+        rev = commit_file.read_text().strip()
+        if not re.fullmatch(r"[0-9a-f]{40}", rev):
+            raise UpstreamRevisionError(f"{commit_file} is not a 40-hex commit id")
+        return rev
+    try:
+        top = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "--show-toplevel"], text=True,
+                                      stderr=subprocess.DEVNULL).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        raise UpstreamRevisionError(f"{repo} has no COMMIT file and is not a git checkout") from exc
+    if os.path.realpath(top) != os.path.realpath(repo):
+        raise UpstreamRevisionError(f"{repo} has no COMMIT file and git resolves to a PARENT repository "
+                                    f"({top}); refusing to record its HEAD as the upstream revision")
+    return subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+
+
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 

@@ -23,7 +23,7 @@ import pandas as pd  # noqa: E402
 from sklearn.linear_model import LogisticRegression  # noqa: E402
 
 from heatcheck import features as F, kernels as K, splits as S, store  # noqa: E402
-from heatcheck.custodian import Custodian  # noqa: E402
+from heatcheck.custodian import Custodian, ExposureRefused  # noqa: E402
 from heatcheck.util import PROTOCOL, canonical_json, sha256_bytes, sha256_file, utc_now_iso  # noqa: E402
 
 EPS = 1e-6
@@ -180,6 +180,10 @@ def amend(data: Path, out: Path, reason: str = ""):
     am["canonical_amendment_hash"] = sha256_bytes(canonical_json(am))
     _amendment_path(out, n).write_text(json.dumps(am, indent=2) + "\n", newline="\n")
     print(json.dumps(am, indent=2))
+    if n >= 2:
+        print(f"NOTE: amendment {n} on a receipt that already has a replay. It will not run until a reviewer "
+              f"other than the author writes claim_plan_GP.amendment-{n}.signoff.json with "
+              '{"reviewer": ..., "receipt_id": ..., "amendment_hash": ...} (DECISIONS D15).', file=sys.stderr)
 
 
 def _matching_amendment(out: Path, plan: dict, current_code_hash: str) -> dict | None:
@@ -228,10 +232,12 @@ def final(data: Path, out: Path):
         if len(originals) != 1:
             raise FinalRefused("amended replay needs exactly one original reservation of this plan")
         mode, receipt_id = "AMENDED_REPLAY", originals[0]["receipt_id"]
+        so_path = out / f"claim_plan_GP.amendment-{amendment['amendment_id'].rsplit('-', 1)[1]}.signoff.json"
+        signoff = json.loads(so_path.read_text()) if so_path.exists() else None
         replay = cust.replay(receipt_id=receipt_id, family_id=plan["final_family_id"],
                              epoch_id=plan["final_epoch_id"], record_ids=final_ids,
                              amendment_hash=amendment["canonical_amendment_hash"], code_hash=current_code,
-                             input_hash=input_hash)
+                             input_hash=input_hash, reviewer_signoff=signoff)
         receipt = {"receipt_id": receipt_id, "retry": True}
     # ---- inside custodian scope: full labels
     labels = store.read(data / "restricted_labels.sqlite", "game_labels")
@@ -311,6 +317,6 @@ if __name__ == "__main__":
             amend(Path(sys.argv[2]), Path(sys.argv[3]), " ".join(sys.argv[4:]))
         else:
             {"dev": dev, "freeze": freeze, "final": final}[cmd](Path(sys.argv[2]), Path(sys.argv[3]))
-    except FinalRefused as exc:
+    except (FinalRefused, ExposureRefused) as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         sys.exit(2)

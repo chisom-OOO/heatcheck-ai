@@ -193,3 +193,134 @@ def test_final_refuses_edited_plan(tmp_path):
     (out / "claim_plan_GP.json").write_text(json.dumps(plan, indent=2))
     with pytest.raises(gp.FinalRefused, match="canonical_plan_hash"):
         gp.final(DATA, out)
+
+
+# --------------------------------------------------------------------------- ruling: every id maps to its game
+from heatcheck.custodian import exposure_key  # noqa: E402
+
+
+@pytest.mark.parametrize("rid,game", [
+    ("0022300589", "nba:0022300589"), ("SHOT:0022300589:3012500", "nba:0022300589"),
+    ("GAME:0022300589", "nba:0022300589"), ("nba:0022300589:412:r1", "nba:0022300589"),
+    ("SHOT:0022300589:3012500:preshot/1", "nba:0022300589"), ("SHOT:nba:22300589:7", "nba:0022300589"),
+    ("syn:g1", "syn:g1"), ("SHOT:syn:g1:5", "syn:g1")])
+def test_exposure_key_maps_record_to_game(rid, game):
+    assert exposure_key(rid) == game
+
+
+@pytest.mark.parametrize("bad", ["SHOT:22300589:7", "nba-team:1610612737", "x:0022300001:0022300002",
+                                 "free-text", "SHOT:syn:"])
+def test_exposure_key_refuses_unmappable_or_ambiguous(bad):
+    with pytest.raises(ExposureRefused):
+        exposure_key(bad)
+
+
+def test_shot_level_family_over_reserved_final_games_is_refused(tmp_path):
+    """Ruling 2026-11-07: a shot-level family over reserved final games must be refused."""
+    c = Custodian(tmp_path / "l.jsonl")
+    _res(c, fam="GAME-FAMILY", ids=IDS)                              # game-level reservation (bare ids)
+    for shots in (["SHOT:0022300902:3012500", "SHOT:0022300902:3012600"],
+                  ["SHOT:nba:0022300903:77"], ["nba:0022300901:412:r1"]):
+        with pytest.raises(ExposureRefused):
+            _res(c, fam="SHOT-FAMILY", ids=shots)
+    assert _res(c, fam="OTHER", ids=["SHOT:0022300904:1"])["exposed_games"] == ["nba:0022300904"]
+
+
+def test_game_family_over_reserved_shot_records_is_refused(tmp_path):
+    c = Custodian(tmp_path / "l.jsonl")
+    _res(c, fam="SHOTS", ids=["SHOT:0022300901:1", "SHOT:0022300901:2"])
+    with pytest.raises(ExposureRefused):
+        _res(c, fam="GAMES", ids=["nba:0022300901"])
+
+
+# --------------------------------------------------------------------------- ruling: 2nd amendment needs sign-off
+def test_second_amendment_needs_reviewer_signoff(tmp_path):
+    c = Custodian(tmp_path / "l.jsonl")
+    rid = _res(c, inp="A")["receipt_id"]; c.spend(rid)
+    _replay(c, rid, am="am1", code="c2")                            # first amendment: no sign-off needed
+    with pytest.raises(ExposureRefused, match="sign-off"):
+        _replay(c, rid, am="am2", code="c3")
+    with pytest.raises(ExposureRefused, match="sign-off"):         # sign-off naming another amendment
+        c.replay(receipt_id=rid, family_id="F1", epoch_id="E-F1", record_ids=IDS, amendment_hash="am2",
+                 code_hash="c3", input_hash="A",
+                 reviewer_signoff={"reviewer": "rv", "receipt_id": rid, "amendment_hash": "am1"})
+    ok = c.replay(receipt_id=rid, family_id="F1", epoch_id="E-F1", record_ids=IDS, amendment_hash="am2",
+                  code_hash="c3", input_hash="A",
+                  reviewer_signoff={"reviewer": "rv", "receipt_id": rid, "amendment_hash": "am2"})
+    assert ok["reviewer_signoff"]["reviewer"] == "rv"
+
+
+# --------------------------------------------------------------------------- seal / register
+def _seal(c, ids, inp="S", epoch="E-SEAL"):
+    return c.seal(epoch_id=epoch, record_ids=ids, input_hash=inp, data_hashes={"t": "h"}, description="test")
+
+
+def _reg(c, fam="CONF", plan="P", code="C", epoch="E-SEAL"):
+    return c.register(epoch_id=epoch, family_id=fam, plan_hash=plan, code_hash=code)
+
+
+SEALED = ["0022400001", "0022400002", "0022400003"]
+
+
+def test_sealed_games_only_open_to_the_registered_job(tmp_path):
+    c = Custodian(tmp_path / "l.jsonl")
+    _seal(c, SEALED)
+    with pytest.raises(ExposureRefused, match="not registered"):     # unregistered family
+        c.reserve(family_id="CONF", epoch_id="E-SEAL", plan_hash="P", code_hash="C", record_ids=SEALED,
+                  input_hash="S")
+    _reg(c)
+    with pytest.raises(ExposureRefused):                             # another family, other epoch
+        c.reserve(family_id="X", epoch_id="E-X", plan_hash="P", code_hash="C", record_ids=SEALED[:1])
+    with pytest.raises(ExposureRefused):                             # shot ids of a sealed game
+        c.reserve(family_id="X", epoch_id="E-X", plan_hash="P", code_hash="C", record_ids=["SHOT:0022400002:9"])
+    with pytest.raises(ExposureRefused, match="whole"):              # subset of the seal
+        c.reserve(family_id="CONF", epoch_id="E-SEAL", plan_hash="P", code_hash="C", record_ids=SEALED[:2],
+                  input_hash="S")
+    with pytest.raises(ExposureRefused, match="sealed data"):        # different data
+        c.reserve(family_id="CONF", epoch_id="E-SEAL", plan_hash="P", code_hash="C", record_ids=SEALED,
+                  input_hash="other")
+    with pytest.raises(ExposureRefused, match="not registered"):     # registered family, edited plan
+        c.reserve(family_id="CONF", epoch_id="E-SEAL", plan_hash="P2", code_hash="C", record_ids=SEALED,
+                  input_hash="S")
+    r = c.reserve(family_id="CONF", epoch_id="E-SEAL", plan_hash="P", code_hash="C", record_ids=SEALED,
+                  input_hash="S")
+    assert not r["retry"]
+    with pytest.raises(ExposureRefused, match="registration closed"):
+        _reg(c, plan="P-late")
+
+
+def test_seal_refuses_exposed_games_and_second_family(tmp_path):
+    c = Custodian(tmp_path / "l.jsonl")
+    _res(c, fam="OLD", ids=["0022400001"])
+    with pytest.raises(ExposureRefused):
+        _seal(c, SEALED)
+    c2 = Custodian(tmp_path / "l2.jsonl")
+    assert not _seal(c2, SEALED)["retry"] and _seal(c2, SEALED)["retry"]
+    with pytest.raises(ExposureRefused):
+        _seal(c2, SEALED, inp="different")
+    _reg(c2)
+    assert _reg(c2)["retry"]
+    with pytest.raises(ExposureRefused, match="different registered family"):
+        _reg(c2, fam="OTHER")
+    with pytest.raises(ExposureRefused, match="no seal"):
+        _reg(c2, epoch="E-NONE")
+
+
+@real
+def test_gp_second_amendment_runs_only_with_reviewer_signoff(tmp_path):
+    """The committed ledger already holds the amendment-1 replay, so amendment-2 needs sign-off (D15)."""
+    gp = _gp(); out = _evidence_copy(tmp_path)
+    gp.amend(DATA, out, "test amendment 2")
+    am2 = json.loads((out / "claim_plan_GP.amendment-2.json").read_text())
+    before = (out / "custodian_ledger.jsonl").read_bytes()
+    with pytest.raises(ExposureRefused, match="sign-off"):
+        gp.final(DATA, out)
+    assert (out / "custodian_ledger.jsonl").read_bytes() == before
+    (out / "claim_plan_GP.amendment-2.signoff.json").write_text(json.dumps(
+        {"reviewer": "pytest-reviewer", "receipt_id": "3e238d2d-030e-45b4-aae7-db0787ecb873",
+         "amendment_hash": am2["canonical_amendment_hash"]}))
+    gp.final(DATA, out)
+    r = json.loads((out / "game_prediction_final.replay-GP-2023-24-C1-vs-B1-AMEND-2.json").read_text())
+    assert r["replay"]["reviewer_signoff"]["reviewer"] == "pytest-reviewer"
+    orig = json.loads((ROOT / "evidence/game_prediction_final.json").read_text())
+    assert r["decisions"] == orig["decisions"]
