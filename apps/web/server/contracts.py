@@ -7,7 +7,10 @@ import json
 import math
 import os
 
-_PROTO_PATH = os.path.join(os.path.dirname(__file__), "..", "contracts", "Shared_Protocol.json")
+# The repository's single copy (apps/web/server -> repo root/contracts).
+_PROTO_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "..", "contracts", "Shared_Protocol.json"
+)
 with open(_PROTO_PATH, encoding="utf-8") as _f:
     PROTOCOL = json.load(_f)
 

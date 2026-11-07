@@ -7,7 +7,7 @@ The arithmetic calls quotes.compare (stand-in for Research's normaliser, gate G1
 import hashlib
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from . import mapping as mapping_mod
 from . import quotes
@@ -26,7 +26,7 @@ def _dt(s):
     if not s:
         return None
     d = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
-    return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+    return d if d.tzinfo else d.replace(tzinfo=UTC)
 
 
 def propose(venue, ref, game, forecast, transport):
@@ -68,7 +68,7 @@ def compare(spec, mapping, forecast, transport, reviewer, quote_type="midpoint",
             fresh = quotes.freshness(observed, now_utc=cutoff, threshold_seconds=FRESHNESS_SECONDS_HISTORICAL,
                                      cutoff_utc=cutoff)
         else:
-            fresh = quotes.freshness(_dt(snap["received_at_utc"]), now_utc=now or datetime.now(timezone.utc),
+            fresh = quotes.freshness(_dt(snap["received_at_utc"]), now_utc=now or datetime.now(UTC),
                                      threshold_seconds=FRESHNESS_SECONDS_LIVE)
         fresh["observed_at"] = observed.isoformat() if observed else None
         fresh["basis"] = "forecast cutoff" if historical else "local clock at comparison"

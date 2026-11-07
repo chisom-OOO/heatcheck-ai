@@ -26,7 +26,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from . import quotes
 
@@ -42,7 +42,7 @@ KALSHI_BASE = os.environ.get("HEATCHECK_KALSHI_BASE", "https://api.elections.kal
 
 
 def utcnow():
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class VenueError(Exception):
@@ -74,7 +74,7 @@ def _assert_public(host):
     try:
         infos = socket.getaddrinfo(host, 443, proto=socket.IPPROTO_TCP)
     except socket.gaierror as e:
-        raise VenueError("UNAVAILABLE", f"DNS failure for {host}: {e}")
+        raise VenueError("UNAVAILABLE", f"DNS failure for {host}: {e}") from None
     for info in infos:
         ip = ipaddress.ip_address(info[4][0])
         if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
@@ -107,8 +107,8 @@ class UrllibTransport:
             return e.code, dict(e.headers or {}), e.read(MAX_RESPONSE + 1) if e.fp else b""
         except VenueError:
             raise
-        except (urllib.error.URLError, socket.timeout, OSError) as e:
-            raise VenueError("UNAVAILABLE", f"network error: {getattr(e, 'reason', e)}")
+        except (TimeoutError, urllib.error.URLError, OSError) as e:
+            raise VenueError("UNAVAILABLE", f"network error: {getattr(e, 'reason', e)}") from None
 
 
 class FixtureTransport:
@@ -157,7 +157,7 @@ def fetch_json(transport, url, retries=3, max_sleep=5.0, sleep=time.sleep):
         try:
             obj = json.loads(body, parse_constant=lambda c: (_ for _ in ()).throw(ValueError(c)))
         except ValueError as e:
-            raise VenueError("MALFORMED", f"invalid JSON: {e}", url=url)
+            raise VenueError("MALFORMED", f"invalid JSON: {e}", url=url) from None
         prov = {"url": url, "fetch_start_utc": start.isoformat(), "received_at_utc": received.isoformat(),
                 "raw_hash": hashlib.sha256(body).hexdigest(), "bytes": len(body), "attempts": attempt,
                 "transport": transport.name}
@@ -173,7 +173,7 @@ def _json_list(v, field):
         try:
             out = json.loads(v)
         except ValueError:
-            raise VenueError("MALFORMED", f"{field} is not valid JSON")
+            raise VenueError("MALFORMED", f"{field} is not valid JSON") from None
         if not isinstance(out, list):
             raise VenueError("MALFORMED", f"{field} is not a list")
         return out
@@ -189,7 +189,7 @@ def _parse_time(s):
         return None
     try:
         if isinstance(s, (int, float)) or (isinstance(s, str) and s.isdigit()):
-            return datetime.fromtimestamp(int(s) / 1000, tz=timezone.utc)
+            return datetime.fromtimestamp(int(s) / 1000, tz=UTC)
         return datetime.fromisoformat(str(s).replace("Z", "+00:00").replace(" ", "T"))
     except ValueError:
         return None
@@ -241,7 +241,7 @@ class PolymarketAdapter:
             "market_id": str(m.get("id") or slug),
             "slug": slug,
             "event_id": str((m.get("events") or [{}])[0].get("id")) if m.get("events") else m.get("eventId"),
-            "outcome_contract_ids": [{"label": str(o), "contract_id": str(i)} for o, i in zip(outcomes, ids)],
+            "outcome_contract_ids": [{"label": str(o), "contract_id": str(i)} for o, i in zip(outcomes, ids, strict=True)],
             "title": m.get("question") or m.get("title") or "",
             "nba_event_identity": {"game_start_utc": m.get("gameStartTime"), "end_date": m.get("endDateIso") or m.get("endDate")},
             "rules_text": rules,
@@ -272,7 +272,7 @@ class PolymarketAdapter:
         try:
             norm = quotes.normalise_polymarket(b, tick=tick)
         except quotes.QuoteError as e:
-            raise VenueError(e.status, str(e))
+            raise VenueError(e.status, str(e)) from None
         return _snapshot(self.venue, spec, contract_id, "outcome_token_bid_ask", norm, b.get("timestamp"), prov, self.t)
 
 
@@ -354,7 +354,7 @@ class KalshiAdapter:
             norm = quotes.normalise_kalshi(book, tick=spec["price_quantity_grid"]["tick"] if unit == "dollars" else None,
                                            price_unit=unit)
         except quotes.QuoteError as e:
-            raise VenueError(e.status, str(e))
+            raise VenueError(e.status, str(e)) from None
         snap = _snapshot(self.venue, spec, contract_id, "yes_bid_and_derived_yes_ask", norm, obj.get("_provider_time"), prov, self.t)
         snap["source_price_unit"] = unit
         return snap

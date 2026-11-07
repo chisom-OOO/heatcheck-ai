@@ -7,17 +7,26 @@ import os
 import sys
 import threading
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
 
-from server import comparison, engine_fixture, files, intake, mapping, quotes, venue_fixtures, venues  # noqa: E402
+from server import (  # noqa: E402
+    comparison,
+    engine_fixture,
+    files,
+    intake,
+    mapping,
+    quotes,
+    venue_fixtures,
+    venues,
+)
 from server.authority import AuthorityError, Session  # noqa: E402
 from server.contracts import ContractError, loads_strict, validate_envelope  # noqa: E402
 
-FIX = os.path.join(ROOT, "contracts", "fixtures")
+FIX = os.path.join(ROOT, "fixtures", "envelopes")
 
 
 class TestContracts(unittest.TestCase):
@@ -81,7 +90,10 @@ class TestAuthority(unittest.TestCase):
         self.confirm()
         out = []
         ts = [threading.Thread(target=lambda: out.append(self.s.start_run("req-concurrent")[0]["run_id"])) for _ in range(8)]
-        [t.start() for t in ts]; [t.join() for t in ts]
+        for t in ts:
+            t.start()
+        for t in ts:
+            t.join()
         self.assertEqual(len(set(out)), 1)
         self.assertEqual(len(self.s.runs), 1)
 
@@ -202,7 +214,7 @@ class TestQuotes(unittest.TestCase):
         self.assertEqual(r["percentage_points"], Decimal("5.00"))
 
     def test_freshness(self):
-        cut = datetime(2026, 11, 8, tzinfo=timezone.utc)
+        cut = datetime(2026, 11, 8, tzinfo=UTC)
         self.assertEqual(quotes.freshness(cut + timedelta(seconds=1), now_utc=cut, cutoff_utc=cut)["status"], "FUTURE_QUOTE")
         self.assertEqual(quotes.freshness(cut - timedelta(hours=1), now_utc=cut, threshold_seconds=600)["status"], "STALE_BOOK")
         self.assertEqual(quotes.freshness(cut - timedelta(seconds=30), now_utc=cut, threshold_seconds=600)["status"], "FRESH")
@@ -251,7 +263,8 @@ class TestMapping(unittest.TestCase):
 
 class _Seq:
     """Transport returning a scripted sequence of responses."""
-    name = "fixture"; data_mode = "SYNTHETIC"
+    name = "fixture"
+    data_mode = "SYNTHETIC"
 
     def __init__(self, seq):
         self.seq, self.calls = list(seq), 0
