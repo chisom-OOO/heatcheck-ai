@@ -1,0 +1,166 @@
+"""DESCRIPTIVE FORECAST (not a registered claim): roll the registered B1 Elo forward and price upcoming games.
+
+Usage:
+  python -I scripts/live_forecast.py ratings <data_2023-24> <data_2024-25> <cdnnba_2025.csv> <out_dir>
+  python -I scripts/live_forecast.py forecast <out_dir> <schedule.json> <forecasts.json>
+
+Model: features.py Elo exactly as in the 2023-24 final run (receipt 3e238d2d): K=20, home court 100 Elo points,
+no margin term, ratings updated once per US/Eastern date, between-season regression
+carry = 0.75 * rating + 0.25 * 1505 (features.seed_elo; applied at every season boundary).
+Seasons used: 2022-23 (seed) -> 2023-24 -> 2024-25 -> 2025-26 -> carried into 2026-27.
+"""
+from __future__ import annotations
+
+import json
+import math
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from heatcheck import canonical, store  # noqa: E402
+from heatcheck import features as F  # noqa: E402
+from heatcheck import kernels as K  # noqa: E402
+from heatcheck.util import sha256_file, utc_now_iso  # noqa: E402
+
+EPS = 1e-6   # same clip as the final run
+
+
+def carry(r: dict) -> dict:
+    return {t: F.ELO_CARRY * v + (1 - F.ELO_CARRY) * F.ELO_MEAN for t, v in r.items()}
+
+
+def _season(data: Path, games_tbl="games", labels_tbl="game_labels"):
+    g = store.read(data / "public.sqlite", games_tbl)
+    g["neutral_site"] = g.neutral_site.astype(bool)
+    lab = store.read(data / "restricted_labels.sqlite", labels_tbl)
+    return g, lab
+
+
+def ratings(data23: Path, data24: Path, csv25: Path, out: Path):
+    out.mkdir(parents=True, exist_ok=True)
+    g22, l22 = _season(data23, "games_2022", "game_labels_2022")
+    g23, l23 = _season(data23)
+    g24, l24 = _season(data24)
+    b25 = canonical.build_canonical(csv25, "2025-26", neutral_sites=set())   # assumption: no neutral flags
+    g25 = b25.games.copy(); g25["neutral_site"] = g25.neutral_site.astype(bool); l25 = b25.game_labels
+
+    r = F.seed_elo(g22, l22)                                                  # carried into 2023-24
+    r, _ = F._run_elo(g23, dict(zip(l23.game_id, l23.home_win.astype(int))), r, emit=False)
+    r24_start = carry(r)
+    # backtest 2024-25: pre-game probabilities from the frozen feature builder, scored like the final run
+    feat = F.pregame_features(g24, l24, r24_start, set(g24.game_id)).merge(l24[["game_id", "home_win"]], on="game_id")
+    y = feat.home_win.to_numpy(float); p = feat.p_elo.to_numpy(float)
+    backtest = {"log_loss": float(K.log_loss_per(y, p, EPS).mean()), "brier": float(K.brier_per(y, p).mean()),
+                "games": int(len(feat))}
+    r, _ = F._run_elo(g24, dict(zip(l24.game_id, l24.home_win.astype(int))), r24_start, emit=False)
+    r, _ = F._run_elo(g25, dict(zip(l25.game_id, l25.home_win.astype(int))), carry(r), emit=False)
+    r27 = carry(r)
+    last = pd.to_datetime(l25.finalization_utc, utc=True).max()
+    teams = (pd.concat([g25[["home_team_id", "home_tricode"]].set_axis(["team_id", "tricode"], axis=1),
+                        g25[["away_team_id", "away_tricode"]].set_axis(["team_id", "tricode"], axis=1)])
+             .drop_duplicates().set_index("team_id").tricode.to_dict())
+    state = {"ratings_2026_27_start": {str(k): v for k, v in sorted(r27.items())},
+             "tricodes": {str(k): v for k, v in sorted(teams.items())},
+             "backtest_2024_25": backtest,
+             "last_completed_game_utc": last.strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "games_used": {"2023-24": int(len(g23)), "2024-25": int(len(g24)), "2025-26": int(len(g25))},
+             "results_2026_27_used": 0,
+             "inputs": {"cdnnba_2025_csv_sha256": sha256_file(csv25),
+                        "data_2023_24_tables": store.logical_table_hashes(data23),
+                        "data_2024_25_tables": store.logical_table_hashes(data24, store.SEASON_TABLES)},
+             "assumptions": ["2025-26 neutral-site games not flagged: home court applied to every game",
+                             "no 2026-27 results available: ratings are the 2025-26 end ratings carried once"],
+             "created_utc": utc_now_iso()}
+    (out / "elo_state.json").write_text(json.dumps(state, indent=2) + "\n", newline="\n")
+    print(json.dumps({k: state[k] for k in ("backtest_2024_25", "last_completed_game_utc", "games_used")}, indent=2))
+
+
+def p_home(elo_h: float, elo_a: float, neutral: bool = False) -> float:
+    return 1.0 / (1.0 + 10 ** (-((elo_h + (0.0 if neutral else F.ELO_HFA)) - elo_a) / 400.0))
+
+
+REQUIRED_IDS = ["0022600189", "0022600190", "0022600191", "0022600192", "0022600193", "0022600194", "0022600195"]
+FORECAST_DATES_ET = ("2026-11-07", "2026-11-08")
+GAME_END_BOUND_H = 4   # upper bound on game length; the schedule JSON has tip times, not end times
+
+
+def _sched_games(raw: bytes) -> pd.DataFrame:
+    d = json.loads(raw)
+    rows = []
+    for day in d["leagueSchedule"]["gameDates"]:
+        for g in day["games"]:
+            h, a = g["homeTeam"], g["awayTeam"]
+            rows.append({"game_id": g["gameId"], "status": int(g["gameStatus"]),
+                         "tip_utc": pd.Timestamp(g["gameDateTimeUTC"]).tz_convert("UTC") if pd.Timestamp(g["gameDateTimeUTC"]).tzinfo
+                         else pd.Timestamp(g["gameDateTimeUTC"], tz="UTC"),
+                         "neutral_site": bool(g.get("isNeutral", False)),
+                         "home_team_id": int(h["teamId"]), "away_team_id": int(a["teamId"]),
+                         "home_team": f"{h['teamCity']} {h['teamName']}", "away_team": f"{a['teamCity']} {a['teamName']}",
+                         "home_score": h.get("score"), "away_score": a.get("score")})
+    df = pd.DataFrame(rows)
+    df["game_date_et"] = df.tip_utc.dt.tz_convert("America/New_York").dt.strftime("%Y-%m-%d")
+    return df
+
+
+def forecast(out: Path, schedule: Path, dest: Path, expected_sha: str, fetched_utc: str, provenance: str):
+    raw = schedule.read_bytes()
+    sha = __import__("hashlib").sha256(raw).hexdigest()
+    if sha != expected_sha:
+        raise SystemExit(f"REFUSED: schedule sha256 {sha} != expected {expected_sha}")
+    st = json.loads((out / "elo_state.json").read_text())
+    r = {int(k): v for k, v in st["ratings_2026_27_start"].items()}
+    df = _sched_games(raw)
+    reg = df[df.game_id.str.fullmatch(r"00226[0-9]{5}")]                   # 2026-27 regular season only
+    first_date = min(FORECAST_DATES_ET)
+    done = reg[(reg.status == 3) & (reg.game_date_et < first_date)].copy()  # D5: strictly earlier ET dates
+    if done[["home_score", "away_score"]].isna().any().any() or (done.home_score == done.away_score).any():
+        raise SystemExit("REFUSED: a completed game lacks a decisive score")
+    lab = dict(zip(done.game_id, (done.home_score.astype(int) > done.away_score.astype(int)).astype(int)))
+    if len(done):
+        r, _ = F._run_elo(done, lab, r, emit=False)
+    up = reg[reg.game_date_et.isin(FORECAST_DATES_ET) & (reg.status != 3)].sort_values(["tip_utc", "game_id"])
+    missing = sorted(set(REQUIRED_IDS) - set(up.game_id))
+    if missing:
+        raise SystemExit(f"REFUSED: required games missing or already final in the schedule: {missing}")
+    last_tip = done.tip_utc.max() if len(done) else pd.Timestamp(st["last_completed_game_utc"])
+    cutoff = (last_tip + pd.Timedelta(hours=GAME_END_BOUND_H)) if len(done) else last_tip
+    if not cutoff < up.tip_utc.min():
+        raise SystemExit(f"REFUSED: data cutoff {cutoff} is not before the first tip {up.tip_utc.min()}")
+    z = lambda t: t.strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
+    games = []
+    for g in up.itertuples():
+        eh, ea = r.get(g.home_team_id, F.ELO_MEAN), r.get(g.away_team_id, F.ELO_MEAN)
+        games.append({"game_id": "nba:" + g.game_id, "tip_utc": z(g.tip_utc),
+                      "home_team_id": f"nba-team:{g.home_team_id}", "away_team_id": f"nba-team:{g.away_team_id}",
+                      "home_team": g.home_team, "away_team": g.away_team,
+                      "p_home_win": round(p_home(eh, ea, g.neutral_site), 6), "elo_home": round(eh, 3),
+                      "elo_away": round(ea, 3)})
+    doc = {"format": "heatcheck-live-forecast/1", "label": "DESCRIPTIVE FORECAST",
+           "model": ("B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, "
+                     "between-season carry 0.75*r+0.25*1505; ratings rolled 2022-23 to 2026-27 from "
+                     "shufinskiy/nba_data@46488f0f (2023-24 to 2025-26) and cdn.nba.com schedule results (2026-27)"),
+           "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
+           "data_cutoff_utc": z(cutoff),
+           "source": {"results": f"cdn.nba.com schedule JSON (scheduleLeagueV2.json; {provenance})",
+                      "fetched_utc": fetched_utc, "sha256": sha, "cross_check": "NOT_RUN"},
+           "backtest_2024_25": st["backtest_2024_25"], "games": games}
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
+    print(json.dumps({"completed_2026_27_used": len(done), "last_used_tip": z(last_tip), "data_cutoff_utc": z(cutoff),
+                      "n_forecast": len(games), "first_tip": games[0]["tip_utc"]}, indent=2))
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "ratings":
+        ratings(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]), Path(sys.argv[5]))
+    elif sys.argv[1] == "forecast":
+        a = sys.argv
+        forecast(Path(a[2]), Path(a[3]), Path(a[4]), a[a.index("--sha256") + 1], a[a.index("--fetched-utc") + 1],
+                 a[a.index("--provenance") + 1])
+    else:
+        raise SystemExit(f"unknown command {sys.argv[1]}")
