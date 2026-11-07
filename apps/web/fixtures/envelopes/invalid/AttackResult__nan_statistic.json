@@ -1,0 +1,20 @@
+{
+ "claim_plan_hash": "66c14d173ee3d7e7b4f2ddb465e73d3bcef9c7d4af963405c55737d5892214b1",
+ "effect_estimate": 0.08899502070205867,
+ "evidence_hash": "94d4a3facf67eee8ac1143e54f83baafea5a7fc4f874819a8bab1125109fdc79",
+ "input_hashes": [
+  "c83ed434f5ad10ea4a47dee8477655873e62c06311a01982585105b21128eedc"
+ ],
+ "interval": [
+  0.07288285619620251,
+  0.10216710673070432
+ ],
+ "null_method_assumptions": "make/miss exchangeable within a shooter under the null; corrects finite-sequence bias",
+ "p_value": 0.0024937655860349127,
+ "parameters_hash": "221c4ec31436fcfc508ee15c0faffb3ecd30dde5ed48ffc5c853139eaa9bb7a5",
+ "reason": "400 permutations",
+ "scope": "synthetic league (development)",
+ "statistic": NaN, "_was": 0.08899502070205867,
+ "status": "OK",
+ "test_id_version": "permutation_within_sequence@1"
+}
