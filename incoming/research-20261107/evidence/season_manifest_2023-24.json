@@ -1,0 +1,102 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "manifest_type": "frozen_season_manifest",
+  "season": "2023-24",
+  "competition": "NBA_REGULAR_SEASON",
+  "created_utc": "2026-11-07T15:18:22.575671Z",
+  "transformation_revision": {
+    "canonical.py": "e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a",
+    "build_dataset.py": "a933df4ef5c5922184b156ccaa5647f40156b40208b0a1bd79df3dff9778b6ea"
+  },
+  "raw_snapshots": [
+    {
+      "provider": "cdnnba",
+      "upstream": "https://github.com/shufinskiy/nba_data",
+      "upstream_revision": "46488f0f8e1cab58fc1256511ea808166a443a15",
+      "path_in_upstream": "datasets/cdnnba_2023.tar.xz",
+      "retrieval_utc": "2026-11-07T15:17:19.902497Z",
+      "payload_sha256": "33d49fefc809f73d5d6cbad6d1d6690e0df6c89fe2b5a4d814ecc9ea4df6101b",
+      "byte_count": 18598380,
+      "members": [
+        "cdnnba_2023.csv"
+      ],
+      "schema_version": "canonical/1",
+      "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9)."
+    },
+    {
+      "provider": "nbastats",
+      "upstream": "https://github.com/shufinskiy/nba_data",
+      "upstream_revision": "46488f0f8e1cab58fc1256511ea808166a443a15",
+      "path_in_upstream": "datasets/nbastats_2023.tar.xz",
+      "retrieval_utc": "2026-11-07T15:17:20.300635Z",
+      "payload_sha256": "ec0029c0d45a90b769d173010f60b73c6c8866acf1d4d914a72476373ce3a913",
+      "byte_count": 8480776,
+      "members": [
+        "nbastats_2023.csv"
+      ],
+      "schema_version": "canonical/1",
+      "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9)."
+    },
+    {
+      "provider": "cdnnba",
+      "upstream": "https://github.com/shufinskiy/nba_data",
+      "upstream_revision": "46488f0f8e1cab58fc1256511ea808166a443a15",
+      "path_in_upstream": "datasets/cdnnba_2022.tar.xz",
+      "retrieval_utc": "2026-11-07T15:17:21.294033Z",
+      "payload_sha256": "de895e3474365fc14b028f514eb0f8c9c1503b95d3f1a5aef5a408305ddfb41f",
+      "byte_count": 18705272,
+      "members": [
+        "cdnnba_2022.csv"
+      ],
+      "schema_version": "canonical/1",
+      "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9)."
+    }
+  ],
+  "logical_table_hashes": {
+    "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+    "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+    "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+    "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+    "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0"
+  },
+  "record_counts": {
+    "2023-24": {
+      "raw_rows": 674937,
+      "raw_games": 1230,
+      "duplicate_sequence": 0,
+      "duplicate_event_id": 0,
+      "clock_regress_steps": 7,
+      "neutral_site_games_flagged": 4,
+      "games_included": 1230,
+      "games_excluded": 0,
+      "events_included": 674937,
+      "field_goal_attempts": 218693,
+      "points_check_mismatch": 0
+    },
+    "2022-23": {
+      "raw_rows": 679732,
+      "raw_games": 1230,
+      "duplicate_sequence": 0,
+      "duplicate_event_id": 0,
+      "clock_regress_steps": 2,
+      "neutral_site_games_flagged": 0,
+      "games_included": 1230,
+      "games_excluded": 0,
+      "events_included": 679732,
+      "field_goal_attempts": 217221,
+      "points_check_mismatch": 0
+    }
+  },
+  "reconciliation": {
+    "MATCH": 1230
+  },
+  "external_crosscheck": {
+    "balldontlie": "NOT_RUN: no user key in this session; coverage UNVERIFIED_EXTERNAL"
+  },
+  "exclusions_2023": [],
+  "rights_note": "nba_data repo is Apache-2.0; upstream NBA data/redistribution rights NOT established by that licence. Internal research use only; do not redistribute raw files (DECISIONS D9).",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "pseudo_out_of_sample": true
+}

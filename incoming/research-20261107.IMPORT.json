@@ -1,0 +1,234 @@
+{
+ "dest": "incoming/research-20261107",
+ "imported": [
+  {
+   "bytes": 7548,
+   "path": "DECISIONS.md",
+   "sha256": "d1c988d3623114b16040d26d756e6a416a26c71f74d13794802f814521610afa"
+  },
+  {
+   "bytes": 10733,
+   "path": "EVIDENCE.md",
+   "sha256": "12789bedf591fcbeb06078db78c04f258f548f962cb16f0a57c8c32b7279c104"
+  },
+  {
+   "bytes": 3890,
+   "path": "REPORT.md",
+   "sha256": "eb81408a4c67e03ef26e516e5e5727136544b40137b819dcca4f4d99f928e791"
+  },
+  {
+   "bytes": 1441,
+   "path": "evidence/build_run2.log",
+   "sha256": "2f371715f879eaa3dabb1387c9b8e6ba7a37388836fdc829eee411e89d594312"
+  },
+  {
+   "bytes": 2345,
+   "path": "evidence/claim_plan_GP.json",
+   "sha256": "a6cf299cd65823862ef4cc6a750920eeaf52668233a1638ac2ea114ca0c9b8a1"
+  },
+  {
+   "bytes": 4756,
+   "path": "evidence/custodian_ledger.jsonl",
+   "sha256": "061535d71dbb0f187837f68431f331a4a3ffd238474ea7f4f88d7d7d0ad587f2"
+  },
+  {
+   "bytes": 381,
+   "path": "evidence/custodian_probes.txt",
+   "sha256": "fa9eeba39c11c19328ab00acd6fa373afe3e64e55b6ff58329b5a3a3c41cb8b9"
+  },
+  {
+   "bytes": 2346,
+   "path": "evidence/freeze.log",
+   "sha256": "681ee2830fe9a0c08bf9f95fcf18205eac9705168c8b5409d5d75a9a86826622"
+  },
+  {
+   "bytes": 4666,
+   "path": "evidence/game_prediction_dev.json",
+   "sha256": "1d218b5212d7ab5f7eb9dd58d9102718cdadcc7545b853541c6caa9f38eff15f"
+  },
+  {
+   "bytes": 3852,
+   "path": "evidence/game_prediction_final.json",
+   "sha256": "163db64d56bac1bbadce0a5e05a1305f684ec297691c255c0f5bdbe3eabdcf4b"
+  },
+  {
+   "bytes": 78189,
+   "path": "evidence/harness_league_results.csv",
+   "sha256": "cc7732b5f6e2dbc2bb2775e1bc4056f3e049e480ed594a9ad74aa80e9c7ba894"
+  },
+  {
+   "bytes": 3789,
+   "path": "evidence/harness_report.json",
+   "sha256": "ffbc6fcc1c8f3fa782bc2f7c8ca43f729fb4d1fc025430031a1eb542aba6cb54"
+  },
+  {
+   "bytes": 1389,
+   "path": "evidence/hot_hand_dev.json",
+   "sha256": "fcbb3d5759c0f024e1350b44aa90b31fbcdc087ac79ad4f8b150146c91f69aa2"
+  },
+  {
+   "bytes": 1034,
+   "path": "evidence/null_calibration.json",
+   "sha256": "33603d5dbbbb32449d1b912485d2e79bf901318305ab97e41a778b41a25133b8"
+  },
+  {
+   "bytes": 67160,
+   "path": "evidence/reconciliation_2023.csv",
+   "sha256": "4b48c6187c48f12900725e3acf81e7ca3123a45572d30aa62e4b0f6ac2bd3dbf"
+  },
+  {
+   "bytes": 69,
+   "path": "evidence/replay_determinism.txt",
+   "sha256": "eddc96c7df019bb650e9071e8de3bdde6ac23eea8614297fbd0133aaf0fe3dd9"
+  },
+  {
+   "bytes": 4387,
+   "path": "evidence/season_manifest_2023-24.json",
+   "sha256": "794a423f9660235132b32dea9d1f81cd717304abd3f0d5a7872ce2775bd68d89"
+  },
+  {
+   "bytes": 4038,
+   "path": "evidence/test_run.txt",
+   "sha256": "b8efffb88ceba04b93704f1471ba443e226858275cd8a31e421cae11cc36cd22"
+  },
+  {
+   "bytes": 69,
+   "path": "pyproject.toml",
+   "sha256": "fb884b391ae5f1230a749a9c8da94e1713be85e507e0b175c284f6c8c6d8d9b8"
+  },
+  {
+   "bytes": 41,
+   "path": "raw/repo/COMMIT",
+   "sha256": "6a1d43cca0482188335ecc51ff42ff7e3c73838df4ce2e62d07e599f02a189b7"
+  },
+  {
+   "bytes": 257,
+   "path": "raw/repo/SHA256SUMS",
+   "sha256": "6739b97d5934e25fba846ed8973d1ccf744378b0f738a1ebc14f6e123bb5490d"
+  },
+  {
+   "bytes": 11357,
+   "path": "raw/repo/UPSTREAM_LICENSE",
+   "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  {
+   "bytes": 4192,
+   "path": "scripts/build_dataset.py",
+   "sha256": "ea15c620d4caa0448052ea02aea7f6dbe794a1af99182c54161246a3abfa2fd0"
+  },
+  {
+   "bytes": 11828,
+   "path": "scripts/game_prediction.py",
+   "sha256": "2565b42e1e673018dcf32dcdbf0b17a0bd318a9ac5e361ef61370713bd05fb37"
+  },
+  {
+   "bytes": 386,
+   "path": "scripts/setup_data.sh",
+   "sha256": "4685cb4db1ebb2b09cdd9c5d964e529abf38761a1663b4f876ae860a5f33d936"
+  },
+  {
+   "bytes": 9145,
+   "path": "scripts/shot_association.py",
+   "sha256": "f46249c58521ba0b194fa92abc02371e72a906c3a48844aa6994aeac4ec903df"
+  },
+  {
+   "bytes": 0,
+   "path": "src/heatcheck/__init__.py",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "bytes": 11592,
+   "path": "src/heatcheck/canonical.py",
+   "sha256": "e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a"
+  },
+  {
+   "bytes": 4231,
+   "path": "src/heatcheck/custodian.py",
+   "sha256": "66074d69973683810228583fb1bb6d03562170d19836b04156c684612e0d4b82"
+  },
+  {
+   "bytes": 8944,
+   "path": "src/heatcheck/features.py",
+   "sha256": "570fb6062ad26e424bbf76bef906957c1af190cbb2a2b1d7be289c75432734ca"
+  },
+  {
+   "bytes": 6792,
+   "path": "src/heatcheck/kernels.py",
+   "sha256": "b3bdc6238822ee0df731e30bf232770664146ae91adf39123add265475e3d1ed"
+  },
+  {
+   "bytes": 2480,
+   "path": "src/heatcheck/mapping.py",
+   "sha256": "fa60a95bcfe73c8bbc137b78032d7262d2f5c77ed3afa4d53457a3260ec87a17"
+  },
+  {
+   "bytes": 5062,
+   "path": "src/heatcheck/quotes.py",
+   "sha256": "865e07ce3d18b394befdeae461e3641338320ae654feb2276c3f64c8c1253140"
+  },
+  {
+   "bytes": 3254,
+   "path": "src/heatcheck/simulate.py",
+   "sha256": "709ce3870963c9e1818446631768ab798f784804476ef1225bb440767c945941"
+  },
+  {
+   "bytes": 1676,
+   "path": "src/heatcheck/splits.py",
+   "sha256": "de1e7a53ab3e780e0e57ed71eee3b61a8dfff45ed9a86245112e8b229fbe466b"
+  },
+  {
+   "bytes": 1582,
+   "path": "src/heatcheck/store.py",
+   "sha256": "6d077eadb69ee76c9a9f39d6e196fe91ada5462e6734157fc17ffea582e96a17"
+  },
+  {
+   "bytes": 1533,
+   "path": "src/heatcheck/util.py",
+   "sha256": "c74e7fe71fad8b8216686c6bc2b0e33c27d87370cdc52d13760caf47bf6aa319"
+  },
+  {
+   "bytes": 2211,
+   "path": "tests/test_custodian.py",
+   "sha256": "7408cea71a940a4af9e67c78be26577a06a08f7bcf27ec518600571faf4639b8"
+  },
+  {
+   "bytes": 4233,
+   "path": "tests/test_kernels.py",
+   "sha256": "37eb3a6d670d00044f2e9af8b80fa26194af4c949b73a6037a525059014114f8"
+  },
+  {
+   "bytes": 4258,
+   "path": "tests/test_quotes_mapping.py",
+   "sha256": "ef1ca845bbfc220f0a21b412f553ec770c0bbb48509a95987ee0e5058ece7010"
+  },
+  {
+   "bytes": 5869,
+   "path": "tests/test_time_integrity.py",
+   "sha256": "fc4411fbc8a1ccc9faff847904dadb97dcbd852d8e097533566e33fc4ba2e45b"
+  }
+ ],
+ "note": "Byte-for-byte import; files are exempt from EOL conversion (.gitattributes).",
+ "omit_globs": [
+  "raw/repo/datasets/*.tar.xz"
+ ],
+ "omitted": [
+  {
+   "bytes": 18705272,
+   "path": "raw/repo/datasets/cdnnba_2022.tar.xz",
+   "sha256": "de895e3474365fc14b028f514eb0f8c9c1503b95d3f1a5aef5a408305ddfb41f"
+  },
+  {
+   "bytes": 18598380,
+   "path": "raw/repo/datasets/cdnnba_2023.tar.xz",
+   "sha256": "33d49fefc809f73d5d6cbad6d1d6690e0df6c89fe2b5a4d814ecc9ea4df6101b"
+  },
+  {
+   "bytes": 8480776,
+   "path": "raw/repo/datasets/nbastats_2023.tar.xz",
+   "sha256": "ec0029c0d45a90b769d173010f60b73c6c8866acf1d4d914a72476373ce3a913"
+  }
+ ],
+ "source_zip": "heatcheck-research-20261107T155639Z-1-001.zip",
+ "source_zip_sha256": "561cc69368ea4aea4c4d7e92d943c9d550e880cf0e1044a293fdc4e03b0c86df",
+ "zip_top_dir": "heatcheck-research"
+}

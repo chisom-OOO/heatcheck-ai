@@ -1,0 +1,183 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "lane": "GAME_PREDICTION",
+  "phase": "DEVELOPMENT",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "pseudo_out_of_sample": true,
+  "split_manifest": {
+    "fit": {
+      "n_games": 619,
+      "first_date": "2023-10-24",
+      "last_date": "2024-01-19",
+      "game_ids_sha256": "d7b7e8a7772a18326bbbafb471ad22f64b5056b79d6ad200be5e5eb7a0d5c4dc"
+    },
+    "tune": {
+      "n_games": 185,
+      "first_date": "2024-01-20",
+      "last_date": "2024-02-13",
+      "game_ids_sha256": "c090eba5f91d177e5850be6d1ee71ff21b2e855c92c11121db092cc02ce6217e"
+    },
+    "calibration": {
+      "n_games": 126,
+      "first_date": "2024-02-14",
+      "last_date": "2024-03-06",
+      "game_ids_sha256": "ed2e82868c5d55ffd1b0adc24b5917915779e054d28404865627c6b13216ab2a"
+    },
+    "final": {
+      "n_games": 300,
+      "first_date": "2024-03-07",
+      "last_date": "2024-04-14",
+      "game_ids_sha256": "74d6d63cca0ec936cedab8e500d9fbc11dbfd8fc3eff9158d2a009ce09197c9c"
+    },
+    "split_manifest_hash": "30fded21be74e8b4fe0992908a402b8ef471c18414c5674ad7c90d1291508fcf"
+  },
+  "fit": {
+    "n_games": 619,
+    "home_win_rate_B0": 0.5815831987075929,
+    "c1_coef": {
+      "elo_logit": 1.249804,
+      "rest_diff": -0.035808,
+      "home_b2b": -0.640458,
+      "away_b2b": 0.675518
+    },
+    "c1_intercept": -0.37560857460620756
+  },
+  "results": {
+    "tune": {
+      "n_games": 185,
+      "c1_fallbacks": 0,
+      "scores": {
+        "B0": {
+          "log_loss": 0.7128687714834097,
+          "brier": 0.2597427501543526
+        },
+        "B1": {
+          "log_loss": 0.6494137029764955,
+          "brier": 0.22733375605229839
+        },
+        "C1": {
+          "log_loss": 0.6540981147152211,
+          "brier": 0.22494859746924745
+        }
+      },
+      "C1_vs_B1_logloss_diff": {
+        "mean": -0.0046844117387254995,
+        "ci95": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "days": 25,
+        "nonoverlap_7d_blocks": 3,
+        "status": "INSUFFICIENT_BLOCKS"
+      },
+      "C1_reliability": [
+        {
+          "bin": "(-0.001, 0.2]",
+          "n": 25,
+          "mean_p": 0.13069609906358978,
+          "freq": 0.2
+        },
+        {
+          "bin": "(0.2, 0.4]",
+          "n": 31,
+          "mean_p": 0.32196008116151303,
+          "freq": 0.25806451612903225
+        },
+        {
+          "bin": "(0.4, 0.5]",
+          "n": 28,
+          "mean_p": 0.45044145365616395,
+          "freq": 0.39285714285714285
+        },
+        {
+          "bin": "(0.5, 0.6]",
+          "n": 28,
+          "mean_p": 0.5547958420347191,
+          "freq": 0.6785714285714286
+        },
+        {
+          "bin": "(0.6, 0.8]",
+          "n": 44,
+          "mean_p": 0.6990402085547222,
+          "freq": 0.5681818181818182
+        },
+        {
+          "bin": "(0.8, 1.0]",
+          "n": 29,
+          "mean_p": 0.8741686800944777,
+          "freq": 0.7241379310344828
+        }
+      ]
+    },
+    "calibration": {
+      "n_games": 126,
+      "c1_fallbacks": 0,
+      "scores": {
+        "B0": {
+          "log_loss": 0.701412623415295,
+          "brier": 0.25406587549524856
+        },
+        "B1": {
+          "log_loss": 0.6489557997345594,
+          "brier": 0.23239574835095309
+        },
+        "C1": {
+          "log_loss": 0.6498613508548691,
+          "brier": 0.23098490547322603
+        }
+      },
+      "C1_vs_B1_logloss_diff": {
+        "mean": -0.0009055511203094273,
+        "ci95": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "days": 22,
+        "nonoverlap_7d_blocks": 3,
+        "status": "INSUFFICIENT_BLOCKS"
+      },
+      "C1_reliability": [
+        {
+          "bin": "(-0.001, 0.2]",
+          "n": 9,
+          "mean_p": 0.14693793286309123,
+          "freq": 0.1111111111111111
+        },
+        {
+          "bin": "(0.2, 0.4]",
+          "n": 20,
+          "mean_p": 0.3076191555352557,
+          "freq": 0.45
+        },
+        {
+          "bin": "(0.4, 0.5]",
+          "n": 7,
+          "mean_p": 0.44868965208971,
+          "freq": 0.2857142857142857
+        },
+        {
+          "bin": "(0.5, 0.6]",
+          "n": 23,
+          "mean_p": 0.5502935901546387,
+          "freq": 0.5217391304347826
+        },
+        {
+          "bin": "(0.6, 0.8]",
+          "n": 36,
+          "mean_p": 0.7063020111908164,
+          "freq": 0.3888888888888889
+        },
+        {
+          "bin": "(0.8, 1.0]",
+          "n": 31,
+          "mean_p": 0.8822018108477394,
+          "freq": 0.8709677419354839
+        }
+      ]
+    }
+  },
+  "labels_granted_through": "< 2024-03-07",
+  "created_utc": "2026-11-07T15:22:42.537529Z"
+}

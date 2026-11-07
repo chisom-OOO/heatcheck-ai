@@ -1,0 +1,45 @@
+{
+  "purpose": "Diagnose apparently conservative FPR (1/150) in harness_report family A null",
+  "family": "A (development family; held-out B untouched by this diagnosis)",
+  "leagues": 1000,
+  "B": 99,
+  "seeds": "7_000_000 + 13*i, i<1000",
+  "rejection_rate": {
+    "0.01": {
+      "rate": 0.007,
+      "wilson95": [
+        0.0033948250792319975,
+        0.01437849692694906
+      ]
+    },
+    "0.05": {
+      "rate": 0.043,
+      "wilson95": [
+        0.03207848108830104,
+        0.057419304219659906
+      ]
+    },
+    "0.1": {
+      "rate": 0.098,
+      "wilson95": [
+        0.08108172764860938,
+        0.11799509881484863
+      ]
+    },
+    "0.2": {
+      "rate": 0.188,
+      "wilson95": [
+        0.1649943095437335,
+        0.21339367517417424
+      ]
+    },
+    "0.5": {
+      "rate": 0.495,
+      "wilson95": [
+        0.46408970934046934,
+        0.5259485596453947
+      ]
+    }
+  },
+  "conclusion": "Consistent with nominal super-uniformity; the 150-league 0.7% estimate was a low draw. No test parameter changed."
+}

@@ -23,7 +23,7 @@ markers = ["browser: requires an installed browser", "research: requires researc
 [tool.ruff]
 target-version = "py312"
 line-length = 100
-exclude = ["spec/reference", "docs/history", "docs/team", "reports"]
+exclude = ["spec/reference", "docs/history", "docs/team", "reports", "incoming"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "B", "UP"]

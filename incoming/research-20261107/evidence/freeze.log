@@ -1,0 +1,39 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "claim_id": "GP-2023-24-C1-vs-B1",
+  "revision": 1,
+  "kind": "GAME_PREDICTION",
+  "statement": "Adding prior-rest differential and back-to-back indicators to a frozen Elo baseline improves mean log loss on unseen 2023-24 final-split games.",
+  "estimand": "mean over final games of logloss(B1) - logloss(C1); H2: logloss(B0) - logloss(B1)",
+  "population": "2023-24 NBA regular season games in final split (ET dates 2024-03-07..2024-04-14)",
+  "target_horizon_cutoff": "00:00 US/Eastern on game date; inputs = outcomes on strictly earlier ET dates",
+  "effect_units": "nats per game",
+  "direction": "positive = improvement",
+  "feature_catalogue_hash": "3bc7322884c02d299f1bdf4f14142fdcc6e9c66729dddb5da8b12f2758bc2461",
+  "baseline_hash": "07693f8f6343f229fac9049af3e9e8dc8a469220a5d63f455d2f384ebce1d551",
+  "data_hashes": {
+    "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+    "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+    "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+    "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+    "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0"
+  },
+  "split_manifest_hash": "30fded21be74e8b4fe0992908a402b8ef471c18414c5674ad7c90d1291508fcf",
+  "primary_metric_test": "paired log-loss diff; moving-block bootstrap 7 calendar days, B=10000, seed 20261107; Holm over {H1,H2} at 0.05",
+  "practical_effect_floor": 0.002,
+  "mandatory_attacks": [
+    "future_perturbation(G02)",
+    "identical_eligible_games_and_fallback(G09)",
+    "block_count_sufficiency",
+    "multiplicity_holm"
+  ],
+  "final_family_id": "FAM-GP-2023-24-v1",
+  "final_epoch_id": "EPOCH-GP-2023-24-001",
+  "compute_budget": "single CPU run < 5 min",
+  "creator_model_prompt": "none: plan authored by HeatCheck-Research coding session per DECISIONS D6/D10",
+  "code_hash": "d496e34eca5139024537016f235dd070bd5f439ddfa899861ac905097ee8de56",
+  "eps": 1e-06,
+  "canonical_plan_hash": "a8d8129283fbf1b57e119aec83b7904948dd9e5250647148465b5a030e312cf8"
+}
