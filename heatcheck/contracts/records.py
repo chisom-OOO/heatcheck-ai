@@ -173,6 +173,11 @@ def _utc(value: Any, path: str) -> None:
         raise RecordError(path, f"invalid calendar timestamp ({exc})") from None
 
 
+def validate_utc(value: Any, path: str) -> None:
+    """Public check for a canonical UTC timestamp (raises RecordError)."""
+    _utc(value, path)
+
+
 def _season(value: Any, path: str) -> None:
     m = SEASON_RE.match(value) if isinstance(value, str) else None
     if not m or (int(m.group(1)) + 1) % 100 != int(m.group(2)):

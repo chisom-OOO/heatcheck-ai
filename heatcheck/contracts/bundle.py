@@ -27,6 +27,7 @@ from heatcheck.contracts.records import (
     record_hash,
     sha256_hex,
     validate_record,
+    validate_utc,
 )
 
 MAX_FILE_BYTES = 64 * 1024 * 1024
@@ -122,6 +123,10 @@ def load_bundle(directory: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
         raise BundleError("manifest format_version mismatch")
     if manifest["created_by_role"] not in ROLES:
         raise BundleError(f"created_by_role must be one of {ROLES}")
+    try:
+        validate_utc(manifest["created_utc"], "manifest.created_utc")  # RV-U9
+    except RecordError as exc:
+        raise BundleError(str(exc)) from None
 
     body = _read_capped(directory / "records.jsonl")
     if sha256_hex(body) != manifest["records_sha256"]:
