@@ -4,7 +4,8 @@ import hashlib
 import io
 import json
 import re
-from datetime import UTC, datetime
+
+from .timefmt import now_z
 
 MAX_BYTES = 2 * 1024 * 1024
 MAX_ROWS = 50_000
@@ -68,7 +69,7 @@ def ingest(name, data, declared_mime=None, meta=None):
         "file_name": name,
         "bytes": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
-        "retrieved_utc": datetime.now(UTC).isoformat(),
+        "retrieved_utc": now_z(),
         "declared_mime": declared_mime,
         "source_date": (meta or {}).get("source_date"),
         "units": (meta or {}).get("units"),

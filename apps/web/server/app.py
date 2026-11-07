@@ -21,7 +21,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
-from . import comparison, engine_fixture, files, intake, quotes, venue_fixtures
+from . import comparison, engine_fixture, files, intake, quotes, timefmt, venue_fixtures
 from .authority import AuthorityError, Session, sha
 from .contracts import PROTOCOL_VERSION, ContractError, loads_strict, validate_envelope
 from .venues import UrllibTransport, VenueError, adapter
@@ -43,7 +43,7 @@ LOCK = threading.RLock()
 
 
 def utcnow():
-    return datetime.now(UTC).isoformat()
+    return timefmt.now_z()
 
 
 def code_hash():

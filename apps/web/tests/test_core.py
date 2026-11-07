@@ -4,6 +4,7 @@ Run from repo root:  python3 -m unittest discover -s tests -v
 import inspect
 import json
 import os
+import re
 import sys
 import threading
 import unittest
@@ -20,6 +21,7 @@ from server import (  # noqa: E402
     intake,
     mapping,
     quotes,
+    timefmt,
     venue_fixtures,
     venues,
 )
@@ -185,17 +187,24 @@ class TestQuotes(unittest.TestCase):
         self.assertTrue(b["ask_is_derived"])
         self.assertEqual(b["midpoint"], Decimal("0.55"))
 
-    def test_cents_vs_dollars(self):
-        self.assertEqual(quotes.parse_price(52, "cents"), Decimal("0.52"))
+    def test_only_probability_dollars(self):
+        self.assertEqual(quotes.PRICE_UNIT, "PROBABILITY_DOLLARS")
+        self.assertEqual(quotes.parse_price("0.52"), Decimal("0.52"))
+        for unit in ("cents", "dollars", "points", "probability_dollars_per_1_payout"):
+            with self.subTest(unit=unit), self.assertRaises(quotes.QuoteError) as e:
+                quotes.parse_price("0.52", unit)
+            self.assertEqual(e.exception.status, "UNKNOWN_UNITS")
         with self.assertRaises(quotes.QuoteError) as e:
-            quotes.parse_price("52", "dollars")
+            quotes.parse_price("52")            # a cent value in a dollars field
         self.assertEqual(e.exception.status, "UNKNOWN_UNITS")
-        with self.assertRaises(quotes.QuoteError):
-            quotes.parse_price("0.5", "points")
+        for raw in (52, "$0.52"):              # integer cents and currency strings are not decimal strings
+            with self.subTest(raw=raw), self.assertRaises(quotes.QuoteError) as e:
+                quotes.parse_price(raw)
+            self.assertEqual(e.exception.status, "MALFORMED")
 
     def test_float_and_off_grid_rejected(self):
         with self.assertRaises(quotes.QuoteError):
-            quotes.parse_price(0.5, "dollars")
+            quotes.parse_price(0.5)
         with self.assertRaises(quotes.QuoteError):
             quotes.normalise_polymarket({"bids": [{"price": "0.525", "size": "1"}], "asks": []}, tick="0.01")
 
@@ -325,11 +334,22 @@ class TestVenues(unittest.TestCase):
                 venues.fetch_json(_Seq([(200, {}, body)]), venue_fixtures.PM_BOOK_URL)
 
     def test_polymarket_misaligned_tokens(self):
-        bad = dict(venue_fixtures._PM_MARKET, positionIds=["1"])
+        bad = dict(venue_fixtures._PM_MARKET, clobTokenIds='["1"]')
         t = venues.FixtureTransport({venue_fixtures.PM_MKT_URL: bad})
         with self.assertRaises(venues.VenueError) as e:
             venues.PolymarketAdapter(t).get_market_spec(venue_fixtures.PM_SLUG)
         self.assertEqual(e.exception.status, "MALFORMED")
+
+    def test_polymarket_prefers_clob_token_ids(self):
+        both = dict(venue_fixtures._PM_MARKET, version="v2", positionIds=["9", "8"])
+        spec = venues.PolymarketAdapter(venues.FixtureTransport({venue_fixtures.PM_MKT_URL: both})) \
+            .get_market_spec(venue_fixtures.PM_SLUG)
+        self.assertEqual([o["contract_id"] for o in spec["outcome_contract_ids"]], ["111001", "222002"])
+        v1_positions_only = dict(venue_fixtures._PM_MARKET, clobTokenIds=None, positionIds=["9", "8"])
+        with self.assertRaises(venues.VenueError) as e:
+            venues.PolymarketAdapter(venues.FixtureTransport({venue_fixtures.PM_MKT_URL: v1_positions_only})) \
+                .get_market_spec(venue_fixtures.PM_SLUG)
+        self.assertEqual(e.exception.status, "MALFORMED")   # v1 without clobTokenIds has no book tokens
 
     def test_book_hash_and_timestamps(self):
         spec = venues.adapter("kalshi", venue_fixtures.transport("kalshi_ok")).get_market_spec(venue_fixtures.K_TICKER)
@@ -337,7 +357,83 @@ class TestVenues(unittest.TestCase):
         self.assertEqual(len(snap["raw_hash"]), 64)
         self.assertEqual(snap["data_mode"], "SYNTHETIC")
         self.assertTrue(snap["fetch_start_utc"] <= snap["received_at_utc"])
+        self.assertEqual(snap["price_unit"], "PROBABILITY_DOLLARS")
+        self.assertNotIn("source_price_unit", snap)
+        for k in ("provider_time", "fetch_start_utc", "received_at_utc"):
+            self.assertTrue(snap[k].endswith("Z"), (k, snap[k]))
+        self.assertLessEqual(timefmt.parse_utc(snap["provider_time"]), timefmt.parse_utc(snap["received_at_utc"]))
         validate_envelope("BookSnapshot", quotes.to_jsonable(snap))
+
+    def test_every_fixture_book_has_provider_time_at_or_before_receipt(self):
+        for sc, (v, ref, _, _) in venue_fixtures.SCENARIOS.items():
+            if sc == "kalshi_clock_skew":
+                continue
+            with self.subTest(sc=sc):
+                try:
+                    spec = venues.adapter(v, venue_fixtures.transport(sc)).get_market_spec(ref)
+                    cid = spec["outcome_contract_ids"][-1 if v == "polymarket" else 0]["contract_id"]
+                    snap = venues.adapter(v, venue_fixtures.transport(sc)).get_book(spec, cid)
+                except venues.VenueError as e:
+                    self.assertNotEqual(e.status, "CLOCK_SKEW", e.reason)
+                    continue
+                if snap["provider_time"]:
+                    self.assertLessEqual(timefmt.parse_utc(snap["provider_time"]),
+                                         timefmt.parse_utc(snap["received_at_utc"]))
+
+    def test_provider_time_after_receipt_refused(self):
+        spec = venues.adapter("kalshi", venue_fixtures.transport("kalshi_clock_skew")).get_market_spec(venue_fixtures.K_TICKER)
+        with self.assertRaises(venues.VenueError) as e:
+            venues.adapter("kalshi", venue_fixtures.transport("kalshi_clock_skew")).get_book(spec, venue_fixtures.K_TICKER + ":yes")
+        self.assertEqual(e.exception.status, "CLOCK_SKEW")
+        # within tolerance is accepted (clocks are not synchronised to the millisecond)
+        t = venues.FixtureTransport(venue_fixtures._k(), clock_utc="2026-11-07T23:57:57Z")
+        snap = venues.adapter("kalshi", t).get_book(spec, venue_fixtures.K_TICKER + ":yes")
+        self.assertEqual(snap["provider_time"], "2026-11-07T23:58:00Z")
+
+    def test_legacy_cents_book_refused(self):
+        spec = venues.adapter("kalshi", venue_fixtures.transport("kalshi_cents_legacy")).get_market_spec(venue_fixtures.K_TICKER)
+        with self.assertRaises(venues.VenueError) as e:
+            venues.adapter("kalshi", venue_fixtures.transport("kalshi_cents_legacy")).get_book(spec, venue_fixtures.K_TICKER + ":yes")
+        self.assertEqual(e.exception.status, "UNKNOWN_UNITS")
+        self.assertIn("cent", e.exception.reason)
+
+
+class TestTimestampsAndUnits(unittest.TestCase):
+    def test_iso_z(self):
+        self.assertEqual(timefmt.iso_z(datetime(2026, 11, 7, 23, 58, tzinfo=UTC)), "2026-11-07T23:58:00Z")
+        with self.assertRaises(ValueError):
+            timefmt.iso_z(datetime(2026, 11, 7))
+        self.assertTrue(timefmt.now_z().endswith("Z"))
+
+    def test_committed_envelopes_use_z_and_one_unit_label(self):
+        units = set()
+
+        def walk(o, path):
+            if isinstance(o, dict):
+                for k, v in o.items():
+                    if k in ("price_unit", "unit") and isinstance(v, str):
+                        units.add(v)
+                    walk(v, f"{path}.{k}")
+            elif isinstance(o, list):
+                for i, v in enumerate(o):
+                    walk(v, f"{path}[{i}]")
+            elif isinstance(o, str) and re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?.*", o):
+                self.assertTrue(o.endswith("Z"), f"{path} = {o}")
+
+        valid = os.path.join(FIX, "valid")
+        for name in sorted(os.listdir(valid)):
+            with self.subTest(name=name), open(os.path.join(valid, name), encoding="utf-8") as f:
+                text = f.read()
+                self.assertNotIn("+00:00", text)
+                walk(json.loads(text), name)
+        self.assertEqual(units, {"PROBABILITY_DOLLARS"})
+
+    def test_committed_book_snapshot_clock_order(self):
+        with open(os.path.join(FIX, "valid", "BookSnapshot.json"), encoding="utf-8") as f:
+            snap = json.load(f)
+        pt, start, rec = (timefmt.parse_utc(snap[k]) for k in ("provider_time", "fetch_start_utc", "received_at_utc"))
+        self.assertLessEqual(start, rec)
+        self.assertLessEqual(pt, rec)
 
 
 class TestComparison(unittest.TestCase):
@@ -349,7 +445,8 @@ class TestComparison(unittest.TestCase):
         return comparison.compare(p["spec"], p["mapping"], venue_fixtures.FORECAST, venue_fixtures.transport(sc), reviewer, qt)
 
     def test_expected_statuses(self):
-        exp = {"kalshi_ok": ("OK", Decimal("0.04")), "polymarket_ok": ("OK", Decimal("0.04")), "kalshi_cents_legacy": ("OK", Decimal("0.04")),
+        exp = {"kalshi_ok": ("OK", Decimal("0.04")), "polymarket_ok": ("OK", Decimal("0.04")),
+               "kalshi_cents_legacy": ("UNKNOWN_UNITS", None), "kalshi_clock_skew": ("CLOCK_SKEW", None),
                "kalshi_reversed_outcome": ("NO_MATCH", None), "kalshi_other_date": ("NO_MATCH", None),
                "kalshi_regulation_only": ("OVERTIME_MISMATCH", None), "kalshi_unknown_units": ("UNKNOWN_UNITS", None),
                "kalshi_stale_book": ("STALE_BOOK", None), "kalshi_after_cutoff": ("FUTURE_QUOTE", None),

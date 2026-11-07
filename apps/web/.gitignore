@@ -1,0 +1,5 @@
+# Runtime outputs written by the local server; regenerate, do not commit.
+evidence/harness_batch.json
+evidence/harness_batch_smoke.json
+evidence/screenshots/
+__pycache__/

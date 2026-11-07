@@ -9,9 +9,9 @@ import copy
 from .venues import KALSHI_BASE, FixtureTransport, PolymarketAdapter
 
 GAME = {"game_id": "FIX-G0001", "home_team": "BOS", "away_team": "NYK",
-        "scheduled_tip_utc": "2026-11-08T00:30:00+00:00", "season": "fixture", "data_mode": "SYNTHETIC"}
+        "scheduled_tip_utc": "2026-11-08T00:30:00Z", "season": "fixture", "data_mode": "SYNTHETIC"}
 FORECAST = {"forecast_id": "FIX-F0001", "game_id": GAME["game_id"], "team": "BOS",
-            "probability": 0.59, "cutoff_utc": "2026-11-08T00:00:00+00:00",
+            "probability": 0.59, "cutoff_utc": "2026-11-08T00:00:00Z",
             "model": "fixture-forecast-0", "evidence_hash": "fixture-no-evidence",
             "calibration_scope": "none: authored fixture, not a model output",
             "data_mode": "SYNTHETIC"}
@@ -32,8 +32,9 @@ _K_BOOK = {"orderbook_fp": {"yes_dollars": [["0.5100", "300.00"], ["0.5200", "12
            "_provider_time": "2026-11-07T23:58:00Z"}
 
 _PM_MARKET = {
-    "id": "fixture-pm-1", "version": "v2", "question": "Knicks vs. Celtics",
-    "outcomes": "[\"Knicks\", \"Celtics\"]", "clobTokenIds": None, "positionIds": ["111001", "222002"],
+    # Shape follows the real v1 Gamma capture: clobTokenIds is a JSON-encoded string of book tokens.
+    "id": "fixture-pm-1", "version": "v1", "question": "Knicks vs. Celtics",
+    "outcomes": "[\"Knicks\", \"Celtics\"]", "clobTokenIds": "[\"111001\", \"222002\"]",
     "gameStartTime": "2026-11-08 00:30:00+00", "endDateIso": "2026-11-08",
     "description": "This market resolves to the team that wins the game, including any overtime. "
                    "If the game is postponed, the market stays open until it is played; if cancelled, it resolves 50-50.",
@@ -79,12 +80,14 @@ SCENARIOS = {
                                "contract excludes overtime"),
     "kalshi_cents_legacy": ("kalshi", K_TICKER, lambda: _k(book={"orderbook": {"yes": [[52, 120], [51, 300]],
                             "no": [[42, 80], [40, 200]]}, "_provider_time": "2026-11-07T23:58:00Z"}),
-                            "legacy integer-cent levels converted explicitly"),
+                            "legacy integer-cent levels are refused, not converted"),
     "kalshi_unknown_units": ("kalshi", K_TICKER, lambda: _k(book={"levels": [[0.5, 1]]}), "unrecognised book shape"),
     "kalshi_stale_book": ("kalshi", K_TICKER, lambda: _k(book={**copy.deepcopy(_K_BOOK), "_provider_time": "2026-11-07T21:00:00Z"}),
                           "book observed 3h before cutoff"),
     "kalshi_after_cutoff": ("kalshi", K_TICKER, lambda: _k(book={**copy.deepcopy(_K_BOOK), "_provider_time": "2026-11-08T00:05:00Z"}),
                             "quote observed after the forecast cutoff"),
+    "kalshi_clock_skew": ("kalshi", K_TICKER, lambda: _k(),
+                          "provider time 8h after our receipt (the old BookSnapshot defect) is refused"),
     "kalshi_paused": ("kalshi", K_TICKER, lambda: _k({"status": "closed"}), "market not open"),
     "polymarket_missing_ask": ("polymarket", PM_SLUG, lambda: _pm(book={**copy.deepcopy(_PM_BOOK), "asks": []}),
                                "no ask side"),
@@ -97,10 +100,24 @@ SCENARIOS = {
 }
 
 
+# Authored fetch clock per scenario: each fixture is "received" 1s after its provider time, so
+# provider_time <= received_at_utc holds in every regenerated envelope. kalshi_clock_skew keeps
+# the wall-clock time the old BookSnapshot.json was generated with, to prove the guard fires.
+_CLOCK = {"kalshi": "2026-11-07T23:58:01Z", "polymarket": "2026-11-07T23:59:01Z"}
+_CLOCK_OVERRIDE = {"kalshi_stale_book": "2026-11-07T21:00:01Z",
+                   "kalshi_after_cutoff": "2026-11-08T00:05:01Z",
+                   "kalshi_clock_skew": "2026-11-07T15:42:18Z"}
+
+
+def clock(name):
+    return _CLOCK_OVERRIDE.get(name) or _CLOCK[SCENARIOS[name][0]]
+
+
 def transport(name):
     if name not in SCENARIOS:
         raise KeyError(name)
-    return FixtureTransport(SCENARIOS[name][2](), data_mode="SYNTHETIC", captured_at=None)
+    return FixtureTransport(SCENARIOS[name][2](), data_mode="SYNTHETIC", captured_at=None,
+                            clock_utc=clock(name))
 
 
 def scenario_list():

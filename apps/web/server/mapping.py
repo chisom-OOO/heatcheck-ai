@@ -9,6 +9,8 @@ import json
 import re
 from datetime import UTC, datetime
 
+from .timefmt import iso_z
+
 NBA_TEAMS = {
     "ATL": ("Atlanta", "Hawks"), "BOS": ("Boston", "Celtics"), "BKN": ("Brooklyn", "Nets"),
     "CHA": ("Charlotte", "Hornets"), "CHI": ("Chicago", "Bulls"), "CLE": ("Cleveland", "Cavaliers"),
@@ -94,7 +96,7 @@ def propose(game, target_team, spec, max_tip_gap_hours=12):
         reasons.append("market has no game start time; date cannot be verified")
         status = "NO_MATCH" if status == "NO_MATCH" else "RULES_UNVERIFIED"
     elif tip and abs((mstart - tip).total_seconds()) > max_tip_gap_hours * 3600:
-        reasons.append(f"market start {mstart.isoformat()} differs from scheduled tip {tip.isoformat()} "
+        reasons.append(f"market start {iso_z(mstart)} differs from scheduled tip {iso_z(tip)} "
                        f"by more than {max_tip_gap_hours}h (same teams, different game?)")
         status = "NO_MATCH"
 
@@ -168,6 +170,6 @@ def approve(mapping, reviewer, current_rules_hash):
         raise PermissionError("market rules changed since the mapping was proposed; re-propose")
     out = dict(mapping)
     out["status"] = "APPROVED"
-    out["trusted_reviewer"] = {"name": reviewer, "at": datetime.now(UTC).isoformat(),
+    out["trusted_reviewer"] = {"name": reviewer, "at": iso_z(datetime.now(UTC)),
                                "attested": "checked teams, date, outcome direction, overtime and postponement rules"}
     return out

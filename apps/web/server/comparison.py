@@ -12,6 +12,8 @@ from datetime import UTC, datetime
 from . import mapping as mapping_mod
 from . import quotes
 from .contracts import validate_envelope
+from .quotes import PRICE_UNIT
+from .timefmt import iso_z
 from .venues import VenueError, adapter
 
 FRESHNESS_SECONDS_HISTORICAL = 600   # configured before the demo; recorded in every comparison
@@ -70,7 +72,7 @@ def compare(spec, mapping, forecast, transport, reviewer, quote_type="midpoint",
         else:
             fresh = quotes.freshness(_dt(snap["received_at_utc"]), now_utc=now or datetime.now(UTC),
                                      threshold_seconds=FRESHNESS_SECONDS_LIVE)
-        fresh["observed_at"] = observed.isoformat() if observed else None
+        fresh["observed_at"] = iso_z(observed) if observed else None
         fresh["basis"] = "forecast cutoff" if historical else "local clock at comparison"
         if fresh["status"] != "FRESH":
             comp_status = fresh["status"]
@@ -97,7 +99,7 @@ def compare(spec, mapping, forecast, transport, reviewer, quote_type="midpoint",
         "forecast_evidence_hash": forecast.get("evidence_hash"),
         "event_mapping_hash": _sha(approved or mapping),
         "book_snapshot_hash": _sha(snap) if snap else None,
-        "quote_type_unit": {"type": quote_type, "unit": "probability (dollars per $1 payout)",
+        "quote_type_unit": {"type": quote_type, "unit": PRICE_UNIT,
                             "derived": bool(result and result.get("ask_is_derived"))},
         "forecast_probability": float(forecast["probability"]),
         "observed_quote": result["observed_quote"] if result and result["status"] == "OK" else None,
