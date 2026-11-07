@@ -1,6 +1,6 @@
-// Run from apps/web:  node --test tests/
+// Run from apps/web:  node --test tests/referee.test.mjs
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -98,4 +98,57 @@ test("stand-in run without a matching plan does not borrow another claim", () =>
   assert.equal(referee.show(vm.claim.plan_hash), "old");
   assert.equal(vm.verdict.decision, "BLOCKED");
   assert.deepEqual(vm.attacks, []);
+});
+
+// --- Max's evidence ledger (heatcheck/ledger/evidence.py), committed at reports/max/logs/2026-11-07-loop
+const LEDGER = join(ROOT, "..", "..", "reports", "max", "logs", "2026-11-07-loop", "evidence_real_game.jsonl");
+const ledger = () => readFileSync(LEDGER, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
+const skip = !existsSync(LEDGER) && "Max's committed ledger not on this branch";
+
+test("ledger entry HH-K2 maps to claim, attacks, verdict, evidence", { skip }, () => {
+  const e = ledger().find((x) => x.identity.claim.claim_id === "HH-K2");
+  assert.ok(referee.isLedgerEntry(e));
+  const vm = referee.fromLedgerEntry(e, true);
+  assert.equal(vm.source, "LEDGER_ENTRY");
+  assert.equal(vm.verified, true);
+  assert.deepEqual(vm.problems, []);
+  assert.equal(vm.data_mode, "REAL_NBA_RETROSPECTIVE");
+  assert.equal(referee.show(vm.claim.claim_id), "HH-K2");
+  assert.equal(referee.show(vm.claim.plan_hash), e.identity.claim.canonical_plan_hash);
+  assert.equal(vm.verdict.decision, "NOT_SUPPORTED");
+  assert.equal(vm.verdict.reason, e.identity.reason);
+  assert.match(vm.verdict.referee, /DETERMINISTIC_CODE/);
+  assert.deepEqual(vm.attacks.map((a) => [referee.show(a.test_id), a.outcome]),
+    e.identity.attack_results.map((r) => [r.test_id_version, r.status]));
+  const perm = vm.attacks.find((a) => referee.show(a.test_id) === "A-PERMUTATION-NULL@1");
+  assert.equal(referee.show(perm.p_value), "0.239");                 // as recorded
+  assert.ok(perm.mandatory && perm.challenge.includes("Miller-Sanjurjo"));
+  const labels = vm.evidence.map((x) => x.label);
+  for (const l of ["evidence id", "entry hash", "data source (records_sha256)", "code research:src/heatcheck/kernels.py", "limits"]) assert.ok(labels.includes(l), l);
+  assert.equal(referee.show(vm.evidence.find((x) => x.label === "evidence id").value), e.evidence_id);
+});
+
+test("ledger entry without server verification says so", { skip }, () => {
+  const vm = referee.fromLedgerEntry(ledger()[0], false);
+  assert.equal(vm.verified, false);
+  assert.match(vm.problems[0], /not verified/);
+});
+
+test("BLOCKED entry lists every mandatory attack as NOT_RUN, nothing zero-filled", { skip }, () => {
+  const e = ledger().find((x) => x.identity.claim.claim_id === "GP-REST");
+  const vm = referee.fromLedgerEntry(e, true);
+  assert.equal(vm.verdict.decision, "BLOCKED");
+  assert.deepEqual(vm.attacks.map((a) => a.outcome), ["NOT_RUN", "NOT_RUN", "NOT_RUN"]);
+  assert.ok(vm.attacks.every((a) => a.mandatory && referee.show(a.statistic) === "unavailable: not run"));
+});
+
+test("unknown attack status and protocol are flagged, not reinterpreted", { skip }, () => {
+  const e = structuredClone(ledger()[1]);
+  e.identity.attack_results[0].status = "PASSED";
+  e.identity.protocol_version = "heatcheck-nba/2";
+  const vm = referee.fromLedgerEntry(e, true);
+  assert.equal(vm.attacks[0].outcome, "UNRECOGNISED");
+  assert.ok(vm.problems.some((p) => p.includes("PASSED")));
+  assert.ok(vm.problems.some((p) => p.includes("heatcheck-nba/2")));
+  assert.ok(referee.fromLedgerEntry({ evidence_id: 1 }).problems.includes("not an evidence-ledger entry"));
 });

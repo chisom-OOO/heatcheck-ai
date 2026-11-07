@@ -1,9 +1,13 @@
 // Referee evidence view model. Pure functions: no DOM, no network, no statistics.
 //
-// PROVISIONAL. Max owns the Referee evidence record format and has not delivered it yet. Until
-// then this module defines the four things the UI shows (claim, attacks run, verdict, evidence)
-// and two adapters into that view:
-//   fromRecord(record)        a record in the provisional shape below (replace when Max's lands)
+// Max owns the Referee evidence record. The UI shows four things (claim, attacks run, verdict,
+// evidence) and has three adapters into that view:
+//   fromLedgerEntry(entry, verified)  an entry of Max's append-only evidence ledger
+//                             (heatcheck/ledger/evidence.py, protocol heatcheck-nba/1, read at
+//                             max/integrate-r001-e001@cb7320c). Hash verification happens on the
+//                             server with Max's own code; `verified` says whether it did.
+//   fromRecord(record)        the earlier provisional shape below (kept for files from before
+//                             the ledger existed)
 //   fromStandInRun(run, plan) today's stand-in engine output (server/engine_fixture.py),
 //                             always labelled as stand-in, never as a Referee record
 // Values are displayed exactly as supplied. Nothing missing is zero-filled: it is shown as
@@ -18,6 +22,11 @@
 
 export const FORMAT_STATUS = "PROVISIONAL: awaiting Max's Referee evidence record format";
 export const PROVISIONAL_FORMAT = "provisional-experience/0";
+export const LEDGER_PROTOCOL = "heatcheck-nba/1";
+export const LEDGER_STATUS = "Referee evidence ledger entry (heatcheck/ledger/evidence.py, heatcheck-nba/1)";
+// AttackResult statuses written by heatcheck/agents/attacks.py. Shown as recorded; the UI never
+// turns a status into pass/fail itself (the Referee's decision and reason say what it meant).
+export const LEDGER_ATTACK_STATUSES = ["EXECUTED", "FAILED", "UNSUPPORTED"];
 
 export const VERDICTS = {
   SURVIVED_PROTOCOL: ["✓", "Survived every registered check"],
@@ -169,6 +178,105 @@ export function fromStandInRun(run, plan) {
     data_mode: [res.data_mode, p.data_mode].find((m) => DATA_MODES.includes(m)) || null,
     claim, attacks, verdict: verdictView(res.decision, res.reason, problems), evidence: ev, problems,
   };
+}
+
+/** True when the object looks like an evidence-ledger entry rather than a provisional record. */
+export function isLedgerEntry(o) {
+  return isObj(o) && typeof o.evidence_id === "string" && isObj(o.identity);
+}
+
+/**
+ * View model from one evidence-ledger entry. `verified` is true only when the app server
+ * recomputed evidence_id and entry_hash with heatcheck.ledger.evidence; a file opened in the
+ * browser is never verified here.
+ */
+export function fromLedgerEntry(entry, verified = false) {
+  const problems = [];
+  if (!isLedgerEntry(entry)) {
+    return { source: "LEDGER_ENTRY", format_status: LEDGER_STATUS, verified: false, data_mode: null, claim: null,
+             attacks: [], verdict: verdictView(null, null, problems), evidence: [], problems: ["not an evidence-ledger entry", ...problems] };
+  }
+  if (!verified) problems.push("hashes not verified: open this entry through the app server's ledger view to verify it");
+  const id = entry.identity;
+  if (id.protocol_version !== LEDGER_PROTOCOL) {
+    problems.push(`protocol_version ${JSON.stringify(id.protocol_version ?? null)} is not ${LEDGER_PROTOCOL}; fields may be misread`);
+  }
+  const data = isObj(id.data) ? id.data : {};
+  const dataMode = DATA_MODES.includes(data.data_mode) ? data.data_mode : null;
+  if (!dataMode) problems.push(`data.data_mode ${JSON.stringify(data.data_mode ?? null)} not recognised`);
+
+  const plan = (isObj(id.claim) && isObj(id.claim.plan)) ? id.claim.plan : {};
+  let claim = null;
+  if (isObj(id.claim)) {
+    claim = {
+      claim_id: field(id.claim, "claim_id", problems, "claim"),
+      statement: field(plan, "statement", problems, "claim.plan"),
+      plan_hash: field(id.claim, "canonical_plan_hash", problems, "claim"),
+      revision: UNAVAILABLE("ledger entries are not tied to a UI revision"),
+      estimand: plan.estimand ? shown(plan.estimand) : UNAVAILABLE("estimand not stated"),
+    };
+  } else problems.push("claim missing");
+
+  const mandatory = Array.isArray(plan.mandatory_attacks) ? plan.mandatory_attacks : [];
+  const challenger = isObj(id.challenger) ? id.challenger : {};
+  const why = new Map((challenger.ways_claim_could_be_wrong || []).filter(isObj).map((w) => [w.attack_id, w.way_claim_could_be_wrong]));
+  const results = Array.isArray(id.attack_results) ? id.attack_results : [];
+  if (!Array.isArray(id.attack_results)) problems.push("attack_results missing");
+  const attacks = [];
+  const seen = new Set();
+  results.forEach((r, i) => {
+    if (!isObj(r)) { problems.push(`attack_results[${i}] is not an object`); return; }
+    const tid = typeof r.test_id_version === "string" ? r.test_id_version : "";
+    const aid = tid.split("@")[0];
+    seen.add(aid);
+    let outcome = r.status;
+    if (!LEDGER_ATTACK_STATUSES.includes(outcome)) {
+      problems.push(`attack_results[${i}].status ${JSON.stringify(outcome ?? null)} is not one of ${LEDGER_ATTACK_STATUSES.join("/")}`);
+      outcome = "UNRECOGNISED";
+    }
+    if (!tid) problems.push(`attack_results[${i}].test_id_version missing`);
+    const detail = isObj(r.details) && Object.keys(r.details).length
+      ? Object.entries(r.details).map(([k, v]) => `${k}=${typeof v === "object" ? JSON.stringify(v) : v}`).join(", ") : null;
+    attacks.push({
+      test_id: tid ? shown(tid) : UNAVAILABLE("test id not supplied"),
+      outcome,
+      statistic: numberOrText(r.statistic, "statistic"),
+      p_value: numberOrText(r.p_value, "p-value"),
+      method: r.null_method_assumptions && r.null_method_assumptions !== "n/a"
+        ? shown(r.null_method_assumptions) : UNAVAILABLE("no null model for this attack"),
+      reason: [r.reason, detail].filter(Boolean).join(" · ") || null,
+      challenge: why.get(aid) || null,
+      mandatory: mandatory.includes(aid),
+    });
+  });
+  const expected = [...new Set([...mandatory, ...(Array.isArray(challenger.selected_attacks) ? challenger.selected_attacks : [])])];
+  for (const aid of expected) {
+    if (!seen.has(aid)) {
+      attacks.push({ test_id: shown(aid), outcome: "NOT_RUN", statistic: UNAVAILABLE("not run"), p_value: UNAVAILABLE("not run"),
+                     method: UNAVAILABLE("not run"), reason: "listed by the plan or the Challenger but no AttackResult was recorded",
+                     challenge: why.get(aid) || null, mandatory: mandatory.includes(aid) });
+    }
+  }
+
+  const verdict = verdictView(id.decision, id.reason, problems);
+  if (isObj(id.referee)) verdict.referee = `${id.referee.kind || "?"} · rule ${id.referee.rule || "?"} · v${id.referee.version || "?"}`;
+
+  const ev = [];
+  const add = (label, value, kind) => ev.push({ label, value: numberOrText(value, label), kind });
+  add("evidence id", entry.evidence_id, "hash");
+  add("entry hash", entry.entry_hash, "hash");
+  add("recorded at (UTC)", entry.created_at_utc, "time");
+  add("data source (records_sha256)", data.source, "hash");
+  add("data arrays sha256", data.arrays_sha256, "hash");
+  for (const k of ["n_games", "n_groups", "n_attempts"]) if (data[k] !== undefined) add(k, data[k], "count");
+  for (const [path, h] of Object.entries(isObj(id.code) ? id.code : {})) add(`code ${path}`, h, "hash");
+  for (const r of results) if (isObj(r)) add(`evidence hash ${r.test_id_version}`, r.evidence_hash, "hash");
+  if (isObj(id.proposer)) add("proposer (Jone)", [id.proposer.kind, id.proposer.model].filter(Boolean).join(" · "), "agent");
+  if (isObj(id.challenger)) add("challenger", [challenger.kind, challenger.model].filter(Boolean).join(" · "), "agent");
+  if (id.limits) add("limits", id.limits, "text");
+
+  return { source: "LEDGER_ENTRY", format_status: LEDGER_STATUS, verified: Boolean(verified), data_mode: dataMode,
+           claim, attacks, verdict, evidence: ev, problems };
 }
 
 /** Text for one displayed value: the value itself, or "unavailable: <reason>". */
