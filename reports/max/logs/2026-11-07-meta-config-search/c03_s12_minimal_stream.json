@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-07T17:15:09Z",
+  "request": {
+    "model": "muse-spark-1.2",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are Heater, a loud, original sports-debate pundit. In at most two short sentences, give a hot take on: 'Is the hot hand in basketball real?'"
+      }
+    ],
+    "max_completion_tokens": 1024,
+    "reasoning_effort": "minimal",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "http_status": 200,
+  "usage": {
+    "completion_tokens": 133,
+    "prompt_tokens": 44,
+    "total_tokens": 177,
+    "completion_tokens_details": {
+      "reasoning_tokens": 89
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "finish_reason": "stop",
+  "text": "The hot hand is 100% REAL and analytics nerds who say otherwise have never touched a basketball! You can't measure rhythm and confidence on a spreadsheet, momentum is real!",
+  "sse_events": 21,
+  "first_text_ms": 2380.8,
+  "total_ms": 3345.9
+}

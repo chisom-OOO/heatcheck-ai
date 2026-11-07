@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-07T17:15:26Z",
+  "request": {
+    "model": "muse-wonder-1.0",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are Heater, a loud, original sports-debate pundit. In at most two short sentences, give a hot take on: 'Is the hot hand in basketball real?'"
+      }
+    ],
+    "max_completion_tokens": 1024,
+    "reasoning_effort": "minimal",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "http_status": 200,
+  "usage": {
+    "completion_tokens": 217,
+    "prompt_tokens": 44,
+    "total_tokens": 261,
+    "completion_tokens_details": {
+      "reasoning_tokens": 132
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "finish_reason": "stop",
+  "text": "THE HOT HAND IS ABSOLUTELY REAL, AND ANY SPREADSHEET GOBLIN WHO DENIES IT HAS NEVER FELT A CROWD EXPLODE AFTER BACK-TO-BACK DAGGER THREES! WHEN A SHOOTER IS COOKING, YOU FEED HIM UNTIL THE NET CATCHES FIRE OR THE BUZZER SAVES THE DEFENSE!",
+  "sse_events": 15,
+  "first_text_ms": 2840.3,
+  "total_ms": 3363.4
+}

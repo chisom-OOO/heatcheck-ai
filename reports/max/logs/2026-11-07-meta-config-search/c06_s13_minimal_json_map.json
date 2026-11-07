@@ -1,0 +1,58 @@
+{
+  "utc": "2026-11-07T17:15:50Z",
+  "request": {
+    "model": "muse-spark-1.3",
+    "reasoning_effort": "minimal",
+    "max_completion_tokens": 512,
+    "messages": [
+      {
+        "role": "system",
+        "content": "Map the user's question to exactly one registered claim id, or NONE if no claim tests it. Registered claims: [{\"claim_id\": \"HH-K3\", \"statement\": \"Within a player-game, a field goal after 3 straight makes is made more often than one after 3 straight misses.\"}, {\"claim_id\": \"HH-K2\", \"statement\": \"Same as HH-K3 with streak length 2.\"}, {\"claim_id\": \"GP-REST\", \"statement\": \"Rest-day difference and back-to-backs improve pre-tip win forecasts over Elo.\"}]"
+      },
+      {
+        "role": "user",
+        "content": "Do guys who hit three in a row keep shooting better, or is that a myth?"
+      }
+    ],
+    "response_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "claim_mapping",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "claim_id"
+          ],
+          "properties": {
+            "claim_id": {
+              "type": "string",
+              "enum": [
+                "HH-K3",
+                "HH-K2",
+                "GP-REST",
+                "NONE"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "http_status": 200,
+  "text": "{\"claim_id\": \"HH-K3\"}",
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 138,
+    "prompt_tokens": 204,
+    "total_tokens": 342,
+    "completion_tokens_details": {
+      "reasoning_tokens": 120
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "total_ms": 1394.8
+}
