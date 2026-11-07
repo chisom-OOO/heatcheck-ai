@@ -1,0 +1,84 @@
+## upstream archive checksums (sha256sum -c raw/repo/SHA256SUMS)
+cdnnba_2022.tar.xz: OK
+cdnnba_2023.tar.xz: OK
+nbastats_2023.tar.xz: OK
+
+## reconstruction of recorded build_dataset.py (a933df4e)
+a933df4ef5c5922184b156ccaa5647f40156b40208b0a1bd79df3dff9778b6ea  /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/recon/build_dataset.a933df4e.py
+ea15c620d4caa0448052ea02aea7f6dbe794a1af99182c54161246a3abfa2fd0  -
+
+## diff a933df4e (recorded) -> ea15c620 (shipped)
+--- /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/recon/build_dataset.a933df4e.py	2026-11-07 16:19:19.418055706 +0000
++++ /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/shipped.py	2026-11-07 16:32:57.717659894 +0000
+@@ -22,7 +22,11 @@
+ 
+ def main(repo: Path, out: Path, extracted: Path):
+     import subprocess
+-    rev = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
++    try:
++        rev = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True,
++                                      stderr=subprocess.DEVNULL).strip()
++    except (subprocess.CalledProcessError, FileNotFoundError):
++        rev = (repo / "COMMIT").read_text().strip()   # bundled copy without .git
+     out.mkdir(parents=True, exist_ok=True)
+     snaps = [canonical.register_raw(repo / "datasets" / f, out / "rawstore", provider=p, upstream=UPSTREAM,
+                                     revision=rev, rights_note=RIGHTS)
+
+## logical table hashes vs evidence/season_manifest_2023-24.json
+run_base games MATCH 12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599
+run_base events MATCH 8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8
+run_base game_labels MATCH d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b
+run_base shot_labels MATCH 4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed
+run_base exclusions MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+run_base games_2022 MATCH 20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5
+run_base game_labels_2022 MATCH b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0
+run_base transformation_revision {'canonical.py': 'e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a', 'build_dataset.py': 'ea15c620d4caa0448052ea02aea7f6dbe794a1af99182c54161246a3abfa2fd0'}
+run_old_crlf games MATCH 12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599
+run_old_crlf events MATCH 8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8
+run_old_crlf game_labels MATCH d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b
+run_old_crlf shot_labels MATCH 4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed
+run_old_crlf exclusions MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+run_old_crlf games_2022 MATCH 20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5
+run_old_crlf game_labels_2022 MATCH b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0
+run_old_crlf transformation_revision {'canonical.py': 'e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a', 'build_dataset.py': 'ea15c620d4caa0448052ea02aea7f6dbe794a1af99182c54161246a3abfa2fd0'}
+run_new_crlf games MATCH 12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599
+run_new_crlf events MATCH 8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8
+run_new_crlf game_labels MATCH d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b
+run_new_crlf shot_labels MATCH 4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed
+run_new_crlf exclusions MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+run_new_crlf games_2022 MATCH 20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5
+run_new_crlf game_labels_2022 MATCH b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0
+run_new_crlf transformation_revision {'canonical.py': 'e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a', 'build_dataset.py': 'd05aa56796903c00729c0f82d697b3f801cdd8b6903cd823eb07b6ba7870a10f'}
+run_new games MATCH 12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599
+run_new events MATCH 8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8
+run_new game_labels MATCH d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b
+run_new shot_labels MATCH 4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed
+run_new exclusions MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+run_new games_2022 MATCH 20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5
+run_new game_labels_2022 MATCH b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0
+run_new transformation_revision {'canonical.py': 'e4e8f3cec51bd8c4283214c864ca264e79f37bc512f7ca333aa8ebc23e1d373a', 'build_dataset.py': 'd05aa56796903c00729c0f82d697b3f801cdd8b6903cd823eb07b6ba7870a10f'}
+
+## reconciliation_2023.csv line endings
+run_base CR_bytes=0 sha256=4b48c6187c48f12900725e3acf81e7ca3123a45572d30aa62e4b0f6ac2bd3dbf IDENTICAL_TO_EVIDENCE
+run_old_crlf CR_bytes=1231 sha256=b7a47fefe738449ac56609a5859384ad51efeb09b161d3f48a706f991e56c418 DIFFERENT_FROM_EVIDENCE
+run_new_crlf CR_bytes=0 sha256=4b48c6187c48f12900725e3acf81e7ca3123a45572d30aa62e4b0f6ac2bd3dbf IDENTICAL_TO_EVIDENCE
+run_new CR_bytes=0 sha256=4b48c6187c48f12900725e3acf81e7ca3123a45572d30aa62e4b0f6ac2bd3dbf IDENTICAL_TO_EVIDENCE
+
+## shot_association outputs (fixed code, simulated CRLF)
+harness_league_results.csv CR_bytes=0 IDENTICAL_TO_EVIDENCE
+harness_report.json CR_bytes 0 equal_to_evidence_except_created_utc True
+hot_hand_dev.json CR_bytes 0 equal_to_evidence_except_created_utc True
+
+## frozen GAME_PREDICTION code_hash
+now d496e34eca5139024537016f235dd070bd5f439ddfa899861ac905097ee8de56
+frozen d496e34eca5139024537016f235dd070bd5f439ddfa899861ac905097ee8de56
+MATCH
+
+## frozen files unchanged vs import (git diff 6eba349 -- src scripts/game_prediction.py evidence tests)
+(empty = unchanged)
+
+## environment
+Linux-6.18.44-fc-v310-x86_64-with-glibc2.39
+3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]
+numpy 2.5.3 pandas 3.0.5 scipy 1.18.1 sklearn 1.9.1 pytest 9.2.0
+4
