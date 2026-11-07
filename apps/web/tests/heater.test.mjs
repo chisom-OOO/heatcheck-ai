@@ -9,45 +9,67 @@ import * as M from "../web/heater/heater-model.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const H = join(ROOT, "web", "heater");
-const svg = readFileSync(join(H, "heater.svg"), "utf8");
 const css = readFileSync(join(H, "heater.css"), "utf8");
+const js = readFileSync(join(H, "heater.js"), "utf8");
 const FIXTURE = join(H, "fixtures", "evidence_real_game.jsonl");
 const SOURCE = join(ROOT, "..", "..", "reports", "max", "logs", "2026-11-07-loop", "evidence_real_game.jsonl");
 const entries = () => M.parseJsonl(readFileSync(FIXTURE, "utf8"));
 const byClaim = (id) => entries().find((e) => e.identity.claim.claim_id === id);
 
-test("rig: 15-25 angular shards, exactly one circle (the ball), every named part", () => {
-  const shards = svg.match(/<polygon class="h-shard[^"]*"/g) || [];
-  assert.ok(shards.length >= 15 && shards.length <= 25, `shards=${shards.length}`);
-  assert.equal((svg.match(/<circle/g) || []).length, 1);
-  assert.match(svg, /<circle class="h-ball-core"/);
-  const parts = ["h-crest", "h-visor", "h-mouth", "h-jaw", "h-lapel", "h-arm-l", "h-arm-r", "h-claw-l",
-    "h-claw-r", "h-leg-l", "h-leg-r", "h-ball", "h-blazer-back", "h-blazer-front"];
-  for (let i = 1; i <= 7; i++) parts.push(`h-flame-${i}`);
-  for (const p of parts) assert.match(svg, new RegExp(`class="[^"]*\\b${p}\\b`), p);
-  assert.match(svg, /viewBox="0 0 220 320"/);
-});
-
-test("rig: feet stand on the y=300 baseline and nothing goes below the floor", () => {
-  for (const leg of ["h-leg-l", "h-leg-r"]) {
-    const pts = svg.match(new RegExp(`${leg}" points="([^"]+)"`))[1].trim().split(/\s+/).map((p) => p.split(",").map(Number));
-    assert.equal(Math.max(...pts.map((p) => p[1])), 300, leg);
+/** Width and height of a WebP file (VP8, VP8L or VP8X), read from its header. */
+function webpSize(buf) {
+  assert.equal(buf.toString("ascii", 0, 4), "RIFF");
+  assert.equal(buf.toString("ascii", 8, 12), "WEBP");
+  const kind = buf.toString("ascii", 12, 16);
+  if (kind === "VP8X") return [1 + buf.readUIntLE(24, 3), 1 + buf.readUIntLE(27, 3)];
+  if (kind === "VP8 ") return [buf.readUInt16LE(26) & 0x3fff, buf.readUInt16LE(28) & 0x3fff];
+  if (kind === "VP8L") {
+    const b = buf.readUInt32LE(21);
+    return [1 + (b & 0x3fff), 1 + ((b >> 14) & 0x3fff)];
   }
-  const all = [...svg.matchAll(/points="([^"]+)"/g)].flatMap((m) => m[1].trim().split(/\s+/).map((p) => Number(p.split(",")[1])));
-  assert.ok(Math.max(...all) <= 303);
+  throw new Error(`unknown WebP chunk ${kind}`);
+}
+
+test("one pose map covers all 9 states; unsure and blocked borrow thinking and listening", () => {
+  assert.deepEqual(Object.keys(M.POSE_FOR_STATE).sort(), [...M.STATES].sort());
+  for (const s of M.STATES) assert.ok(M.POSES.includes(M.POSE_FOR_STATE[s]), s);
+  assert.equal(M.POSE_FOR_STATE.unsure, "thinking");
+  assert.equal(M.POSE_FOR_STATE.blocked, "listening");
+  for (const p of M.POSES) assert.equal(M.POSE_FOR_STATE[p], p);
+  assert.equal(M.poseFile("cooled"), "poses/cooled.webp");
+  assert.equal(M.POSES.length, 7);
 });
 
-test("rig is self-contained: no style, script, external reference or raster", () => {
-  for (const bad of [/<style/i, /<script/i, /href=/i, /<image/i, /style="/i, /https?:\/\/(?!www\.w3\.org\/2000\/svg)/i]) {
-    assert.doesNotMatch(svg, bad, String(bad));
+const missingPoses = M.POSES.filter((p) => !existsSync(join(H, "poses", `${p}.webp`)));
+test("pose images present", { todo: missingPoses.length ? `missing: ${missingPoses.join(", ")}` : false }, () => {
+  assert.deepEqual(missingPoses, []);
+});
+
+test("every pose image present is a WebP of 1024 px height", () => {
+  for (const p of M.POSES.filter((x) => !missingPoses.includes(x))) {
+    const [w, h] = webpSize(readFileSync(join(H, "poses", `${p}.webp`)));
+    assert.equal(h, 1024, `${p}: ${w}x${h}`);
   }
-  assert.doesNotMatch(css, /@import|url\(\s*["']?https?:/i);
 });
 
-test("every state has a CSS class, and reduced motion removes the loops", () => {
+test("the SVG rig is gone: no heater.svg and no SVG mount", () => {
+  assert.ok(!existsSync(join(H, "heater.svg")));
+  assert.doesNotMatch(js, /heater\.svg|innerHTML = \(await/);
+  assert.match(js, /createElement\("img"|el\("img"/);
+});
+
+test("CSS: 200 ms crossfade, #12121A stage, radial edge mask, every state, reduced motion", () => {
+  assert.match(css, /\.h-pose\s*\{[^}]*transition: opacity 200ms/);
+  assert.match(css, /--stage: #12121A/);
+  assert.match(css, /mask-image: var\(--mask\)/);
+  assert.match(css, /--mask: radial-gradient\(/);
   for (const s of M.STATES) assert.match(css, new RegExp(`\\.st-${s}\\b`), s);
-  assert.equal(M.STATES.length, 9);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation: none !important/);
+  assert.match(css, /@keyframes h-squash/);
+  assert.match(css, /translateX\(-3px\)[\s\S]*translateX\(3px\)/);
+  assert.match(css, /\.h-slice \{[^}]*animation: h-slice 600ms/);
+  assert.match(css, /\.st-cooled \.h-spark:nth-child\(n\+3\) \{ display: none; \}/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation: none !important[\s\S]*\.h-sparks, \.h-root \.h-glitch \{ display: none !important; \}/);
+  assert.doesNotMatch(css, /@import|url\(\s*["']?https?:/i);
 });
 
 test("fixture is a byte copy of Max's committed ledger", { skip: !existsSync(SOURCE) && "source ledger not on this branch" }, () => {
@@ -66,7 +88,7 @@ test("verdict -> end state and chip; unknown verdicts never vindicate", () => {
   assert.equal(M.chipFor("PROBABLY_TRUE").kind, "unknown");
 });
 
-test("card model for HH-K2 uses only the record's own text and numbers", () => {
+test("card model for HH-K2: the Ref's numbers come only from the record", () => {
   const e = byClaim("HH-K2");
   const m = M.cardModel(e, { verified: false });
   assert.equal(m.title, e.identity.claim.plan.statement);
@@ -74,13 +96,34 @@ test("card model for HH-K2 uses only the record's own text and numbers", () => {
   assert.ok(m.refLine.endsWith(e.identity.reason));
   assert.deepEqual(m.facts, ["5 attacks", "181 attempts", "1 game", "real nba retrospective",
     `evidence ${e.evidence_id.slice(0, 8)}`, "hashes not verified here"]);
-  // every digit run shown on the card appears in the serialized record
   const shown = [m.title, m.refLine, ...m.facts].join(" ");
   const record = JSON.stringify(e);
   for (const n of shown.match(/\d[\d.,]*/g) || []) {
     const plain = n.replace(/,/g, "").replace(/\.$/, "");
     assert.ok(record.includes(plain) || plain === String(e.identity.attack_results.length), `number ${n} not in record`);
   }
+});
+
+test("Heater's line is a hot take, never the claim description", () => {
+  for (const e of entries()) {
+    const m = M.cardModel(e);
+    assert.notEqual(m.heaterLine, m.title);
+    assert.ok(!m.heaterLine.includes(m.title));
+    assert.doesNotMatch(m.heaterLine, /\d/, "Heater says no numbers; those belong to the Ref");
+  }
+  assert.equal(M.cardModel(byClaim("HH-K2")).heaterLine, "Two in a row? He's HEATING UP! Give him the ball!");
+});
+
+test("personality file formats: table, {lines}, {claims}, default fallback, rotation", () => {
+  const t = M.linesTable({ lines: { "HH-K2": ["A!", "B!"], default: "Generic!" } });
+  assert.deepEqual(t, { "HH-K2": ["A!", "B!"], "*": ["Generic!"] });
+  assert.deepEqual(M.linesTable({ claims: { X: ["x"] } }), { X: ["x"] });
+  assert.deepEqual(M.linesTable({ X: "x" }), { X: ["x"] });
+  assert.equal(M.linesTable([]), null);
+  assert.equal(M.linesTable({ X: [1, null] }), null);
+  assert.equal(M.heaterLineFor("HH-K2", t, 1), "B!");
+  assert.equal(M.heaterLineFor("GP-REST", t), "Generic!");
+  assert.equal(M.heaterLineFor("GP-REST", { X: ["x"] }), M.PLACEHOLDER_LINES["*"][0]);
 });
 
 test("every committed record maps to a state and a chip without problems", () => {

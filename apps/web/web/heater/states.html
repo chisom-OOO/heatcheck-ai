@@ -11,14 +11,14 @@
 <body>
 <header class="top">
   <h1>Heater <span>/ state sheet</span></h1>
-  <p>Original HeatCheck pundit rig: inline SVG, 25 shards and one basketball. Each cell holds one state.
-     One-shot states replay every few seconds.</p>
+  <p>HeatCheck's pundit: one pose image per state (AI-generated art, Gemini) with CSS motion on top.
+     Each cell holds one state; one-shot states replay every few seconds.</p>
 </header>
 
 <section class="seq" aria-labelledby="seq-h">
   <h2 id="seq-h">Full sequence</h2>
   <div class="seq-grid">
-    <div class="stage big"><div id="seq-heater"></div></div>
+    <div class="seq-fig"><div id="seq-heater"></div></div>
     <div class="seq-side">
       <div id="seq-card"></div>
       <form id="ask" class="ask" autocomplete="off">
@@ -33,8 +33,9 @@
         </div>
         <p class="phase" id="phase" aria-live="polite">Ready.</p>
         <p class="src" id="src"></p>
-        <p class="note">Heater's take and the Ref's verdict are read from the selected evidence record
-           in Max's ledger. No model is called, and the question does not change the record.</p>
+        <p class="note">The Ref's verdict and every number come from the selected evidence record in
+           Max's ledger. Heater's line is a hot take from heater_personality.json (placeholder lines until
+           that file is added). No model is called, and the question does not change the record.</p>
       </form>
     </div>
   </div>

@@ -10,6 +10,50 @@ export const STATES = Object.freeze([
   "cooled", "unsure", "blocked", "heat_check",
 ]);
 
+/** The seven pose images (apps/web/web/heater/poses/<name>.webp, 687x1024). */
+export const POSES = Object.freeze([
+  "idle", "listening", "thinking", "hot_take", "heat_check", "vindicated", "cooled",
+]);
+
+/** The single pose map: state -> pose image. unsure and blocked borrow thinking and
+ *  listening until their own images exist. */
+export const POSE_FOR_STATE = Object.freeze({
+  idle: "idle", listening: "listening", thinking: "thinking", hot_take: "hot_take",
+  heat_check: "heat_check", vindicated: "vindicated", cooled: "cooled",
+  unsure: "thinking", blocked: "listening",
+});
+
+export const poseFile = (state) => `poses/${POSE_FOR_STATE[state] || "idle"}.webp`;
+
+/** Placeholder hot takes, used only while web/heater_personality.json is absent.
+ *  The HH-K2 line is the user's own example; the others are placeholders, not the
+ *  user's file. Heater lines carry no digits: numbers belong to the Ref. */
+export const PLACEHOLDER_LINES = Object.freeze({
+  "HH-K2": ["Two in a row? He's HEATING UP! Give him the ball!"],
+  "HH-K3": ["Three straight? He's ON FIRE! Nobody can guard him now!"],
+  "GP-REST": ["Fresh legs WIN games. Bet the rested team, every time!"],
+  "*": ["I've seen enough. This one is a LOCK!"],
+});
+
+/** Pull a {claim_id: [lines]} table out of a personality file. Accepts
+ *  {"lines": {...}}, {"claims": {...}} or the table itself; "*" or "default" is the fallback. */
+export function linesTable(doc) {
+  const t = isObj(doc?.lines) ? doc.lines : isObj(doc?.claims) ? doc.claims : doc;
+  if (!isObj(t)) return null;
+  const out = {};
+  for (const [k, v] of Object.entries(t)) {
+    const arr = (Array.isArray(v) ? v : [v]).filter(isStr);
+    if (arr.length) out[k === "default" ? "*" : k] = arr;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+/** Heater's line for a claim: a hot take from the table, never the claim description. */
+export function heaterLineFor(claimId, table = PLACEHOLDER_LINES, turn = 0) {
+  const pool = (table && (table[claimId] || table["*"])) || PLACEHOLDER_LINES["*"];
+  return pool[Math.abs(turn) % pool.length];
+}
+
 export const DECISION_STATE = Object.freeze({
   SURVIVED_PROTOCOL: "vindicated",
   NOT_SUPPORTED: "cooled",
@@ -79,7 +123,7 @@ export function factsFor(entry, { verified = false } = {}) {
 }
 
 /** Everything the speech card and the sequence need, from one ledger entry. */
-export function cardModel(entry, { verified = false } = {}) {
+export function cardModel(entry, { verified = false, lines = PLACEHOLDER_LINES, turn = 0 } = {}) {
   if (!isLedgerEntry(entry)) {
     return { ok: false, problems: ["not an evidence-ledger entry"], chip: chipFor("NOT_A_RECORD") };
   }
@@ -92,11 +136,12 @@ export function cardModel(entry, { verified = false } = {}) {
   if (!reason) problems.push("verdict reason missing");
   if (!CHIP[id.decision]) problems.push(`unrecognised verdict ${id.decision}`);
   const verdictWords = (CHIP[id.decision] ? CHIP[id.decision][0] : id.decision).toLowerCase();
+  const claimId = isStr(id.claim.claim_id) ? id.claim.claim_id : "(no claim id)";
   return {
     ok: true,
-    claimId: isStr(id.claim.claim_id) ? id.claim.claim_id : "(no claim id)",
+    claimId,
     title: statement || "(claim statement missing)",
-    heaterLine: statement ? `HOT take: ${statement}` : "No take on record.",
+    heaterLine: heaterLineFor(claimId, lines, turn),
     refLine: `${verdictWords}. ${reason || "No reason on record."}`,
     decision: id.decision,
     chip: chipFor(id.decision),

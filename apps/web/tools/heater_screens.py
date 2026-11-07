@@ -65,11 +65,11 @@ def main(argv: list[str]) -> int:
         wait_up(f"{base}/heater/states.html")
         with sync_playwright() as p:
             browser = p.chromium.launch(channel=args.channel, headless=True)
-            page = browser.new_page(viewport={"width": 520, "height": 620}, device_scale_factor=2)
+            page = browser.new_page(viewport={"width": 860, "height": 720}, device_scale_factor=1)
             errors: list[str] = []
             page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
             for state, ms in STATES.items():
-                # the glitch lasts 210 ms; hold its second frame so the capture shows it
+                # the glitch lasts 600 ms; hold one frame so the capture shows it
                 freeze = "&freeze=1" if state == "heat_check" else ""
                 page.goto(f"{base}/heater/states.html?shot={state}{freeze}")
                 page.wait_for_selector("body[data-ready='1']")

@@ -5,16 +5,16 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0C0C12; --fg: #ECEAF5; --muted: #A09DB4; --panel: #16151F; --line: #2C2A3C;
+    --bg: #0C0C12; --fg: #ECEAF5; --muted: #A09DB4; --panel: #16151F; --line: #2C2A3C; --ref: #2EC4B6;
   }
 }
 :root[data-theme="dark"] { --bg: #0C0C12; --fg: #ECEAF5; --muted: #A09DB4; --panel: #16151F; --line: #2C2A3C; }
 
 * { box-sizing: border-box; }
 body {
-  margin: 0; padding: 20px 16px 48px; background: var(--bg); color: var(--fg);
+  margin: 0 auto; padding: 20px 16px 48px; background: var(--bg); color: var(--fg);
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
-  max-width: 1180px; margin-inline: auto;
+  max-width: 1240px;
 }
 h1, h2 { font-family: "Bahnschrift SemiCondensed", "Bahnschrift", "Arial Narrow", sans-serif; font-stretch: condensed; letter-spacing: .02em; }
 h1 { margin: 0 0 4px; font-size: 2rem; }
@@ -22,22 +22,38 @@ h1 span { color: var(--muted); font-weight: 600; }
 h2 { margin: 28px 0 12px; font-size: 1.3rem; }
 .top p { margin: 0; color: var(--muted); max-width: 70ch; }
 
-.stage {
-  background: var(--stage); display: flex; align-items: flex-end; justify-content: center;
-  padding: 10px 8px 4px;
-  clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+/* ------------------------------------------------------------------ state cells
+   Each cell is self-contained: it clips its own content and owns its height, so nothing
+   (pose, glow, card) can spill into the next cell. The pose is at least 440 px tall;
+   the card sits beside it when the cell is wide enough and below it otherwise. */
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 580px), 1fr)); align-items: start; }
+.cell {
+  container-type: inline-size;
+  background: var(--panel); border: 1px solid var(--line); padding: 12px;
+  min-width: 0; overflow: hidden; contain: layout paint;
 }
-.stage > div { width: 100%; max-width: 220px; }
-.stage.big > div { max-width: 300px; }
-
-.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-.cell { background: var(--panel); border: 1px solid var(--line); padding: 10px; min-width: 0; }
-.cell h3 { margin: 8px 0 2px; font: 700 1rem/1.2 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif; }
+.cell-in { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 540px) {
+  .cell-in { grid-template-columns: 296px minmax(0, 1fr); align-items: start; }
+}
+.cell-fig { display: flex; justify-content: center; min-width: 0; }
+.cell-fig .h-root { height: 440px; width: auto; max-width: 100%; }
+.cell-side { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.cell h3 { margin: 2px 0 0; font: 700 1.15rem/1.2 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif; }
 .cell h3 code { font: 600 .8rem ui-monospace, Consolas, monospace; color: var(--accent); margin-left: 6px; }
-.cell p { margin: 0; color: var(--muted); font-size: .86rem; }
+.cell p { margin: 0; color: var(--muted); font-size: .88rem; }
+.cell .pose { font: .78rem ui-monospace, Consolas, monospace; }
+.cell-card { margin-top: 6px; min-width: 0; }
+.cell-card.empty { padding: 10px 12px; border: 1px dashed var(--line); color: var(--muted); font-size: .84rem; }
 
-.seq-grid { display: grid; gap: 16px; grid-template-columns: minmax(200px, 320px) minmax(0, 1fr); align-items: start; }
-@media (max-width: 720px) { .seq-grid { grid-template-columns: 1fr; } .stage.big > div { max-width: 240px; } }
+/* ------------------------------------------------------------------ full sequence */
+.seq-grid { display: grid; gap: 16px; grid-template-columns: 349px minmax(0, 1fr); align-items: start; }
+.seq-fig { display: flex; justify-content: center; min-width: 0; }
+.seq-fig .h-root { height: 520px; width: auto; max-width: 100%; }
+@media (max-width: 760px) {
+  .seq-grid { grid-template-columns: minmax(0, 1fr); }
+  .seq-fig .h-root { height: 460px; }
+}
 .seq-side { display: grid; gap: 14px; min-width: 0; }
 .ask { display: grid; gap: 6px; background: var(--panel); border: 1px solid var(--line); padding: 12px; }
 .ask label small { color: var(--muted); }
@@ -48,10 +64,8 @@ h2 { margin: 28px 0 12px; font-size: 1.3rem; }
 .phase { margin: 4px 0 0; font: .85rem ui-monospace, Consolas, monospace; color: var(--ref); }
 .src, .note { margin: 0; color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
 
-/* screenshot mode: one large figure */
-body.shot { padding: 0; max-width: none; background: #12121A; }
+/* ------------------------------------------------------------------ screenshot mode: one cell */
+body.shot { padding: 0; max-width: none; background: #0C0C12; color-scheme: dark;
+  --panel: #16151F; --line: #2C2A3C; --muted: #A09DB4; --fg: #ECEAF5; color: var(--fg); }
 body.shot .top, body.shot .seq, body.shot section { display: none; }
-body.shot #shot { display: block; }
-#shot { display: none; width: 360px; padding: 8px 16px 6px; background: #12121A; }
-#shot .label { font: 700 14px "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif; color: #ECEAF5; letter-spacing: .08em; margin: 0 0 4px; }
-#shot-card { width: 420px; }
+#shot { width: 820px; padding: 10px; }

@@ -1,245 +1,184 @@
-/* Heater: rig styling, one class per state on the root (.st-<name>), speech card.
-   Poses are static transforms with 150-250 ms transitions; loops run on the *-loop inner
-   groups so a pose and a loop never fight over one transform. Feet stay on y=300. */
+/* Heater: pose images (one <img> per state via the pose map in heater-model.js) with CSS
+   motion on top. State class on the root: .st-<name>. Layers:
+     .h-root  stage (#12121A), clips everything to its own box
+     .h-fig   state motion (idle bob, vindicated pop, cooled sink, CAPS shake)
+     .h-body  word bounce (squash) and colour filters (glow, desaturate)
+     .h-pose  two stacked images, crossfaded in 200 ms; .h-slice copies for the glitch
+   Every image has a soft radial edge mask so no image rectangle shows on the stage. */
 
 .h-root {
   --heat-core: #FF7A1A;
   --heat-hot: #FFD23F;
   --heat-white: #FFF4D6;
-  --blazer: #1E1B2E;
   --edge: #6C4BFF;
   --ember: #8A2A0A;
-  --smoke: #5B5F6B;
+  --stage: #12121A;
   --card: #12121A;
   --ref: #2EC4B6;
-  --ball: #D9631E;
+  --violet: #8B5CFF;
   --mic: 0;
+  --sx: 51%;          /* spark origin: the head, per pose below */
+  --sy: 15%;
   --h-cond: "Bahnschrift SemiCondensed", "Bahnschrift", "Arial Narrow", "Roboto Condensed", "Helvetica Neue", sans-serif;
   --h-mono: ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+  --mask: radial-gradient(ellipse 60% 58% at 50% 50%, #000 68%, transparent 100%),
+          linear-gradient(to right, transparent, #000 6%, #000 94%, transparent),
+          linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+  position: relative;
   display: block;
-  aspect-ratio: 220 / 320;
+  aspect-ratio: 687 / 1024;
+  background: var(--stage);
+  overflow: hidden;
+  contain: paint;
+  isolation: isolate;
 }
-.h-svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.h-root g, .h-root polygon, .h-root circle, .h-root path { transform-box: view-box; }
+.h-fig, .h-body, .h-glitch { position: absolute; inset: 0; transform-origin: 50% 94%; }
 
-/* ------------------------------------------------------------------ parts */
-.h-shard { stroke-linejoin: miter; }
-.h-blazer { fill: var(--blazer); stroke: var(--edge); stroke-width: 1.2; }
-.h-leg { fill: #17152A; stroke: var(--edge); stroke-width: 1; }
-.h-lapel { fill: var(--edge); stroke: var(--heat-white); stroke-width: .35; }
-.h-claw { fill: var(--heat-core); stroke: var(--ember); stroke-width: .8; }
-.h-claw-tip { fill: var(--heat-hot); }
-.h-jaw { fill: var(--heat-core); stroke: var(--ember); stroke-width: 1; }
-.h-visor { fill: var(--heat-white); opacity: .8; transition: opacity .2s, fill .2s, stroke-width .2s; stroke: var(--heat-hot); stroke-width: 0; }
-.h-visor-scan { fill: var(--ref); opacity: 0; }
-.h-root .h-mouth { fill: var(--card); transform-box: fill-box; transform-origin: 50% 0; transition: transform 90ms; }
-.h-root.mouth-open .h-mouth { transform: scaleY(2.6); }
-.h-floor { fill: var(--edge); opacity: .35; }
-.h-scan { fill: var(--ref); opacity: 0; }
-.h-wisp, .h-puff, .h-spark { opacity: 0; }
-.h-wisp { fill: var(--smoke); }
-.h-puff { fill: #C9CCD6; }
-.h-spark { fill: var(--heat-hot); }
-.h-ball-core { fill: var(--ball); stroke: var(--card); stroke-width: 1.4; }
-.h-ball-seam { fill: none; stroke: var(--card); stroke-width: 1.2; }
-
-/* flames: every shard flickers on its own clock, scaled from its own base */
-.h-root .h-flame {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: h-flick var(--d, .9s) ease-in-out var(--dl, 0s) infinite alternate;
-  transition: fill .3s;
+.h-pose, .h-slice {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: 50% 100%;
+  -webkit-mask-image: var(--mask); mask-image: var(--mask);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  user-select: none; pointer-events: none;
 }
-.h-flame-1 { fill: var(--heat-core); --d: .8s;  --dl: -.1s;  --i: 0; }
-.h-flame-2 { fill: var(--heat-hot);  --d: 1.05s; --dl: -.4s; --i: 1; }
-.h-flame-3 { fill: var(--heat-core); --d: .7s;  --dl: -.2s;  --i: 2; }
-.h-flame-4 { fill: var(--heat-hot);  --d: 1.2s; --dl: -.6s;  --i: 3; }
-.h-flame-5 { fill: var(--heat-core); --d: .9s;  --dl: -.3s;  --i: 4; }
-.h-flame-6 { fill: var(--heat-hot);  --d: .6s;  --dl: -.5s;  --i: 5; }
-.h-flame-7 { fill: var(--heat-white); --d: .75s; --dl: -.15s; --i: 6; }
-@keyframes h-flick {
-  from { transform: scaleY(.92) rotate(-2deg); }
-  to   { transform: scaleY(1.06) rotate(2.5deg); }
+.h-pose { opacity: 0; transition: opacity 200ms ease; }
+.h-pose.on { opacity: 1; }
+.h-missing {
+  position: absolute; left: 8px; right: 8px; top: 8px; margin: 0;
+  font: 600 .75rem/1.3 var(--h-mono); color: #FFB627; text-align: center;
 }
+.h-missing:empty { display: none; }
 
-/* pose pivots (view-box coordinates) */
-.h-upper     { transform-origin: 108px 214px; transition: transform .22s ease; }
-.h-upper-loop { transform-origin: 108px 214px; }
-.h-legs      { transform-origin: 110px 300px; }
-.h-arm-l     { transform-origin: 86px 137px;  transition: transform .22s ease; }
-.h-arm-r     { transform-origin: 135px 123px; transition: transform .22s ease; }
-.h-arm-r-loop { transform-origin: 135px 123px; }
-.h-arm-l-loop { transform-origin: 86px 137px; }
-.h-shoulders { transition: transform .2s ease; }
-.h-head      { transform-origin: 128px 112px; transition: transform .2s ease; }
-.h-crest     { transform-origin: 127px 100px; transition: transform .22s ease; }
-.h-crest-loop { transform-origin: 127px 100px; }
-.h-ball      { transform: translate(70px, 196px); transition: transform .25s ease; }
-.h-root .h-ball-spin { transform-box: fill-box; transform-origin: 50% 50%; }
-
-/* ------------------------------------------------------------------ 1. idle: waiting on the take */
-.st-idle .h-upper-loop { animation: h-bob 2.4s ease-in-out infinite; }
-.st-idle .h-legs { animation: h-legbob 2.4s ease-in-out infinite; }
-.st-idle .h-crest { transform: scale(.92); }
-@keyframes h-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-@keyframes h-legbob { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.035); } }
-
-/* ------------------------------------------------------------------ 4. hot_take: speaking */
-.st-hot_take .h-upper { transform: rotate(5deg); }
-.st-hot_take .h-arm-r { transform: rotate(-62deg); }
-.st-hot_take .h-arm-r-loop { animation: h-jab .5s ease-out infinite; }
-.st-hot_take .h-crest { transform: scale(1.06, 1.2); }
-.st-hot_take .h-flame-1, .st-hot_take .h-flame-3, .st-hot_take .h-flame-5 { fill: var(--heat-hot); }
-.st-hot_take .h-flame-2, .st-hot_take .h-flame-4, .st-hot_take .h-flame-6 { fill: var(--heat-white); }
-.st-hot_take .h-visor { opacity: 1; stroke-width: 1.6; }
-@keyframes h-jab {
-  0%, 100% { transform: rotate(0); }
-  30% { transform: rotate(-7deg) translate(4px, -2px); }
+/* ------------------------------------------------------------------ sparks from the head */
+.h-sparks { position: absolute; left: var(--sx); top: var(--sy); width: 0; height: 0; pointer-events: none; }
+.h-spark {
+  position: absolute; left: var(--x, 0px); top: 0; width: 5px; height: 9px;
+  background: var(--heat-hot);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  opacity: 0;
+  animation: h-rise var(--d, 1.6s) ease-out var(--dl, 0s) infinite;
 }
-/* emphasis on CAPS words: horizontal only, so the feet stay on y=300 */
-.h-root.shake .h-all { animation: h-shake .22s linear; }
+.h-spark-1 { --x: -26px; --d: 1.5s; --dl: 0s; }
+.h-spark-2 { --x: 18px;  --d: 1.8s; --dl: -.4s; background: var(--heat-core); }
+.h-spark-3 { --x: -8px;  --d: 1.3s; --dl: -.9s; }
+.h-spark-4 { --x: 30px;  --d: 1.7s; --dl: -1.2s; background: var(--heat-white); }
+.h-spark-5 { --x: -36px; --d: 2s;   --dl: -.2s; background: var(--heat-core); }
+.h-spark-6 { --x: 6px;   --d: 1.4s; --dl: -.7s; }
+.h-spark-7 { --x: 40px;  --d: 1.9s; --dl: -1.5s; background: var(--heat-core); }
+.h-spark-8 { --x: -18px; --d: 1.6s; --dl: -1s; background: var(--heat-white); }
+@keyframes h-rise {
+  0%   { opacity: 0; transform: translate(0, 10px) scale(.8); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--drift, 6px), -70px) rotate(45deg) scale(.4); }
+}
+.h-spark:nth-child(even) { --drift: -8px; }
+
+/* per-pose head positions (approximate, for the spark origin) */
+.st-hot_take   { --sx: 50%; --sy: 13%; }
+.st-vindicated { --sx: 47%; --sy: 22%; }
+.st-cooled     { --sx: 51%; --sy: 16%; }
+
+/* ------------------------------------------------------------------ idle: slow bob */
+.st-idle .h-fig { animation: h-bob 3s ease-in-out infinite; }
+@keyframes h-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* ------------------------------------------------------------------ listening / thinking */
+.st-listening .h-body { filter: brightness(calc(.9 + var(--mic) * .35)); transition: filter 90ms linear; }
+.st-thinking .h-fig { animation: h-sway 2.6s ease-in-out infinite; }
+@keyframes h-sway { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.6deg) translateY(-2px); } }
+
+/* ------------------------------------------------------------------ hot_take: bounce per word, shake on CAPS */
+.h-root.bounce .h-body { animation: h-squash 200ms ease-out; }
+@keyframes h-squash {
+  0%   { transform: scale(1, 1); }
+  35%  { transform: scale(1.045, .95); }
+  70%  { transform: scale(.985, 1.03); }
+  100% { transform: scale(1, 1); }
+}
+.h-root.shake .h-fig { animation: h-shake 240ms linear; }
 @keyframes h-shake {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-2.5px); }
-  50% { transform: translateX(2.5px); }
-  75% { transform: translateX(-1.5px); }
+  20% { transform: translateX(-3px); }
+  45% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+  85% { transform: translateX(2px); }
 }
+.st-hot_take .h-spark { --d: 1.1s; }
 
-/* ------------------------------------------------------------------ 9. heat_check: scanned by the Ref */
-.st-heat_check .h-upper { transform: rotate(3deg); }
-.st-heat_check .h-visor { fill: var(--ref); opacity: 1; }
-.st-heat_check .h-all { animation: h-glitch .21s steps(1, end) both; }
-.st-heat_check .h-scan { animation: h-scanline .6s linear both; }
-@keyframes h-glitch {
-  0%     { filter: var(--hg1); }
-  33.3%  { filter: var(--hg2); }
-  66.6%  { filter: var(--hg3); }
-  100%   { filter: none; }
+/* ------------------------------------------------------------------ heat_check: 0.6 s slice-glitch */
+.h-glitch { display: none; }
+.st-heat_check .h-glitch { display: block; }
+.h-slice { opacity: 0; animation: h-slice 600ms steps(1, end) both; }
+.h-slice-1 { clip-path: inset(8% 0 74% 0);  --gx: 14px;  --gc: var(--ref); }
+.h-slice-2 { clip-path: inset(30% 0 52% 0); --gx: -18px; --gc: var(--violet); }
+.h-slice-3 { clip-path: inset(55% 0 30% 0); --gx: 10px;  --gc: var(--ref); }
+.h-slice-4 { clip-path: inset(76% 0 10% 0); --gx: -12px; --gc: var(--violet); }
+@keyframes h-slice {
+  0%   { opacity: 1; transform: translateX(var(--gx)); filter: drop-shadow(3px 0 0 var(--gc)); }
+  17%  { opacity: 1; transform: translateX(calc(var(--gx) * -0.6)); filter: drop-shadow(-3px 0 0 var(--gc)); }
+  33%  { opacity: 0; }
+  50%  { opacity: 1; transform: translateX(calc(var(--gx) * 0.8)); filter: drop-shadow(-4px 0 0 var(--gc)); }
+  67%  { opacity: 1; transform: translateX(calc(var(--gx) * -0.3)); filter: drop-shadow(2px 0 0 var(--gc)); }
+  84%, 100% { opacity: 0; transform: none; filter: none; }
 }
-/* screenshot hook (states.html?shot=heat_check&freeze=1): hold glitch frame 2 mid-scan */
-.h-root.h-freeze.st-heat_check .h-all { animation: none; filter: var(--hg2); }
-.h-root.h-freeze.st-heat_check .h-scan { animation: none; opacity: .9; transform: translateY(150px); }
-@keyframes h-scanline {
-  0%   { opacity: 0;  transform: translateY(0); }
+.st-heat_check .h-body { animation: h-jitter 600ms steps(1, end) both; }
+@keyframes h-jitter {
+  0%   { filter: hue-rotate(-12deg) contrast(1.15); }
+  33%  { filter: none; }
+  50%  { filter: contrast(1.2) brightness(1.1); }
+  84%, 100% { filter: none; }
+}
+/* the Ref's scanline */
+.h-root::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: var(--ref); box-shadow: 0 0 10px var(--ref); opacity: 0; pointer-events: none;
+}
+.st-heat_check::after { animation: h-scan 600ms linear both; }
+@keyframes h-scan {
+  0%   { opacity: 0;  top: 0; }
   10%  { opacity: .9; }
   90%  { opacity: .9; }
-  100% { opacity: 0;  transform: translateY(317px); }
+  100% { opacity: 0;  top: 100%; }
 }
+/* screenshot hook (states.html?shot=heat_check&freeze=1): hold one glitch frame mid-scan */
+.h-freeze.st-heat_check .h-slice { animation: none; opacity: 1; transform: translateX(var(--gx)); filter: drop-shadow(3px 0 0 var(--gc)); }
+.h-freeze.st-heat_check .h-body { animation: none; filter: contrast(1.15); }
+.h-freeze.st-heat_check::after { animation: none; opacity: .9; top: 46%; }
 
-/* ------------------------------------------------------------------ 5. vindicated (SURVIVED_PROTOCOL) */
-.st-vindicated .h-arm-l { transform: rotate(170deg); }
-.st-vindicated .h-arm-r { transform: rotate(-160deg); }
-.st-vindicated .h-crest { transform: scale(1.15, 1.5); }
-.st-vindicated .h-flame { fill: var(--heat-hot); }
-.st-vindicated .h-flame-3, .st-vindicated .h-flame-4, .st-vindicated .h-flame-7 { fill: var(--heat-white); }
-.st-vindicated .h-visor { opacity: 1; stroke-width: 1.6; }
-.st-vindicated .h-upper-loop { animation: h-cheer 1.2s ease-out both; }
-.st-vindicated .h-legs { animation: h-legcheer 1.2s ease-out both; }
-.st-vindicated .h-ball { animation: h-slam 1.2s cubic-bezier(.3, 0, .7, 1) both; }
-@keyframes h-cheer { 0% { transform: translateY(4px); } 20% { transform: translateY(-6px); } 40%, 100% { transform: translateY(0); } }
-@keyframes h-legcheer { 0% { transform: scaleY(.955); } 20% { transform: scaleY(1.068); } 40%, 100% { transform: scaleY(1); } }
-@keyframes h-slam {
-  0%, 15% { transform: translate(144px, 30px); }
-  35%     { transform: translate(178px, 287px); }
-  50%     { transform: translate(180px, 258px); }
-  62%     { transform: translate(181px, 287px); }
-  72%     { transform: translate(182px, 278px); }
-  80%, 100% { transform: translate(182px, 287px); }
+/* ------------------------------------------------------------------ vindicated: scale-pop and glow */
+.st-vindicated .h-fig { animation: h-pop 700ms cubic-bezier(.2, .9, .3, 1.2) both; }
+@keyframes h-pop {
+  0%   { transform: scale(.9); }
+  45%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
+/* The glow is a screen-blended radial light over the figure, not a drop-shadow: a shadow
+   would trace the image's masked rectangle. */
+.h-fig::after {
+  content: ""; position: absolute; inset: 4% 0 10%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 150, 40, .55), rgba(255, 110, 20, .18) 60%, transparent);
+  mix-blend-mode: screen; opacity: 0; transition: opacity .3s ease;
+}
+.st-vindicated .h-body { filter: brightness(1.12) saturate(1.1); }
+.st-vindicated .h-fig::after { opacity: 1; animation: h-glow 1.4s ease-in-out infinite alternate; }
+@keyframes h-glow { from { opacity: .55; } to { opacity: 1; } }
+.st-vindicated .h-spark { --d: .9s; }
 
-/* ------------------------------------------------------------------ 6. cooled (NOT_SUPPORTED) */
-.st-cooled .h-flame {
-  animation: none;
-  transform: scaleY(.18);
-  fill: var(--ember);
-  transition: transform .3s ease-in calc(var(--i) * 110ms), fill .3s ease-in calc(var(--i) * 110ms);
-}
-.st-cooled .h-upper { transform: translateY(3px) rotate(7deg); }
-.st-cooled .h-shoulders { transform: translateY(5px); }
-.st-cooled .h-arm-l { transform: rotate(6deg); }
-.st-cooled .h-arm-r { transform: rotate(8deg); }
-.st-cooled .h-visor { opacity: .3; }
-.st-cooled .h-ball { transform: translate(176px, 287px); }
-.st-cooled .h-wisp { animation: h-wisp 1.6s ease-out both; }
-.st-cooled .h-wisp-1 { animation-delay: .7s; }
-.st-cooled .h-wisp-2 { animation-delay: .9s; }
-.st-cooled .h-wisp-3 { animation-delay: 1.1s; }
-@keyframes h-wisp {
-  0%   { opacity: 0;   transform: translateY(14px); }
-  30%  { opacity: .85; }
-  100% { opacity: 0;   transform: translate(-4px, -22px); }
-}
-/* slow re-ignite on the way back to idle (heater.js adds .reignite for 1 s) */
-.h-root.reignite .h-crest-loop { animation: h-reignite 1s ease-out both; }
-.h-root.reignite .h-flame { transition: fill .9s ease-out; }
-@keyframes h-reignite { from { transform: scale(.2); } to { transform: scale(1); } }
+/* ------------------------------------------------------------------ cooled: slow sink and desaturate */
+.st-cooled .h-fig { animation: h-sink 1.5s ease-in both; }
+@keyframes h-sink { from { transform: translateY(0); } to { transform: translateY(16px) scale(.985); } }
+.st-cooled .h-body { filter: grayscale(.75) saturate(.5) brightness(.72); transition: filter 1.5s ease-in; }
+.h-body { transition: filter .4s ease; }
+.st-cooled .h-spark { --d: 2.8s; background: var(--ember); }
+.st-cooled .h-spark:nth-child(n+3) { display: none; }      /* fewer sparks when cooled */
+.h-root.reignite .h-body { transition: filter 1s ease-out; }
 
-.h-root .h-spark, .h-root .h-puff { transform-box: fill-box; transform-origin: 50% 50%; }
-
-/* ------------------------------------------------------------------ 2. listening */
-.st-listening .h-upper { transform: rotate(8deg); }
-.st-listening .h-head { transform: rotate(5deg) translateX(3px); }
-.st-listening .h-arm-l { transform: rotate(-116deg); }
-.st-listening .h-claw-l { transform-origin: 80px 200px; transform: rotate(-35deg); }
-.st-listening .h-visor { opacity: .35; }
-.st-listening .h-ball { transform: translate(174px, 287px); }
-/* flames follow the mic level (--mic, 0..1, set by heater.js) and pulse slowly without it */
-.st-listening .h-crest {
-  transform: scale(calc(.9 + var(--mic) * .35), calc(.85 + var(--mic) * .5));
-  transition: transform 90ms linear;
-}
-.st-listening .h-crest-loop { animation: h-pulse 1.8s ease-in-out infinite; }
-@keyframes h-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04, 1.1); } }
-
-/* ------------------------------------------------------------------ 3. thinking */
-.st-thinking .h-upper { transform: rotate(2deg); }
-.st-thinking .h-arm-r { transform: rotate(-135deg); }
-.st-thinking .h-ball { transform: translate(177px, 41px); }
-.st-thinking .h-ball-spin { animation: h-spin .5s linear infinite; }
-.st-thinking .h-crest { transform: scale(.95); }
-.st-thinking .h-visor { opacity: .55; }
-.st-thinking .h-visor-scan { opacity: 1; animation: h-scanvisor 1.1s ease-in-out infinite alternate; }
-.st-thinking .h-spark { animation: h-sparkrise 1.4s ease-out infinite; }
-.st-thinking .h-spark-2 { animation-delay: .35s; }
-.st-thinking .h-spark-3 { animation-delay: .7s; }
-.st-thinking .h-spark-4 { animation-delay: 1.05s; }
-@keyframes h-spin { to { transform: rotate(360deg); } }
-@keyframes h-scanvisor { from { transform: translateX(-4px); } to { transform: translateX(22px); } }
-@keyframes h-sparkrise {
-  0%   { opacity: 0; transform: translateY(8px); }
-  25%  { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-26px) rotate(40deg); }
-}
-
-/* ------------------------------------------------------------------ 7. unsure (INSUFFICIENT_EVIDENCE) */
-.st-unsure .h-shoulders { transform: translateY(-6px); }
-.st-unsure .h-arm-l { transform: translateY(-6px) rotate(18deg); }
-.st-unsure .h-arm-r { transform: translateY(-6px) rotate(-22deg); }
-.st-unsure .h-head { transform: translateY(-2px) rotate(-5deg); }
-.st-unsure .h-flame { animation: h-uneven calc(var(--d) * .8) linear var(--dl) infinite alternate; }
-.st-unsure .h-visor { animation: h-blink 1.6s linear infinite; }
-@keyframes h-uneven {
-  0%   { transform: scaleY(.7) rotate(-4deg); }
-  35%  { transform: scaleY(1.05) rotate(3deg); }
-  55%  { transform: scaleY(.5) rotate(-1deg); }
-  100% { transform: scaleY(.95) rotate(5deg); }
-}
-@keyframes h-blink { 0%, 44%, 52%, 100% { opacity: .8; } 46%, 50% { opacity: .05; } }
-
-/* ------------------------------------------------------------------ 8. blocked (BLOCKED / DATA_INVALID) */
-.st-blocked .h-upper { transform: rotate(-2deg); }
-.st-blocked .h-arm-l { transform: rotate(-58deg); }
-.st-blocked .h-arm-r { transform: rotate(58deg); }
-.st-blocked .h-flame { animation-play-state: paused; fill: var(--heat-core); }
-.st-blocked .h-ball { transform: translate(176px, 287px); }
-.st-blocked .h-puff { animation: h-steam 1.2s ease-out infinite; }
-.st-blocked .h-puff-2 { animation-delay: .4s; }
-.st-blocked .h-puff-3 { animation-delay: .8s; }
-@keyframes h-steam {
-  0%   { opacity: 0; transform: translateY(6px) scale(.6); }
-  30%  { opacity: .9; }
-  100% { opacity: 0; transform: translateY(-20px) scale(1.3); }
-}
+/* ------------------------------------------------------------------ unsure / blocked (stand-in poses) */
+.st-unsure .h-fig { animation: h-wobble 1.6s ease-in-out infinite; }
+@keyframes h-wobble { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+.st-unsure .h-spark:nth-child(n+5) { display: none; }
+.st-blocked .h-body { filter: saturate(.6) brightness(.85); }
+.st-blocked .h-spark { display: none; }
 
 /* ------------------------------------------------------------------ speech card */
 .h-card {
@@ -261,7 +200,7 @@
   width: 36px; height: 36px; flex: none; background: #1A1830;
   box-shadow: inset 0 0 0 1px var(--edge); overflow: hidden;
 }
-.h-card-avatar .h-root { width: 100%; height: 100%; aspect-ratio: auto; }
+.h-card-avatar img { display: block; width: 100%; height: auto; transform: scale(2.6); transform-origin: 52% 13%; }
 .h-card-name { font: 700 1rem/1 var(--h-cond); font-stretch: condensed; letter-spacing: .08em; }
 .h-card-sub { font: 600 .85rem/1 var(--h-cond); color: #9A97B0; }
 .h-chip {
@@ -278,11 +217,13 @@
 .h-chip.unknown      { color: #FFB627; box-shadow: inset 0 0 0 1.5px #FFB627; }
 .h-chip.idle         { color: #9A97B0; box-shadow: inset 0 0 0 1px #3A3752; }
 .h-card-take {
-  margin: 10px 0 8px;
-  font: 700 1.15rem/1.25 var(--h-cond); font-stretch: condensed;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin: 10px 0 4px;
+  font: 700 1.2rem/1.25 var(--h-cond); font-stretch: condensed; color: #FFD9A8;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   overflow-wrap: anywhere;
 }
+.h-card-claim { margin: 0 0 8px; font: .8rem/1.4 var(--h-mono); color: #9A97B0; overflow-wrap: anywhere; }
+.h-card-claim:empty { display: none; }
 .h-card-ref {
   margin: 0 0 10px; padding: 8px 10px;
   border-left: 3px solid var(--ref); box-shadow: inset 0 0 0 1px rgba(46, 196, 182, .35);
@@ -293,14 +234,10 @@
 .h-card-foot { font: .74rem/1.5 var(--h-mono); color: var(--ref); overflow-wrap: anywhere; }
 .h-card-note { font: .72rem/1.4 var(--h-mono); color: #9A97B0; margin-top: 4px; overflow-wrap: anywhere; }
 
-/* ------------------------------------------------------------------ reduced motion: fades only */
+/* ------------------------------------------------------------------ reduced motion: crossfades and colour only */
 @media (prefers-reduced-motion: reduce) {
-  .h-root *, .h-root.shake .h-all { animation: none !important; }
-  .h-root .h-upper, .h-root .h-arm-l, .h-root .h-arm-r, .h-root .h-crest, .h-root .h-ball,
-  .h-root .h-shoulders, .h-root .h-head, .h-root .h-flame {
-    transition: transform .25s ease, fill .25s ease, opacity .25s ease !important;
-  }
-  .h-root.st-heat_check .h-all { animation: h-fade .5s ease both !important; }
-  .h-root.st-cooled .h-wisp { opacity: .5; }
+  .h-root, .h-root *, .h-root::after, .h-root *::after { animation: none !important; }
+  .h-root .h-sparks, .h-root .h-glitch { display: none !important; }
+  .h-root.st-heat_check .h-body { filter: sepia(.3) hue-rotate(130deg) !important; }
+  .h-root.st-vindicated .h-fig::after { opacity: .8 !important; }
 }
-@keyframes h-fade { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
