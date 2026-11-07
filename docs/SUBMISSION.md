@@ -97,11 +97,17 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
   spans 39 days, which is exactly the pre-registered minimum of five 7-day blocks. The 14- and 28-day
   robustness checks could not be computed: the window gives 2 and 1 blocks, below the minimum. So the
   verdict rests on the 7-day analysis alone.
-- **Why rest is INSUFFICIENT_EVIDENCE although Holm p = 0.049 < 0.05.** The registered rule (D10) requires
-  **all three** of: Holm p < 0.05, a 95% CI lower bound above 0, and a mean of at least 0.002 nats. H1's CI
-  lower bound is −0.0043, so it fails the second condition. It is not `NOT_SUPPORTED` either, because that
-  needs the CI upper bound (+0.0438) below 0.002. On the development data C1 was slightly *worse* than Elo
-  (−0.0047 nats on tune, −0.0009 on calibration). The sign change is not a finding.
+- **Why rest is INSUFFICIENT_EVIDENCE although Holm p = 0.049 < 0.05.** Verbatim from
+  `reports/research/2026-11-07-2015-rebuild-and-seal-binding.md` §1:
+
+  > H1 (C1 rest/back-to-back vs B1 Elo) is INSUFFICIENT_EVIDENCE because the registered D10 rule requires all
+  > three of "Holm-adjusted p < 0.05 **AND** CI95 lower bound > 0 **AND** mean ≥ 0.002 nats" for
+  > SURVIVED_PROTOCOL. Its CI95 lower bound is **−0.00433**, so it fails the second condition even though
+  > Holm p = 0.048995 < 0.05. It is not NOT_SUPPORTED either, because that needs the CI95 upper bound
+  > (+0.0438) below the 0.002 floor; every other case is INSUFFICIENT_EVIDENCE (D10, `game_prediction.py final()`).
+
+  On the development data C1 was slightly *worse* than Elo (−0.0047 nats on tune, −0.0009 on calibration).
+  The sign change is not a finding.
 
 ### 4.2 Hot hand, 2023–24 development games only (exploratory)
 
@@ -162,12 +168,31 @@ To get a result that cannot have been tuned on the data, the whole 2024–25 reg
 - momentum p = 1.0;
 - hot hand p = 0.998.
 
-Anyone can rebuild the sealed season in about two minutes. The confirmatory script refuses to run if a
-single byte of the sealed tables differs (`reports/research/2026-11-07-2015-rebuild-and-seal-binding.md`).
+**Reproducible from scratch.** The sealed season was rebuilt on a fresh machine: an empty directory, a fresh
+clone of commit `e7e8857`, a fresh Python environment and fresh downloads of the pinned archives. All six
+sealed tables matched the seal (**6/6, SEAL MATCH**). The whole rebuild took **1 min 57 s** on a 4-CPU Linux
+machine with a warm package cache. Source: `reports/research/2026-11-07-2015-rebuild-and-seal-binding.md` §3;
+script `reports/research/logs/rebuild/rebuild_2024-25.sh`; log `reports/research/logs/rebuild/fresh_rebuild_run.log`.
 
-**Result: [PLACEHOLDER — the confirmatory test has not been run. It is reserved for the live demo and
-requires explicit authorisation. This section will be filled with the recorded output of
-`confirmatory.py final`, unchanged.]**
+The confirmatory script refuses to run if a single byte of the sealed tables differs. It refuses before
+reserving anything, and a test tampers each table in turn to check this (same report, §4).
+
+**Results: NOT YET RUN.** Everything between the markers below is a placeholder. The confirmatory test is
+reserved for the live demo and needs explicit authorisation. It will be replaced with the recorded output of
+`confirmatory.py final` (`evidence/confirmatory-2024-25/final_result.json`), unchanged.
+
+<!-- BEGIN PLACEHOLDER: 2024-25 confirmatory results — do not fill by hand -->
+
+| Hypothesis | Sample | Estimate | 95% CI | p (one-sided) | Holm p | Verdict |
+|---|---|---|---|---|---|---|
+| CONF-HA home advantage | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
+| CONF-MOM one-shot momentum | [PLACEHOLDER] | [PLACEHOLDER] | n/a | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
+| CONF-HH hot hand | [PLACEHOLDER] | [PLACEHOLDER] | n/a | [PLACEHOLDER] | [PLACEHOLDER] | [PLACEHOLDER] |
+
+Exposure receipt: [PLACEHOLDER] · Authorised by: [PLACEHOLDER] · Run at (UTC): [PLACEHOLDER] ·
+Result file sha256: [PLACEHOLDER]
+
+<!-- END PLACEHOLDER -->
 
 ## 6. Independent review and what it caught
 
