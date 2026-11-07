@@ -174,12 +174,12 @@ def main(argv: list[str]) -> int:
     try:
         wait_port(API_PORT, api, "dialogue API")
         wait_port(UI_PORT, ui, "UI server")
-        say(f"dialogue console  http://127.0.0.1:{API_PORT}/")
-        say(f"Experience UI     http://127.0.0.1:{UI_PORT}/")
+        say(f"demo page (main)  http://127.0.0.1:{UI_PORT}/demo.html")
+        say(f"dialogue console  http://127.0.0.1:{API_PORT}/  (fallback)")
+        say(f"evidence ledger   http://127.0.0.1:{UI_PORT}/")
         say("Ctrl+C to stop")
         if "--no-browser" not in argv:
-            webbrowser.open(f"http://127.0.0.1:{API_PORT}/")
-            webbrowser.open(f"http://127.0.0.1:{UI_PORT}/")
+            webbrowser.open(f"http://127.0.0.1:{UI_PORT}/demo.html")
         while api.poll() is None and ui.poll() is None:
             time.sleep(0.5)
         say("a server stopped; shutting down")

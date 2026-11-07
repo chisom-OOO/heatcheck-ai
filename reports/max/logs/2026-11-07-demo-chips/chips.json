@@ -1,0 +1,76 @@
+[
+  {
+    "chip": "Is the hot hand real?",
+    "done": true,
+    "wall_s": 26.0,
+    "api": {
+      "claim_id": null,
+      "verdict": null,
+      "evidence_record_id": null,
+      "evidence_source": null,
+      "heater_text": null,
+      "sources": null,
+      "_err": null
+    },
+    "page_stamp": "NOT SUPPORTED",
+    "page_ref_title": "Hot hand: two makes in a row",
+    "page_ref_text": "The data says no. Making two in a row didn't make the next shot more likely (p = 0.24, 181 shots, one game).",
+    "page_take": "Two in a row? He's HEATING UP! Give him the ball!",
+    "pose": null,
+    "console": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
+    "chip": "Do home teams win more?",
+    "done": true,
+    "wall_s": 24.2,
+    "api": {
+      "claim_id": "CONF-HA",
+      "verdict": null,
+      "evidence_record_id": null,
+      "evidence_source": null,
+      "heater_text": "OH BABY, the crowd is BUZZING for this debate! The Ref has NOT blown the whistle yet, so we wait! I bring the noise, not the evidence!",
+      "sources": {
+        "ref": "TEMPLATE_CONFIRMATORY_NOT_RUN",
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)",
+        "heater": "LLM"
+      },
+      "_err": null
+    },
+    "page_stamp": "NOT TESTED YET",
+    "page_ref_title": "Home-court advantage",
+    "page_ref_text": "No ruling yet. We haven't run a test for this one, so there's nothing to report.",
+    "page_take": "OH BABY, the crowd is BUZZING for this debate! The Ref has NOT blown the whistle yet, so we wait! I bring the noise, not the evidence!",
+    "pose": null,
+    "console": []
+  },
+  {
+    "chip": "Does rest matter?",
+    "done": false,
+    "wall_s": 60.1,
+    "api": {
+      "claim_id": "GP-REST",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "evidence_record_id": "6a67b1820c0869128c6f65ba7289a55c21cb4fc5ee600105302078c7091b2e8d",
+      "evidence_source": "RECORDED_RESEARCH_RESULT",
+      "heater_text": "Listen, tired legs FEEL real to me! But the Ref says the PROOF ISN'T THERE, so I respect the whistle!",
+      "sources": {
+        "ref": "TEMPLATE",
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (recorded final result)",
+        "heater": "LLM"
+      },
+      "_err": null
+    },
+    "page_stamp": "NOT ENOUGH EVIDENCE",
+    "page_ref_title": "Rest days and back-to-backs",
+    "page_ref_text": "Insufficient. CI includes values on both sides of the decision thresholds.",
+    "page_take": "Listen, tired legs FEEL real to me! But the Ref says the PROOF ISN'T THERE, so I respect the whistle!",
+    "pose": null,
+    "console": [
+      "PAGEERROR: Cannot read properties of undefined (reading 'find')"
+    ]
+  }
+]

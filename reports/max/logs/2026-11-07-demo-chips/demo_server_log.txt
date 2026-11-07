@@ -1,0 +1,99 @@
+[demo] bundle records_sha256 9b44a479ce95 matches the committed evidence ledger
+[demo] demo ledger logs\demo\evidence.jsonl copied from the committed ledger
+[demo] Heater and Ref: live Meta model calls (spend is logged to logs/llm_usage.jsonl)
+[07/Nov/2026 21:24:51] "GET /demo.html HTTP/1.1" 200 -
+[demo] demo page (main)  http://127.0.0.1:8765/demo.html
+[demo] dialogue console  http://127.0.0.1:8770/  (fallback)
+[demo] evidence ledger   http://127.0.0.1:8765/
+[demo] Ctrl+C to stop
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 54552)
+Traceback (most recent call last):
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 438, in handle
+    self.handle_one_request()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------
+[07/Nov/2026 21:24:59] "GET /demo.html HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /demo.html?voice=0&debug=1 HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /heater/heater.css HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /demo.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /heater/heater.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /demo.css HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /heater/heater-model.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /voice.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /heater/poses/idle.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /heater/heater_personality.json HTTP/1.1" 200 -
+[07/Nov/2026 21:25:02] "GET /favicon.ico HTTP/1.1" 404 -
+[07/Nov/2026 21:25:02] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 21:25:04] "GET /heater/poses/listening.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:04] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:13] "GET /heater/poses/hot_take.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:17] "GET /heater/poses/heat_check.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:17] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 57555)
+Traceback (most recent call last):
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "C:\Users\chiso\Documents\Codex\GitHub\HeatCheck\heatcheck\api\dialogue_server.py", line 106, in do_POST
+    return self._send(200, out)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chiso\Documents\Codex\GitHub\HeatCheck\heatcheck\api\dialogue_server.py", line 66, in _send
+    self.wfile.write(body)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+[07/Nov/2026 21:25:26] "GET /heater/poses/cooled.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /demo.html?voice=0&debug=1 HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /heater/heater.css HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /demo.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /demo.css HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /heater/heater.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /voice.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /heater/heater-model.js HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /heater/poses/idle.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /heater/heater_personality.json HTTP/1.1" 200 -
+[07/Nov/2026 21:25:32] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 21:25:34] "GET /heater/poses/listening.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:34] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:41] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 21:25:41] "GET /heater/poses/hot_take.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:50] "GET /heater/poses/heat_check.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:25:51] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /demo.html?voice=0&debug=1 HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /heater/heater.css HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /demo.js HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /demo.css HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /heater/heater.js HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /voice.js HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /heater/heater-model.js HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /heater/poses/idle.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /heater/heater_personality.json HTTP/1.1" 200 -
+[07/Nov/2026 21:26:01] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 21:26:03] "GET /heater/poses/listening.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:03] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:09] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 21:26:09] "GET /heater/poses/hot_take.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:16] "GET /heater/poses/heat_check.webp HTTP/1.1" 200 -
+[07/Nov/2026 21:26:16] "GET /heater/poses/thinking.webp HTTP/1.1" 200 -

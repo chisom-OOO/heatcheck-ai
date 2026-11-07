@@ -1,0 +1,12 @@
+== d65797e round 1 21:15:26
+136.02s call     tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive
+1 passed in 144.71s (0:02:24)
+== HEAD round 1 21:17:59
+135.24s call     tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive
+1 passed in 135.98s (0:02:15)
+== d65797e round 2 21:20:16
+142.92s call     tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive
+1 passed in 144.35s (0:02:24)
+== HEAD round 2 21:22:44
+136.96s call     tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive
+1 passed in 137.95s (0:02:17)
