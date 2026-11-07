@@ -122,8 +122,10 @@ def parse_book(
     if not isinstance(b, dict):
         raise AdapterError("book payload is not an object")
     refuse_summary_levels(b, ("bids", "asks"))
-    if b.get("asset_id") not in (None, contract_id):
+    # The book must say whose book it is; without asset_id another token's book would pass.
+    if b.get("asset_id") != contract_id:
         raise AdapterError(f"book asset_id {b.get('asset_id')!r} is not {contract_id!r}")
+    tick = market["body"]["tick_size"]
     levels = []
     for key, side in (("bids", "BID"), ("asks", "ASK")):
         rows = b.get(key)
@@ -134,7 +136,7 @@ def parse_book(
             if not isinstance(row, dict) or set(row) != {"price", "size"}:
                 extra = sorted(set(row) - {"price", "size"}) if isinstance(row, dict) else row
                 raise AdapterError(f"{where}: a level has only price and size; got {extra!r}")
-            levels.append(level(side, row["price"], row["size"], where))
+            levels.append(level(side, row["price"], row["size"], where, tick=tick))
     sides = {lv["side"] for lv in levels}
     note = None
     if levels and sides != {"BID", "ASK"}:

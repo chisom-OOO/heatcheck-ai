@@ -1,6 +1,6 @@
 """Read-only live HTTP client for public venue market data (ported from the Experience build).
 
-Only HTTPS ``GET`` to an allowlisted host and path prefix. No redirects, no cookies, no
+Only HTTPS ``GET`` to an allowlisted host and exact path pattern. No redirects, no cookies, no
 credentials, no private or loopback addresses, and a response size cap. There is no
 route that writes to a venue. Nothing in this repository calls it automatically: a live
 capture needs the user's explicit authorisation on the machine that runs it (E-001).
@@ -9,6 +9,7 @@ capture needs the user's explicit authorisation on the machine that runs it (E-0
 from __future__ import annotations
 
 import ipaddress
+import re
 import socket
 import urllib.error
 import urllib.parse
@@ -18,10 +19,22 @@ from datetime import UTC, datetime
 from heatcheck.markets.adapters.common import AdapterError
 
 MAX_RESPONSE = 2 * 1024 * 1024
-ALLOW: dict[str, tuple[str, ...]] = {
-    "gamma-api.polymarket.com": ("/markets/slug/", "/markets", "/events"),
-    "clob.polymarket.com": ("/book",),
-    "api.elections.kalshi.com": ("/trade-api/v2/markets", "/trade-api/v2/events"),
+# One identifier path segment: letters, digits, '-' and '_' only. No '.', '..', '%' or '/',
+# so neither a dot segment nor an encoded slash can reach another endpoint (RV-E1).
+_SEG = r"[A-Za-z0-9][A-Za-z0-9_-]{0,199}"
+# Whole-path patterns, matched exactly (no prefix matching): each is one public read.
+ALLOW: dict[str, tuple[re.Pattern[str], ...]] = {
+    "gamma-api.polymarket.com": tuple(
+        re.compile(p) for p in (rf"/markets/slug/{_SEG}", r"/markets", r"/events")
+    ),
+    "clob.polymarket.com": (re.compile(r"/book"),),
+    "api.elections.kalshi.com": tuple(
+        re.compile(p)
+        for p in (
+            rf"/trade-api/v2/markets(/{_SEG}(/orderbook)?)?",
+            rf"/trade-api/v2/events(/{_SEG})?",
+        )
+    ),
 }
 
 
@@ -41,7 +54,7 @@ def check_request(method: str, url: str) -> str:
     host = (u.hostname or "").lower()
     if host not in ALLOW:
         raise AdapterError(f"host {host!r} is not on the read-only allowlist")
-    if not any(u.path.startswith(p) for p in ALLOW[host]):
+    if not any(p.fullmatch(u.path) for p in ALLOW[host]):
         raise AdapterError(f"path {u.path!r} is not an allowlisted public read endpoint")
     return host
 

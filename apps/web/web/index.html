@@ -138,8 +138,6 @@
           <button id="btn-reveal">Reveal hidden truth</button>
           <a id="dl-json" class="btnlike" download>Export run (JSON)</a>
           <a id="dl-csv" class="btnlike" download>Export tests (CSV)</a>
-          <label class="btnlike" for="ref-file">Open a Referee record (JSON)</label>
-          <input id="ref-file" type="file" accept=".json,application/json" class="sr-only">
         </div>
         <div id="reveal-view"></div>
         <details id="standin-extras" open><summary>Stand-in engine extras (not part of a Referee record)</summary>
@@ -147,6 +145,17 @@
           <div class="viz-root"><div id="talent-chart" class="chart"></div></div>
           <details><summary>Talent table</summary><div class="tablewrap"><table id="talent-table"></table></div></details>
         </details>
+      </article>
+
+      <article class="card" aria-labelledby="h-ledger">
+        <h2 id="h-ledger">Referee evidence ledger <small class="muted">read-only; entries written by the agent loop</small></h2>
+        <div class="row">
+          <button id="btn-ledger">Load evidence ledger</button>
+          <label class="btnlike" for="ref-file">Open a record or ledger file</label>
+          <input id="ref-file" type="file" accept=".json,.jsonl,application/json" class="sr-only">
+        </div>
+        <p id="ledger-meta" class="hint mono"></p>
+        <ul id="ledger-list" class="history"></ul>
       </article>
 
       <article class="card" aria-labelledby="h-hist">

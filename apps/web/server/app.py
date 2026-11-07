@@ -21,7 +21,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
-from . import comparison, engine_fixture, files, intake, quotes, timefmt, venue_fixtures
+from . import comparison, engine_fixture, evidence, files, intake, quotes, timefmt, venue_fixtures
 from .authority import AuthorityError, Session, sha
 from .contracts import PROTOCOL_VERSION, ContractError, loads_strict, validate_envelope
 from .venues import UrllibTransport, VenueError, adapter
@@ -717,6 +717,14 @@ def r_venues_health(h, args, q):
     h._send(200, out)
 
 
+def r_evidence(h, args, q):
+    """Verified entries of the configured Referee evidence ledger (read-only)."""
+    try:
+        h._send(200, evidence.read_verified(evidence.configured_path()))
+    except evidence.EvidenceUnavailable as e:
+        raise ApiError(404 if e.status in ("NOT_CONFIGURED", "NOT_FOUND") else 409, e.status, str(e)) from None
+
+
 def r_gates(h, args, q):
     with open(os.path.join(EVIDENCE, "acceptance_ledger.json")) as f:
         h._send(200, json.load(f))
@@ -746,6 +754,7 @@ ROUTES = {
     ("POST", "market-compare"): r_market_compare,
     ("GET", "venues"): r_venues_health,
     ("GET", "gates"): r_gates,
+    ("GET", "evidence"): r_evidence,
 }
 
 
@@ -756,7 +765,10 @@ def make_server(port=8765):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--ledger", help="existing Referee evidence ledger (.jsonl) to show read-only")
     a = ap.parse_args()
+    if a.ledger:
+        os.environ["HEATCHECK_LEDGER"] = os.path.abspath(a.ledger)
     srv = make_server(a.port)
     print(f"HeatCheck-Experience on http://127.0.0.1:{a.port}  (code {CODE_HASH[:12]})")
     srv.serve_forever()

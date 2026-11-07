@@ -1,0 +1,503 @@
+# HeatCheck check run
+date_utc: 2026-11-07T17:12:22Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/referee-ui-integrate
+commit: 602ae1db6a25f29e921c2182b8e3208593adba04
+worktree clean: False
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## copy /y "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\test_rv_e001_adapter.py" tests\review\ && uv run pytest -q tests/review/test_rv_e001_adapter.py -p no:cacheprovider & del tests\review\test_rv_e001_adapter.py
+        1 file(s) copied.
+...........................................                              [100%]
+43 passed in 0.40s
+exit: 0
+
+## cd /d "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc-base" && git_head_5573806_baseline_same_venv 2>nul & "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\.venv\Scripts\python.exe" -c "import heatcheck;print('heatcheck from',heatcheck.__file__)" && "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\.venv\Scripts\python.exe" -m pytest -q tests -p no:cacheprovider
+heatcheck from C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc-base\heatcheck\__init__.py
+........................................................................ [ 35%]
+.......................................s..sssF......................F... [ 70%]
+..........sssss.....FF...F......F.F.F.FFFF........FF.FF...FFF            [100%]
+================================== FAILURES ===================================
+___________________________ test_experience_bundle ____________________________
+
+no_network = None
+
+    def test_experience_bundle(no_network):  # noqa: F811
+        manifest, recs = require_bundle(ENV_EXPERIENCE_BUNDLE, E001_DEFAULT)
+        path = env_path(ENV_EXPERIENCE_BUNDLE, E001_DEFAULT)
+        problems = experience_problems(path, manifest, recs, stale_s=stale_seconds())
+>       assert not problems, _report(problems)
+E       AssertionError: EXPECTED no problems; ACTUAL:
+E           quote:map:syn:FIX-G0001:KALSHI:KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes:a92f676d989d9e65: status OK with no provider_time_utc; freshness unprovable
+E       assert not ['quote:map:syn:FIX-G0001:KALSHI:KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes:a92f676d989d9e65: status OK with no provider_time_utc; freshness unprovable']
+
+tests\review\test_rv_candidates.py:47: AssertionError
+_____________ test_experience_check_fires[<lambda>-outside fetch] _____________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_experience_check_fires__l8')
+mutate = <function <lambda> at 0x000002017F7182C0>, needle = 'outside fetch'
+
+    @pytest.mark.parametrize("mutate, needle", [
+        (lambda r: _q(r)["levels"][0].update(price="0.0052"), "off tick"),
+        (lambda r: _q(r)["levels"][0].update(price="0.53"), "not traceable"),
+        (lambda r: _q(r)["levels"][0].update(derivation="DERIVED_COMPLEMENT"), "DIRECT only"),
+        (lambda r: _q(r)["levels"][0].update(size="0"), "not positive"),
+        (lambda r: _q(r).update(provider_time_utc="2026-11-07T10:00:00Z"), "STALE"),
+        (lambda r: _q(r).update(provider_time_utc="2026-11-07T17:00:00Z"), "after received"),
+        (lambda r: _q(r).update(provider_time_utc=None), "freshness unprovable"),
+        (lambda r: _q(r).update(fetch_start_utc="2026-11-07T11:00:00Z"), "fetch took"),
+        (lambda r: [s["body"].update(retrieved_utc="2024-01-01T00:00:00Z")
+                    for s in of_type(r, "RAW_SNAPSHOT")], "outside fetch"),
+        (lambda r: first(r, "GAME")["body"].update(scheduled_tip_utc="2026-11-07T11:00:00Z"),
+         "not a pre-tip"),
+        (lambda r: first(r, "GAME")["body"].update(status="POSTPONED"), "status POSTPONED"),
+        (lambda r: first(r, "VENUE_MAPPING")["body"].update(overtime_convention="REGULATION_ONLY"),
+         "not comparable"),
+        (lambda r: first(r, "VENUE_MAPPING")["body"].update(overtime_convention="INCLUDES_OVERTIME"),
+         "without a rules_text_sha256"),
+        (lambda r: first(r, "VENUE_MAPPING")["body"].update(status="VERIFIED",
+                                                             overtime_convention="INCLUDES_OVERTIME"),
+         "requires PROPOSED"),
+        (lambda r: first(r, "VENUE_MARKET")["body"]["outcomes"][0].update(label="NO"),
+         "manual confirmation"),
+    ])
+    def test_experience_check_fires(tmp_path, mutate, needle):
+>       d, m, recs = clean_experience(tmp_path / "b", mutate)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\review\test_rv_checks_selftest.py:175: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\review\test_rv_checks_selftest.py:137: in clean_experience
+    m, loaded = load_bundle(tmp)
+                ^^^^^^^^^^^^^^^^
+heatcheck\contracts\bundle.py:152: in load_bundle
+    _check_references(directory, records)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_experience_check_fires__l8/b')
+records = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1..., ...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}]
+
+    def _check_references(directory: Path, records: list[dict[str, Any]]) -> None:
+        by_type: dict[str, dict[str, dict[str, Any]]] = {t: {} for t in RECORD_TYPES}
+        for r in records:
+            key = (r["record_type"], r["record_id"])
+            if r["record_id"] in by_type[r["record_type"]]:
+                raise BundleError(f"duplicate record_id {key}")
+            by_type[r["record_type"]][r["record_id"]] = r
+    
+        snapshots = {r["body"]["snapshot_sha256"]: r for r in by_type["RAW_SNAPSHOT"].values()}
+        for r in by_type["RAW_SNAPSHOT"].values():
+            b = r["body"]
+            if r["record_id"] != b["snapshot_sha256"]:
+                raise BundleError("RAW_SNAPSHOT record_id must equal snapshot_sha256")
+            if b["bundle_path"] is not None:
+                data = _read_capped(_safe_join(directory, b["bundle_path"]))
+                if sha256_hex(data) != b["snapshot_sha256"]:
+                    raise BundleError(f"raw payload hash mismatch for {b['bundle_path']}")
+                if len(data) != b["byte_count"]:
+                    raise BundleError(f"raw payload byte_count mismatch for {b['bundle_path']}")
+    
+        games = {r["body"]["game_id"]: r for r in by_type["GAME"].values()}
+        for r in by_type["GAME"].values():
+            if r["record_id"] != r["body"]["game_id"]:
+                raise BundleError("GAME record_id must equal game_id")
+        markets = by_type["VENUE_MARKET"]
+        mappings = {r["body"]["mapping_id"]: r for r in by_type["VENUE_MAPPING"].values()}
+    
+        for r in records:
+            b = r["body"]
+            rid = f"{r['record_type']}:{r['record_id']}"
+            for sid in b.get("source_snapshot_ids", []):
+                if sid not in snapshots:
+                    raise BundleError(f"{rid} references unknown snapshot {sid}")
+            if r["record_type"] in ("EVENT", "FEATURE_ROW", "RESTRICTED_LABEL", "VENUE_MAPPING"):
+                if b["game_id"] not in games:
+                    raise BundleError(f"{rid} references game {b['game_id']} not in bundle")
+                game_mode = games[b["game_id"]]["data_mode"]
+                if (game_mode == "SYNTHETIC") != (r["data_mode"] == "SYNTHETIC"):
+                    raise BundleError(f"{rid} synthetic/real mismatch with its game")
+                if r["record_type"] != "VENUE_MAPPING" and game_mode != r["data_mode"]:
+                    raise BundleError(f"{rid} NBA record must share its game's data_mode")
+            if r["record_type"] == "VENUE_MAPPING":
+                market = markets.get(b["venue_market_record_id"])
+                if market is None:
+                    raise BundleError(f"{rid} references unknown VENUE_MARKET")
+                contracts = {o["contract_id"] for o in market["body"]["outcomes"]}
+                if b["contract_id"] not in contracts:
+                    raise BundleError(f"{rid} contract_id not an outcome of its market")
+                game = games[b["game_id"]]["body"]
+                if b["team_id"] not in (game["home_team_id"], game["away_team_id"]):
+                    raise BundleError(f"{rid} team_id is not a participant of the game")
+            if r["record_type"] == "QUOTE":
+                if b["raw_snapshot_id"] not in snapshots:
+                    raise BundleError(f"{rid} references unknown raw snapshot")
+                mapping = mappings.get(b["mapping_id"])
+                if mapping is None:
+                    raise BundleError(f"{rid} references unknown mapping {b['mapping_id']}")
+                # RV-U8: the raw book must have been retrieved inside the quote's fetch window.
+                retrieved = parse_utc(snapshots[b["raw_snapshot_id"]]["body"]["retrieved_utc"])
+                if not parse_utc(b["fetch_start_utc"]) <= retrieved <= parse_utc(b["received_utc"]):
+>                   raise BundleError(f"{rid} raw snapshot retrieved_utc is outside its fetch window")
+E                   heatcheck.contracts.bundle.BundleError: QUOTE:quote:map:syn:G0001:M1-YES:4aee54ed8853182b raw snapshot retrieved_utc is outside its fetch window
+
+heatcheck\contracts\bundle.py:216: BundleError
+_____________ test_rv_l5_target_id_resolves_to_no_event_rejected ______________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_l5_target_id_resolves_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l5_target_id_resolves_to_no_event_rejected(tmp_path, recs):
+        fr = first(recs, "FEATURE_ROW")
+        fr["body"]["target_id"] = "syn:G0001:shot:e999"
+>       assert_rejected(tmp_path, recs, "PRE_SHOT_MAKE target_id names no shot in the bundle")
+
+tests\review\test_rv_validator_probes.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_l5_target_id_resolves_0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'PRE_SHOT_MAKE target_id names no shot in the bundle'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: PRE_SHOT_MAKE target_id names no shot in the bundle
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_________ test_rv_l6_source_hashes_reference_unknown_records_rejected _________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_l6_source_hashes_refer0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_l6_source_hashes_reference_unknown_records_rejected(tmp_path, recs):
+        fr = first(recs, "FEATURE_ROW")
+        fr["body"]["source_record_hashes"] = ["f" * 64]
+>       assert_rejected(tmp_path, recs, "source_record_hashes names a record not in the bundle")
+
+tests\review\test_rv_validator_probes.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_l6_source_hashes_refer0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'source_record_hashes names a record not in the bundle'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: source_record_hashes names a record not in the bundle
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________ test_rv_g3_team_win_label_team_not_in_game_rejected _____________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_g3_team_win_label_team0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_g3_team_win_label_team_not_in_game_rejected(tmp_path, recs):
+        lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
+        lab["record_id"] = "syn:G0001:team_win:r1"
+        lab["body"].update(target_id="syn:G0001:team_win", label_kind="TEAM_WIN",
+                           value={"team_id": "syn-team:OTHER", "won": True})
+        recs.append(lab)
+>       assert_rejected(tmp_path, recs, "TEAM_WIN label for a team not in the game")
+
+tests\review\test_rv_validator_probes.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_g3_team_win_label_team0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'TEAM_WIN label for a team not in the game'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: TEAM_WIN label for a team not in the game
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+____________ test_rv_o3_team_win_contradicts_final_score_rejected _____________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_o3_team_win_contradict0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o3_team_win_contradicts_final_score_rejected(tmp_path, recs):
+        lab = copy.deepcopy(first(recs, "RESTRICTED_LABEL"))
+        lab["record_id"] = "syn:G0001:team_win:r1"
+        lab["body"].update(target_id="syn:G0001:team_win", label_kind="TEAM_WIN",
+                           value={"team_id": "syn-team:AWAY", "won": True})  # away scored 0
+        recs.append(lab)
+>       assert_rejected(tmp_path, recs, "TEAM_WIN says the losing team won")
+
+tests\review\test_rv_validator_probes.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_o3_team_win_contradict0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'TEAM_WIN says the losing team won'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: TEAM_WIN says the losing team won
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________ test_rv_o5_quote_level_derived_complement_rejected ______________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o5_quote_level_derived_complement_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["levels"][1]["derivation"] = "DERIVED_COMPLEMENT"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:204: Failed
+__________ test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected __________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_o7_both_outcomes_mappe0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected(tmp_path, recs):
+        m2 = copy.deepcopy(first(recs, "VENUE_MAPPING"))
+        m2["record_id"] = m2["body"]["mapping_id"] = "map:syn:G0001:M1-NO"
+        m2["body"]["contract_id"] = "M1-NO"  # label AWAY, but team_id still HOME
+        recs.append(m2)
+>       assert_rejected(tmp_path, recs, "YES and NO of one market both mapped to HOME TEAM_WINS")
+
+tests\review\test_rv_validator_probes.py:221: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_o7_both_outcomes_mappe0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'YES and NO of one market both mapped to HOME TEAM_WINS'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: YES and NO of one market both mapped to HOME TEAM_WINS
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+__________________ test_rv_u2_off_tick_price_rejected[0.537] __________________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.537'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.537 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.537 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_________________ test_rv_u2_off_tick_price_rejected[0.0053] __________________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje1')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.0053'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje1')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.0053 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.0053 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+__________________ test_rv_u2_off_tick_price_rejected[0.005] __________________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje2')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+price = '0.005'
+
+    @pytest.mark.parametrize("price", ["0.537", "0.0053", "0.005"])
+    def test_rv_u2_off_tick_price_rejected(tmp_path, recs, price):
+        """Market tick_size is 0.01; '0.0053' is a cents value divided by 100 twice."""
+        first(recs, "QUOTE")["body"]["levels"][0]["price"] = price
+>       assert_rejected(tmp_path, recs, f"price {price} is off the market's 0.01 tick grid")
+
+tests\review\test_rv_validator_probes.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u2_off_tick_price_reje2')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = "price 0.005 is off the market's 0.01 tick grid"
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: price 0.005 is off the market's 0.01 tick grid
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+_____________________ test_rv_u3_zero_size_level_rejected _____________________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u3_zero_size_level_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["levels"][0]["size"] = "0"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:244: Failed
+______________ test_rv_u7_provider_time_after_received_rejected _______________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u7_provider_time_after_received_rejected(recs):
+        """Provider stamp 5 h after receipt: the signature of local time mislabelled as UTC."""
+        q = first(recs, "QUOTE")
+        q["body"]["provider_time_utc"] = "2024-01-01T05:00:01Z"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:278: Failed
+_________ test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected __________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_u8_raw_snapshot_time_o0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected(tmp_path, recs):
+        """Quote fetched 2024-01-01T00:00; its raw book snapshot says retrieved 2026-11-07."""
+        q = first(recs, "QUOTE")
+        snap = next(r for r in recs if r["record_id"] == q["body"]["raw_snapshot_id"])
+>       assert snap["body"]["retrieved_utc"] == "2026-11-07T12:00:00Z"
+E       AssertionError: assert '2024-01-01T00:00:00.200Z' == '2026-11-07T12:00:00Z'
+E         
+E         - 2026-11-07T12:00:00Z
+E         + 2024-01-01T00:00:00.200Z
+
+tests\review\test_rv_validator_probes.py:286: AssertionError
+________ test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected _________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["provider_time_utc"] = "2023-12-31T22:00:00Z"  # received 2024-01-01T00:00:00Z
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:301: Failed
+___________ test_rv_s2_ok_quote_with_one_day_fetch_window_rejected ____________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_s2_ok_quote_with_one_day_fetch_window_rejected(recs):
+        q = first(recs, "QUOTE")
+        q["body"]["fetch_start_utc"] = "2023-12-31T00:00:00Z"
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:308: Failed
+_________ test_rv_t2_verified_regulation_only_for_team_wins_rejected __________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t2_verified_regulation_only_for_team_wins_rejected(recs):
+        """Research §143: a full-game TEAM_WINS target and a regulation-only contract differ."""
+        _verified(recs, overtime_convention="REGULATION_ONLY")
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:346: Failed
+____________ test_rv_t3_verified_unknown_cancel_postpone_rejected _____________
+
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t3_verified_unknown_cancel_postpone_rejected(recs):
+        """ACCEPTANCE G10: 'regulation/overtime/cancel mapping; unknowns block'."""
+        _verified(recs, cancel_postpone_convention="UNKNOWN")
+>       with pytest.raises(RecordError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'heatcheck.contracts.records.RecordError'>
+
+tests\review\test_rv_validator_probes.py:353: Failed
+_______________ test_rv_t4_verified_without_rules_hash_rejected _______________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_t4_verified_without_ru0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+
+    def test_rv_t4_verified_without_rules_hash_rejected(tmp_path, recs):
+        _verified(recs)
+        first(recs, "VENUE_MARKET")["body"]["rules_text_sha256"] = None
+>       assert_rejected(tmp_path, recs, "VERIFIED mapping whose market has no rules hash")
+
+tests\review\test_rv_validator_probes.py:360: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-20/test_rv_t4_verified_without_ru0')
+recs = [{'body': {'bundle_path': 'raw/4aee54ed8853182b7e3faa88106ba6117517c1eb72363c51a3c87d3437f9662c.json', 'byte_count': 1...}, 'data_mode': 'SYNTHETIC', 'format_version': 'heatcheck-records/1', 'protocol_version': 'heatcheck-nba/1', ...}, ...]
+why = 'VERIFIED mapping whose market has no rules hash'
+
+    def assert_rejected(tmp_path: Path, recs: list[dict], why: str) -> None:
+        err = bundle_result(tmp_path, recs)
+>       assert err is not None, f"EXPECTED REJECT, ACTUAL PASS: {why}"
+E       AssertionError: EXPECTED REJECT, ACTUAL PASS: VERIFIED mapping whose market has no rules hash
+E       assert None is not None
+
+tests\review\test_rv_validator_probes.py:39: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_agent_loop.py:132: NOT_RUN: real-game bundle not built (tools/bridge_r001_game.py)
+SKIPPED [1] tests\integration\test_research_bridge.py:45: NOT_RUN: Research canonical build not present (data is not redistributable)
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [5] tests\review\test_rv_preshot_invariance.py:75: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+FAILED tests/review/test_rv_candidates.py::test_experience_bundle - Assertion...
+FAILED tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-outside fetch]
+FAILED tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537]
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053]
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005]
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected
+FAILED tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected
+19 failed, 177 passed, 9 skipped in 107.46s (0:01:47)
+exit: 1
