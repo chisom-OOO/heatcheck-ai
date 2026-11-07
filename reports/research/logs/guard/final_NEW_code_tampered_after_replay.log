@@ -1,0 +1,4 @@
+$ python -I scripts/game_prediction.py final <tampered labels: 40 final games flipped> <copy of evidence incl. amendment-1 and replay entry>
+REFUSED: input data differ from the frozen plan's data_hashes: ['game_labels']
+exit=2
+evidence copy unchanged (no ledger append)

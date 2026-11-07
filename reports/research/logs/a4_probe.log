@@ -1,0 +1,4 @@
+game=0022300061 shots_in_game=181 target_seq=3012500 shooter=1629060
+invariance asserted for target shots: 1 of 3601 FGA rows built (181 in the target game)
+later shots by same shooter (len(nxt)) = 5 -> downstream branch EXECUTED
+if target were any shot in this game: 19/181 targets have no later shot by same shooter (vacuous)

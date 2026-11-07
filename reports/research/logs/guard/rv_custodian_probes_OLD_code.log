@@ -1,0 +1,72 @@
+FFFF......                                                               [100%]
+=================================== FAILURES ===================================
+___________ test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-5/test_rv_c1_id_spelling_variant0')
+variant = ['nba:0022300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py:39: Failed
+_____ test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-5/test_rv_c1_id_spelling_variant1')
+variant = ['22300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py:39: Failed
+_________ test_rv_c1_id_spelling_variant_cannot_reopen[leading_space] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-5/test_rv_c1_id_spelling_variant2')
+variant = [' 0022300901']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py:39: Failed
+________ test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-5/test_rv_c1_id_spelling_variant3')
+variant = ['0022300901\n']
+
+    @pytest.mark.parametrize("variant", [
+        ["nba:0022300901"], ["22300901"], [" 0022300901"], ["0022300901\n"],
+    ], ids=["nba_prefix", "leading_zeros_dropped", "leading_space", "trailing_newline"])
+    def test_rv_c1_id_spelling_variant_cannot_reopen(tmp_path, variant):
+        c = Custodian(tmp_path / "ledger.jsonl")
+        _reserve(c, "F1", IDS)
+>       with pytest.raises(ExposureRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ExposureRefused
+
+/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py:39: Failed
+=========================== short test summary info ============================
+FAILED ../../../tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[nba_prefix]
+FAILED ../../../tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_zeros_dropped]
+FAILED ../../../tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[leading_space]
+FAILED ../../../tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/probe/test_rv_research_custodian.py::test_rv_c1_id_spelling_variant_cannot_reopen[trailing_newline]
+4 failed, 6 passed in 1.97s

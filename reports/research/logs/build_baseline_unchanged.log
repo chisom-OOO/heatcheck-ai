@@ -1,0 +1,47 @@
+{
+  "hashes": {
+    "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+    "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+    "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+    "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+    "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0"
+  },
+  "counts": {
+    "2023-24": {
+      "raw_rows": 674937,
+      "raw_games": 1230,
+      "duplicate_sequence": 0,
+      "duplicate_event_id": 0,
+      "clock_regress_steps": 7,
+      "neutral_site_games_flagged": 4,
+      "games_included": 1230,
+      "games_excluded": 0,
+      "events_included": 674937,
+      "field_goal_attempts": 218693,
+      "points_check_mismatch": 0
+    },
+    "2022-23": {
+      "raw_rows": 679732,
+      "raw_games": 1230,
+      "duplicate_sequence": 0,
+      "duplicate_event_id": 0,
+      "clock_regress_steps": 2,
+      "neutral_site_games_flagged": 0,
+      "games_included": 1230,
+      "games_excluded": 0,
+      "events_included": 679732,
+      "field_goal_attempts": 217221,
+      "points_check_mismatch": 0
+    }
+  },
+  "reconciliation": {
+    "MATCH": 1230
+  },
+  "exclusions": []
+}
+
+real	1m1.929s
+user	0m58.186s
+sys	0m3.496s
