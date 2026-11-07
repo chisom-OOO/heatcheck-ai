@@ -4,7 +4,8 @@
 
 HeatCheck is an AI researcher that tests its own ideas and separates robust discoveries from lucky findings,
 using NBA data. Heater, an AI pundit, proposes claims; a Challenger attacks them; a deterministic Referee
-decides by pre-registered rules and records every verdict in a tamper-evident ledger.
+decides by pre-registered rules, explains each verdict from the ledger alone, and records every verdict in a
+tamper-evident ledger.
 
 - **Elo vs base rate** (2023–24, 300 held-out games): survives, narrowly (Holm p 0.046).
 - **Rest/back-to-back:** refused by its own pre-registered rule despite p 0.049, because its confidence
@@ -53,23 +54,31 @@ A claim goes through four steps. Only the last two decide anything.
 **Heater and the Ref.** Heater is the user-facing voice of the Discoverer: an AI-generated, original pundit
 character who improvises hot takes through the language model. Heater is instructed never to state
 statistics or numbers, never to contradict the Ref, and never to name or imitate a real commentator. Its
-text also passes the number guard. The Referee ("the Ref") is deterministic
-and never improvises. Its verdict comes only from the fixed rule and the ledger entry. The model may phrase
-the Ref's plain-English explanation, but that text must pass a guard that every number appears in the
-evidence record. Otherwise a fixed template is shown.
+text also passes a guard that refuses any number not in the evidence record; on a failure Heater falls back
+to a fixed line. The Referee ("the Ref") is fully deterministic and never improvises. No model is called.
+Both its verdict and its explanation come from a template filled only from the ledger entry. Any numbers
+appear verbatim from the record (`reports/max/2026-11-07-2059-deterministic-ref-recorded-finals.md`).
 
 **What is built today** (Max's branch `max/integrate-r001-e001`):
 - The proposer in the loop is a deterministic stand-in.
 - A model-backed Challenger exists, but it can only add attacks. Under the current registry every applicable
   attack is already required, so it is not called.
-- A language model (Meta `muse-spark-1.3`) is used in the live dialogue for three things: mapping a
-  user's question to a registered claim, Heater's in-character reactions, and phrasing the Ref's
-  explanation. A guard checks that every number in the model's text appears in the evidence record.
+- A language model (Meta `muse-spark-1.3`) does exactly two things in the live dialogue:
+  - it routes the user's question to a registered claim;
+  - it writes Heater's lines, under the number guard.
+- The Ref's verdict and explanation are templates; no model call.
 - The proposer in the agent loop (above) is still the deterministic stand-in. Heater speaks in the
   dialogue; it does not yet choose claims by model.
-- In a live end-to-end test, the model mapped 6 of 6 questions correctly, and every verdict equalled the
-  committed ledger entry (`reports/max/2026-11-07-2009-live-e2e-and-demo.md`).
-- The model never changes a verdict.
+- **Recorded finals.** The 2023–24 game-prediction results are in the evidence ledger as **recorded
+  references to custodian receipt `3e238d2d`**. They are copied verbatim and bound by file and ledger-line
+  hashes, not recomputed. This lets the demo show them:
+  - Elo vs base rate as **GP-ELO**, SURVIVED_PROTOCOL;
+  - rest/back-to-back as **GP-REST**, INSUFFICIENT_EVIDENCE.
+
+  GP-ELO is a recorded-only id; its statement restates the plan's H2 estimand, and the entry says so.
+- In the latest live end-to-end test (6 turns), routing was correct 6 of 6 times. Every verdict equalled
+  the committed ledger entry (`reports/max/2026-11-07-2059-deterministic-ref-recorded-finals.md`).
+- No model changes a verdict.
 
 ## 3. The protocol
 
@@ -110,6 +119,8 @@ play-by-play).
 ### 4.1 Game prediction, 2023–24 final split (300 games, run once)
 
 Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt `3e238d2d…`, plan `a8d81292…`.
+Both verdicts are also in the demo's evidence ledger as recorded references to that receipt (GP-ELO, GP-REST),
+not recomputed.
 
 | Model | Log loss | Brier |
 |---|---|---|
@@ -169,7 +180,9 @@ Source: `reports/max/2026-11-07-1641-agent-loop.md`. Max's loop ran on one bridg
 | Hot hand, 2 makes | NOT_SUPPORTED | p = 0.239 |
 | Rest | BLOCKED | no season view implemented |
 
-This demonstrates the pipeline. It is not an NBA research result.
+This demonstrates the pipeline. It is not an NBA research result. The loop's BLOCKED rest entry stays in
+the ledger as history. The dialogue now answers the rest claim from the recorded 2023–24 final
+(INSUFFICIENT_EVIDENCE).
 
 ## 5. The sealed 2024–25 confirmatory test
 
@@ -266,9 +279,13 @@ The same review process also caught:
 
   They coordinated only through GitHub branches and committed reports. Every status report records the
   commit, the commands, the raw output and PASS/FAIL/NOT_RUN for each check. One session integrated the work.
-- **Models.** Meta `muse-spark-1.3` produces Heater's dialogue and routes questions to registered claims. It
-  also phrases the Ref's explanations under the number guard. Heater's character art was generated with
-  Gemini. No model decides a verdict.
+- **Models.**
+  - Meta `muse-spark-1.3` writes Heater's lines and routes questions to registered claims. Nothing else.
+  - The Ref is a template; no model call.
+  - Heater's character art is AI-generated with Google Gemini. The credit is recorded on
+    `experience/heater-character@1560525`: the state sheet header `apps/web/web/heater/states.html` and
+    `apps/web/web/heater/README.md`.
+  - No model decides a verdict.
 - **Prepared before the event.** These were committed on 7 November:
   - the repository scaffold and tooling configuration, derived from a 6 November preparation scaffold;
   - the three role specifications (commit `5be39a7`, 12:07 UTC);
@@ -283,8 +300,8 @@ The same review process also caught:
 
 - **Only one game is bridged into the shared record format.** The season-level analyses run in Research's
   own table format. Only `nba:0022300061` has been translated into the shared `heatcheck-records/1` bundle
-  that the agent loop and the UI read. The game-prediction "season view" for the loop is not implemented,
-  so the rest claim is `BLOCKED` there.
+  that the agent loop and the UI read. The game-prediction "season view" for the loop is not implemented. The
+  loop cannot compute game-prediction claims itself; the demo shows them from the recorded 2023–24 final.
 - **Isolation is logical, not enforced by the operating system.** The custodian and the evaluator run as the
   same user. A determined insider with file access could bypass them. The custodian also needs `fcntl`, so
   the confirmatory step runs on Linux, macOS or WSL, not native Windows. Reviewer sign-offs are recorded,
