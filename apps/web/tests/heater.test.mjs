@@ -45,7 +45,8 @@ test("rig is self-contained: no style, script, external reference or raster", ()
 });
 
 test("every state has a CSS class, and reduced motion removes the loops", () => {
-  for (const s of ["idle", "hot_take", "heat_check", "vindicated", "cooled"]) assert.match(css, new RegExp(`\\.st-${s}\\b`), s);
+  for (const s of M.STATES) assert.match(css, new RegExp(`\\.st-${s}\\b`), s);
+  assert.equal(M.STATES.length, 9);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation: none !important/);
 });
 

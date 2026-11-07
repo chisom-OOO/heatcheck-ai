@@ -124,6 +124,10 @@ async function shotMode(params) {
     const stage = document.createElement("div");
     box.append(label, stage);
     await mount(stage, { state: which, hold: true });
+    if (params.get("freeze") === "1") {
+      stage.classList.add("h-freeze");
+      label.textContent += " (glitch frame 2 held for capture)";
+    }
   }
   document.body.dataset.ready = "1";
 }
