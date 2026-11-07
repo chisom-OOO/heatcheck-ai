@@ -334,9 +334,7 @@ async function cancelRun() {
 // are labelled so; a record opened from disk is rendered through the same view. PROVISIONAL until
 // Max's Referee evidence record format is delivered.
 const OUTCOME_CELL = { PASSED: ["pass", "✓ passed"], FAILED: ["fail", "✕ failed"], NOT_RUN: ["not-run", "– not run"],
-  ERROR: ["fail", "! error"], UNRECOGNISED: ["fail", "? unrecognised outcome"],
-  // heatcheck-referee-view/1 statuses (Max, 2026-11-07; pending Experience review): whether the attack ran, not pass/fail.
-  EXECUTED: ["ran", "ran"], UNSUPPORTED: ["not-run", "– could not run"] };
+  ERROR: ["fail", "! error"], UNRECOGNISED: ["fail", "? unrecognised outcome"] };
 function valueEl(tag, v, attrs = {}) {
   return el(tag, { ...attrs, class: [attrs.class, v && v.available ? null : "unavailable"].filter(Boolean).join(" ") || null, text: referee.show(v) });
 }

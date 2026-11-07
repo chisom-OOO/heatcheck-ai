@@ -35,7 +35,6 @@ from heatcheck.agents.registry import ATTACKS, CLAIMS, Claim, catalogue
 from heatcheck.agents.roles import DeterministicChallenger
 from heatcheck.agents.views import ShotView
 from heatcheck.ledger.evidence import EvidenceLedger
-from heatcheck.ledger.referee_view import referee_view
 
 DISCOVERER_DISPLAY_NAME = "Heater"
 REFEREE_DISPLAY_NAME = "the Ref"
@@ -341,7 +340,7 @@ class Dialogue:
             heater_text, sources["heater"] = self._heater(question, None, None, None)
             sources["ref"] = "TEMPLATE_NO_REGISTERED_TEST"
             return {"heater_text": heater_text, "ref_text": ref_text, "evidence_record_id": None,
-                    "verdict": None, "claim_id": NONE, "sources": sources, "referee_view": None}
+                    "verdict": None, "claim_id": NONE, "sources": sources}
         challenger = LLMChallenger(self.llm) if self.llm else DeterministicChallenger()
         entry = run_once(self.view, self.ledger, view_identity=self.view_identity,
                          jone=MappedDiscoverer(claim_id, question, map_identity),
@@ -357,7 +356,7 @@ class Dialogue:
             ref_text, sources["ref"] = r.result()
         return {"heater_text": heater_text, "ref_text": ref_text,
                 "evidence_record_id": entry["evidence_id"], "verdict": facts["decision"],
-                "claim_id": claim_id, "sources": sources, "referee_view": referee_view(entry)}
+                "claim_id": claim_id, "sources": sources}
 
     # -- pieces
 
