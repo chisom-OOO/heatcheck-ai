@@ -1,0 +1,13 @@
+{
+  "market": {
+    "ticker": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+    "event_ticker": "KXNBAGAME-FIX26NOV08NYKBOS",
+    "title": "New York Knicks at Boston Celtics: Winner?",
+    "yes_sub_title": "Boston Celtics",
+    "rules_primary": "If the Boston Celtics win the New York Knicks vs Boston Celtics game scheduled for Nov 8, 2026, including any overtime, then the market resolves to Yes.",
+    "rules_secondary": "If the game is postponed, the market remains open until the rescheduled game is played. If the game is cancelled, the market resolves per the exchange's cancellation rules.",
+    "occurrence_datetime": "2026-11-08T00:30:00Z",
+    "status": "active",
+    "tick_size_dollars": "0.01"
+  }
+}
