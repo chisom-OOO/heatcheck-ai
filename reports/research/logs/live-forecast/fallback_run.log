@@ -1,0 +1,61 @@
+code: research/live-forecast working tree on 74d457d
+$ python -I handoff/research-20261107/scripts/live_forecast.py fallback data/live/work data/live/raw/gamelist_handcopied_20261107.json data/live/forecasts.json $U5/datasets/cdnnba_2025.tar.xz 2026-11-07T22:53:11Z
+{
+  "n_forecast": 7,
+  "data_cutoff_utc": "2026-04-13T03:05:51Z",
+  "games": [
+    [
+      "nba:0022600189",
+      "Denver Nuggets",
+      "@",
+      "Indiana Pacers",
+      0.308168
+    ],
+    [
+      "nba:0022600190",
+      "Brooklyn Nets",
+      "@",
+      "Atlanta Hawks",
+      0.858953
+    ],
+    [
+      "nba:0022600191",
+      "New York Knicks",
+      "@",
+      "Cleveland Cavaliers",
+      0.645118
+    ],
+    [
+      "nba:0022600192",
+      "Washington Wizards",
+      "@",
+      "Oklahoma City Thunder",
+      0.941147
+    ],
+    [
+      "nba:0022600193",
+      "Orlando Magic",
+      "@",
+      "Golden State Warriors",
+      0.527575
+    ],
+    [
+      "nba:0022600194",
+      "Houston Rockets",
+      "@",
+      "Phoenix Suns",
+      0.563347
+    ],
+    [
+      "nba:0022600195",
+      "San Antonio Spurs",
+      "@",
+      "Portland Trail Blazers",
+      0.443906
+    ]
+  ]
+}
+exit=0
+$ (in max/integrate-r001-e001 worktree) uv run --frozen python -m heatcheck.contracts.live_forecast data/live/forecasts.json
+validator at 4930adb
+PASS /home/user/heatcheck-ai/data/live/forecasts.json: heatcheck-live-forecast/1 non-sample, games=7, cutoff=2026-04-13T03:05:51Z

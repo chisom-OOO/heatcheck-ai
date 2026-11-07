@@ -155,7 +155,49 @@ def forecast(out: Path, schedule: Path, dest: Path, expected_sha: str, fetched_u
                       "n_forecast": len(games), "first_tip": games[0]["tip_utc"]}, indent=2))
 
 
+def fallback(out: Path, gamelist: Path, dest: Path, results_archive: Path, fetched_utc: str):
+    """FALLBACK forecast: 2025-26 end ratings carried once into 2026-27; NO 2026-27 results; hand-copied game list."""
+    st = json.loads((out / "elo_state.json").read_text())
+    r = {int(k): v for k, v in st["ratings_2026_27_start"].items()}
+    gl = json.loads(gamelist.read_text())["games"]
+    ids = [g["game_id"] for g in gl]
+    if len(ids) != len(set(ids)) or sorted("nba:" + i for i in REQUIRED_IDS) != sorted(ids):
+        raise SystemExit(f"REFUSED: game list must be exactly the required games {REQUIRED_IDS}")
+    cutoff = st["last_completed_game_utc"]
+    games = []
+    for g in sorted(gl, key=lambda g: (g["tip_utc"], g["game_id"])):
+        h, a = int(g["home_team_id"].split(":")[1]), int(g["away_team_id"].split(":")[1])
+        if str(h) not in st["tricodes"] or str(a) not in st["tricodes"]:
+            raise SystemExit(f"REFUSED: unknown team in {g['game_id']}")
+        if not cutoff < g["tip_utc"]:
+            raise SystemExit("REFUSED: cutoff not before tip")
+        eh, ea = r[h], r[a]
+        games.append({"game_id": g["game_id"], "tip_utc": g["tip_utc"], "home_team_id": g["home_team_id"],
+                      "away_team_id": g["away_team_id"], "home_team": g["home_team"], "away_team": g["away_team"],
+                      "p_home_win": round(p_home(eh, ea, False), 6), "elo_home": round(eh, 3), "elo_away": round(ea, 3)})
+    doc = {"format": "heatcheck-live-forecast/1", "label": "DESCRIPTIVE FORECAST",
+           "model": ("FALLBACK: B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, "
+                     "between-season carry 0.75*r+0.25*1505. Ratings are the 2025-26 end ratings carried once into "
+                     "2026-27; NO 2026-27 results were used (cdn.nba.com refused every machine tried). Game list "
+                     "hand-copied from NBA.com, not fetched. All seven games assumed not at a neutral site."),
+           "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
+           "data_cutoff_utc": cutoff,
+           "source": {"results": ("shufinskiy/nba_data@46488f0f datasets/cdnnba_2025.tar.xz (2025-26 regular-season "
+                                  "results; earlier seasons from the same repository). No 2026-27 results. Game list "
+                                  "hand-copied from the NBA.com schedule page (data/live/raw/gamelist_handcopied_20261107.json)"),
+                      "fetched_utc": fetched_utc, "sha256": sha256_file(results_archive), "cross_check": "NOT_RUN"},
+           "backtest_2024_25": st["backtest_2024_25"], "games": games}
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
+    print(json.dumps({"n_forecast": len(games), "data_cutoff_utc": cutoff,
+                      "games": [(g["game_id"], g["away_team"], "@", g["home_team"], g["p_home_win"]) for g in games]}, indent=2))
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "fallback":
+        a = sys.argv
+        fallback(Path(a[2]), Path(a[3]), Path(a[4]), Path(a[5]), a[6])
+        sys.exit(0)
     if sys.argv[1] == "ratings":
         ratings(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]), Path(sys.argv[5]))
     elif sys.argv[1] == "forecast":

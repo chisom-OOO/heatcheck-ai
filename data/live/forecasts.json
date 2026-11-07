@@ -1,0 +1,101 @@
+{
+  "format": "heatcheck-live-forecast/1",
+  "label": "DESCRIPTIVE FORECAST",
+  "model": "FALLBACK: B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, between-season carry 0.75*r+0.25*1505. Ratings are the 2025-26 end ratings carried once into 2026-27; NO 2026-27 results were used (cdn.nba.com refused every machine tried). Game list hand-copied from NBA.com, not fetched. All seven games assumed not at a neutral site.",
+  "inputs_used": [
+    "elo_rating_home",
+    "elo_rating_away",
+    "home_court"
+  ],
+  "data_cutoff_utc": "2026-04-13T03:05:51Z",
+  "source": {
+    "results": "shufinskiy/nba_data@46488f0f datasets/cdnnba_2025.tar.xz (2025-26 regular-season results; earlier seasons from the same repository). No 2026-27 results. Game list hand-copied from the NBA.com schedule page (data/live/raw/gamelist_handcopied_20261107.json)",
+    "fetched_utc": "2026-11-07T22:53:11Z",
+    "sha256": "a5d1bed30778430816b755676649cb2e3690ea62df5d96f4d9d6e9a8b8839339",
+    "cross_check": "NOT_RUN"
+  },
+  "backtest_2024_25": {
+    "log_loss": 0.6289737469421883,
+    "brier": 0.21961561816347416,
+    "games": 1230
+  },
+  "games": [
+    {
+      "game_id": "nba:0022600189",
+      "tip_utc": "2026-11-07T22:00:00Z",
+      "home_team_id": "nba-team:1610612754",
+      "away_team_id": "nba-team:1610612743",
+      "home_team": "Indiana Pacers",
+      "away_team": "Denver Nuggets",
+      "p_home_win": 0.308168,
+      "elo_home": 1375.363,
+      "elo_away": 1615.848
+    },
+    {
+      "game_id": "nba:0022600190",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612737",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Brooklyn Nets",
+      "p_home_win": 0.858953,
+      "elo_home": 1553.404,
+      "elo_away": 1339.562
+    },
+    {
+      "game_id": "nba:0022600191",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612739",
+      "away_team_id": "nba-team:1610612752",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "New York Knicks",
+      "p_home_win": 0.645118,
+      "elo_home": 1600.835,
+      "elo_away": 1597.014
+    },
+    {
+      "game_id": "nba:0022600192",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612760",
+      "away_team_id": "nba-team:1610612764",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Washington Wizards",
+      "p_home_win": 0.941147,
+      "elo_home": 1684.033,
+      "elo_away": 1302.476
+    },
+    {
+      "game_id": "nba:0022600193",
+      "tip_utc": "2026-11-08T01:30:00Z",
+      "home_team_id": "nba-team:1610612744",
+      "away_team_id": "nba-team:1610612753",
+      "home_team": "Golden State Warriors",
+      "away_team": "Orlando Magic",
+      "p_home_win": 0.527575,
+      "elo_home": 1454.47,
+      "elo_away": 1535.289
+    },
+    {
+      "game_id": "nba:0022600194",
+      "tip_utc": "2026-11-08T02:00:00Z",
+      "home_team_id": "nba-team:1610612756",
+      "away_team_id": "nba-team:1610612745",
+      "home_team": "Phoenix Suns",
+      "away_team": "Houston Rockets",
+      "p_home_win": 0.563347,
+      "elo_home": 1520.436,
+      "elo_away": 1576.18
+    },
+    {
+      "game_id": "nba:0022600195",
+      "tip_utc": "2026-11-08T03:00:00Z",
+      "home_team_id": "nba-team:1610612757",
+      "away_team_id": "nba-team:1610612759",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "San Antonio Spurs",
+      "p_home_win": 0.443906,
+      "elo_home": 1521.945,
+      "elo_away": 1661.087
+    }
+  ]
+}
