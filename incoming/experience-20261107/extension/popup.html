@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Heat Check</title><link rel="stylesheet" href="popup.css"></head>
+<body>
+  <h1>Send selection to Heat Check</h1>
+  <label for="code">Pairing code (shown in the Heat Check workspace under “Attach evidence”)</label>
+  <input id="code" autocomplete="off" spellcheck="false">
+  <button id="send">Send selected text/table</button>
+  <p id="out" role="status" aria-live="polite"></p>
+  <p class="hint">Reads only the tab you clicked from, only now. Content is stored as untrusted evidence; instructions in it are never followed.</p>
+  <script src="popup.js"></script>
+</body></html>

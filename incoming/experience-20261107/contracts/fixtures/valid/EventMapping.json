@@ -1,0 +1,27 @@
+{
+ "cancel_postpone_convention": {
+  "excerpt": "if the game is postponed, the market remains open until the rescheduled game is played.",
+  "stated": true
+ },
+ "forecast_game_id": "FIX-G0001",
+ "mapping_id": "map_0795016c28947a43",
+ "market_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+ "market_spec_hash": "ec85ad28ee9772696ea19ca659b1dc5ae369d231d48b709faffff24db082e37f",
+ "outcome_direction": {
+  "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+  "target_team": "BOS"
+ },
+ "participants_date": {
+  "away": "NYK",
+  "home": "BOS",
+  "market_game_start": "2026-11-08T00:30:00Z",
+  "scheduled_tip_utc": "2026-11-08T00:30:00+00:00"
+ },
+ "proposed_by": "rule-based matcher (cannot approve)",
+ "reason": "all automated checks matched; awaiting human review",
+ "regulation_overtime_convention": "INCLUDES_OVERTIME",
+ "rules_hash": "d598e2d6b4eb0514d1f04e931be61dd31581c60ff24e5cc2d73395bf1c29bfcd",
+ "status": "PROPOSED",
+ "trusted_reviewer": null,
+ "venue": "kalshi"
+}

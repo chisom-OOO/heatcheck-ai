@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Heat Check: send selection",
+  "version": "0.1.0",
+  "description": "On your click, sends the text or table you selected on this tab to your local Heat Check workspace as untrusted evidence.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["http://127.0.0.1:8765/*"],
+  "action": { "default_title": "Send selection to Heat Check", "default_popup": "popup.html" },
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'none'" }
+}
