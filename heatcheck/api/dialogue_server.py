@@ -1,4 +1,4 @@
-"""POST /api/dialogue -> {heater_text, ref_text, evidence_record_id, verdict} (+ claim_id, sources).
+"""GET / (console page) and POST /api/dialogue -> {heater_text, ref_text, evidence_record_id, verdict} (+ claim_id, sources).
 
 Stdlib HTTP server bound to 127.0.0.1. CORS is limited to Experience's local UI origins. The
 provider key stays in this process's environment; it is never returned.
@@ -16,8 +16,11 @@ from __future__ import annotations
 import json
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 from heatcheck.agents.dialogue import Dialogue
+
+CONSOLE = Path(__file__).with_name("console.html")
 
 MAX_BODY = 16 * 1024
 MAX_QUESTION = 500
@@ -58,6 +61,19 @@ def make_handler(dialogue: Dialogue):
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self._cors()
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):
+            """GET / serves the console page (static file, no data embedded)."""
+            if self.path not in ("/", "/index.html"):
+                return self._send(404, {"error": "not found"})
+            body = CONSOLE.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; "
+                             "style-src 'unsafe-inline'; connect-src 'self'")
             self.end_headers()
             self.wfile.write(body)
 

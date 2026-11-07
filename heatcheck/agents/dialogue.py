@@ -316,9 +316,17 @@ def confirmatory_facts(entry: dict) -> dict:
 
 def ref_brief(facts: dict) -> dict:
     """The compact subset sent to the LLM for phrasing (fewer prompt and reasoning tokens).
-    The guard still checks against the full ``facts``."""
-    return {"claim": facts["statement"], "verdict": facts["decision"], "reason": facts["reason"],
-            "field_goal_attempts": facts["data"]["n_attempts"], "games": facts["data"]["n_games"]}
+    The guard still checks against the full ``facts``.
+
+    Sample counts are sent only when a test actually ran on that sample: for a BLOCKED claim
+    the loaded shot data are not the claim's data, and the live run of 2026-11-07 showed the
+    model attaching them to it ("field_goal_attempts at 181" for GP-REST). The guard cannot
+    catch that, because it checks numbers, not what they refer to."""
+    brief = {"claim": facts["statement"], "verdict": facts["decision"], "reason": facts["reason"]}
+    if facts["decision"] != "BLOCKED":
+        brief["field_goal_attempts"] = facts["data"]["n_attempts"]
+        brief["games"] = facts["data"]["n_games"]
+    return brief
 
 
 def _record_text(facts: dict) -> str:

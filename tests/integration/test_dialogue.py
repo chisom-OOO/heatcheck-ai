@@ -366,3 +366,34 @@ def test_endpoint_returns_four_fields_and_rejects_bad_requests(view, tmp_path):
 
 def test_no_test_template_lists_registered_claims():
     assert "HH-K3" in NO_TEST_REF.format(ids="HH-K3, HH-K2, GP-REST")
+
+
+def test_ref_brief_omits_sample_counts_for_blocked():
+    """Live run 2026-11-07: with counts in the brief, the model said GP-REST was BLOCKED 'with
+    field_goal_attempts at 181', attaching the shot sample to a claim that never ran on it."""
+    from heatcheck.agents.dialogue import ref_brief
+    base = {"statement": "s", "reason": "r", "data": {"n_attempts": 181, "n_games": 1}}
+    assert "field_goal_attempts" not in ref_brief({**base, "decision": "BLOCKED"})
+    assert ref_brief({**base, "decision": "NOT_SUPPORTED"})["field_goal_attempts"] == 181
+
+
+def test_console_page_served_and_other_paths_404():
+    import threading
+    import urllib.error
+    import urllib.request
+
+    from heatcheck.api.dialogue_server import serve
+    srv = serve(object(), port=0)  # GET never calls the dialogue
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    try:
+        with urllib.request.urlopen(base + "/") as r:
+            body = r.read().decode()
+            assert r.status == 200 and r.headers["Content-Type"].startswith("text/html")
+            assert "connect-src 'self'" in r.headers["Content-Security-Policy"]
+        assert "HeatCheck dialogue console" in body and "/api/dialogue" in body
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(base + "/../evidence.jsonl")
+        assert e.value.code == 404
+    finally:
+        srv.shutdown()

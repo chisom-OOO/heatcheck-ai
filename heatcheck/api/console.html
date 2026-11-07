@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeatCheck dialogue console</title>
+<style>
+  :root { --bg: #fafaf8; --fg: #1c1c1a; --muted: #6b6b66; --line: #dcdcd6; --card: #ffffff;
+          --heat: #c2410c; --ref: #1d4ed8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --fg: #ececea; --muted: #a3a39e; --line: #33332f; --card: #1f1f1d;
+            --heat: #fb923c; --ref: #93c5fd; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  .note { color: var(--muted); font-size: .9rem; margin: 0 0 20px; }
+  form { display: flex; gap: 8px; flex-wrap: wrap; }
+  input { flex: 1 1 320px; padding: 10px 12px; font: inherit; color: var(--fg); background: var(--card);
+          border: 1px solid var(--line); border-radius: 8px; }
+  button { padding: 10px 16px; font: inherit; border: 0; border-radius: 8px; background: var(--fg);
+           color: var(--bg); cursor: pointer; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .examples { margin: 10px 0 24px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .examples button { background: transparent; color: var(--muted); border: 1px solid var(--line);
+                     font-size: .85rem; padding: 4px 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+          margin: 0 0 12px; }
+  .who { font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+  .heater .who { color: var(--heat); } .ref .who { color: var(--ref); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; font-size: .9rem; }
+  dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; }
+  .mono { font-family: ui-monospace, Consolas, monospace; font-size: .85rem; }
+  .err { color: #b91c1c; }
+</style>
+</head>
+<body>
+<main>
+  <h1>HeatCheck dialogue console</h1>
+  <p class="note">Max's API test page for <span class="mono">POST /api/dialogue</span>. Heater is
+    entertainment; the verdict comes from the deterministic Referee and the evidence ledger.
+    Experience's UI (port 8765) shows the same ledger.</p>
+  <form id="f">
+    <input id="q" maxlength="500" placeholder="Ask Heater a basketball question" autocomplete="off" required>
+    <button id="go" type="submit">Ask</button>
+  </form>
+  <div class="examples" id="ex"></div>
+  <div id="out"></div>
+</main>
+<script>
+const EXAMPLES = [
+  "Is the hot hand real after three straight makes?",
+  "After two makes in a row, is the next shot more likely to go in?",
+  "Do back-to-backs change who wins?",
+  "Do home teams really win more than half their games?",
+  "Who is the best free throw shooter?",
+];
+const $ = (id) => document.getElementById(id);
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text; return e; }
+for (const q of EXAMPLES) { const b = el("button", "", q); b.type = "button";
+  b.onclick = () => { $("q").value = q; ask(); }; $("ex").append(b); }
+$("f").onsubmit = (ev) => { ev.preventDefault(); ask(); };
+async function ask() {
+  const q = $("q").value.trim(); if (!q) return;
+  $("go").disabled = true; $("out").replaceChildren(el("p", "note", "Waiting for Heater and the Ref…"));
+  const t0 = performance.now();
+  try {
+    const r = await fetch("/api/dialogue", { method: "POST", headers: { "Content-Type": "application/json" },
+                                             body: JSON.stringify({ question: q }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || r.status);
+    const ms = Math.round(performance.now() - t0);
+    const h = el("div", "card heater"); h.append(el("div", "who", "Heater"), el("p", "", d.heater_text));
+    const f = el("div", "card ref"); f.append(el("div", "who", "The Ref"), el("p", "", d.ref_text));
+    const meta = el("div", "card"); const dl = el("dl");
+    const rows = [["verdict", d.verdict ?? "none (no verdict)"], ["claim", d.claim_id], ["lane", d.lane ?? "–"],
+                  ["evidence id", d.evidence_record_id ?? "none (nothing written)"],
+                  ["confirmatory", d.confirmatory_status ?? "–"], ["turn time", ms + " ms"]];
+    for (const [k, v] of Object.entries(d.sources || {})) rows.push(["source: " + k, v]);
+    for (const [k, v] of rows) { dl.append(el("dt", "", k), el("dd", k === "evidence id" ? "mono" : "", String(v))); }
+    meta.append(dl);
+    $("out").replaceChildren(h, f, meta);
+  } catch (e) {
+    $("out").replaceChildren(el("p", "err", "Request failed: " + e.message));
+  } finally { $("go").disabled = false; }
+}
+</script>
+</body>
+</html>

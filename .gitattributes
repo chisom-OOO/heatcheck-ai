@@ -10,3 +10,5 @@ data/bundles/** -text
 incoming/** -text
 # Research handoff working copy: frozen code hashes cover exact bytes.
 handoff/** -text
+# Windows batch files need CRLF.
+*.cmd text eol=crlf
