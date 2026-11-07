@@ -376,6 +376,14 @@ def propose_mapping(
             f"outcome {contract_id!r} labelled {label!r} {what}; TEAM_WINS for {team_id} "
             f"({tri}) needs an outcome that names that team and no other"
         )
+    # Kalshi game tickers end in the YES team's code (KXNBAGAME-26NOV07DENIND-IND). When that
+    # code is a known tricode it must be the mapped team: an id check, not only a label check.
+    if body["venue"] == "KALSHI":
+        suffix = body["market_id"].rsplit("-", 1)[-1]
+        if suffix in NBA_TEAMS and suffix != tri:
+            raise AdapterError(
+                f"Kalshi ticker {body['market_id']!r} is for {suffix}, not {team_id} ({tri})"
+            )
     ot = overtime_convention(rules_text)
     reason = (
         "Proposed by the Experience adapter from the market's own outcome label and rules "
@@ -408,8 +416,12 @@ def ms_to_utc(value: Any, where: str) -> str | None:
     """Venue millisecond epoch string -> UTC 'Z' timestamp; None if absent."""
     if value is None:
         return None
-    if not isinstance(value, str) or not value.isdigit():
+    if not isinstance(value, str) or not value.isascii() or not value.isdigit():
         raise AdapterError(f"{where}: timestamp {value!r} is not epoch milliseconds")
+    # Epoch ms has 13 digits from 2001 to 2286; 10 digits is epoch SECONDS (RV-E4).
+    if len(value) != 13:
+        unit = "epoch seconds, not milliseconds" if len(value) == 10 else "not epoch milliseconds"
+        raise AdapterError(f"{where}: timestamp {value!r} has {len(value)} digits: {unit}")
     ms = int(value)
     dt = datetime.fromtimestamp(ms // 1000, tz=UTC)
     frac = ms % 1000

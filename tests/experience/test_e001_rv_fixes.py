@@ -172,6 +172,46 @@ def test_correct_mappings_still_propose():
     validate_record(m)
 
 
+def _kalshi_market(ticker_suffix: str, yes_sub_title: str):
+    mk = copy.deepcopy(B.K_MARKET)
+    ticker = mk["market"]["ticker"].rsplit("-", 1)[0] + "-" + ticker_suffix
+    mk["market"].update(ticker=ticker, yes_sub_title=yes_sub_title)
+    return kalshi.parse_market(raw(mk), CAP), ticker, kalshi.rules_text(raw(mk))
+
+
+def test_kalshi_ticker_team_code_must_be_the_mapped_team():
+    # Label names Boston but the ticker is the Knicks' market: refused on the id.
+    market, ticker, rules = _kalshi_market("NYK", "Boston Celtics")
+    with pytest.raises(AdapterError, match="ticker .* is for NYK"):
+        propose_mapping(game_id=B.GAME_ID, team_id="syn-team:BOS", market=market,
+                        contract_id=f"{ticker}:yes", expected_label="YES (Boston Celtics)",
+                        rules_text=rules)
+    # Consistent ticker, label and team id: proposed.
+    market, ticker, rules = _kalshi_market("BOS", "Boston Celtics")
+    m = propose_mapping(game_id=B.GAME_ID, team_id="syn-team:BOS", market=market,
+                        contract_id=f"{ticker}:yes", expected_label="YES (Boston Celtics)",
+                        rules_text=rules)
+    assert m["body"]["status"] == "PROPOSED"
+
+
+def test_kalshi_no_contract_refused_even_with_matching_ticker():
+    market, ticker, rules = _kalshi_market("BOS", "Boston Celtics")
+    with pytest.raises(AdapterError, match="names no team"):
+        propose_mapping(game_id=B.GAME_ID, team_id="syn-team:BOS", market=market,
+                        contract_id=f"{ticker}:no", expected_label="NO", rules_text=rules)
+
+
+@pytest.mark.parametrize("ts, msg", [
+    ("1794067200", "epoch seconds, not milliseconds"),
+    ("1794067200050000", "not epoch milliseconds"),      # microseconds
+    ("179406720005", "not epoch milliseconds"),
+    ("１７９４０６７２０００５０", "not epoch milliseconds"),   # full-width digits
+])
+def test_timestamp_unit_refused_with_reason(ts, msg):
+    with pytest.raises(AdapterError, match=msg):
+        pm_book(timestamp=ts)
+
+
 # ------------------------------------------------------------------ overtime
 
 @pytest.mark.parametrize("text, expected", [
