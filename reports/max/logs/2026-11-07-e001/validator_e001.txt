@@ -1,0 +1,4 @@
+# HEAD 3422d0c112c087d799ab1daf45f76e5ea63dc493
+$ uv run --frozen python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001
+PASS tests/fixtures/quotes/e001: bundle e001-syn-quote-fixture-1 modes=['SYNTHETIC'] records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit=0
