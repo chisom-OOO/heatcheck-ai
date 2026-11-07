@@ -82,7 +82,7 @@ class FakeTransport:
             return 200, iter(chat_json(self.mapping))
         if name == "attack_selection":
             sel = self.challenger if self.challenger is not None else json.dumps(
-                {"optional_attacks": ["A-SPLIT-HALF-REPLICATION"]})
+                {"attacks": ["A-SPLIT-HALF-REPLICATION"]})
             return 200, iter(chat_json(sel))
         if b.get("stream"):
             return 200, iter(chat_sse(self.heater))
@@ -199,7 +199,9 @@ def test_none_runs_no_test_and_ref_says_so(view, tmp_path):
 
 
 @pytest.mark.parametrize("bad", ['{"claim_id": "HH-K9"}', '{"claim_id": "HH-K3", "x": 1}', "not json",
-                                 '{"claim_id": "run_my_custom_test"}'])
+                                 '{"claim_id": "run_my_custom_test"}',
+                                 '{"claim_id": "NONE", "claim_id": "HH-K3"}',   # duplicate key (RV-AL6)
+                                 '{"claim_id": ["HH-K3"]}', '{"claim_id": "hh-k3"}', '{"claim_id": "HH-K3 "}'])
 def test_unregistered_mapping_is_never_run(view, tmp_path, bad):
     t = FakeTransport(mapping=bad)
     ledger = EvidenceLedger(tmp_path / "l.jsonl")
@@ -221,15 +223,60 @@ def test_keyword_standin_mapping():
 # --------------------------------------------------------------------------- Challenger
 
 
-def test_llm_challenger_cannot_add_unregistered_or_drop_mandatory(view, tmp_path):
+def test_llm_challenger_not_called_when_nothing_is_addable(view, tmp_path):
+    """Under heatcheck-registry/1 every applicable attack is required, so the model Challenger
+    has nothing it may add and is not called (no latency, no spend)."""
+    from heatcheck.agents.registry import CLAIMS
+    from heatcheck.agents.roles import required_attacks
+    t = FakeTransport()
+    ch = LLMChallenger(llm(tmp_path, t))
+    assert ch.select(CLAIMS["HH-K3"], view) == required_attacks(CLAIMS["HH-K3"], view)
+    assert t.calls == [] and "LLM not called" in ch.note
+
+
+@pytest.mark.parametrize("reply, ok", [
+    ('{"attacks": ["A-EXTRA"]}', True),
+    ('{"attacks": []}', True),
+    ('{"attacks": ["A-EXTRA"], "attacks": []}', False),          # duplicate key
+    ('{"attacks": ["A-MADE-UP"]}', False),                       # unregistered
+    ('{"attacks": ["A-EXTRA", "A-EXTRA"]}', False),              # duplicate id
+    ('{"attacks": "A-EXTRA"}', False),                           # wrong type
+    ('{"attacks": [], "drop": ["A-PERMUTATION-NULL"]}', False),  # unknown field
+])
+def test_llm_challenger_can_only_add_and_parses_strictly(view, tmp_path, monkeypatch, reply, ok):
+    """Simulate a registry with one addable attack ("A-EXTRA"). The model can add it; it can
+    never remove a required attack; malformed output falls back to the required set."""
+    import heatcheck.agents.dialogue as dlg
+    import heatcheck.agents.roles as roles
     from heatcheck.agents.registry import ATTACKS, CLAIMS
-    mandatory = {a.attack_id for a in ATTACKS.values() if a.mandatory}
-    ch = LLMChallenger(llm(tmp_path, FakeTransport(challenger='{"optional_attacks": []}')))
-    assert mandatory <= set(ch.select(CLAIMS["HH-K3"], view)) and ch.identity["kind"] == "LLM"
-    ch = LLMChallenger(llm(tmp_path, FakeTransport(challenger='{"optional_attacks": ["A-MADE-UP"]}')))
+    from heatcheck.agents.roles import required_attacks
+    monkeypatch.setitem(roles.ATTACKS, "A-EXTRA", ATTACKS["A-SPLIT-HALF-REPLICATION"])
+    monkeypatch.setattr(dlg, "addable_attacks", lambda claim, view: ["A-EXTRA"])
+    required = required_attacks(CLAIMS["HH-K3"], view)
+    ch = LLMChallenger(llm(tmp_path, FakeTransport(challenger=reply)))
     sel = ch.select(CLAIMS["HH-K3"], view)
-    assert "A-MADE-UP" not in sel and ch.identity["kind"] == "DETERMINISTIC_STANDIN"
-    assert "unregistered" in ch.fallback_reason
+    assert set(required) <= set(sel)
+    if ok:
+        assert ch.identity["kind"] == "LLM" and set(sel) - set(required) <= {"A-EXTRA"}
+    else:
+        assert sel == required and ch.identity["kind"] == "DETERMINISTIC_STANDIN"
+        assert ch.fallback_reason
+
+
+def test_displayed_claim_and_verdict_are_what_ran(view, tmp_path):
+    ledger = EvidenceLedger(tmp_path / "l.jsonl")
+    out = Dialogue(view, ledger, llm(tmp_path, FakeTransport())).turn("hot hand three straight?")
+    e = ledger.get(out["evidence_record_id"])
+    assert out["claim_id"] == e["identity"]["claim"]["claim_id"] == "HH-K3"
+    assert out["verdict"] == e["identity"]["decision"]
+
+
+@pytest.mark.parametrize("text", ["p was 6.1e-2.", "n was １４.", "Half of the shots went in.",
+                                  "Players get 3 times hotter.", "There is a 6.1% chance.",
+                                  "Fourteen of them went in."])
+def test_guard_refuses_number_smuggling_forms(view, tmp_path, text):
+    _, entry = deterministic_entry(view, tmp_path)
+    assert ref_guard(text, ref_facts(entry), require_verdict=False)
 
 
 # --------------------------------------------------------------------------- failures / timeout
@@ -241,10 +288,11 @@ def test_timeout_falls_back_within_deadline(view, tmp_path):
         .turn("hot hand, three in a row?")
     assert set(out) >= {"heater_text", "ref_text", "evidence_record_id", "verdict"}
     assert out["evidence_record_id"] and out["verdict"]
-    for k in ("mapping", "challenger", "heater", "ref"):
+    for k in ("mapping", "heater", "ref"):
         assert "fallback" in out["sources"][k], out["sources"]
+    assert "LLM not called" in out["sources"]["challenger"]
     log = [json.loads(x) for x in (tmp_path / "usage.jsonl").read_text().splitlines()]
-    assert [r["status"] for r in log].count("TIMEOUT") == 4
+    assert [r["status"] for r in log].count("TIMEOUT") == 3
     # Each provider wait ends at its 0.3 s deadline, not at the 1 s reply. (The turn's total also
     # includes the permutation test on this league, so it is not bounded here.)
     assert all(r["latency_ms"] < 600 for r in log), [r["latency_ms"] for r in log]
@@ -281,11 +329,11 @@ def test_usage_logged_per_call_without_key_or_prompt(view, tmp_path):
     Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("secret question about hot hand streak")
     raw = (tmp_path / "usage.jsonl").read_text()
     rows = [json.loads(x) for x in raw.splitlines()]
-    assert sorted(r["role"] for r in rows) == ["challenger", "discoverer_map", "heater", "ref"]
+    assert sorted(r["role"] for r in rows) == ["discoverer_map", "heater", "ref"]
     assert all(r["prompt_tokens"] == 50 and r["completion_tokens"] == 40 and r["est_cost_usd"] > 0 for r in rows)
     assert FAKE_KEY not in raw and "secret question" not in raw
     s = usage_summary(tmp_path / "usage.jsonl")
-    assert s["calls"] == 4 and s["tokens"]["prompt"] == 200
+    assert s["calls"] == 3 and s["tokens"]["prompt"] == 150
     assert all(a == f"Bearer {FAKE_KEY}" for a in t.seen_auth)
     body = json.dumps(t.calls)
     assert FAKE_KEY not in body and all(c["reasoning_effort"] == "minimal" for c in t.calls)

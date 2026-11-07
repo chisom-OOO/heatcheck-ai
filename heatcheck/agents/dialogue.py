@@ -32,8 +32,16 @@ from typing import Any
 from heatcheck.agents.llm import LLMUnavailable, MetaChat, prompt_sha256
 from heatcheck.agents.loop import run_once
 from heatcheck.agents.registry import ATTACKS, CLAIMS, Claim, catalogue
-from heatcheck.agents.roles import DeterministicChallenger
+from heatcheck.agents.roles import (
+    DeterministicChallenger,
+    ProposalRefused,
+    parse_selection,
+    required_attacks,
+    validate_selection,
+    view_capabilities,
+)
 from heatcheck.agents.views import ShotView
+from heatcheck.contracts.records import loads_strict
 from heatcheck.ledger.evidence import EvidenceLedger
 
 DISCOVERER_DISPLAY_NAME = "Heater"
@@ -76,11 +84,17 @@ def map_schema() -> dict:
 
 
 def parse_mapping(text: str) -> str:
-    """Strict: exactly {"claim_id": <registered id or NONE>}. Raises ValueError otherwise."""
-    obj = json.loads(text)
+    """Strict (RV-AL6): exactly {"claim_id": <registered id or NONE>} with no duplicate keys,
+    a string id matched exactly. Raises ValueError otherwise; nothing is coerced."""
+    try:
+        obj = loads_strict(text)
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"mapping is not strict JSON: {e}") from None
     if not isinstance(obj, dict) or set(obj) != {"claim_id"}:
         raise ValueError("mapping must be exactly {claim_id}")
     cid = obj["claim_id"]
+    if not isinstance(cid, str):
+        raise ValueError(f"claim_id must be a string, not {type(cid).__name__}")
     if cid != NONE and cid not in CLAIMS:
         raise ValueError(f"claim_id {cid!r} is not registered")
     return cid
@@ -106,62 +120,62 @@ class MappedDiscoverer:
 # --------------------------------------------------------------------------- Challenger
 
 CHALLENGER_SYSTEM = (
-    "You are the Challenger in a statistics protocol. Mandatory checks always run. From the "
-    "eligible optional checks listed, select every check that could expose a way this claim is "
-    "wrong on this data. Use only the listed ids."
+    "You are the Challenger in a statistics protocol. The required checks always run. From the "
+    "additional registered checks listed, select every one that could expose a way this claim "
+    "is wrong on this data. Use only the listed ids."
 )
 
 
-def _eligible_optional(view: ShotView) -> list[str]:
-    std = DeterministicChallenger().select(None, view)  # type: ignore[arg-type]
-    return [a for a in std if not ATTACKS[a].mandatory]
+def addable_attacks(claim: Claim, view: ShotView) -> list[str]:
+    """Registered attacks a Challenger may ADD: applicable to the view and not already required.
+    Under heatcheck-registry/1 every applicable attack is required, so this is empty."""
+    have, req = view_capabilities(view), set(required_attacks(claim, view))
+    return sorted(a.attack_id for a in ATTACKS.values()
+                  if set(a.requires) <= have and a.attack_id not in req)
 
 
 class LLMChallenger:
-    """Selects optional attacks with the LLM; mandatory attacks are always added. Falls back to
-    the deterministic Challenger on any provider or validation failure."""
+    """Model Challenger that can only ADD registered attacks to the Referee's required set
+    (user rule, RV-AL4/AL5). Its JSON is parsed strictly (RV-AL6). With nothing addable the
+    model is not called. Any failure falls back to the deterministic Challenger."""
 
     def __init__(self, llm: MetaChat):
         self.llm = llm
         self.identity: dict = {}
         self.fallback_reason: str | None = None
+        self.note: str | None = None
 
     def select(self, claim: Claim, view: ShotView) -> list[str]:
-        eligible = _eligible_optional(view)
-        mandatory = sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+        required = required_attacks(claim, view)
+        addable = addable_attacks(claim, view)
+        if not addable:
+            self.note = "LLM not called: every applicable registered attack is already required"
+            self.identity = {**DeterministicChallenger.identity, "llm_not_called": self.note}
+            return required
         messages = [{"role": "system", "content": CHALLENGER_SYSTEM},
                     {"role": "user", "content": json.dumps({
                         "claim": {"claim_id": claim.claim_id, "statement": claim.statement},
-                        "mandatory": mandatory,
-                        "eligible_optional": [{"attack_id": a, "way_claim_could_be_wrong":
-                                               ATTACKS[a].way_claim_could_be_wrong} for a in eligible]})}]
+                        "required": required,
+                        "additional": [{"attack_id": a, "way_claim_could_be_wrong":
+                                        ATTACKS[a].way_claim_could_be_wrong} for a in addable]})}]
+        # No "uniqueItems": Meta structured outputs reject it (HTTP 400, live turn 17:27Z).
         fmt = {"type": "json_schema", "json_schema": {"name": "attack_selection", "strict": True, "schema": {
-            "type": "object", "additionalProperties": False, "required": ["optional_attacks"],
-            # No "uniqueItems": Meta structured outputs reject it (HTTP 400, live turn 17:27Z);
-            # duplicates are removed below.
-            "properties": {"optional_attacks": {"type": "array",
-                                                "items": {"type": "string", "enum": eligible or ["__none__"]}}}}}}
+            "type": "object", "additionalProperties": False, "required": ["attacks"],
+            "properties": {"attacks": {"type": "array", "items": {"type": "string", "enum": addable}}}}}}
         try:
-            if not eligible:
-                raise LLMUnavailable("no eligible optional attacks; nothing for the LLM to choose")
             res = self.llm.complete("challenger", messages, response_format=fmt)
-            obj = json.loads(res.text)
-            if not isinstance(obj, dict) or set(obj) != {"optional_attacks"} \
-                    or not isinstance(obj["optional_attacks"], list):
-                raise ValueError("selection must be exactly {optional_attacks: [...]}")
-            chosen = obj["optional_attacks"]
-            bad = [a for a in chosen if a not in eligible]
+            chosen = validate_selection(claim, parse_selection(res.text))
+            bad = [a for a in chosen if a not in addable]
             if bad:
-                raise ValueError(f"unregistered or ineligible attacks {bad}")
+                raise ProposalRefused(f"not addable here: {bad}")
             self.identity = {"role": "challenger", "kind": "LLM", "version": "1", **self.llm.identity,
                              "prompt": prompt_sha256(messages, fmt)}
-            return sorted(set(mandatory) | set(chosen))
-        except (LLMUnavailable, ValueError, TypeError) as e:
+            return sorted(set(required) | set(chosen))
+        except (LLMUnavailable, ProposalRefused, ValueError, TypeError) as e:
             self.fallback_reason = getattr(e, "reason", None) or f"{type(e).__name__}: {e}"
-            std = DeterministicChallenger()
-            self.identity = {**std.identity, "fallback_from": "LLM",
+            self.identity = {**DeterministicChallenger.identity, "fallback_from": "LLM",
                              "fallback_reason": self.fallback_reason[:200]}
-            return std.select(claim, view)
+            return required
 
 
 # --------------------------------------------------------------------------- Ref guard
@@ -171,8 +185,18 @@ _SPELLED = {w: i for i, w in enumerate(
     "fifteen sixteen seventeen eighteen nineteen twenty".split())}
 _SPELLED.update({"thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70,
                  "eighty": 80, "ninety": 90, "hundred": 100, "thousand": 1000})
-_NUM = re.compile(r"(?<![\w.])([-+−]?)(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+)(%?)")
-_WORDNUM = re.compile(r"\b(" + "|".join(_SPELLED) + r")\b", re.IGNORECASE)
+# Spelled-out numbers are a style allowance for small values (e.g. "three makes"). Larger
+# values must be quoted as digits exactly as the record writes them.
+MAX_SPELLED = 10
+# A unit suffix changes what a number means (0.061 vs 6.1%, 3 vs "3 times"). Such a number is
+# allowed only if the record has the same value with the same kind of suffix.
+_SUFFIX = r"(\s*(?:%|percent\b|per\s+cent\b|times\b|x\b|-?fold\b))?"
+_NUM = re.compile(r"(?<![\w.])([-+−]?)([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?|\.[0-9]+)"
+                  + _SUFFIX)
+_WORDNUM = re.compile(r"\b(" + "|".join(_SPELLED) + r")\b" + _SUFFIX, re.IGNORECASE)
+_SCI = re.compile(r"[0-9.][eE][-+]?[0-9]")
+_FRACTION = re.compile(r"\b(half|halves|thirds?|quarters?|twice|double[ds]?|triple[ds]?|"
+                       r"dozens?|majority|minority)\b", re.IGNORECASE)
 
 DECISION_PHRASES = {
     "SURVIVED_PROTOCOL": r"\bsurviv(?:ed|es|al)\b|\bsurvived_protocol\b",
@@ -185,19 +209,28 @@ DECISION_PHRASES = {
 OVERCLAIM = re.compile(
     r"\b(prov(?:e|en|es|ed)|proof|confirm(?:s|ed)?|debunk(?:s|ed)?|myth|guarantee[ds]?|"
     r"definitely|certain(?:ly)?|significan(?:t|tly|ce)|real|fake|true|false|(?<!not )supported|"
-    r"supports?|verified|validated|wins?|loses?|right|wrong)\b", re.IGNORECASE)
+    r"supports?|verified|validated|wins?|loses?|right|wrong|luck|lucky|confident|confidence|"
+    r"chance)\b", re.IGNORECASE)
 
 
-def _numbers(text: str) -> list[tuple[str, Decimal]]:
+def _kind(suffix: str | None) -> str:
+    s = (suffix or "").strip().lower()
+    if not s:
+        return ""
+    return "%" if s in ("%", "percent") or s.startswith("per") else "x"
+
+
+def _numbers(text: str) -> list[tuple[str, Decimal, str]]:
+    """(sign, magnitude, kind) for every number in text; kind is '', '%' or 'x'."""
     out = []
-    for sign, digits, _pct in _NUM.findall(text):
+    for sign, digits, suffix in _NUM.findall(text):
         try:
             d = Decimal(digits.replace(",", ""))
         except InvalidOperation:
             continue
-        out.append(("-" if sign in "-−" and sign else "+", d))
-    for w in _WORDNUM.findall(text):
-        out.append(("+", Decimal(_SPELLED[w.lower()])))
+        out.append(("-" if sign and sign in "-−" else "+", d, _kind(suffix)))
+    for w, suffix in _WORDNUM.findall(text):
+        out.append(("+", Decimal(_SPELLED[w.lower()]), _kind(suffix)))
     return out
 
 
@@ -235,14 +268,18 @@ def ref_brief(facts: dict) -> dict:
             "field_goal_attempts": facts["data"]["n_attempts"], "games": facts["data"]["n_games"]}
 
 
-def allowed_numbers(facts: dict) -> set[tuple[str, Decimal]]:
-    out: set[tuple[str, Decimal]] = set()
+def _record_text(facts: dict) -> str:
+    return " ".join(str(v) for v in _walk(facts) if isinstance(v, str)).lower()
+
+
+def allowed_numbers(facts: dict) -> set[tuple[str, Decimal, str]]:
+    out: set[tuple[str, Decimal, str]] = set()
     for v in _walk(facts):
         if isinstance(v, bool) or v is None:
             continue
         if isinstance(v, (int, float)):
             d = Decimal(repr(v))
-            out.add(("-" if d < 0 else "+", abs(d)))
+            out.add(("-" if d < 0 else "+", abs(d), ""))
         elif isinstance(v, str):
             out.update(_numbers(v))
     return out
@@ -251,26 +288,53 @@ def allowed_numbers(facts: dict) -> set[tuple[str, Decimal]]:
 def number_violations(text: str, facts: dict) -> list[str]:
     allowed = allowed_numbers(facts)
     bad = []
-    for sign, d in _numbers(text):
-        if (sign, d) not in allowed:
-            bad.append(("-" if sign == "-" else "") + str(d))
+    for ch in text:
+        if ch.isdigit() and ch not in "0123456789":
+            bad.append(f"non-ASCII digit {ch!r}")
+            break
+    if _SCI.search(text):
+        bad.append("scientific notation")
+    # Fraction words only if the verdict reason or claim statement itself uses them (e.g. "not
+    # replicated on both halves"); an attack's method name such as "split-half" does not count.
+    verdict_text = f"{facts.get('reason', '')} {facts.get('statement', '')}".lower()
+    for m in _FRACTION.finditer(text):
+        if m.group(0).lower() not in verdict_text:
+            bad.append(f"fraction word {m.group(0)!r}")
+    for w, _suffix in _WORDNUM.findall(text):
+        if _SPELLED[w.lower()] > MAX_SPELLED:
+            bad.append(f"spelled-out {w!r} (quote counts as digits from the record)")
+    for sign, d, kind in _numbers(text):
+        if (sign, d, kind) not in allowed:
+            bad.append(("-" if sign == "-" else "") + str(d) + kind)
     return bad
 
 
-def ref_guard(text: str, facts: dict) -> list[str]:
-    """Problems with the Ref's text; empty means it may be shown. Deterministic and pure."""
+def ref_guard(text: str, facts: dict, *, require_verdict: bool = True) -> list[str]:
+    """Problems with the Ref's text; empty means it may be shown. Deterministic and pure.
+
+    Checks that every number (digits, signed, spelled, with % or "times") is in the record;
+    that the verdict is stated (``require_verdict``); that no other verdict's wording appears;
+    and that over-claim words appear only if the record uses them. It checks numbers, not what
+    a number refers to: an in-record count attached to the wrong noun is not caught."""
     problems = [f"number {n} is not in the evidence record" for n in number_violations(text, facts)]
     decision = facts["decision"]
-    if not re.search(DECISION_PHRASES[decision], text, re.IGNORECASE):
+    if require_verdict and not re.search(DECISION_PHRASES[decision], text, re.IGNORECASE):
         problems.append(f"verdict {decision} is not stated")
     for other, pat in DECISION_PHRASES.items():
         if other != decision and re.search(pat, text, re.IGNORECASE):
             problems.append(f"verdict word for {other} contradicts the record ({decision})")
-    record_text = " ".join(str(v) for v in _walk(facts) if isinstance(v, str)).lower()
+    record_text = _record_text(facts)
     for m in OVERCLAIM.finditer(text):
         if m.group(0).lower() not in record_text:
             problems.append(f"verdict word {m.group(0)!r} is not in the evidence record")
     return problems
+
+
+def ref_guard_allows(text: str, entry: dict) -> bool:
+    """Reviewer interface (HEATCHECK_REVIEW_REF_GUARD=heatcheck.agents.dialogue:ref_guard_allows):
+    True when ``text`` may be spoken about evidence ``entry``. Numbers and verdict words only;
+    whether the text states the verdict is checked separately by the dialogue."""
+    return not ref_guard(text, ref_facts(entry), require_verdict=False)
 
 
 PLAIN = {"SURVIVED_PROTOCOL": "Survived the registered checks (SURVIVED_PROTOCOL)",
@@ -345,9 +409,15 @@ class Dialogue:
         entry = run_once(self.view, self.ledger, view_identity=self.view_identity,
                          jone=MappedDiscoverer(claim_id, question, map_identity),
                          challenger=challenger)
+        note = getattr(challenger, "fallback_reason", None)
+        note = f"fallback: {note}" if note else getattr(challenger, "note", None)
         sources["challenger"] = challenger.identity.get("kind", "DETERMINISTIC_STANDIN") + (
-            f" (fallback: {challenger.fallback_reason})"
-            if getattr(challenger, "fallback_reason", None) else "")
+            f" ({note})" if note else "")
+        # What is displayed is what ran: claim and verdict come from the evidence entry, and a
+        # mismatch with the mapping is an internal error, never shown (RV-AL6).
+        ran = entry["identity"]["claim"]["claim_id"]
+        if ran != claim_id:
+            raise RuntimeError(f"evidence claim {ran!r} differs from the mapped claim {claim_id!r}")
         facts = ref_facts(entry)
         with cf.ThreadPoolExecutor(max_workers=2) as pool:
             h = pool.submit(self._heater, question, claim_id, facts["decision"], facts)
@@ -355,8 +425,8 @@ class Dialogue:
             heater_text, sources["heater"] = h.result()
             ref_text, sources["ref"] = r.result()
         return {"heater_text": heater_text, "ref_text": ref_text,
-                "evidence_record_id": entry["evidence_id"], "verdict": facts["decision"],
-                "claim_id": claim_id, "sources": sources}
+                "evidence_record_id": entry["evidence_id"], "verdict": entry["identity"]["decision"],
+                "claim_id": ran, "sources": sources}
 
     # -- pieces
 
