@@ -129,6 +129,14 @@ def test_rv_al4_challenger_cannot_drop_applicable_optional_attacks():
 
 
 def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+    """RV-AL5, as resolved by RV-AL4 (Referee-enforced attack set): a Challenger that selects only the
+    mandatory attacks cannot shrink what is run. The Referee's required set (mandatory + applicable
+    optional) is run anyway, the omission is recorded in the evidence identity, and the decision equals
+    the full Challenger's.
+
+    Fixed 2026-11-07 by Research, which did not write the agent loop. The earlier version ended in an
+    unconditional pytest.fail(...), so it failed whether run_once refused or accepted and could never pass.
+    """
     class MandatoryOnly(DeterministicChallenger):
         identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
 
@@ -138,11 +146,20 @@ def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
     view = tiny_view()
     full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
     mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
-    have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
-        set(mini["identity"]["challenger"]["selected_attacks"])
+    fc, mc = full["identity"]["challenger"], mini["identity"]["challenger"]
+    have_optional = set(fc["selected_attacks"]) - set(mc["selected_attacks"])
     assert have_optional, "control: the full Challenger should select optional attacks here"
-    pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
-                f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+    assert set(mc.get("omitted_required_attacks") or []) == have_optional, (
+        f"EXPECTED the omitted applicable attacks {sorted(have_optional)} recorded as omitted; "
+        f"ACTUAL {mc.get('omitted_required_attacks')}")
+    assert set(mc.get("referee_required_attacks") or []) >= have_optional and \
+        set(mc.get("attacks_run") or []) >= set(mc.get("referee_required_attacks") or have_optional), (
+        f"EXPECTED every Referee-required attack to run despite the minimal Challenger; ACTUAL attacks_run="
+        f"{mc.get('attacks_run')}, required={mc.get('referee_required_attacks')}")
+    assert set(mc["attacks_run"]) == set(fc["attacks_run"]), "the minimal Challenger changed what was run"
+    assert mini["identity"]["decision"] == full["identity"]["decision"], (
+        f"EXPECTED the same decision as the full Challenger ({full['identity']['decision']}); "
+        f"ACTUAL {mini['identity']['decision']}")
 
 
 @pytest.mark.parametrize("raw", [
