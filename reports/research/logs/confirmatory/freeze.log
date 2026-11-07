@@ -1,0 +1,64 @@
+code commit 491e09e6e4f8026b5ddd79ab584d617e77445eba (scripts/confirmatory.py and code files unchanged since; DECISIONS.md is not a code file)
+$ python -I scripts/confirmatory.py freeze $DATA2023 evidence
+{
+  "family": {
+    "protocol_version": "heatcheck-nba/1",
+    "family_id": "FAM-CONF-2024-25-v1",
+    "final_epoch_id": "EPOCH-CONF-2024-25-001",
+    "seal_id": "870135b5-07a2-4748-b580-d99d7cebee7c",
+    "sealed_input_hash": "3540dfe18eca85697e0c3ec6f0f7f35de2b84368e39ddf4d5f769f1556c388f4",
+    "sealed_data_hashes": {
+      "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+      "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+      "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+      "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+      "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+      "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+    },
+    "n_sealed_games": 1230,
+    "hypotheses": {
+      "CONF-HA": "6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13",
+      "CONF-MOM": "f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503",
+      "CONF-HH": "46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3"
+    },
+    "multiplicity": "Holm over the 3 hypotheses at alpha=0.05",
+    "code_files": [
+      "src/heatcheck/features.py",
+      "src/heatcheck/kernels.py",
+      "src/heatcheck/custodian.py",
+      "src/heatcheck/util.py",
+      "src/heatcheck/store.py",
+      "src/heatcheck/canonical.py",
+      "src/heatcheck/splits.py",
+      "scripts/build_confirmatory.py",
+      "scripts/confirmatory.py"
+    ],
+    "code_hash": "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e",
+    "authorisation": "final run requires explicit user authorisation (live demo)",
+    "created_utc": "2026-11-07T17:54:40.046222Z",
+    "canonical_family_hash": "684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0"
+  },
+  "registration": {
+    "type": "register",
+    "register_id": "e71f8aa8-643d-49cd-99da-4ec1210f9bfc",
+    "epoch_id": "EPOCH-CONF-2024-25-001",
+    "seal_id": "870135b5-07a2-4748-b580-d99d7cebee7c",
+    "family_id": "FAM-CONF-2024-25-v1",
+    "plan_hash": "684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0",
+    "code_hash": "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e",
+    "at_utc": "2026-11-07T17:54:40.046618Z",
+    "retry": false
+  }
+}
+exit=0
+$ (repeat must refuse: plans are never overwritten)
+REFUSED: CONF-HA.plan.json already exists; plans are frozen and never overwritten
+exit=2
+## ledger
+5
+{"at_utc": "2026-11-07T17:54:40.046618Z", "code_hash": "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e", "epoch_id": "EPOCH-CONF-2024-25-001", "family_id": "FAM-CONF-2024-25-v1", "plan_hash": "684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0", "register_id": "e71f8aa8-643d-49cd-99da-4ec1210f9bfc", "seal_id": "870135b5-07a2-4748-b580-d99d7cebee7c", "type": "register"}
+ad0e0754bec35636bc39208f8bded57e898ecacf26d74c6c6b5a38da457a1e33  evidence/confirmatory-2024-25/CONF-HA.plan.json
+4b52ff4bae819454a5ea969261d9b96b6382772cee3031acfdf77be82ff9d27d  evidence/confirmatory-2024-25/CONF-HH.plan.json
+6f7bf303885eeb3ff23c1a80a6961b37ca2085bc8cc4cbc4e4fd487b70eb117b  evidence/confirmatory-2024-25/CONF-MOM.plan.json
+3d343e561088e5329d5d702b9a2f97371edfc9f3d48ceffc3a3d4e565edb0940  evidence/confirmatory-2024-25/dev_results_2023-24.json
+44a27910f54eb481836067e5434e28f9ae482f3002738f6d7468796d08715b9f  evidence/confirmatory-2024-25/family.json

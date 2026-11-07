@@ -27,6 +27,18 @@ NEUTRAL_SITE_2023 = {
     ("2023-12-07", frozenset({"LAL", "NOP"})),
 }
 
+NEUTRAL_SITE_2024 = {
+    # 2024-25 regular season, checked 2026-11-07 (DECISIONS D16): Mexico City (WAS designated home),
+    # Paris x2 (IND home 01-23, SAS home 01-25), NBA Cup semifinals in Las Vegas (12-14). The Cup final
+    # (12-17, MIL-OKC) does not count as a regular-season game; listed so it is flagged if present.
+    ("2024-11-02", frozenset({"MIA", "WAS"})),
+    ("2025-01-23", frozenset({"IND", "SAS"})),
+    ("2025-01-25", frozenset({"IND", "SAS"})),
+    ("2024-12-14", frozenset({"MIL", "ATL"})),
+    ("2024-12-14", frozenset({"OKC", "HOU"})),
+    ("2024-12-17", frozenset({"MIL", "OKC"})),
+}
+
 SCHEMA_VERSION = "canonical/1"
 
 
@@ -77,7 +89,8 @@ class CanonicalBuild:
     diagnostics: dict = field(default_factory=dict)
 
 
-def build_canonical(csv_path: Path, season: str, competition: str = "NBA_REGULAR_SEASON") -> CanonicalBuild:
+def build_canonical(csv_path: Path, season: str, competition: str = "NBA_REGULAR_SEASON",
+                    neutral_sites: set = NEUTRAL_SITE_2023) -> CanonicalBuild:
     raw = pd.read_csv(csv_path, low_memory=False, dtype={"qualifiers": str, "personIdsFilter": str})
     diag: dict = {"raw_rows": int(len(raw)), "raw_games": int(raw.gameId.nunique())}
 
@@ -179,7 +192,7 @@ def build_canonical(csv_path: Path, season: str, competition: str = "NBA_REGULAR
         })
     games = pd.DataFrame(rows)
     games["neutral_site"] = [
-        (d, frozenset({ht, at})) in NEUTRAL_SITE_2023
+        (d, frozenset({ht, at})) in neutral_sites
         for d, ht, at in zip(games.game_date_et, games.home_tricode, games.away_tricode)]
     diag["neutral_site_games_flagged"] = int(games.neutral_site.sum())
 

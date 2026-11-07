@@ -1,0 +1,21 @@
+## nested layout: /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/nest is a git repo; raw/repo inside it has COMMIT and datasets/, no .git
+$ git -C nest rev-parse HEAD     # parent repo
+c7d00e54cff05b59122dc29e7ef7b405497e2de9
+$ cat nest/raw/repo/COMMIT
+46488f0f8e1cab58fc1256511ea808166a443a15
+$ git -C nest/raw/repo rev-parse --show-toplevel
+/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/nest
+
+## BEFORE: build_dataset.py at 5604d36 (sha256 d05aa56796903c00)
+exit=0
+
+## AFTER: build_dataset.py at c05f540 (sha256 cf5e56d035d8df70)
+exit=0
+nest_old_out: upstream_revision recorded = ['c7d00e54cff05b59122dc29e7ef7b405497e2de9'] | logical table hashes match evidence: 7/7
+nest_new_out: upstream_revision recorded = ['46488f0f8e1cab58fc1256511ea808166a443a15'] | logical table hashes match evidence: 7/7
+
+## AFTER, nested copy WITHOUT a COMMIT file: must refuse, not record the parent HEAD
+heatcheck.util.UpstreamRevisionError: /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/nest/raw/repo has no COMMIT file and git resolves to a PARENT repository (/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/nest); refusing to record its HEAD as the upstream revision
+exit=1
+## BEFORE, same case (old code):
+old code would record: c7d00e54cff05b59122dc29e7ef7b405497e2de9

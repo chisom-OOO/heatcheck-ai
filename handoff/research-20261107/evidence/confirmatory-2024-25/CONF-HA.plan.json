@@ -1,0 +1,30 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "hypothesis_id": "CONF-HA",
+  "channel": "GAME_PREDICTION",
+  "title": "Home advantage",
+  "claim": "In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games.",
+  "estimand": "mean over eligible games of (home_win - 0.5); home_win includes overtime",
+  "sample": "every sealed 2024-25 regular-season game with neutral_site == false (builder exclusions, quarantined games (D19) and listed neutral sites removed); one row per game",
+  "test": "moving-block bootstrap over calendar days (kernels.moving_block_bootstrap): block 7 days, B=10000, seed 20261108; one-sided p = (1 + #{centred boot >= mean}) / (B + 1)",
+  "null": "mean(home_win) - 0.5 <= 0 (home teams win at most half of eligible games)",
+  "params": {
+    "kind": "home_advantage",
+    "block_days": 7,
+    "B": 10000,
+    "seed": 20261108,
+    "practical_floor": 0.01,
+    "min_games": 1000,
+    "min_blocks": 5
+  },
+  "decision_rule": "SURVIVED_PROTOCOL iff Holm-adjusted p < 0.05 AND CI95 lower > 0 AND mean >= 0.01; NOT_SUPPORTED iff CI95 upper < 0.01; INSUFFICIENT_EVIDENCE otherwise, or if fewer than 1000 eligible games or fewer than 5 non-overlapping 7-day blocks",
+  "season": "2024-25",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "final_epoch_id": "EPOCH-CONF-2024-25-001",
+  "development_reference": {
+    "file": "dev_results_2023-24.json",
+    "sha256": "3d343e561088e5329d5d702b9a2f97371edfc9f3d48ceffc3a3d4e565edb0940"
+  },
+  "registered_before": "any 2024-25 claim evaluation; seal 870135b5-07a2-4748-b580-d99d7cebee7c",
+  "canonical_plan_hash": "6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13"
+}

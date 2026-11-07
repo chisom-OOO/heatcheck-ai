@@ -82,3 +82,67 @@ Protocol `heatcheck-nba/1`. Decisions taken by HeatCheck-Research on 2026-11-07 
   hypotheses, thresholds, floor, splits, data hashes, family, epoch and seed are read from the unchanged
   original plan. The replay is an audit re-execution of the spent receipt on the same unchanged data; it is
   logged in the ledger as `type: replay`, exposes no new record, and does not create a new verdict of record.
+
+## D14 — Exposure is keyed by game (appended 2026-11-07 ~17:55 UTC; ruling by Max)
+- Every record id maps to exactly one game before any exposure check: bare/`nba:` game ids, `GAME:<game>`,
+  `SHOT:<game>:<seq>`, EVENT `nba:<game>:<event>:r<rev>`, FEATURE_ROW/label ids built on those, and `syn:<id>`.
+  An id naming no game or more than one game is refused. A shot-level family over reserved final games is
+  refused (`custodian.exposure_key`, test `test_shot_level_family_over_reserved_final_games_is_refused`).
+
+## D15 — A second amendment on the same receipt needs reviewer sign-off (appended ~17:55 UTC; ruling by Max)
+- The first CODE_IDENTITY_ONLY amendment of a spent receipt may replay without sign-off (GP amendment-1 did).
+  Any later, different amendment on the same receipt runs only with a sign-off record
+  `{reviewer, receipt_id, amendment_hash}` naming that exact amendment, written by a reviewer other than the
+  author (`claim_plan_GP.amendment-<n>.signoff.json`); the custodian refuses the replay otherwise and records the
+  sign-off in the ledger. Limitation: the sign-off is recorded, not cryptographically verified; isolation is
+  logical until Max applies access control.
+- Consequence today: the D14/D15 code changes alter the GAME_PREDICTION code hash, so amendment-1 no longer
+  matches current code. Re-running that replay now needs amendment-2 plus reviewer sign-off. The committed
+  amendment-1 replay result (code `c822b55`) stands.
+
+## D16 — Confirmatory season sealed: 2024-25 regular season (appended ~17:55 UTC)
+- Data: `shufinskiy/nba_data@46488f0f`, `datasets/cdnnba_2024.tar.xz` (play-by-play, same provider as D2) and
+  `datasets/nbastats_2024.tar.xz` (same-organisation reconciliation, not independent). Pinned by sha256, byte
+  count and the git blob id in the upstream commit's tree (`scripts/build_confirmatory.py: PINNED`).
+- Neutral-site games (checked 2026-11-07 against nba.com/ESPN/news reports): 2024-11-02 MIA–WAS (Mexico City),
+  2025-01-23 and 2025-01-25 IND–SAS (Paris), 2024-12-14 MIL–ATL and OKC–HOU (NBA Cup semifinals, Las Vegas).
+  The Cup final (2024-12-17) is not a regular-season game; any non-`00224xxxxx` game id is excluded.
+- The whole season is sealed under the custodian as epoch `EPOCH-CONF-2024-25-001` before any claim runs. The
+  builder reads outcome fields mechanically (labels, reconciliation) and prints only counts and hashes; no
+  outcome statistic is computed before the authorised final run.
+
+## D17 — Pre-registered confirmatory family (appended ~17:55 UTC, before the development run and before any
+## 2024-25 analysis)
+- Family `FAM-CONF-2024-25-v1`, three hypotheses, Holm at α=0.05 across all three. Exact text, tests, nulls,
+  thresholds, seeds and sample minimums are `HYPOTHESES` in `scripts/confirmatory.py` and are copied into the
+  frozen plan files.
+  - CONF-HA home advantage: non-neutral games, estimand mean(home_win − 0.5), 7-day moving-block bootstrap
+    B=10000; SURVIVED iff Holm p<0.05, CI lower>0 and mean ≥ 0.01; NOT_SUPPORTED iff CI upper < 0.01; needs
+    ≥1000 games and ≥5 blocks.
+  - CONF-MOM one-shot momentum (k=1) and CONF-HH hot hand (k=3): FGA only (D12), ordering-resolved, permutation
+    within (player, game, shot value), B=999; SURVIVED iff Holm p<0.05, else INSUFFICIENT_EVIDENCE (no
+    equivalence test); needs ≥100000 FGA and ≥1000 shots in each conditioning set.
+- Changed from the claims list (`reports/research/2026-11-07-1633-jone-claims.md`): home advantage is now the
+  direct win-share estimand instead of the log-loss comparison against a frozen rate, because it states the
+  claim exactly. Decided here, before the development run.
+- The development run on 2023-24 development games uses the same code and parameters and does not change them.
+
+## D18 — No confirmatory run until the user authorises it (appended ~17:55 UTC; instruction by the user)
+- `confirmatory.py final` requires `--authorised-by <name>` and is not run in preparation. It is reserved for
+  the live demo. A frozen confirmatory family cannot be amended; a code change after freezing makes `final`
+  refuse.
+
+## D19 — Reconciliation mismatch quarantines a game (appended 2026-11-07 ~18:05 UTC)
+- The first 2024-25 build (code `c05f540`) reported reconciliation `MATCH 1229, SCORE_MISMATCH 1` against
+  nbastats. Only the count was seen; the game's scores were deliberately not inspected, so no sealed outcome
+  was opened. Rule (as R-001 deliverable 4): a game whose reconciliation is not `MATCH` is QUARANTINED. It
+  stays in the sealed season, so its records stay protected, but it is listed in a hashed `quarantine`
+  table and excluded from every confirmatory sample. Values are never edited to make sources agree.
+- Decided before the seal and before the plans were frozen. The rule is added to the registered sample
+  definitions.
+
+## D20 — Erratum: times in D14–D19 (appended 2026-11-07 ~17:55 UTC by the container clock)
+- The approximate times written into D14–D18 ("~17:55 UTC") and D19 ("~18:05 UTC") were estimates and are
+  too late. The authoritative times are the commit times: D14–D18 in `c05f540` (2026-11-07T17:42:17Z), D19 in
+  `491e09e` (17:51:09Z). The order is unchanged: design (D17) committed 17:42Z → seal 17:52:37Z →
+  development run → plans frozen. Entries are not edited in place.

@@ -1,0 +1,9 @@
+## readiness check (does NOT run final; reserves nothing; reads no label values beyond hashing)
+CONF-HA plan hash OK 6799901f8aa25c39 | params {'kind': 'home_advantage', 'block_days': 7, 'B': 10000, 'seed': 20261108, 'practical_floor': 0.01, 'min_games': 1000, 'min_blocks': 5}
+CONF-MOM plan hash OK f01ed8cbb47c6384 | params {'kind': 'streak', 'k': 1, 'B': 999, 'seed': 20261109, 'min_fga': 100000, 'min_opportunities': 1000}
+CONF-HH plan hash OK 46cdc53649612e80 | params {'kind': 'streak', 'k': 3, 'B': 999, 'seed': 20261110, 'min_fga': 100000, 'min_opportunities': 1000}
+code hash now == family: True ebf6aaa4c8e69130
+2024-25 data hashes == sealed: True
+ledger types: ['reserve', 'spend', 'replay', 'seal', 'register']
+reservations on the 2024-25 epoch: 0
+final_result.json exists: False

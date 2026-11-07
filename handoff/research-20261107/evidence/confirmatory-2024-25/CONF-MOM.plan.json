@@ -1,0 +1,30 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "hypothesis_id": "CONF-MOM",
+  "channel": "SHOT_ASSOCIATION",
+  "title": "One-shot momentum",
+  "claim": "In 2024-25, within a player's game, a field-goal attempt is more likely to be made after a made field goal than after a missed one, beyond what within-player-game shuffling produces.",
+  "estimand": "pooled P(make | previous FGA in same player-game made) - P(make | previous FGA missed)",
+  "sample": "every 2024-25 field-goal attempt in sealed, non-quarantined games (D19; free throws out of scope, D12) with a known shooter and resolved event order (shots in a period with a clock regression excluded, D3)",
+  "test": "permutation: outcomes shuffled within (player, game, shot value 2/3) strata, statistic recomputed, B=999, seed 20261109; one-sided p = (1 + #{T* >= T}) / (B + 1) (kernels.mc_pvalue)",
+  "null": "outcomes are exchangeable within (player, game, shot value): no dependence on the previous shot",
+  "params": {
+    "kind": "streak",
+    "k": 1,
+    "B": 999,
+    "seed": 20261109,
+    "min_fga": 100000,
+    "min_opportunities": 1000
+  },
+  "decision_rule": "SURVIVED_PROTOCOL iff Holm-adjusted p < 0.05; otherwise INSUFFICIENT_EVIDENCE (no equivalence test registered); INSUFFICIENT_EVIDENCE if the statistic is undefined, eligible FGA < 100000 or either conditioning set < 1000",
+  "interpretation_limit": "association under within-player-game exchangeability; not causal. Harness family C (form drift, no streak) triggers the k=3 version 38% of the time.",
+  "season": "2024-25",
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "final_epoch_id": "EPOCH-CONF-2024-25-001",
+  "development_reference": {
+    "file": "dev_results_2023-24.json",
+    "sha256": "3d343e561088e5329d5d702b9a2f97371edfc9f3d48ceffc3a3d4e565edb0940"
+  },
+  "registered_before": "any 2024-25 claim evaluation; seal 870135b5-07a2-4748-b580-d99d7cebee7c",
+  "canonical_plan_hash": "f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503"
+}
