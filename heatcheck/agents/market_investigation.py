@@ -80,6 +80,11 @@ HYPOTHETICAL_ANSWER = (
     "pre-tip injury and lineup reports, player-level on/off or plus-minus data for the players "
     "involved, and a lineup-aware model evaluated on past games before it is trusted.")
 
+SAMPLE_HEATER = (
+    "This card uses a SAMPLE forecast: its numbers are made up, so there is nothing real to "
+    "explain yet. Once Research's real forecast arrives, I can walk through where it sits against "
+    "the market.")
+
 THESIS = re.compile(r"\bback[- ]to[- ]backs?\b|\bb2b\b|\brest(?:ed|ing)?\b|\brest days?\b|"
                     r"\bfatigue\w*|\btired\b|\bsecond night\b", re.IGNORECASE)
 THESIS_CLAIM = "GP-REST"
@@ -419,7 +424,10 @@ def investigate(
     thesis = thesis_summary(message, thesis_entry)
     hypothetical = bool(HYPOTHETICAL.search(message))
 
-    if hypothetical:
+    if lf.is_sample:
+        # Never voice a SAMPLE value as the model's forecast; no LLM call either.
+        heater_text, heater_source = SAMPLE_HEATER, "FIXED_SAMPLE"
+    elif hypothetical:
         heater_text, heater_source = HYPOTHETICAL_ANSWER.format(inputs=", ".join(inputs)), "FIXED_HYPOTHETICAL"
     else:
         heater_text, heater_source = heater_template(card, flag, inputs), "TEMPLATE"
@@ -438,7 +446,7 @@ def investigate(
                     heater_source = f"TEMPLATE (guard rejected: {bad[:4] or ['empty']})"
                 else:
                     heater_text, heater_source = text, "LLM"
-    template_bad = heater_guard(heater_text, inputs, facts) if not hypothetical else []
+    template_bad = heater_guard(heater_text, inputs, facts) if heater_source.startswith("TEMPLATE") else []
     if template_bad:  # a template that fails its own guard is a code defect; fail loudly
         raise AssertionError(f"Heater template fails guard: {template_bad}")
 

@@ -10,6 +10,8 @@ Options:
   --fresh-ledger  start the demo ledger again from the committed one
   --recorded-market  market card compares each recorded quote as of its capture time and says
                   "RECORDED game" on screen (the cut-off fallback); default compares live
+  --live-forecast PATH  forecast file for the market card instead of data/live/forecasts.json
+                  (e.g. a SAMPLE file: every card then says SAMPLE and Can't compare)
 
 First run (a few minutes, about 46 MB downloaded):
   1. Download the three pinned public archives (shufinskiy/nba_data at the commit in Research's
@@ -160,6 +162,9 @@ def wait_port(port: int, proc: subprocess.Popen, name: str, timeout: float = 60)
 
 
 def main(argv: list[str]) -> int:
+    global LIVE_FORECAST
+    if "--live-forecast" in argv:
+        LIVE_FORECAST = (ROOT / argv[argv.index("--live-forecast") + 1]).resolve()
     try:
         import numpy  # noqa: F401
     except ImportError:

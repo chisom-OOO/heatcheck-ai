@@ -169,6 +169,12 @@ def test_sample_forecast_cannot_compare(bundle):
     out, ident = run(verified(recs), sha, doc=doc)
     assert out["verdict"] == VERDICT_CANT and out["is_sample"] and ident["forecast"]["is_sample"]
     assert "SAMPLE" in out["data_note"]
+    # Heater never voices a SAMPLE value as the model's forecast, and the LLM is not called.
+    called = []
+    out, _ = run(verified(recs), sha, doc=doc, heater_llm=lambda s_, u: called.append(1) or "x")
+    assert out["heater_source"] == "FIXED_SAMPLE" and not called
+    assert "SAMPLE" in out["heater_text"] and "%" not in out["heater_text"]
+    assert not any(ch.isdigit() for ch in out["heater_text"])
 
 
 def test_missing_inputs_reported(bundle):
