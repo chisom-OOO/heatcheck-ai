@@ -1,0 +1,98 @@
+# HeatCheck check run
+date_utc: 2026-11-07T16:44:57Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/app-referee-ui
+commit: 5919c1cda9eae5edd4e1ade898fc66872e2182e7
+worktree clean: True
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv sync --frozen --group dev
+Checked 8 packages in 2ms
+exit: 0
+
+## uv run python tools/check_scaffold.py
+PASS: preparation contracts/guard only; application/research gates NOT_RUN
+exit: 0
+
+## uv run ruff check .
+All checks passed!
+exit: 0
+
+## uv run pytest -q
+............................................                             [100%]
+44 passed in 1.62s
+exit: 0
+
+## uv run python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=6f3076466e2f0e889207bbceb6c2b32045eacbd33cafa28f58c926f94512dd41
+exit: 0
+
+## cd apps\web && uv run python -m unittest discover -s tests -v
+test_api (unittest.loader._FailedTest.test_api) ... ERROR
+test_core (unittest.loader._FailedTest.test_core) ... ERROR
+
+======================================================================
+ERROR: test_api (unittest.loader._FailedTest.test_api)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_api
+Traceback (most recent call last):
+  File "C:\Users\nicho_yyv3g9s\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nicho_yyv3g9s\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\apps\web\tests\test_api.py", line 15, in <module>
+    from server import app  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\apps\web\server\app.py", line 22, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+
+
+======================================================================
+ERROR: test_core (unittest.loader._FailedTest.test_core)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_core
+Traceback (most recent call last):
+  File "C:\Users\nicho_yyv3g9s\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nicho_yyv3g9s\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\apps\web\tests\test_core.py", line 17, in <module>
+    from server import (  # noqa: E402
+  File "C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\apps\web\server\engine_fixture.py", line 15, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+FAILED (errors=2)
+exit: 1
+
+## cd apps\web && node --test tests/referee.test.mjs
+✔ module is pure: no DOM or network globals used (2.1733ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (2.3449ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (1.4547ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.3121ms)
+✔ unknown attack outcome and non-finite numbers are flagged (0.961ms)
+✔ other formats are read but flagged (1.0535ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (2.1843ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.2321ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 201.1068
+exit: 0
+
+## cd apps\web && node --check web/app.js && node --check web/referee.js && echo syntax-ok
+syntax-ok 
+exit: 0

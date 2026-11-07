@@ -1,0 +1,139 @@
+# HeatCheck check run
+date_utc: 2026-11-07T16:45:18Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/app-referee-ui
+commit: 5919c1cda9eae5edd4e1ade898fc66872e2182e7
+worktree clean: False
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv sync --frozen --group dev --group research
+Installed 2 packages in 1.63s
+ + numpy==2.5.4
+ + scipy==1.18.1
+exit: 0
+
+## uv run python tools/check_scaffold.py
+PASS: preparation contracts/guard only; application/research gates NOT_RUN
+exit: 0
+
+## uv run ruff check .
+All checks passed!
+exit: 0
+
+## uv run pytest -q
+............................................                             [100%]
+44 passed in 1.54s
+exit: 0
+
+## uv run python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=6f3076466e2f0e889207bbceb6c2b32045eacbd33cafa28f58c926f94512dd41
+exit: 0
+
+## cd apps\web && uv run python -m unittest discover -s tests -v
+test_cancel (test_api.Api.test_cancel) ... ok
+test_claim_needs_every_field (test_api.Api.test_claim_needs_every_field) ... ok
+test_cross_origin_post_refused (test_api.Api.test_cross_origin_post_refused) ... ok
+test_file_endpoint (test_api.Api.test_file_endpoint) ... ok
+test_full_synthetic_run_reveal_export (test_api.Api.test_full_synthetic_run_reveal_export) ... ok
+test_gates_endpoint (test_api.Api.test_gates_endpoint) ... ok
+test_host_header_rebinding_refused (test_api.Api.test_host_header_rebinding_refused) ... ok
+test_idempotent_run_and_late_edit (test_api.Api.test_idempotent_run_and_late_edit) ... ok
+test_keepalive_unread_body_does_not_corrupt_next_request (test_api.Api.test_keepalive_unread_body_does_not_corrupt_next_request) ... ok
+test_market_flow (test_api.Api.test_market_flow) ... ok
+test_methods_and_bad_json (test_api.Api.test_methods_and_bad_json) ... ok
+test_oversize_json_refused (test_api.Api.test_oversize_json_refused) ... ok
+test_page_and_screen_sources (test_api.Api.test_page_and_screen_sources) ... ok
+test_real_mode_blocked_not_invented (test_api.Api.test_real_mode_blocked_not_invented) ... ok
+test_stale_confirmation_refused (test_api.Api.test_stale_confirmation_refused) ... ok
+test_static_traversal_and_headers (test_api.Api.test_static_traversal_and_headers) ... ok
+test_transcribe_blocked_without_provider (test_api.Api.test_transcribe_blocked_without_provider) ... ok
+test_cancel_then_provider_completion_does_not_restore (test_core.TestAuthority.test_cancel_then_provider_completion_does_not_restore) ... ok
+test_concurrent_starts_create_one_run (test_core.TestAuthority.test_concurrent_starts_create_one_run) ... ok
+test_double_confirmation_idempotent (test_core.TestAuthority.test_double_confirmation_idempotent) ... ok
+test_edit_revokes_confirmation (test_core.TestAuthority.test_edit_revokes_confirmation) ... ok
+test_export_after_edit_keeps_history (test_core.TestAuthority.test_export_after_edit_keeps_history) ... ok
+test_late_completion_after_edit_is_historical (test_core.TestAuthority.test_late_completion_after_edit_is_historical) ... ok
+test_replacement_run_supersedes (test_core.TestAuthority.test_replacement_run_supersedes) ... ok
+test_retry_same_request_id_returns_same_run (test_core.TestAuthority.test_retry_same_request_id_returns_same_run) ... ok
+test_stale_hash_and_revision_refused (test_core.TestAuthority.test_stale_hash_and_revision_refused) ... ok
+test_absent_listing (test_core.TestComparison.test_absent_listing) ... ok
+test_expected_statuses (test_core.TestComparison.test_expected_statuses) ... ok
+test_quote_types (test_core.TestComparison.test_quote_types) ... ok
+test_every_invalid_fixture_rejected (test_core.TestContracts.test_every_invalid_fixture_rejected) ... ok
+test_infinity_rejected (test_core.TestContracts.test_infinity_rejected) ... ok
+test_valid_fixtures_validate (test_core.TestContracts.test_valid_fixtures_validate) ... ok
+test_analyse_has_no_truth_argument (test_core.TestEngineIsolation.test_analyse_has_no_truth_argument) ... ok
+test_bad_data_invalid (test_core.TestEngineIsolation.test_bad_data_invalid) ... ok
+test_cancel_returns_none (test_core.TestEngineIsolation.test_cancel_returns_none) ... ok
+test_custodian_bounds (test_core.TestEngineIsolation.test_custodian_bounds) ... ok
+test_custodian_does_not_expose_config_attributes (test_core.TestEngineIsolation.test_custodian_does_not_expose_config_attributes) ... ok
+test_deterministic (test_core.TestEngineIsolation.test_deterministic) ... ok
+test_generated_data_carries_no_config (test_core.TestEngineIsolation.test_generated_data_carries_no_config) ... ok
+test_streak_stat_tiny_exact (test_core.TestEngineIsolation.test_streak_stat_tiny_exact) ... ok
+test_formula_cells_neutralised_on_export (test_core.TestFiles.test_formula_cells_neutralised_on_export) ... ok
+test_preview_counts (test_core.TestFiles.test_preview_counts) ... ok
+test_rejections (test_core.TestFiles.test_rejections) ... ok
+test_traversal_name_reduced (test_core.TestFiles.test_traversal_name_reduced) ... ok
+test_clutch_never_chooses_definition (test_core.TestIntake.test_clutch_never_chooses_definition) ... ok
+test_commands (test_core.TestIntake.test_commands) ... ok
+test_spans_point_into_text (test_core.TestIntake.test_spans_point_into_text) ... ok
+test_unsupported_and_injection_is_data (test_core.TestIntake.test_unsupported_and_injection_is_data) ... ok
+test_la_city_alone_does_not_identify (test_core.TestMapping.test_la_city_alone_does_not_identify) ... ok
+test_ok_requires_human (test_core.TestMapping.test_ok_requires_human) ... ok
+test_polymarket_outcome_by_label_not_position (test_core.TestMapping.test_polymarket_outcome_by_label_not_position) ... ok
+test_rules_change_invalidates (test_core.TestMapping.test_rules_change_invalidates) ... ok
+test_semantic_failures (test_core.TestMapping.test_semantic_failures) ... ok
+test_target_not_in_game (test_core.TestMapping.test_target_not_in_game) ... ok
+test_float_and_off_grid_rejected (test_core.TestQuotes.test_float_and_off_grid_rejected) ... ok
+test_freshness (test_core.TestQuotes.test_freshness) ... ok
+test_kalshi_derived_ask (test_core.TestQuotes.test_kalshi_derived_ask) ... ok
+test_missing_side_and_crossed (test_core.TestQuotes.test_missing_side_and_crossed) ... ok
+test_only_probability_dollars (test_core.TestQuotes.test_only_probability_dollars) ... ok
+test_synthetic_example_from_spec (test_core.TestQuotes.test_synthetic_example_from_spec) ... ok
+test_committed_book_snapshot_clock_order (test_core.TestTimestampsAndUnits.test_committed_book_snapshot_clock_order) ... ok
+test_committed_envelopes_use_z_and_one_unit_label (test_core.TestTimestampsAndUnits.test_committed_envelopes_use_z_and_one_unit_label) ... ok
+test_iso_z (test_core.TestTimestampsAndUnits.test_iso_z) ... ok
+test_429_bounded_retry_honours_retry_after (test_core.TestVenues.test_429_bounded_retry_honours_retry_after) ... ok
+test_allowlist (test_core.TestVenues.test_allowlist) ... ok
+test_book_hash_and_timestamps (test_core.TestVenues.test_book_hash_and_timestamps) ... ok
+test_every_fixture_book_has_provider_time_at_or_before_receipt (test_core.TestVenues.test_every_fixture_book_has_provider_time_at_or_before_receipt) ... ok
+test_legacy_cents_book_refused (test_core.TestVenues.test_legacy_cents_book_refused) ... ok
+test_malformed_and_oversize (test_core.TestVenues.test_malformed_and_oversize) ... ok
+test_no_write_capability (test_core.TestVenues.test_no_write_capability) ... ok
+test_polymarket_misaligned_tokens (test_core.TestVenues.test_polymarket_misaligned_tokens) ... ok
+test_polymarket_prefers_clob_token_ids (test_core.TestVenues.test_polymarket_prefers_clob_token_ids) ... ok
+test_private_resolution_refused (test_core.TestVenues.test_private_resolution_refused) ... ok
+test_provider_time_after_receipt_refused (test_core.TestVenues.test_provider_time_after_receipt_refused) ... ok
+test_redirect_refused (test_core.TestVenues.test_redirect_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 75 tests in 8.721s
+
+OK
+exit: 0
+
+## cd apps\web && node --version && node --test tests/referee.test.mjs
+v24.21.0
+✔ module is pure: no DOM or network globals used (1.5978ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (2.6011ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (0.809ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.2474ms)
+✔ unknown attack outcome and non-finite numbers are flagged (0.797ms)
+✔ other formats are read but flagged (0.7444ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (1.6567ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.2028ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 130.861
+exit: 0
+
+## cd apps\web && node --check web/app.js && node --check web/referee.js && echo syntax-ok
+syntax-ok 
+exit: 0
