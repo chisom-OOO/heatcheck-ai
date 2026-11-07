@@ -26,6 +26,8 @@ only `heater_text` and the `sources` values change.
 | `POST` | `/api/dialogue` | One dialogue turn: map the question, get the evidence, Heater reacts, the Ref states the verdict. |
 | `GET` | `/api/display-titles` | `{"display_titles": {claim_id: title}}`: short fan-facing titles, presentation only (below). |
 | `GET` | `/` or `/index.html` | Max's console page (HTML). |
+| `GET` | `/api/live-forecast` | Research's live forecast file, re-validated per request (docs/LIVE_FORECAST_FORMAT.md). |
+| `POST` | `/api/investigate` | Read-only MARKET_COMPARISON investigation of one game card (below). |
 | `OPTIONS` | any | CORS preflight: `204`, with `Access-Control-Allow-Methods: GET, POST` and `Access-Control-Allow-Headers: Content-Type`. |
 
 Any other path returns `404 {"error": "not found"}`.
@@ -200,3 +202,35 @@ async function askHeater(question) {
 ```
 
 Render all text with `textContent`, never `innerHTML`.
+
+## `POST /api/investigate` (MARKET_COMPARISON, read-only, descriptive)
+
+Enabled by `tools/serve_dialogue.py ... --live-forecast F --quote-bundle DIR [--recorded]`;
+`503` when not configured. Code: `heatcheck/agents/market_investigation.py`.
+
+Request: exactly `{"game_id": "nba:<10 digits>", "mapping_id": "<VENUE_MAPPING mapping_id>",
+"message": "<0..500 chars>"}`. The server resolves the forecast row and quotes from its own
+validated files. It never accepts forecast or price numbers from the client.
+
+Response `200`: `format, mode (LIVE|RECORDED), as_of_utc, data_note, is_sample, label, game{},
+team, flag (FORECAST_ABOVE_ASK|FORECAST_BELOW_BID|FORECAST_INSIDE_SPREAD|NO_TWO_SIDED_QUOTE),
+forecast{p_team_win, model, inputs_used, data_cutoff_utc}, quote{record_id, venue, best_bid,
+best_ask, received_utc, status}|null, heater_text, heater_source, hypothetical,
+challenger_checks[{check_id, status PASS|FAIL|INFO, detail}], thesis|null, verdict, ref_text,
+evidence_id, recorded_at_utc`. Probabilities and prices are decimal strings.
+
+- `verdict` is exactly `Worth investigating · Edge unverified` (game, team, outcome matched,
+  verified mapping, fresh two-sided quote, cutoff before tip, non-SAMPLE forecast) or
+  `Can't compare`. Nothing else. Show `data_note` on screen; it says SAMPLE or RECORDED.
+- Checks: GAME_MATCH, OUTCOME_MATCH, QUOTE_FRESH (LIVE limit 60 s; also before tip), QUOTE_SIDE,
+  FORECAST_CUTOFF, MISSING_INPUTS (info), MARKET_SKILL_EVIDENCE (info: none exists), and
+  FORECAST_SAMPLE when the forecast is a sample.
+- `heater_text` cites only `inputs_used` and card numbers; other factors appear only as
+  questions. A guard-rejected or unavailable LLM falls back to a template (`heater_source`).
+  A "what if X is out?" message gets the fixed answer (`hypothetical: true`).
+- `thesis` appears when the message raises rest/back-to-backs: Research's recorded GP-REST result.
+- Every call is appended to the investigation ledger (default `logs/market_investigations.jsonl`)
+  with forecast, quote, checks, verdict and timestamps; the message is stored as a hash only.
+- `404 {"error"}` when the game is not in the forecast file or the mapping/quote is not in the
+  bundle. `200` with `Can't compare` and `evidence_id: null` when the forecast file is missing
+  or invalid.

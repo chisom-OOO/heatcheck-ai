@@ -1,7 +1,12 @@
 """Serve POST /api/dialogue on 127.0.0.1 for Experience's UI.
 
     uv run --frozen python tools/serve_dialogue.py data/bundles/r001-nba-0022300061 \
-        --ledger logs/dialogue_evidence.jsonl [--port 8770] [--no-llm]
+        --ledger logs/dialogue_evidence.jsonl [--port 8770] [--no-llm]         [--live-forecast data/live/forecasts.json]         [--quote-bundle DIR [--recorded] [--investigation-ledger logs/market_investigations.jsonl]]
+
+--live-forecast is served read-only at GET /api/live-forecast, re-validated per request.
+--quote-bundle enables POST /api/investigate (read-only MARKET_COMPARISON investigation) on that
+heatcheck-records/1 quote bundle. --recorded evaluates each quote as of its capture time and
+labels every response "RECORDED game" (the 03:00 fallback); otherwise quotes are compared live.
 
 The Meta key is read from META_API_KEY in this process's environment. Without it, or with
 --no-llm, every turn uses the deterministic stand-ins and templates. Token usage per call is
@@ -18,8 +23,9 @@ sys.path.insert(0, str(ROOT))
 
 from heatcheck.agents.dialogue import Dialogue  # noqa: E402
 from heatcheck.agents.llm import MetaChat  # noqa: E402
+from heatcheck.agents.recorded import find_recorded  # noqa: E402
 from heatcheck.agents.views import shot_view_from_events  # noqa: E402
-from heatcheck.api.dialogue_server import serve  # noqa: E402
+from heatcheck.api.dialogue_server import InvestigationConfig, serve  # noqa: E402
 from heatcheck.contracts.bundle import load_bundle  # noqa: E402
 from heatcheck.ledger.evidence import EvidenceLedger  # noqa: E402
 
@@ -38,7 +44,26 @@ def main(argv: list[str]) -> int:
     bundle = Path(argv[0])
     ledger = Path(argv[argv.index("--ledger") + 1])
     port = int(argv[argv.index("--port") + 1]) if "--port" in argv else 8770
-    srv = serve(build(bundle, ledger, "--no-llm" not in argv), port)
+    lf = Path(argv[argv.index("--live-forecast") + 1]) if "--live-forecast" in argv else None
+    use_llm = "--no-llm" not in argv
+    dialogue = build(bundle, ledger, use_llm)
+    inv = None
+    if "--quote-bundle" in argv:
+        inv_ledger = (Path(argv[argv.index("--investigation-ledger") + 1])
+                      if "--investigation-ledger" in argv else ROOT / "logs" / "market_investigations.jsonl")
+        heater = None
+        if use_llm and dialogue.llm is not None:
+            llm = dialogue.llm
+
+            def heater(system: str, user: str) -> str:
+                msgs = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+                return llm.complete("heater", msgs, stream=True).text
+
+        inv = InvestigationConfig(
+            market_bundle=Path(argv[argv.index("--quote-bundle") + 1]),
+            ledger=EvidenceLedger(inv_ledger), mode="RECORDED" if "--recorded" in argv else "LIVE",
+            thesis_lookup=lambda: find_recorded(dialogue.ledger, "GP-REST"), heater_llm=heater)
+    srv = serve(dialogue, port, lf, inv)
     print(f"dialogue API on http://127.0.0.1:{srv.server_address[1]}/api/dialogue")
     srv.serve_forever()
     return 0

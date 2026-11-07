@@ -56,3 +56,19 @@ Commands, on Windows 11, Python 3.12 via `uv run --frozen`:
 `uv run python tools/check_scaffold.py` → PASS (preparation only).
 `uv run python tools/make_reference_bundle.py --check` → PASS, records_sha256 6f3076466e2f0e889207bbceb6c2b32045eacbd33cafa28f58c926f94512dd41.
 Gates: none closed. These are contract and tooling checks, and all G01–G18 remain NOT_RUN.
+
+### 2026-11-07 live forecast format + MARKET_COMPARISON investigation (on max/integrate-r001-e001)
+- heatcheck-live-forecast/1: `docs/LIVE_FORECAST_FORMAT.md`, `heatcheck/contracts/live_forecast.py`,
+  SAMPLE fixture `tests/fixtures/live_forecast/forecasts.SAMPLE.json`, `GET /api/live-forecast`.
+- `POST /api/investigate`: `heatcheck/agents/market_investigation.py` (Heater input guard, deterministic
+  Challenger checks and Ref template, ledger identity), `--quote-bundle/--recorded` in serve_dialogue.
+- Commands: `uv run --frozen pytest -q tests/integration/test_market_investigation.py
+  tests/integration/test_live_forecast_route.py tests/contracts/test_live_forecast.py
+  tests/integration/test_dialogue.py` -> 109 passed. Full suite before the investigation module:
+  451 passed, 1 failed (`tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger`,
+  also failing on clean HEAD 741b4de, so not caused by this change). `ruff check .` -> clean.
+- HTTP smoke (SAMPLE forecast + recorded E-001 bundle, --recorded, --no-llm): `/api/live-forecast` OK
+  is_sample true; `/api/investigate` for nba:0022600189 -> 404 "not in the live forecast file".
+- Blocking the recorded-game fallback: no forecast row exists for nba:0022600189 (Research), and both
+  E-001 mappings are PROPOSED (Max must verify the Polymarket rules text, or the card shows Can't compare).
+- Gates: none closed. Review needed by someone other than Max. No live provider or LLM call was run.

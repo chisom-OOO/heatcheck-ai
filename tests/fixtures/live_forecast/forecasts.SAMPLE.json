@@ -1,0 +1,38 @@
+{
+  "format": "heatcheck-live-forecast/1",
+  "label": "DESCRIPTIVE FORECAST",
+  "model": "SAMPLE - hand-made by Max, no model was run",
+  "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
+  "data_cutoff_utc": "2026-11-07T22:00:00Z",
+  "source": {
+    "results": "SAMPLE - hand-made by Max for building against the format; every value is invented",
+    "fetched_utc": "SAMPLE",
+    "sha256": "SAMPLE",
+    "cross_check": "NOT_RUN"
+  },
+  "backtest_2024_25": {"log_loss": 0.0, "brier": 0.0, "games": 0},
+  "games": [
+    {
+      "game_id": "nba:0022600901",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612738",
+      "away_team_id": "nba-team:1610612752",
+      "home_team": "Boston Celtics",
+      "away_team": "New York Knicks",
+      "p_home_win": 0.6,
+      "elo_home": 1600.0,
+      "elo_away": 1550.0
+    },
+    {
+      "game_id": "nba:0022600902",
+      "tip_utc": "2026-11-08T03:30:00Z",
+      "home_team_id": "nba-team:1610612747",
+      "away_team_id": "nba-team:1610612744",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Golden State Warriors",
+      "p_home_win": 0.45,
+      "elo_home": 1500.0,
+      "elo_away": 1560.0
+    }
+  ]
+}
