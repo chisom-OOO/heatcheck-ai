@@ -22,3 +22,4 @@ replay/private/
 
 # Runtime logs (provider usage, local dialogue ledgers)
 /logs/
+*.jsonl.lock
