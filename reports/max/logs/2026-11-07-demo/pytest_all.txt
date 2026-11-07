@@ -1,0 +1,55 @@
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 48%]
+.............................................................F......ssss [ 64%]
+sssssssssssssssss....................................................... [ 80%]
+...........................ssss.ss.....xx...x......x.x.x.xxxx........x.. [ 97%]
+.....xx...xxx                                                            [100%]
+================================== FAILURES ===================================
+_________________ test_rv_al5_loop_accepts_minimal_challenger _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-499/test_rv_al5_loop_accepts_minim0')
+
+    def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+        class MandatoryOnly(DeterministicChallenger):
+            identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
+    
+            def select(self, claim, view):
+                return sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+    
+        view = tiny_view()
+        full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
+        mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
+        have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
+            set(mini["identity"]["challenger"]["selected_attacks"])
+        assert have_optional, "control: the full Challenger should select optional attacks here"
+>       pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
+                    f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+E       Failed: EXPECTED refusal of a selection that omits applicable optional attacks ['A-SHOT-VALUE-SELECTION', 'A-SPLIT-HALF-REPLICATION']; ACTUAL accepted, decision NOT_SUPPORTED
+
+tests\review\test_rv_agent_loop.py:144: Failed
+=========================== short test summary info ===========================
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+SKIPPED [19] tests\review\test_rv_agent_loop.py:179: NOT_RUN: Ref number guard not landed; set HEATCHECK_REVIEW_REF_GUARD
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [6] tests\review\test_rv_preshot_invariance.py:76: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger
+1 failed, 401 passed, 29 skipped, 16 xfailed in 115.24s (0:01:55)

@@ -1,0 +1,68 @@
+[demo] bundle records_sha256 9b44a479ce95 matches the committed evidence ledger
+[demo] Heater and Ref: deterministic templates (no model calls)
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 59661)
+Traceback (most recent call last):
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "C:\Users\chiso\AppData\Local\Temp\claude\c34b274586f78b5d\b8e34c43-d5b2-467a-94a3-099a9b694b43\scratchpad\clean\heatcheck\api\dialogue_server.py", line 78, in do_GET
+    self.wfile.write(body)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+[demo] dialogue console  http://127.0.0.1:8770/
+[demo] Experience UI     http://127.0.0.1:8765/
+[demo] Ctrl+C to stop
+[07/Nov/2026 20:06:21] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 59666)
+Traceback (most recent call last):
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 438, in handle
+    self.handle_one_request()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------
+[07/Nov/2026 20:06:30] "GET / HTTP/1.1" 200 -
+[07/Nov/2026 20:06:30] "GET /api/evidence HTTP/1.1" 200 -
+[07/Nov/2026 20:06:30] "GET /api/evidence HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 64355)
+Traceback (most recent call last):
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 438, in handle
+    self.handle_one_request()
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chiso\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------
+
+[exited with code 127]
