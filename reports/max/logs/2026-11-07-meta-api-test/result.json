@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-07T17:00:28Z",
+  "key_source": "process",
+  "url": "https://api.meta.ai/v1/chat/completions",
+  "request_body": {
+    "model": "muse-spark-1.3",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with exactly: pong"
+      }
+    ],
+    "max_completion_tokens": 256
+  },
+  "http_status": 200,
+  "latency_ms": 2829.2,
+  "response_raw": "{\"id\":\"chatcmpl-01a1b6f4-544b-7684-ae0f-6fd09c49c306\",\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":null,\"refusal\":null,\"role\":\"assistant\"},\"logprobs\":null}],\"created\":1794070828,\"model\":\"muse-spark-1.3\",\"service_tier\":\"default\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":256,\"prompt_tokens\":13,\"total_tokens\":269,\"completion_tokens_details\":{\"reasoning_tokens\":254},\"prompt_tokens_details\":{\"cached_tokens\":0}}}"
+}

@@ -1,0 +1,126 @@
+{
+ "arithmetic_owner": "quotes.py stand-in (Research canonical normaliser not yet integrated)",
+ "blocked_reasons": [],
+ "book": {
+  "adapter_version": "0.2-capture-2026-11-07",
+  "ask_is_derived": true,
+  "best_ask": "0.5800",
+  "best_bid": "0.5200",
+  "captured_at": null,
+  "clock_uncertainty": "provider and local clocks not synchronised; book fetches across venues are not atomic",
+  "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+  "crossed": false,
+  "data_mode": "SYNTHETIC",
+  "fetch_start_utc": "2026-11-07T23:58:01Z",
+  "levels": {
+   "asks": [
+    {
+     "derived": true,
+     "price": "0.5800",
+     "qty": "80.00",
+     "raw_side": "no_bid"
+    },
+    {
+     "derived": true,
+     "price": "0.6000",
+     "qty": "200.00",
+     "raw_side": "no_bid"
+    }
+   ],
+   "bids": [
+    {
+     "derived": false,
+     "price": "0.5200",
+     "qty": "120.00",
+     "raw_side": "yes_bid"
+    },
+    {
+     "derived": false,
+     "price": "0.5100",
+     "qty": "300.00",
+     "raw_side": "yes_bid"
+    }
+   ]
+  },
+  "liquidity_ids": [],
+  "market_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+  "midpoint": "0.5500",
+  "midpoint_unavailable_reason": null,
+  "normalized_side": "yes_bid_and_derived_yes_ask",
+  "price_unit": "PROBABILITY_DOLLARS",
+  "provider_time": "2026-11-07T23:58:00Z",
+  "quantity_unit": "contracts (fixed-point string)",
+  "raw_hash": "a4fda946af83aabb4b05ba7d3fc91b9402c880dc9821299a2605ae9fd5546125",
+  "received_at_utc": "2026-11-07T23:58:01Z",
+  "source_url": "https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-FIX26NOV08NYKBOS-BOS/orderbook",
+  "spread": "0.0600",
+  "status": "OK",
+  "venue": "kalshi"
+ },
+ "book_snapshot_hash": "428997897a12bef8473f2c358103b0f08010bde3fa5e49cda22111ceddc894cb",
+ "comparison_id": "cmp_9369ff21ce95",
+ "confirmed_plan_hash": null,
+ "data_mode": "SYNTHETIC",
+ "event_mapping_hash": "ef42dca2cf06b9989e2dd250b4799e14bef7f796f46a56f1b56937274eb0db81",
+ "forecast": {
+  "calibration_scope": "none: authored fixture, not a model output",
+  "cutoff_utc": "2026-11-08T00:00:00Z",
+  "data_mode": "SYNTHETIC",
+  "evidence_hash": "fixture-no-evidence",
+  "forecast_id": "FIX-F0001",
+  "game_id": "FIX-G0001",
+  "model": "fixture-forecast-0",
+  "probability": 0.59,
+  "team": "BOS"
+ },
+ "forecast_evidence_hash": "fixture-no-evidence",
+ "forecast_probability": 0.59,
+ "mapping": {
+  "cancel_postpone_convention": {
+   "excerpt": "if the game is postponed, the market remains open until the rescheduled game is played.",
+   "stated": true
+  },
+  "forecast_game_id": "FIX-G0001",
+  "mapping_id": "map_a403535bc86569d9",
+  "market_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS",
+  "market_spec_hash": "ec85ad28ee9772696ea19ca659b1dc5ae369d231d48b709faffff24db082e37f",
+  "outcome_direction": {
+   "contract_id": "KXNBAGAME-FIX26NOV08NYKBOS-BOS:yes",
+   "target_team": "BOS"
+  },
+  "participants_date": {
+   "away": "NYK",
+   "home": "BOS",
+   "market_game_start": "2026-11-08T00:30:00Z",
+   "scheduled_tip_utc": "2026-11-08T00:30:00Z"
+  },
+  "proposed_by": "rule-based matcher (cannot approve)",
+  "reason": "all automated checks matched; awaiting human review",
+  "regulation_overtime_convention": "INCLUDES_OVERTIME",
+  "rules_hash": "d598e2d6b4eb0514d1f04e931be61dd31581c60ff24e5cc2d73395bf1c29bfcd",
+  "status": "APPROVED",
+  "trusted_reviewer": {
+   "at": "2026-11-07T16:37:20.136111Z",
+   "attested": "checked teams, date, outcome direction, overtime and postponement rules",
+   "name": "Fixture Reviewer"
+  },
+  "venue": "kalshi"
+ },
+ "note": "Descriptive difference only. Not an expected profit, edge, fill estimate or instruction to trade.",
+ "observed_quote": "0.5500",
+ "quote_type_unit": {
+  "derived": false,
+  "type": "midpoint",
+  "unit": "PROBABILITY_DOLLARS"
+ },
+ "signed_probability_difference": "0.0400",
+ "status": "OK",
+ "timestamps_freshness": {
+  "age_seconds": 120.0,
+  "basis": "forecast cutoff",
+  "observed_at": "2026-11-07T23:58:00Z",
+  "status": "FRESH",
+  "threshold_seconds": 600
+ },
+ "venue": "kalshi"
+}

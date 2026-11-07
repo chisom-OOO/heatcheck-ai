@@ -1,0 +1,164 @@
+# HeatCheck check run
+date_utc: 2026-11-07T16:23:33Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc3
+branch: experience/live-quote
+commit: 8a5269129479a4429284ba977415a26579594fe6
+worktree clean: True
+python: Using CPython 3.12.13 Creating virtual environment at: .venv Installed 8 packages in 930ms Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv sync --frozen --group dev
+Checked 8 packages in 4ms
+exit: 0
+
+## uv run python tools/check_scaffold.py
+PASS: preparation contracts/guard only; application/research gates NOT_RUN
+exit: 0
+
+## uv run ruff check .
+All checks passed!
+exit: 0
+
+## uv run pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.7.0 -- C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc3\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc3
+configfile: pyproject.toml
+testpaths: tests
+collecting ... collected 110 items
+
+tests/contracts/test_eligibility.py::test_eligible_when_received_before_cutoff PASSED [  0%]
+tests/contracts/test_eligibility.py::test_quote_received_after_cutoff_is_ineligible PASSED [  1%]
+tests/contracts/test_eligibility.py::test_latest_of_several_eligible_is_selected PASSED [  2%]
+tests/contracts/test_eligibility.py::test_stale_quote PASSED             [  3%]
+tests/contracts/test_eligibility.py::test_unverified_mapping_blocks PASSED [  4%]
+tests/contracts/test_eligibility.py::test_latest_non_ok_quote_is_not_skipped PASSED [  5%]
+tests/contracts/test_eligibility.py::test_freshness_threshold_must_be_configured PASSED [  6%]
+tests/contracts/test_records.py::test_reference_bundle_loads_and_is_reproducible PASSED [  7%]
+tests/contracts/test_records.py::test_canonical_bytes_are_order_independent_and_reject_nonfinite PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-unknown fields] PASSED [  9%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-namespace] PASSED [ 10%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-must differ] PASSED [ 10%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-season] PASSED [ 11%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-UTC] PASSED [ 12%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-calendar] PASSED [ 13%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>-shot object] PASSED [ 14%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>->= 1] PASSED [ 15%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>-integer] PASSED [ 16%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-strictly before] PASSED [ 17%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-post-outcome] PASSED [ 18%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-exactly one] PASSED [ 19%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[RESTRICTED_LABEL-<lambda>-needs exactly] PASSED [ 20%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-<= 1_0] PASSED [ 20%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-decimal string] PASSED [ 21%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-<= 1_1] PASSED [ 22%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-crossed] PASSED [ 23%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-use EMPTY] PASSED [ 24%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-needs a reason] PASSED [ 25%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-before fetch] PASSED [ 26%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[VENUE_MAPPING-<lambda>-overtime] PASSED [ 27%]
+tests/contracts/test_records.py::test_quote_subsecond_receive_after_fetch_is_valid PASSED [ 28%]
+tests/contracts/test_records.py::test_envelope_checks PASSED             [ 29%]
+tests/contracts/test_records.py::test_tampered_raw_payload_fails PASSED  [ 30%]
+tests/contracts/test_records.py::test_tampered_records_fail PASSED       [ 30%]
+tests/contracts/test_records.py::test_crlf_conversion_is_detected PASSED [ 31%]
+tests/contracts/test_records.py::test_dangling_references_fail PASSED    [ 32%]
+tests/contracts/test_records.py::test_mapping_team_must_be_participant PASSED [ 33%]
+tests/contracts/test_records.py::test_unsafe_raw_path_fails PASSED       [ 34%]
+tests/contracts/test_records.py::test_encoding_is_stable_under_input_order PASSED [ 35%]
+tests/contracts/test_records.py::test_cli_reports_pass_and_fail PASSED   [ 36%]
+tests/contracts/test_records.py::test_experience_shape_recorded_market_bundle_validates PASSED [ 37%]
+tests/contracts/test_records.py::test_research_shape_real_nba_bundle_validates PASSED [ 38%]
+tests/contracts/test_records.py::test_events_cannot_attach_to_market_mode_game PASSED [ 39%]
+tests/contracts/test_records.py::test_real_record_cannot_reference_synthetic_game PASSED [ 40%]
+tests/experience/test_e001_integrity.py::test_bundle_has_five_raw_payloads PASSED [ 40%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8.json] PASSED [ 41%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[4f7956f1d1e96f9897ec9e10a3ff66633f3e88360aee654df6566785fa999a60.json] PASSED [ 42%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[a92f676d989d9e652b3357541d7881b1fe82d7eadaed91b5108170a64da6f30b.json] PASSED [ 43%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3.json] PASSED [ 44%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[fbae709cc911445bb8f1f866f5349ff233b8e1caa65c85c0b94a2213775abb44.json] PASSED [ 45%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8.json] PASSED [ 46%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[4f7956f1d1e96f9897ec9e10a3ff66633f3e88360aee654df6566785fa999a60.json] PASSED [ 47%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[a92f676d989d9e652b3357541d7881b1fe82d7eadaed91b5108170a64da6f30b.json] PASSED [ 48%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3.json] PASSED [ 49%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[fbae709cc911445bb8f1f866f5349ff233b8e1caa65c85c0b94a2213775abb44.json] PASSED [ 50%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[__init__.py] PASSED [ 50%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[capture.py] PASSED [ 51%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[common.py] PASSED [ 52%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[kalshi.py] PASSED [ 53%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[live.py] PASSED [ 54%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[polymarket.py] PASSED [ 55%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[replay.py] PASSED [ 56%]
+tests/experience/test_e001_readonly.py::test_allowlist_has_only_public_read_paths PASSED [ 57%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[POST] PASSED [ 58%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[PUT] PASSED [ 59%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[PATCH] PASSED [ 60%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[DELETE] PASSED [ 60%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[get] PASSED [ 61%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://example.com/markets] PASSED [ 62%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://clob.polymarket.com/order] PASSED [ 63%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://api.elections.kalshi.com/trade-api/v2/portfolio/orders] PASSED [ 64%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[http://clob.polymarket.com/book?token_id=1] PASSED [ 65%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://user:pw@clob.polymarket.com/book?token_id=1] PASSED [ 66%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://clob.polymarket.com:8443/book?token_id=1] PASSED [ 67%]
+tests/experience/test_e001_readonly.py::test_allowed_read_passes_the_check_without_network PASSED [ 68%]
+tests/experience/test_e001_recorded.py::test_a1_recorded_bundle_validates PASSED [ 69%]
+tests/experience/test_e001_recorded.py::test_a2_recorded_replay_offline_is_byte_identical PASSED [ 70%]
+tests/experience/test_e001_recorded.py::test_recorded_build_is_reproducible PASSED [ 70%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[00b07d6757cce90edd219c0a1726efd0dd3adf8fad164ced7837e99d2712f1e3.json] PASSED [ 71%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[1a20c5a26edd9a20f21c20ef5a0b3f13c92d1ae9250f2c20797d77d37df54ad1.json] PASSED [ 72%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[8f21824b541d67d4f8e596c440e0034036b0c7d65410a56b80d9f4de4a54c0a9.json] PASSED [ 73%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[eaa2b3f8bc5ec772e719a096add93c638aebcdff6fecd28a45e6295f29d42e8f.json] PASSED [ 74%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[eb4a5699e024258863e6d92ec3dc2367659b9a6140174a9e8d848f0e75b59654.json] PASSED [ 75%]
+tests/experience/test_e001_recorded.py::test_a6_recorded_labelling_and_identity PASSED [ 76%]
+tests/experience/test_e001_refusals.py::test_polymarket_price_in_cents_refused PASSED [ 77%]
+tests/experience/test_e001_refusals.py::test_kalshi_price_in_cents_refused PASSED [ 78%]
+tests/experience/test_e001_refusals.py::test_kalshi_legacy_integer_cent_book_refused PASSED [ 79%]
+tests/experience/test_e001_refusals.py::test_numeric_price_refused_as_unknown_unit PASSED [ 80%]
+tests/experience/test_e001_refusals.py::test_missing_received_utc_refused[pm] PASSED [ 80%]
+tests/experience/test_e001_refusals.py::test_missing_received_utc_refused[ks] PASSED [ 81%]
+tests/experience/test_e001_refusals.py::test_received_before_fetch_start_refused PASSED [ 82%]
+tests/experience/test_e001_refusals.py::test_outcome_absent_from_metadata_refused[pm] PASSED [ 83%]
+tests/experience/test_e001_refusals.py::test_outcome_absent_from_metadata_refused[ks] PASSED [ 84%]
+tests/experience/test_e001_refusals.py::test_book_for_another_token_refused PASSED [ 85%]
+tests/experience/test_e001_refusals.py::test_mapping_refuses_label_mismatch PASSED [ 86%]
+tests/experience/test_e001_refusals.py::test_polymarket_midpoint_level_refused PASSED [ 87%]
+tests/experience/test_e001_refusals.py::test_polymarket_midpoint_instead_of_levels_refused PASSED [ 88%]
+tests/experience/test_e001_refusals.py::test_kalshi_last_trade_instead_of_levels_refused PASSED [ 89%]
+tests/experience/test_e001_refusals.py::test_last_trade_field_beside_levels_is_not_stored PASSED [ 90%]
+tests/experience/test_e001_refusals.py::test_polymarket_empty_book_is_empty_status PASSED [ 90%]
+tests/experience/test_e001_refusals.py::test_kalshi_empty_book_is_empty_status PASSED [ 91%]
+tests/experience/test_e001_refusals.py::test_zero_price_level_refused PASSED [ 92%]
+tests/experience/test_e001_refusals.py::test_crossed_book_is_error_not_ok PASSED [ 93%]
+tests/experience/test_e001_refusals.py::test_paused_market_quote_is_paused PASSED [ 94%]
+tests/experience/test_e001_refusals.py::test_regulation_only_rules_read_as_such PASSED [ 95%]
+tests/experience/test_e001_replay.py::test_a1_validator_cli_passes PASSED [ 96%]
+tests/experience/test_e001_replay.py::test_a2_replay_offline_is_byte_identical PASSED [ 97%]
+tests/experience/test_e001_replay.py::test_generator_reproduces_committed_bundle PASSED [ 98%]
+tests/experience/test_e001_replay.py::test_a6_labelled_as_synthetic PASSED [ 99%]
+tests/experience/test_e001_replay.py::test_bundle_is_small PASSED        [100%]
+
+============================= 110 passed in 3.99s =============================
+exit: 0
+
+## uv run python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=6f3076466e2f0e889207bbceb6c2b32045eacbd33cafa28f58c926f94512dd41
+exit: 0
+
+## uv run python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001
+PASS tests/fixtures/quotes/e001: bundle e001-syn-quote-fixture-1 modes=['SYNTHETIC'] records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit: 0
+
+## uv run python tests/experience/make_e001_bundle.py --check
+PASS: E-001 bundle reproducible, records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+exit: 0
+
+## uv run python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001-recorded-0022600189
+PASS tests/fixtures/quotes/e001-recorded-0022600189: bundle e001-recorded-0022600189 modes=['RECORDED_MARKET'] records_sha256=9a412c7a23958fa8c15c19477b798fedc9c1608936ab0ef84f70956fe8064c06 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit: 0
+
+## uv run python -m heatcheck.markets.adapters.capture build tests/fixtures/quotes/e001-recorded-0022600189 --check
+PASS: reproducible
+exit: 0

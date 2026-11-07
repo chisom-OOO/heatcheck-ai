@@ -1,0 +1,21 @@
+{
+ "_note": "AUTHORED EXAMPLE of the provisional Experience shape, not a Referee output. Replace with Max's record format when delivered.",
+ "format": "provisional-experience/0",
+ "data_mode": "SYNTHETIC",
+ "claim": {
+  "claim_id": "clm_fixture",
+  "statement": "Players shoot better after three makes",
+  "plan_hash": "example-plan-hash-not-real",
+  "revision": 1
+ },
+ "attacks_run": [
+  {"test_id": "permutation_within_sequence@1", "outcome": "PASSED", "statistic": "0.031", "p_value": "0.004", "method": "within-sequence permutation null", "reason": "example"},
+  {"test_id": "split_half_sign@1", "outcome": "FAILED", "statistic": "-0.002", "p_value": null, "method": "sign agreement across halves", "reason": "example"},
+  {"test_id": "placebo_lag7@1", "outcome": "NOT_RUN", "statistic": null, "p_value": null, "method": null, "reason": "example: budget exhausted"}
+ ],
+ "verdict": {"decision": "NOT_SUPPORTED", "reason": "example: a mandatory attack failed"},
+ "evidence": [
+  {"label": "data hash", "value": "example-data-hash-not-real", "kind": "hash"},
+  {"label": "eligible streak positions", "value": 1234, "kind": "count"}
+ ]
+}

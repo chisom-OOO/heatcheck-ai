@@ -1,0 +1,7 @@
+body { font: 13px/1.45 system-ui, sans-serif; width: 300px; margin: 12px; color: #0b0b0b; }
+h1 { font-size: 14px; margin: 0 0 8px; }
+label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+input { width: 100%; box-sizing: border-box; padding: 6px; font: 12px ui-monospace, monospace; }
+button { margin-top: 8px; width: 100%; padding: 7px; font-weight: 600; }
+.hint { color: #52514e; font-size: 11px; }
+#out.err { color: #a12424; } #out.ok { color: #006300; }

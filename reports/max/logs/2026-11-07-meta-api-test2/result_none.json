@@ -1,0 +1,20 @@
+{
+  "reasoning_effort": "none",
+  "utc": "2026-11-07T17:05:48Z",
+  "key_source": "process",
+  "url": "https://api.meta.ai/v1/chat/completions",
+  "request_body": {
+    "model": "muse-spark-1.3",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with exactly: pong"
+      }
+    ],
+    "max_tokens": 256,
+    "reasoning_effort": "none"
+  },
+  "http_status": 400,
+  "latency_ms": 457.5,
+  "response_raw": "{\"error\":{\"code\":null,\"message\":\"reasoning_effort 'none' is not supported for model 'muse-spark-1.3'. Supported values: [minimal, low, medium, high, xhigh, max]\",\"param\":\"reasoning_effort\",\"type\":\"invalid_request_error\"}}"
+}

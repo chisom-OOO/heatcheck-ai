@@ -1,0 +1,71 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600189",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600189"
+    },
+    "home_team_id": "nba-team:1610612754",
+    "away_team_id": "nba-team:1610612743",
+    "scheduled_tip_utc": "2026-11-07T22:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "https://www.nba.com/game/den-vs-ind-0022600189 page data (__NEXT_DATA__ gameId, gameTimeUTC, homeTeam/awayTeam teamId), read in a browser at about 2026-11-07T16:25Z. Not stored as raw; NBA.com redistribution rights unverified. Research owns the canonical game table."
+  },
+  "captures": [
+    {
+      "venue": "POLYMARKET",
+      "kind": "MARKET",
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-den-ind-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "eb4a5699e024258863e6d92ec3dc2367659b9a6140174a9e8d848f0e75b59654",
+      "fetch_start_utc": "2026-11-07T16:21:17.463932Z",
+      "received_utc": "2026-11-07T16:21:17.604931Z"
+    },
+    {
+      "venue": "POLYMARKET",
+      "kind": "BOOK",
+      "source": "GET https://clob.polymarket.com/book?token_id=100155597339514587735512788056351223587036241159790520590685103796616707991866",
+      "http_status": 200,
+      "payload_sha256": "eaa2b3f8bc5ec772e719a096add93c638aebcdff6fecd28a45e6295f29d42e8f",
+      "fetch_start_utc": "2026-11-07T16:21:17.624941Z",
+      "received_utc": "2026-11-07T16:21:17.710454Z",
+      "market_payload_sha256": "eb4a5699e024258863e6d92ec3dc2367659b9a6140174a9e8d848f0e75b59654",
+      "target": {
+        "game_id": "nba:0022600189",
+        "team_id": "nba-team:1610612754",
+        "contract_id": "100155597339514587735512788056351223587036241159790520590685103796616707991866",
+        "expected_label": "Pacers"
+      }
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND",
+      "http_status": 200,
+      "payload_sha256": "1a20c5a26edd9a20f21c20ef5a0b3f13c92d1ae9250f2c20797d77d37df54ad1",
+      "fetch_start_utc": "2026-11-07T16:21:17.738986Z",
+      "received_utc": "2026-11-07T16:21:18.123566Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND/orderbook",
+      "http_status": 200,
+      "payload_sha256": "8f21824b541d67d4f8e596c440e0034036b0c7d65410a56b80d9f4de4a54c0a9",
+      "fetch_start_utc": "2026-11-07T16:21:18.175940Z",
+      "received_utc": "2026-11-07T16:21:18.328918Z",
+      "market_payload_sha256": "1a20c5a26edd9a20f21c20ef5a0b3f13c92d1ae9250f2c20797d77d37df54ad1",
+      "target": {
+        "game_id": "nba:0022600189",
+        "team_id": "nba-team:1610612754",
+        "contract_id": "KXNBAGAME-26NOV07DENIND-IND:yes",
+        "expected_label": "YES (Indiana)"
+      }
+    }
+  ],
+  "note": "Public read-only GET capture authorised by the user (relaying Max) on 2026-11-07. No account, key or authenticated endpoint. One NBA game: DEN at IND, 2026-11-07, NBA Mexico City Game (neutral site; IND is the listed home team)."
+}

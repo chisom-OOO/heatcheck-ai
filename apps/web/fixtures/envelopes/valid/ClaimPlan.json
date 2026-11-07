@@ -1,0 +1,72 @@
+{
+ "assumptions": {},
+ "baseline_hash": "d48115610e3b9a669d20c917855570d1747374eeed152d606781e2cd3ac86c31",
+ "blocked_reason": null,
+ "canonical_plan_hash": "66c14d173ee3d7e7b4f2ddb465e73d3bcef9c7d4af963405c55737d5892214b1",
+ "claim": {
+  "channel": "SHOT_ASSOCIATION",
+  "claim_id": "clm_fixture",
+  "comparator": "within-player permutation null",
+  "direction": "positive",
+  "kind": "hot_hand",
+  "population": {
+   "label": "players",
+   "type": "group"
+  },
+  "setting": "free throws only",
+  "statement": "Players shoot better after three makes",
+  "streak_length": 3
+ },
+ "claim_id": "clm_fixture",
+ "claim_kind": "hot_hand",
+ "compute_budget": {
+  "bootstrap": 300,
+  "permutations": 400,
+  "timeout_seconds": 120
+ },
+ "creator_model_prompt": {
+  "interpreter": "rule-based intake v1 (no LLM)",
+  "prompt": null
+ },
+ "data_hashes": [
+  "generated-per-run-by-custodian"
+ ],
+ "data_mode": "SYNTHETIC",
+ "direction": "positive",
+ "effect_units": "absolute difference in make probability",
+ "engine": "fixture-local-0.2",
+ "estimand": "pooled P(make | previous 3 makes) minus P(make | otherwise), within sequence",
+ "executable": true,
+ "feature_catalogue_hash": "4fde5d67819cc5facac8118a24dfd6dbbe361119e550aee42b4bbff4ce9fa9e4",
+ "final_epoch_id": null,
+ "final_family_id": null,
+ "kind": "SHOT_ASSOCIATION",
+ "mandatory_attacks": [
+  "permutation_within_sequence",
+  "split_half_sign",
+  "placebo_lag7",
+  "leave_one_out_sign"
+ ],
+ "plan_note": "Development plan (final_epoch_id null): results are exploratory, not a sealed final evaluation.",
+ "population": {
+  "label": "30 anonymised shooters",
+  "type": "synthetic_league",
+  "user_population_note": {
+   "label": "players",
+   "type": "group"
+  }
+ },
+ "practical_effect_floor": 0.03,
+ "primary_metric_test": {
+  "alpha": 0.05,
+  "metric": "streak_difference",
+  "test": "permutation_within_sequence"
+ },
+ "protocol_version": "heatcheck-nba/1",
+ "revision": 1,
+ "sources": [],
+ "split_manifest_hash": "7d4c51449b0ab807258b5a29de8fec6ceef1e5e88f0103ec82b3c753a59c5d39",
+ "statement": "Players shoot better after three makes",
+ "streak_length": 3,
+ "target_horizon_cutoff": "retrospective: events strictly before each shot"
+}
