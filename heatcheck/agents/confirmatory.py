@@ -245,6 +245,9 @@ def confirmatory_source(result: dict, fam: dict, evidence: Path):
     )
 
 
+RECORD_EXEMPT_CHECKS = ("sealed_data", "platform")
+
+
 def _default_runner(argv: list[str], cwd: Path) -> subprocess.CompletedProcess:
     return subprocess.run(argv, cwd=cwd, capture_output=True, text=True)
 
@@ -272,13 +275,35 @@ class ConfirmatoryLane:
         return [sys.executable, "-I", SCRIPT, "final", str(self.data), str(self.evidence),
                 "--authorised-by", str(self.authorised_by)]
 
+    def record_final_done(self, ledger: EvidenceLedger, proposers: dict | None = None) -> dict:
+        """Record a finished, verified final into ``ledger``. Never runs anything, in any mode.
+
+        Requires state FINAL_DONE and every dry-run check to PASS except ``sealed_data`` and
+        ``platform``: those gate *running* final (sealed bytes on disk, a Linux custodian), not
+        recording a run that the custodian ledger shows reserved and spent. Idempotent."""
+        report = self.dry_run()
+        if report["state"] != "FINAL_DONE":
+            raise ConfirmatoryRefused(f"no finished final to record (state {report['state']})")
+        failed = [c["check"] for c in report["checks"]
+                  if c["status"] != "PASS" and c["check"] not in RECORD_EXEMPT_CHECKS]
+        if failed:
+            raise ConfirmatoryRefused(f"finished final does not match the frozen family: {failed}")
+        from heatcheck.agents.recorded import record
+        result = json.loads((Path(self.evidence) / SUBDIR / "final_result.json").read_bytes())
+        fam = verify_final_result(result, self.evidence)
+        return record(confirmatory_source(result, fam, self.evidence), ledger, self.evidence,
+                      proposers=proposers)
+
     def evaluate(self, claim_id: str, ledger: EvidenceLedger, proposer: dict) -> dict[str, Any]:
-        """Dry run: returns {"dry_run": report}; writes nothing. Final: runs the family once
-        (or reuses a verified finished run), records all three hypotheses, returns
-        {"entry": entry for claim_id, "entries": all three}."""
+        """FINAL_DONE (any mode): records the finished run, never reruns, returns
+        {"entry": entry for claim_id, "entries": all three}. Otherwise dry run returns
+        {"dry_run": report} and writes nothing; final runs the family once from UNRUN only."""
         if claim_id not in CONFIRMATORY_IDS:
             raise ConfirmatoryRefused(f"{claim_id!r} is not a confirmatory claim")
         report = self.dry_run()
+        if report["state"] == "FINAL_DONE":
+            entries = self.record_final_done(ledger, proposers={claim_id: proposer})
+            return {"entry": entries[claim_id], "entries": entries}
         if self.mode == "dry_run":
             return {"dry_run": report}
         if not self.authorised_by:
@@ -287,10 +312,14 @@ class ConfirmatoryLane:
             failed = [c["check"] for c in report["checks"] if c["status"] != "PASS"]
             raise ConfirmatoryRefused(f"dry run not ready: {failed}")
         result_path = Path(self.evidence) / SUBDIR / "final_result.json"
-        if report["state"] == "UNRUN":
-            p = self.runner(self.final_argv(), Path(self.handoff))
-            if p.returncode != 0:
-                raise ConfirmatoryRefused(f"final exited {p.returncode}: {(p.stderr or '')[-300:]}")
+        if report["state"] != "UNRUN" or result_path.exists():
+            # The final runs once. A result file or reservation without FINAL_DONE is an
+            # incomplete or tampered state: refuse rather than run again.
+            raise ConfirmatoryRefused(f"final never runs again (state {report['state']}, "
+                                      f"result file {'present' if result_path.exists() else 'absent'})")
+        p = self.runner(self.final_argv(), Path(self.handoff))
+        if p.returncode != 0:
+            raise ConfirmatoryRefused(f"final exited {p.returncode}: {(p.stderr or '')[-300:]}")
         from heatcheck.agents.recorded import record
         result = json.loads(result_path.read_bytes())
         fam = verify_final_result(result, self.evidence)

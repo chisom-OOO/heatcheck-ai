@@ -1,8 +1,11 @@
 """CONFIRMATORY lane: dry run against Research's frozen family, and the recording path.
 
-Research's real ``scripts/confirmatory.py final`` is never run here (user instruction: it runs
-once, recorded, after the reviewer verifies the seal). The final-mode tests inject a runner
-that writes a SYNTHETIC result file, to test only Max's verification and recording code.
+Research's real ``scripts/confirmatory.py final`` is never run here. It ran once, on Linux, on
+7 November (receipt 5cbb3222, review/confirmatory-run@5f0a432), and must never run again.
+``_copy_handoff`` by default rolls a temporary copy back to the pre-run state (no result file,
+no reservation for that receipt) so the final-mode tests can inject a runner that writes a
+SYNTHETIC result file, to test only Max's verification and recording code. Tests of the real
+finished state use ``pre_run=False`` or the committed evidence directly.
 """
 
 from __future__ import annotations
@@ -31,8 +34,12 @@ def _snapshot(root: Path) -> dict[str, bytes]:
     return {str(p.relative_to(root)): p.read_bytes() for p in sorted(root.rglob("*")) if p.is_file()}
 
 
-def _copy_handoff(tmp_path: Path) -> tuple[Path, Path]:
-    """Copy the code files and the confirmatory evidence (not the whole handoff)."""
+REAL_RECEIPT = "5cbb3222-181d-439d-9202-02a8d8030e4e"
+
+
+def _copy_handoff(tmp_path: Path, pre_run: bool = True) -> tuple[Path, Path]:
+    """Copy the code files and the confirmatory evidence (not the whole handoff). With
+    ``pre_run`` the copy drops the real final's result file and custodian lines."""
     h = tmp_path / "handoff"
     for f in FAMILY["code_files"]:
         (h / f).parent.mkdir(parents=True, exist_ok=True)
@@ -40,6 +47,13 @@ def _copy_handoff(tmp_path: Path) -> tuple[Path, Path]:
     ev = h / "evidence"
     shutil.copytree(C.EVIDENCE / C.SUBDIR, ev / C.SUBDIR)
     shutil.copyfile(C.EVIDENCE / "custodian_ledger.jsonl", ev / "custodian_ledger.jsonl")
+    if pre_run:
+        (ev / C.SUBDIR / "final_result.json").unlink()
+        led = ev / "custodian_ledger.jsonl"
+        lines = led.read_text(encoding="utf-8").splitlines(keepends=True)
+        kept = [x for x in lines if json.loads(x).get("receipt_id") != REAL_RECEIPT]
+        assert len(lines) - len(kept) == 2  # exactly the real reserve + spend
+        led.write_text("".join(kept), encoding="utf-8")
     return h, ev
 
 
@@ -65,7 +79,7 @@ def test_dry_run_on_committed_evidence_matches_and_writes_nothing():
     assert r["ready"] is False
     assert r["family_hash"] == "684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0"
     assert r["code_hash"] == "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e"
-    assert not (C.EVIDENCE / C.SUBDIR / "final_result.json").exists()
+    assert r["state"] == "FINAL_DONE"  # ran once on 7 November, receipt 5cbb3222
 
 
 def test_dry_run_ready_only_when_every_check_passes(tmp_path):
@@ -268,16 +282,103 @@ def test_mapping_accepts_confirmatory_ids():
 
 
 def test_dialogue_confirmatory_turn_in_dry_run_runs_nothing(tmp_path):
-    before = _snapshot(C.EVIDENCE)
+    h, ev = _copy_handoff(tmp_path)  # pre-run state
+    before = _snapshot(ev)
     ledger = EvidenceLedger(tmp_path / "ev.jsonl")
-    d = Dialogue(view=None, ledger=ledger, llm=None, view_identity={"bundle": "none"})
+    lane = C.ConfirmatoryLane(evidence=ev, handoff=h)
+    d = Dialogue(view=None, ledger=ledger, llm=None, view_identity={"bundle": "none"},
+                 confirmatory=lane)
     out = d.turn("Do home teams really win more often?")
     assert out["claim_id"] == "CONF-HA" and out["lane"] == "CONFIRMATORY"
     assert out["verdict"] is None and out["evidence_record_id"] is None
     assert out["confirmatory_status"] == "UNRUN_NOT_READY"
     assert "has not been run" in out["ref_text"] and "plans, code and seal match" in out["ref_text"]
     assert "not checked on this machine" in out["ref_text"]
-    assert ledger.all() == [] and _snapshot(C.EVIDENCE) == before
+    assert ledger.all() == [] and _snapshot(ev) == before
+
+
+# --------------------------------------------------------------------------- real finished final
+
+
+class NeverRun:
+    def __init__(self):
+        self.calls = []
+
+    def __call__(self, argv, cwd):
+        self.calls.append(argv)
+        raise AssertionError("the confirmatory final must never run again")
+
+
+def test_committed_final_done_records_three_and_never_runs(tmp_path):
+    before = _snapshot(C.EVIDENCE)
+    runner, ledger = NeverRun(), EvidenceLedger(tmp_path / "ev.jsonl")
+    for mode, kw in (("dry_run", {}), ("final", {"authorised_by": "pytest"})):
+        lane = C.ConfirmatoryLane(mode=mode, runner=runner, **kw)
+        out = lane.evaluate("CONF-HA", ledger, {"role": "discoverer"})
+        assert out["entry"]["identity"]["decision"] == "SURVIVED_PROTOCOL"
+    assert runner.calls == [] and _snapshot(C.EVIDENCE) == before
+    entries = ledger.all()
+    assert len(entries) == 3  # the second evaluate reused the same three entries
+    got = {e["identity"]["claim"]["claim_id"]: e["identity"] for e in entries}
+    assert {k: v["decision"] for k, v in got.items()} == {
+        "CONF-HA": "SURVIVED_PROTOCOL", "CONF-MOM": "INSUFFICIENT_EVIDENCE",
+        "CONF-HH": "INSUFFICIENT_EVIDENCE"}
+    for i in got.values():
+        assert i["lane"] == "CONFIRMATORY" and i["phase"] == "FINAL"
+        assert i["custodian"]["receipt_id"] == REAL_RECEIPT
+        assert [x["type"] for x in i["custodian"]["ledger_lines"]] == ["reserve", "spend"]
+
+
+def test_result_file_without_finished_reservation_never_runs(tmp_path):
+    h, ev = _copy_handoff(tmp_path)
+    shutil.copyfile(C.EVIDENCE / C.SUBDIR / "final_result.json", ev / C.SUBDIR / "final_result.json")
+    runner = NeverRun()
+    lane = _lane(h, ev, tmp_path, runner, mode="final", authorised_by="pytest")
+    with pytest.raises(C.ConfirmatoryRefused, match="never runs again"):
+        lane.evaluate("CONF-HA", EvidenceLedger(tmp_path / "ev.jsonl"), {})
+    assert runner.calls == []
+
+
+def test_finished_final_with_edited_plan_is_not_recorded(tmp_path):
+    h, ev = _copy_handoff(tmp_path, pre_run=False)
+    plan = ev / C.SUBDIR / "CONF-HA.plan.json"
+    plan.write_text(plan.read_text(encoding="utf-8").replace("CONF-HA", "CONF-HA ", 1), encoding="utf-8")
+    lane = C.ConfirmatoryLane(evidence=ev, handoff=h, runner=NeverRun())
+    with pytest.raises(C.ConfirmatoryRefused, match="does not match the frozen family"):
+        lane.record_final_done(EvidenceLedger(tmp_path / "ev.jsonl"))
+
+
+class _MapsToElo:
+    identity = {"provider": "fake", "model": "fake"}
+
+    def complete(self, role, messages, **kw):
+        class R:
+            text = '{"claim_id": "GP-ELO"}'
+        return R()
+
+
+@pytest.mark.parametrize("q", ["Do home teams win more?", "Is home court advantage real?",
+                               "Do teams win more at home?"])
+def test_home_advantage_routes_to_conf_ha_even_if_llm_says_gp_elo(q):
+    d = Dialogue(view=None, ledger=None, llm=_MapsToElo(), view_identity={"bundle": "none"})
+    cid, source, ident = d._map(q)
+    assert cid == "CONF-HA" and source.startswith("KEYWORD_RULE")
+    assert ident["kind"] == "DETERMINISTIC_RULE"
+
+
+def test_elo_question_still_maps_by_llm():
+    d = Dialogue(view=None, ledger=None, llm=_MapsToElo(), view_identity={"bundle": "none"})
+    assert d._map("Is Elo better than a coin flip?")[0] == "GP-ELO"
+
+
+def test_dialogue_home_question_speaks_survived_from_committed_final(tmp_path):
+    ledger = EvidenceLedger(tmp_path / "ev.jsonl")
+    lane = C.ConfirmatoryLane(runner=NeverRun())
+    d = Dialogue(view=None, ledger=ledger, llm=None, view_identity={"bundle": "none"},
+                 confirmatory=lane)
+    out = d.turn("Do home teams win more?")
+    assert out["claim_id"] == "CONF-HA" and out["verdict"] == "SURVIVED_PROTOCOL"
+    assert out["lane"] == "CONFIRMATORY" and out["custodian_receipt_id"] == REAL_RECEIPT
 
 
 def test_dialogue_confirmatory_final_turn_speaks_from_the_record(tmp_path):

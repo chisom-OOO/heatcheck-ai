@@ -97,6 +97,11 @@ def statement_of(claim_id: str) -> str:
 
 
 
+HOME_ADVANTAGE = re.compile(
+    r"\bhome[- ](court|teams?|sides?|advantage|crowds?|floor)\b|\bat home\b|\bhome (win|wins|winning)\b",
+    re.IGNORECASE)
+
+
 def keyword_map(question: str) -> str:
     """Deterministic stand-in mapping. Field-goal streak questions only (free throws are out
     of scope per docs/DECISIONS.md)."""
@@ -567,6 +572,11 @@ class Dialogue:
     # -- pieces
 
     def _map(self, question: str) -> tuple[str, str, dict]:
+        # Home-advantage questions always go to the confirmatory CONF-HA result (user
+        # instruction, 7 November), never to GP-ELO, whatever the LLM would choose.
+        if HOME_ADVANTAGE.search(question):
+            return "CONF-HA", "KEYWORD_RULE (home advantage -> CONF-HA)", {
+                "kind": "DETERMINISTIC_RULE", "model": None, "prompt": None, "rule": "HOME_ADVANTAGE"}
         if self.llm:
             messages = [{"role": "system", "content": MAP_SYSTEM.format(
                 catalogue=json.dumps(mapping_catalogue()))},
