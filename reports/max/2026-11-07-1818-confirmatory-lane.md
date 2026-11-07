@@ -1,6 +1,6 @@
 # Max report: merge of Research 2d277d4 and the confirmatory lane (dry run only)
 
-Written 2026-11-07 18:19 UTC on branch `max/integrate-r001-e001`.
+Written 2026-11-07 18:18 UTC on branch `max/integrate-r001-e001`.
 - Code commit: `ed4f968`. Merge commit: `0f0ada5`.
 - Machine: Windows 11 Pro, Python 3.12.10, `uv run --frozen`.
 - Raw logs: `logs/2026-11-07-confirmatory-lane/`.
