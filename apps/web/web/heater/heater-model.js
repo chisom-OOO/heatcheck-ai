@@ -76,8 +76,11 @@ const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 const isStr = (v) => typeof v === "string" && v.length > 0;
 
 export function isLedgerEntry(e) {
+  // Agent-loop entries carry attack_results; recorded Research finals (lane DEVELOPMENT or
+  // CONFIRMATORY, copied by Max's recorder) carry a lane and a result instead.
   return isObj(e) && isStr(e.evidence_id) && isObj(e.identity) && isObj(e.identity.claim)
-    && isStr(e.identity.decision) && Array.isArray(e.identity.attack_results);
+    && isStr(e.identity.decision)
+    && (Array.isArray(e.identity.attack_results) || (isStr(e.identity.lane) && isObj(e.identity.result)));
 }
 
 /** Parse a ledger JSONL file's text into entries (blank lines skipped, bad lines refused). */
@@ -188,8 +191,15 @@ export function latestFor(entries, claimId) {
 
 const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
 const word = (n) => (Number.isInteger(n) && n >= 0 && n <= 10 ? WORDS[n] : String(n));
-/** p-values to two decimals (0.239 -> "0.24"); tiny ones as "< 0.001". */
-export const fmtP = (p) => (p < 0.001 ? "< 0.001" : (Math.round(p * 100) / 100).toFixed(2));
+/** p-values to two decimals (0.239 -> "0.24"), three below 0.01 (0.0054 -> "0.005"), and
+ *  tiny ones as "< 0.001". */
+export const fmtP = (p) => (p < 0.001 ? "< 0.001"
+  : p < 0.01 ? (Math.round(p * 1000) / 1000).toFixed(3)
+    : (Math.round(p * 100) / 100).toFixed(2));
+/** A probability as a percentage with one decimal (0.5449 -> "54.5%"). */
+export const fmtPct = (x) => `${(Math.round(Number(x) * 1000) / 10).toFixed(1)}%`;
+/** Said of every result from the sealed confirmatory season. */
+export const NEVER_SEEN = "tested on a season the system had never seen";
 const attack = (entry, id) => entry.identity.attack_results.find((a) => String(a.test_id_version || "").startsWith(`${id}@`));
 const DATA_PLAIN = {
   GAME_SEASON_VIEW: "season-long game results",
@@ -230,6 +240,8 @@ export function refPlain(entry, personality = DEFAULT_PERSONALITY) {
       : stripDot(id.reason || "no reason on record");
     return { text: fill(tpl || "No ruling. {reason}.", { reason }), plain: Boolean(m && DATA_PLAIN[m[1]]) };
   }
+  const confirmatory = confirmatoryPlain(id);
+  if (confirmatory && tpl) return { text: fill(tpl, confirmatory), plain: true };
   if (plan.kind === "SHOT_ASSOCIATION" && Number.isInteger(params.k) && tpl) {
     const kw = word(params.k);
     const games = data.n_games === 1 ? "one game" : `${fmtCount(data.n_games)} games`;
@@ -259,6 +271,38 @@ export function refPlain(entry, personality = DEFAULT_PERSONALITY) {
   }
   const verdict = (CHIP[d] ? CHIP[d][0] : d).toLowerCase();
   return { text: `${verdict[0].toUpperCase()}${verdict.slice(1)}. ${stripDot(id.reason || "No reason on record")}.`, plain: false };
+}
+
+/** Plain words for a recorded result from the sealed confirmatory season (lane CONFIRMATORY,
+ *  written by Max's recorder from Research's final_result.json). Every number is read from the
+ *  record's ``result``: ``p_holm`` (Holm-adjusted across the family) and ``detail``. Returns
+ *  {plain_finding, stat_summary} or null when the record lacks the fields. */
+export function confirmatoryPlain(id) {
+  if (id?.lane !== "CONFIRMATORY" || !isObj(id.result)) return null;
+  const r = id.result;
+  const det = isObj(r.detail) ? r.detail : {};
+  const p = typeof r.p_holm === "number" ? r.p_holm : null;
+  const season = isStr(id.data?.season) ? id.data.season : null;
+  if (p === null || !season) return null;
+  const pText = `p = ${fmtP(p)}`;
+  const cid = id.claim?.claim_id;
+  if (cid === "CONF-HA" && typeof det.home_win_rate === "number" && Number.isInteger(det.n_games)) {
+    return {
+      plain_finding: `Home teams won ${fmtPct(det.home_win_rate)} of their games, ${NEVER_SEEN}`,
+      stat_summary: `${fmtCount(det.n_games)} games in ${season}, ${pText}`,
+    };
+  }
+  const k = { "CONF-MOM": 1, "CONF-HH": 3 }[cid];
+  if (k && typeof det.p_make_after_makes === "number" && typeof det.p_make_after_misses === "number"
+      && Number.isInteger(det.n_fga)) {
+    const runs = k === 1 ? ["a make", "a miss"] : [`${word(k)} makes in a row`, `${word(k)} misses in a row`];
+    return {
+      plain_finding: `After ${runs[0]} the next shot went in ${fmtPct(det.p_make_after_makes)} of the time, `
+        + `and ${fmtPct(det.p_make_after_misses)} after ${runs[1]}, ${NEVER_SEEN}`,
+      stat_summary: `${fmtCount(det.n_fga)} shots in ${season}, ${pText}`,
+    };
+  }
+  return null;
 }
 
 /** The verdict stamp's text and colour class. */

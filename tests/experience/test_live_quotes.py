@@ -113,6 +113,57 @@ def test_a_real_file_needs_a_real_hash_and_fetch_time():
     assert any("fetched_utc" in e for e in errs) and any("64 lowercase hex" in e for e in errs)
 
 
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (lambda d: d.update(label="DESCRIPTIVE FORECAST (sample)"), "exactly 'DESCRIPTIVE FORECAST'"),
+        (lambda d: d["source"].update(cross_check="checked by hand"), "cross_check"),
+        (lambda d: d["source"].update(fetched_utc="about 22:30"), "fetched_utc of a SAMPLE"),
+        (lambda d: d["source"].update(sha256="SAMPLE-ish"), "sha256 of a SAMPLE"),
+    ],
+)
+def test_max_format_rules_are_enforced(change, message):
+    doc = sample()
+    change(doc)
+    assert any(message in e for e in lq.validate_forecast(doc)), lq.validate_forecast(doc)
+
+
+def test_sample_is_decided_by_source_results_only():
+    doc = sample()
+    doc["source"] = {"results": "cdn.nba.com schedule JSON (not a SAMPLE)", "fetched_utc": "2026-11-07T21:00:00Z",
+                     "sha256": "0" * 64, "cross_check": "NOT_RUN"}
+    assert not lq.is_sample(doc)
+    assert any("may not say SAMPLE" in e for e in lq.validate_forecast(doc))
+
+
+def test_sample_file_passes_maxs_own_validator():
+    parse = lq.max_validator()
+    assert parse is not None, "heatcheck.contracts.live_forecast is on this branch"
+    lf = parse(SAMPLE.read_bytes())
+    assert lf is not None
+
+
+# ---------------------------------------------------------------- mapping index for the page
+
+
+def test_index_lists_every_matched_mapping_without_prices(tmp_path):
+    import shutil
+    run = tmp_path / RUN.name
+    shutil.copytree(RUN, run, ignore=shutil.ignore_patterns("board.mappings.json"))
+    index = lq.write_index(run)
+    assert (run / "board.mappings.json").read_bytes() == (RUN / "board.mappings.json").read_bytes()
+    matched = {(g["game_id"], v["venue"]) for g in SUMMARY["games"] for v in g["venues"] if v["status"] == "MATCHED"}
+    assert {(m["game_id"], m["venue"]) for m in index["mappings"]} == matched
+    text = (run / "board.mappings.json").read_text(encoding="utf-8")
+    for word in ("best_bid", "best_ask", "levels", "p_home_win", "price"):
+        assert f'"{word}"' not in text
+    for m in index["mappings"]:
+        manifest, _ = bundle.load_bundle(run / m["bundle"])
+        assert m["records_sha256"] == manifest["records_sha256"]
+        assert m["two_sided"] is (m["venue"] == "POLYMARKET")  # Kalshi books hold YES bids only
+    assert index["forecast_input"]["is_sample"] is True
+
+
 # ---------------------------------------------------------------- derived identifiers
 
 

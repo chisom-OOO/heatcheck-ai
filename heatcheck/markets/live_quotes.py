@@ -19,6 +19,9 @@ tool, and the output says so on every level; no forecast value is copied into th
 
     python -m heatcheck.markets.live_quotes validate <forecasts.json>
     python -m heatcheck.markets.live_quotes capture <forecasts.json> <out_dir>
+    python -m heatcheck.markets.live_quotes index <out_dir>     # board.mappings.json for the page
+
+``capture`` writes the index itself when at least one contract MATCHED.
 """
 
 from __future__ import annotations
@@ -92,19 +95,23 @@ def _strings(obj: Any):
 
 
 def is_sample(doc: dict[str, Any]) -> bool:
-    """True when any text in ``source`` says SAMPLE (the shared rule for hand-made files)."""
-    return any("SAMPLE" in s for s in _strings(doc.get("source")))
+    """True when ``source.results`` starts with SAMPLE (docs/LIVE_FORECAST_FORMAT.md)."""
+    src = doc.get("source")
+    return isinstance(src, dict) and str(src.get("results", "")).startswith("SAMPLE")
 
 
 def validate_forecast(doc: Any) -> list[str]:
-    """Every rule of the shared format that the file breaks; empty when it is valid."""
+    """Every rule of the shared format that the file breaks; empty when it is valid.
+
+    Mirrors Max's ``heatcheck.contracts.live_forecast`` rules that matter here; ``load_forecast``
+    also runs Max's validator itself when this checkout has it."""
     if not isinstance(doc, dict):
         return ["the file is not a JSON object"]
     errs: list[str] = []
     if doc.get("format") != FORMAT:
         errs.append(f"format is {doc.get('format')!r}, not {FORMAT!r}")
-    if not isinstance(doc.get("label"), str) or "DESCRIPTIVE FORECAST" not in doc["label"]:
-        errs.append("label must say DESCRIPTIVE FORECAST")
+    if doc.get("label") != "DESCRIPTIVE FORECAST":
+        errs.append("label must be exactly 'DESCRIPTIVE FORECAST'")
     if not isinstance(doc.get("model"), str) or not doc["model"]:
         errs.append("model must be a non-empty string")
     inputs = doc.get("inputs_used")
@@ -118,7 +125,17 @@ def validate_forecast(doc: Any) -> list[str]:
         for k in ("results", "fetched_utc", "sha256", "cross_check"):
             if not isinstance(src.get(k), str) or not src[k]:
                 errs.append(f"source.{k} must be a non-empty string")
-        if not sample:
+        cc = str(src.get("cross_check", ""))
+        if cc != "NOT_RUN" and not cc.startswith("balldontlie"):
+            errs.append("source.cross_check must be NOT_RUN or start with 'balldontlie'")
+        if sample:  # the literal SAMPLE or a real value, never an invented hash or time
+            if src.get("fetched_utc") != "SAMPLE" and not _UTC_RE.match(str(src.get("fetched_utc"))):
+                errs.append("source.fetched_utc of a SAMPLE must be 'SAMPLE' or a UTC Z time")
+            if src.get("sha256") != "SAMPLE" and not _HEX64.match(str(src.get("sha256"))):
+                errs.append("source.sha256 of a SAMPLE must be 'SAMPLE' or a real sha256")
+        else:
+            if any("SAMPLE" in s for s in _strings(src)):
+                errs.append("a non-sample file may not say SAMPLE anywhere in source")
             try:
                 parse_utc(src.get("fetched_utc"))
             except ValueError as exc:
@@ -189,10 +206,25 @@ def validate_forecast(doc: Any) -> list[str]:
     return errs
 
 
+def max_validator():
+    """Max's ``parse_live_forecast`` when this checkout has it (integrate since 5bb5f73)."""
+    try:
+        from heatcheck.contracts.live_forecast import parse_live_forecast
+    except ImportError:
+        return None
+    return parse_live_forecast
+
+
 def load_forecast(path: Path) -> tuple[dict[str, Any], bytes]:
     raw = Path(path).read_bytes()
     doc = load_payload(raw)
     errs = validate_forecast(doc)
+    parse = max_validator()
+    if parse is not None:
+        try:
+            parse(raw)
+        except ValueError as exc:  # LiveForecastError is a ValueError
+            errs.append(f"Max's validator: {exc}")
     if errs:
         raise AdapterError(f"{path} breaks {FORMAT}: " + "; ".join(errs))
     return doc, raw
@@ -508,7 +540,61 @@ def run(forecast_path: Path, out: Path, client: ReadOnlyClient | None = None) ->
     return summary
 
 
+INDEX_FORMAT = "heatcheck-quote-mappings/1"
+
+
+def _best_levels(quote: dict[str, Any]) -> bool:
+    sides = {lv["side"] for lv in quote["body"]["levels"]}
+    return {"BID", "ASK"} <= sides
+
+
+def write_index(run_dir: Path, name: str = "board") -> dict[str, Any]:
+    """Write ``<run_dir>/<name>.mappings.json``: which venue mapping ids the run's bundles hold,
+    for the demo page's market board. Ids, labels and statuses only, never prices; every number on
+    a card comes from Max's /api/investigate, which reads the bundles themselves
+    (``serve_dialogue --quote-bundle <run_dir>`` searches the directory for bundles).
+
+    Pure over the run's bundles, so it is byte-reproducible. Returns the index."""
+    run_dir = Path(run_dir)
+    summary = load_payload((run_dir / "quotes.json").read_bytes())
+    mappings = []
+    for g in summary["games"]:
+        for v in g["venues"]:
+            if v.get("status") != "MATCHED" or "bundle" not in v:
+                continue
+            manifest, recs = load_bundle(run_dir / v["bundle"])
+            markets = {r["record_id"]: r["body"] for r in recs if r["record_type"] == "VENUE_MARKET"}
+            quotes = {r["body"]["mapping_id"]: r for r in recs if r["record_type"] == "QUOTE"}
+            for r in recs:
+                if r["record_type"] != "VENUE_MAPPING":
+                    continue
+                b = r["body"]
+                mk = markets[b["venue_market_record_id"]]
+                label = next(o["label"] for o in mk["outcomes"] if o["contract_id"] == b["contract_id"])
+                mappings.append({"mapping_id": b["mapping_id"], "game_id": b["game_id"],
+                                 "venue": mk["venue"], "contract_id": b["contract_id"],
+                                 "team_id": b["team_id"], "label": label, "status": b["status"],
+                                 "two_sided": b["mapping_id"] in quotes
+                                 and _best_levels(quotes[b["mapping_id"]]),
+                                 "bundle": v["bundle"], "records_sha256": manifest["records_sha256"]})
+    if not mappings:
+        raise AdapterError(f"{run_dir} has no MATCHED contract to index")
+    index = {"format": INDEX_FORMAT, "run": run_dir.name,
+             "captured": [summary["run_started_utc"], summary["run_finished_utc"]],
+             "forecast_input": summary["forecast_input"],
+             "note": ("Ids, labels and statuses as captured (PROPOSED until Max verifies them). "
+                      "No prices: they come from /api/investigate."),
+             "mappings": sorted(mappings, key=lambda m: (m["game_id"], m["venue"]))}
+    (run_dir / f"{name}.mappings.json").write_bytes(
+        (json.dumps(index, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
+    return index
+
+
 def main(argv: list[str]) -> int:
+    if len(argv) == 2 and argv[0] == "index":
+        index = write_index(Path(argv[1]))
+        print(f"PASS indexed {len(index['mappings'])} mappings in {argv[1]}/board.mappings.json")
+        return 0
     if len(argv) == 2 and argv[0] == "validate":
         doc = load_payload(Path(argv[1]).read_bytes())
         errs = validate_forecast(doc)
@@ -530,6 +616,9 @@ def main(argv: list[str]) -> int:
                 print(f"{g['game_id']} {g['away']}@{g['home']} {v['venue']:<10} "
                       f"{v['status']:<9} {extra}")
         print(f"counts {s['counts']}; wrote {argv[2]}/quotes.json")
+        if s["counts"].get("MATCHED"):
+            index = write_index(Path(argv[2]))
+            print(f"indexed {len(index['mappings'])} mappings in {argv[2]}/board.mappings.json")
         return 0
     print(__doc__)
     return 2

@@ -131,6 +131,58 @@ body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflo
 .evidence ul { margin: 4px 0 0; padding-left: 18px; }
 .evidence li { margin: 2px 0; }
 
+/* ------------------------------------------------------------------ top bar and market board */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.view-toggle {
+  font: 700 .9rem var(--cond); letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  color: var(--fg); background: transparent; border: 1.5px solid rgba(46, 196, 182, .6);
+  border-radius: 999px; padding: 7px 16px;
+}
+.view-toggle:hover:not(:disabled) { background: rgba(46, 196, 182, .12); }
+.view-toggle[aria-pressed="true"] { border-color: var(--heat); }
+.view-toggle:focus-visible, .mcard-ask:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
+.view-toggle:disabled { opacity: .45; cursor: default; }
+
+body[data-view="board"] .talk { max-width: 980px; align-self: start; }
+.board { display: grid; gap: 14px; max-height: calc(100vh - 230px); max-height: calc(100dvh - 230px); overflow: auto; padding-right: 4px; }
+.board-head { display: grid; gap: 4px; }
+.board-title { margin: 0; font: 800 1.6rem/1.1 var(--cond); letter-spacing: .02em; }
+.board-note { margin: 0; color: var(--muted); font-size: .95rem; }
+.board-sample {
+  margin: 4px 0 0; justify-self: start; font: 800 .95rem/1.3 var(--cond); letter-spacing: .06em;
+  color: #1E0E00; background: var(--heat-hot); border-radius: 6px; padding: 4px 10px;
+}
+.board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.mcard {
+  position: relative; display: grid; gap: 8px; align-content: start;
+  background: rgba(22, 21, 31, .9); border: 1.5px solid #2E2C40; border-radius: 12px; padding: 14px 16px 14px;
+}
+.mcard.worth { border-color: rgba(255, 182, 39, .6); }
+.mcard-top { display: grid; gap: 2px; padding-right: 70px; }
+.mcard-title { margin: 0; font: 800 1.12rem/1.2 var(--cond); }
+.mcard-tip { color: var(--muted); font-size: .85rem; }
+.mcard-sample {
+  position: absolute; top: 12px; right: 12px; font: 900 .8rem/1 var(--cond); letter-spacing: .1em;
+  color: #1E0E00; background: var(--heat-hot); border-radius: 4px; padding: 5px 7px;
+}
+.mcard-grid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 12px; margin: 0; font-size: .9rem; }
+.mcard-grid dt { color: var(--muted); }
+.mcard-grid dd { margin: 0; overflow-wrap: anywhere; }
+.mcard-flag { color: var(--heat-hot); font-weight: 700; font-size: .82rem; }
+.mcard-diff { font-weight: 800; }
+.mcard.cant .mcard-diff { color: #C9C6DA; }
+.mcard.worth .mcard-diff { color: #FFB627; }
+.mcard-verdict { margin: 4px 0 0; font: 800 1.05rem/1.2 var(--cond); letter-spacing: .03em; }
+.mcard-verdict.cant { color: #C9C6DA; }
+.mcard-verdict.worth { color: #FFB627; }
+.mcard-why { margin: 0; color: var(--muted); font-size: .86rem; }
+.mcard-why:empty { display: none; }
+.mcard-ask {
+  justify-self: start; margin-top: 2px; cursor: pointer; font: 700 .88rem var(--cond); letter-spacing: .05em;
+  color: #1E0E00; background: var(--heat); border: 0; border-radius: 999px; padding: 7px 14px;
+}
+.mcard-ask:disabled { opacity: .45; cursor: default; }
+
 /* ------------------------------------------------------------------ ask bar */
 .ask { grid-area: ask; display: grid; gap: 10px; padding-top: 6px; max-width: 1100px; width: 100%; justify-self: center; }
 .ask-row { display: flex; gap: 10px; min-width: 0; }
@@ -164,6 +216,7 @@ body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflo
   .bubble-text { font-size: 24px; }
   .ref { margin-left: 0; }
   .ref-text { padding-right: 0; }
+  .board { max-height: none; overflow: visible; }
   .stamp { position: relative; right: auto; top: auto; display: inline-block; max-width: none; margin: 16px 0 10px; transform: rotate(-6deg); animation-name: slam-flow; }
   @keyframes slam-flow {
     0% { opacity: 0; transform: rotate(-12deg) scale(2.2); }

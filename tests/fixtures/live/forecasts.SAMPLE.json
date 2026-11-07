@@ -1,13 +1,13 @@
 {
   "format": "heatcheck-live-forecast/1",
-  "label": "DESCRIPTIVE FORECAST (SAMPLE: hand-made placeholder values, not a forecast)",
+  "label": "DESCRIPTIVE FORECAST",
   "model": "SAMPLE: no model was run; p_home_win 0.5 and Elo 1500 are placeholders",
   "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
   "data_cutoff_utc": "2026-11-07T22:00:00Z",
   "source": {
     "results": "SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.",
-    "fetched_utc": "SAMPLE: 2026-11-07T22:30:00Z (approximate browser read)",
-    "sha256": "SAMPLE: no source file was hashed",
+    "fetched_utc": "SAMPLE",
+    "sha256": "SAMPLE",
     "cross_check": "NOT_RUN"
   },
   "backtest_2024_25": {"log_loss": 0.0, "brier": 0.0, "games": 0},

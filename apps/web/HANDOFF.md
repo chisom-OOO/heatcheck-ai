@@ -43,6 +43,12 @@ Branch status: local build only; no push, deployment, outside message or paid se
 | GET/POST | /api/harness | synthetic batch: decisions by truth, tuning vs held-out, detectability |
 | GET | /api/market-scenarios · POST /api/market-propose · /api/market-compare | `MarketSpec` → `EventMapping` → `BookSnapshot` → `MarketComparison` |
 | GET | /api/gates | the acceptance ledger |
+| GET | /api/evidence | Max's evidence ledger (`--ledger`), verified, read-only |
+| GET | /api/market-mappings | the market board's mapping ids (newest `data/experience/quotes/*/board.mappings.json`, or `--quote-index`); no prices |
+| any | /api/dialogue · /api/investigate · /api/live-forecast · /api/display-titles | **pass-through** to Max's dialogue server (`--api`, default `http://127.0.0.1:8770`, loopback only): method, body, status and Content-Type unchanged; 502 `UPSTREAM_UNAVAILABLE` when it does not answer |
+
+`GET /` serves `demo.html` (the demo page); the older workspace UI is at `/index.html`. The demo
+page calls relative `/api/...` URLs only, so it is same-origin on any port and needs no CORS.
 
 ## What Research needs to plug in
 
