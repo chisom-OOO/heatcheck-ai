@@ -73,7 +73,12 @@ def test_committed_ledger_holds_loop_entries_then_recorded_finals():
     assert COMMITTED.read_bytes()[:len(loop)] == loop   # the earlier log, byte for byte
     assert [(e["identity"]["claim"]["claim_id"], e["identity"]["decision"]) for e in entries] == [
         ("HH-K3", "INSUFFICIENT_EVIDENCE"), ("HH-K2", "NOT_SUPPORTED"), ("GP-REST", "BLOCKED"),
-        ("GP-REST", "INSUFFICIENT_EVIDENCE"), ("GP-ELO", "SURVIVED_PROTOCOL")]
+        ("GP-REST", "INSUFFICIENT_EVIDENCE"), ("GP-ELO", "SURVIVED_PROTOCOL"),
+        # 2024-25 confirmatory final (receipt 5cbb3222), appended 7 November by record_final_done.
+        ("CONF-HA", "SURVIVED_PROTOCOL"), ("CONF-MOM", "INSUFFICIENT_EVIDENCE"),
+        ("CONF-HH", "INSUFFICIENT_EVIDENCE")]
+    assert {e["identity"]["custodian"]["receipt_id"] for e in entries[5:]} == {
+        "5cbb3222-181d-439d-9202-02a8d8030e4e"}
     assert R.find_recorded(led, "GP-REST")["evidence_id"] == entries[3]["evidence_id"]
 
 
