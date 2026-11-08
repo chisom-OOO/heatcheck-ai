@@ -479,3 +479,14 @@ def test_every_turn_carries_frost_keys(view, tmp_path):
     for q in ("hot hand three straight?", "who is the best dunker ever?"):
         out = d.turn(q)
         assert isinstance(out["frost"], list) and len(out["frost"]) <= 3 and out["frost_reaction"]
+
+
+
+@pytest.mark.parametrize("bad", ["With all those simultaneous punts, did you check for flukes?",
+                                 "Is that a value bet, Heater?"])
+def test_frost_rephrase_with_betting_wording_keeps_the_template(view, tmp_path, bad):
+    t = FakeTransport(ref=bad)
+    led = EvidenceLedger(tmp_path / "l.jsonl")
+    out = Dialogue(view, led, llm(tmp_path, t)).turn("hot hand three straight?")
+    chal = {c.check: c.question for c in frost.select(ref_facts(led.get(out["evidence_record_id"])))}
+    assert out["frost"] and all(f["question"] == chal[f["check"]] for f in out["frost"])

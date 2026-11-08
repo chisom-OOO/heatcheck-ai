@@ -479,6 +479,10 @@ BETTING_WORDS = re.compile(
     r"can['’]?t lose|cannot lose|a lock|lock it in|mortal lock)(?![\w'’])", re.IGNORECASE)
 
 
+# Frost's rephrase only (Heater's list above is the user's exact list): British betting slang.
+FROST_EXTRA_BETTING = re.compile(r"(?<![\w'’])punt(?:s|er|ers|ing|ed)?(?![\w'’])", re.IGNORECASE)
+
+
 def betting_words(text: str) -> list[str]:
     """Betting-encouragement wording in a Heater line; empty means it may be said."""
     return sorted({m.group(0).lower() for m in BETTING_WORDS.finditer(text or "")})
@@ -551,6 +555,9 @@ class Dialogue:
                 return None
             if number_violations(text, facts) or take_mentions_ref(text) or len(text) > 220:
                 return None                   # fall back to the template question
+            # FROST_SYSTEM says "never suggest betting"; enforce it (live, 8 Nov: "simultaneous punts")
+            if betting_words(text) or FROST_EXTRA_BETTING.search(text):
+                return None
             return text.strip()
 
         if not chal:
