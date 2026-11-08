@@ -369,3 +369,13 @@ export const TIMING = Object.freeze({
 export function fallbackSpeechMs(text, rate = 1) {
   return Math.max(600, Math.round((String(text).length * 75) / rate));
 }
+
+/** Extra time a voiced line may take beyond fallbackSpeechMs before speak() stops waiting. */
+export const SPEECH_GRACE_MS = 2500;
+
+/** The longest speak() waits for the browser's speech to report its end. Some browsers (headless
+ *  Chromium, a hidden tab, no installed voice) never fire onend or onerror; without this limit the
+ *  sequence would stop after the Ref's line and the stamp and end pose would never show. */
+export function speechGuardMs(text, rate = 1) {
+  return fallbackSpeechMs(text, rate) + SPEECH_GRACE_MS;
+}
