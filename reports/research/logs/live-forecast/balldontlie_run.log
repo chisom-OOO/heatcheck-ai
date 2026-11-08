@@ -1,0 +1,120 @@
+code: research/live-forecast @ af27c73 + reader restricted to numbered pages
+data: max/nba-schedule@eec051d data/live/raw/balldontlie (14 pages, sha256 verified against the commit message)
+$ python -I handoff/research-20261107/scripts/live_forecast.py balldontlie data/live/work data/live/raw/balldontlie data/live/raw/gamelist_handcopied_20261107.json data/live/forecasts.json 2026-11-08T00:04:30Z "fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d"
+{
+  "completed_2026_27_used": 132,
+  "files": [
+    {
+      "file": "01-d7e5e3e7b2682ae7.json",
+      "sha256": "d7e5e3e7b2682ae75c3cb66c8a1348de355d055aabc814a157c1fbc972bea22f"
+    },
+    {
+      "file": "02-301068cf0390bacc.json",
+      "sha256": "301068cf0390baccc8d0297566d1454f59e7d18d5590885754753d247c2871d4"
+    },
+    {
+      "file": "03-2c576c20321e30e8.json",
+      "sha256": "2c576c20321e30e882e121ea52fe5b08d3f3367c264581605c0a4bdb519e12ed"
+    },
+    {
+      "file": "04-1cd06d2e090fd4af.json",
+      "sha256": "1cd06d2e090fd4af7f214fd43d512904442134345dbe28a4a98aaa793cbf678f"
+    },
+    {
+      "file": "05-55ce8235e7bc7b42.json",
+      "sha256": "55ce8235e7bc7b42f1995395a97da6be30a1854ef69c3498169ddf488b12f0b2"
+    },
+    {
+      "file": "06-5c296b3375e2f060.json",
+      "sha256": "5c296b3375e2f060a815679b7ed9584517a4a043bce43799bade0cf8a5f3c054"
+    },
+    {
+      "file": "07-3350d3b57af5a4b4.json",
+      "sha256": "3350d3b57af5a4b44ef1e588745b39eaf23e20aefa06ce92adf88a1aaef9630b"
+    },
+    {
+      "file": "08-06d930a956a0dda5.json",
+      "sha256": "06d930a956a0dda560f876efbb04d1f46be0d2a8aeb449c0eabcf890e207ee0a"
+    },
+    {
+      "file": "09-b43cd112fe30a3d3.json",
+      "sha256": "b43cd112fe30a3d3832c36e1a40eabfd93446f6d4c26c70b827c71f155138f26"
+    },
+    {
+      "file": "10-ca5ed1614b433cad.json",
+      "sha256": "ca5ed1614b433cad4b239af50fbe77353f5ffbb983bec62e878f6a5965815fcb"
+    },
+    {
+      "file": "11-0e347c1235d55d22.json",
+      "sha256": "0e347c1235d55d227b58c7483ee83b5145738d72a76de1c26698e98172606617"
+    },
+    {
+      "file": "12-4f035e3fabfacca4.json",
+      "sha256": "4f035e3fabfacca4f7bc711b3917dd11be36e22103181ce8be95c5a470ff4e2c"
+    },
+    {
+      "file": "13-c2f7a847dab7aff9.json",
+      "sha256": "c2f7a847dab7aff92522df62371f4359c77c787f18d550a5b8de8dd3e10a1cf7"
+    },
+    {
+      "file": "14-3d6a7506b66c5dfb.json",
+      "sha256": "3d6a7506b66c5dfb6bd89e300aa71cbb25cc33e8799a687d7174a25d1eeed8ed"
+    }
+  ],
+  "data_cutoff_utc": "2026-11-07T07:00:00Z",
+  "games": [
+    [
+      "nba:0022600189",
+      "Denver Nuggets",
+      "@",
+      "Indiana Pacers",
+      0.304183
+    ],
+    [
+      "nba:0022600190",
+      "Brooklyn Nets",
+      "@",
+      "Atlanta Hawks",
+      0.864459
+    ],
+    [
+      "nba:0022600191",
+      "New York Knicks",
+      "@",
+      "Cleveland Cavaliers",
+      0.661772
+    ],
+    [
+      "nba:0022600192",
+      "Washington Wizards",
+      "@",
+      "Oklahoma City Thunder",
+      0.936056
+    ],
+    [
+      "nba:0022600193",
+      "Orlando Magic",
+      "@",
+      "Golden State Warriors",
+      0.640267
+    ],
+    [
+      "nba:0022600194",
+      "Houston Rockets",
+      "@",
+      "Phoenix Suns",
+      0.475292
+    ],
+    [
+      "nba:0022600195",
+      "San Antonio Spurs",
+      "@",
+      "Portland Trail Blazers",
+      0.501433
+    ]
+  ]
+}
+exit=0
+$ (max/integrate-r001-e001 worktree) uv run --frozen python -m heatcheck.contracts.live_forecast data/live/forecasts.json
+validator at 4930adb
+PASS /home/user/heatcheck-ai/data/live/forecasts.json: heatcheck-live-forecast/1 non-sample, games=7, cutoff=2026-11-07T07:00:00Z

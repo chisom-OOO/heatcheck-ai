@@ -1,0 +1,14 @@
+view {'source': '9b44a479ce951b9a7184bcae5bf4bab41518887a1491ea51a42c4ab60e2f28a6', 'data_mode': 'REAL_NBA_RETROSPECTIVE', 'n_attempts': 181, 'n_groups': 19, 'n_games': 1, 'arrays_sha256': '2a63bc792a4c85483e7ebf5d46152ca344108321568e1a3ab96ebe94b67adb31'}
+8c66d64b502709ff53e7c36dcaa02b24552fb2bf1293bf956864a8f4cd191979 HH-K3 INSUFFICIENT_EVIDENCE | after-3-makes n=14, after-3-misses n=18, need >= 30 each
+    A-INPUT-INTEGRITY@1          EXECUTED    arrays aligned, binary outcomes, values in {2,3}, contiguous groups
+    A-PERMUTATION-NULL@1         EXECUTED    T=0.198413, null mean=-0.033684, one-sided p=0.061000 (B_eff=999)
+    A-SAMPLE-SIZE@1              EXECUTED    after-3-makes n=14, after-3-misses n=18, need >= 30 each
+    A-SHOT-VALUE-SELECTION@1     EXECUTED    3pt share after makes minus after misses = -0.0476; limit 0.1
+    A-SPLIT-HALF-REPLICATION@1   EXECUTED    bias-corrected effect even=-0.140111, odd=+0.610580
+f2277b9f963cb899d7f9a2fbf761692d87d45169b199976eb86f7a8e15596886 HH-K2 NOT_SUPPORTED | p=0.2390 (alpha 0.05), bias-corrected effect +0.0740 (floor 0.01)
+    A-INPUT-INTEGRITY@1          EXECUTED    arrays aligned, binary outcomes, values in {2,3}, contiguous groups
+    A-PERMUTATION-NULL@1         EXECUTED    T=0.028950, null mean=-0.045023, one-sided p=0.239000 (B_eff=999)
+    A-SAMPLE-SIZE@1              EXECUTED    after-2-makes n=31, after-2-misses n=39, need >= 30 each
+    A-SHOT-VALUE-SELECTION@1     EXECUTED    3pt share after makes minus after misses = -0.0108; limit 0.1
+    A-SPLIT-HALF-REPLICATION@1   EXECUTED    bias-corrected effect even=-0.168062, odd=+0.379218
+4004ce39456826776be9fdc67b31074bb5337931ab621f4729144b99b78df0bc GP-REST BLOCKED | no GAME_SEASON_VIEW implemented for GP-REST

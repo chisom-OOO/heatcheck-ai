@@ -122,8 +122,11 @@ def research_problems(manifest: dict, records: list[dict], *, real: bool) -> lis
     rows = [r for r in of_type(records, "FEATURE_ROW") if r["body"]["target_kind"] == "PRE_SHOT_MAKE"]
     covered: Counter[str] = Counter()
     for gid, g in games.items():
-        ref = reference_features(
-            [e for e in events if e["body"]["game_id"] == gid], g["home_team_id"], g["away_team_id"])
+        gev = [e for e in events if e["body"]["game_id"] == gid]
+        ref = reference_features(gev, g["home_team_id"], g["away_team_id"])
+        ref_fga = reference_features(gev, g["home_team_id"], g["away_team_id"],
+                                     count_free_throws=False)
+        count_defs: dict[str, set[str]] = defaultdict(set)
         for r in rows:
             b = r["body"]
             if b["game_id"] != gid:
@@ -152,7 +155,10 @@ def research_problems(manifest: dict, records: list[dict], *, real: bool) -> lis
                     p.append(f"{b['target_id']}: input EVENT sequence "
                              f"{src['body']['sequence']} >= shot {seq} (LEAK)")
             for name in b["features"]:
-                if LEAKY_NAME.search(name) and name not in MIN_FEATURES and "prior" not in name:
+                # prev*/prior* names describe EARLIER shots' outcomes (hot-hand inputs); the
+                # flip harness, not this heuristic, decides whether they leak.
+                if LEAKY_NAME.search(name) and name not in MIN_FEATURES \
+                        and not name.startswith(("prev", "prior")) and "prior" not in name:
                     p.append(f"{b['target_id']}: feature name {name!r} suggests outcome data")
             for name in MIN_FEATURES:
                 fv = b["features"].get(name)
@@ -160,8 +166,22 @@ def research_problems(manifest: dict, records: list[dict], *, real: bool) -> lis
                     p.append(f"{b['target_id']}: minimum feature {name} missing")
                     continue
                 want = ref[s["provider_event_id"]][name]
-                if fv["value"] is not None and want is not None and float(fv["value"]) != float(want):
+                alt = ref_fga[s["provider_event_id"]][name]
+                if fv["value"] is None or want is None:
+                    continue
+                v = float(fv["value"])
+                if name in ("player_prior_attempts_in_game", "player_prior_makes_in_game"):
+                    ok = {d for d, w in (("ALL_SHOTS", want), ("FGA_ONLY", alt)) if v == float(w)}
+                    if not ok:
+                        p.append(f"{b['target_id']}: {name}={fv['value']} matches neither "
+                                 f"definition (all shots {want}, FGA only {alt})")
+                    elif len(ok) == 1:
+                        count_defs[name] |= ok
+                elif v != float(want):
                     p.append(f"{b['target_id']}: {name}={fv['value']} reviewer recomputed {want}")
+        for name, defs in count_defs.items():
+            if len(defs) > 1:
+                p.append(f"{gid}: {name} mixes definitions across rows {sorted(defs)}")
     for (_, peid) in shots:
         if covered[peid] == 0 and not any(peid in x for x in excluded):
             p.append(f"shot {peid} has no PRE_SHOT_MAKE row and no manifest exclusion")
@@ -250,8 +270,8 @@ def experience_problems(directory: Path, manifest: dict, records: list[dict], *,
             age = (recv - prov).total_seconds()
             if b["status"] == "OK" and age > stale_s:
                 p.append(f"{rid}: status OK but book is {age:.0f}s old > {stale_s}s (STALE)")
-        elif b["status"] == "OK":
-            p.append(f"{rid}: status OK with no provider_time_utc; freshness unprovable")
+        # No provider time is not a defect under DECISIONS 2026-11-07 (Max): freshness is
+        # measured on received_utc (600 s historical before cutoff, 60 s live).
         if created is not None and created < recv:
             p.append(f"{rid}: received {b['received_utc']} after manifest created_utc")
         snap = snaps.get(b["raw_snapshot_id"])

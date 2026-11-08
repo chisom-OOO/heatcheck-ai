@@ -1,0 +1,272 @@
+# HeatCheck check run
+date_utc: 2026-11-07T20:33:57Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/heater-character
+commit: 93566c0af01b76df0f22492d1c90e31774fca902
+worktree clean: True
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv run ruff check apps/web
+All checks passed!
+exit: 0
+
+## cd apps\web && node --test --test-reporter=tap tests/heater.test.mjs
+TAP version 13
+# Subtest: one pose map covers all 9 states; unsure and blocked borrow thinking and listening
+ok 1 - one pose map covers all 9 states; unsure and blocked borrow thinking and listening
+  ---
+  duration_ms: 2.8326
+  type: 'test'
+  ...
+# Subtest: pose images present
+not ok 2 - pose images present # TODO missing: idle, listening, thinking, hot_take, heat_check, vindicated, cooled
+  ---
+  duration_ms: 7.7775
+  type: 'test'
+  location: 'C:\\Users\\nicho_yyv3g9s\\AppData\\Local\\Temp\\claude\\6f3eaf0eb1f7cd63\\a7e4e5a3-018f-4430-a9fb-444ec76a178c\\scratchpad\\hc\\apps\\web\\tests\\heater.test.mjs:44:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   'idle',
+    +   'listening',
+    +   'thinking',
+    +   'hot_take',
+    +   'heat_check',
+    +   'vindicated',
+    +   'cooled'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'idle'
+    1: 'listening'
+    2: 'thinking'
+    3: 'hot_take'
+    4: 'heat_check'
+    5: 'vindicated'
+    6: 'cooled'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/nicho_yyv3g9s/AppData/Local/Temp/claude/6f3eaf0eb1f7cd63/a7e4e5a3-018f-4430-a9fb-444ec76a178c/scratchpad/hc/apps/web/tests/heater.test.mjs:45:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: every pose image present is a WebP of 1024 px height
+ok 3 - every pose image present is a WebP of 1024 px height
+  ---
+  duration_ms: 0.3914
+  type: 'test'
+  ...
+# Subtest: the SVG rig is gone: no heater.svg and no SVG mount
+ok 4 - the SVG rig is gone: no heater.svg and no SVG mount
+  ---
+  duration_ms: 1.1318
+  type: 'test'
+  ...
+# Subtest: CSS: 200 ms crossfade, \#12121A stage, radial edge mask, every state, reduced motion
+ok 5 - CSS: 200 ms crossfade, \#12121A stage, radial edge mask, every state, reduced motion
+  ---
+  duration_ms: 0.9626
+  type: 'test'
+  ...
+# Subtest: fixture is a byte copy of Max's committed ledger
+ok 6 - fixture is a byte copy of Max's committed ledger
+  ---
+  duration_ms: 1.7642
+  type: 'test'
+  ...
+# Subtest: verdict -> end state and chip; unknown verdicts never vindicate
+ok 7 - verdict -> end state and chip; unknown verdicts never vindicate
+  ---
+  duration_ms: 1.6938
+  type: 'test'
+  ...
+# Subtest: card model for HH-K2: the Ref's numbers come only from the record
+ok 8 - card model for HH-K2: the Ref's numbers come only from the record
+  ---
+  duration_ms: 35.0234
+  type: 'test'
+  ...
+# Subtest: Heater's line is a hot take, never the claim description
+ok 9 - Heater's line is a hot take, never the claim description
+  ---
+  duration_ms: 2.8731
+  type: 'test'
+  ...
+# Subtest: personality file formats: table, {lines}, {claims}, default fallback, rotation
+ok 10 - personality file formats: table, {lines}, {claims}, default fallback, rotation
+  ---
+  duration_ms: 0.9911
+  type: 'test'
+  ...
+# Subtest: every committed record maps to a state and a chip without problems
+ok 11 - every committed record maps to a state and a chip without problems
+  ---
+  duration_ms: 2.5385
+  type: 'test'
+  ...
+# Subtest: bad input is refused, never zero-filled
+ok 12 - bad input is refused, never zero-filled
+  ---
+  duration_ms: 1.7769
+  type: 'test'
+  ...
+# Subtest: emphasis words and boundary word lookup
+ok 13 - emphasis words and boundary word lookup
+  ---
+  duration_ms: 0.457
+  type: 'test'
+  ...
+# Subtest: voices: Heater and Ref get different voices when two exist
+ok 14 - voices: Heater and Ref get different voices when two exist
+  ---
+  duration_ms: 1.1822
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 1
+# duration_ms 256.2582
+exit: 0
+
+## cd apps\web && node --test tests/
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\apps\web\tests'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v24.21.0
+✖ tests (123.5123ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.4086
+
+✖ failing tests:
+
+test at tests:1:1
+✖ tests (123.5123ms)
+  'test failed'
+exit: 1
+
+## cd apps\web && uv run python -m unittest discover -s tests -q
+----------------------------------------------------------------------
+Ran 80 tests in 10.322s
+
+OK
+exit: 0
+
+# Re-run of the node step: 'node --test tests/' treats the directory path as a file and fails without running any test.
+# Same commit; worktree is not clean only because this log file is untracked. The poses/ folder was moved out for both runs.
+# HeatCheck check run
+date_utc: 2026-11-07T20:34:27Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/heater-character
+commit: 93566c0af01b76df0f22492d1c90e31774fca902
+worktree clean: False
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## cd apps\web && node --test tests/heater.test.mjs tests/referee.test.mjs
+✔ one pose map covers all 9 states; unsure and blocked borrow thinking and listening (4.0311ms)
+⚠ pose images present (2.1976ms) # missing: idle, listening, thinking, hot_take, heat_check, vindicated, cooled
+✔ every pose image present is a WebP of 1024 px height (0.3152ms)
+✔ the SVG rig is gone: no heater.svg and no SVG mount (1.0846ms)
+✔ CSS: 200 ms crossfade, #12121A stage, radial edge mask, every state, reduced motion (1.005ms)
+✔ fixture is a byte copy of Max's committed ledger (3.6446ms)
+✔ verdict -> end state and chip; unknown verdicts never vindicate (2.8015ms)
+✔ card model for HH-K2: the Ref's numbers come only from the record (39.1962ms)
+✔ Heater's line is a hot take, never the claim description (2.717ms)
+✔ personality file formats: table, {lines}, {claims}, default fallback, rotation (1.0401ms)
+✔ every committed record maps to a state and a chip without problems (1.715ms)
+✔ bad input is refused, never zero-filled (1.1323ms)
+✔ emphasis words and boundary word lookup (0.4536ms)
+✔ voices: Heater and Ref get different voices when two exist (0.9773ms)
+✔ module is pure: no DOM or network globals used (3.5355ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (4.7211ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (1.2882ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.5205ms)
+✔ unknown attack outcome and non-finite numbers are flagged (1.3155ms)
+✔ other formats are read but flagged (0.9959ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (2.5627ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.3314ms)
+✔ ledger entry HH-K2 maps to claim, attacks, verdict, evidence (4.4831ms)
+✔ ledger entry without server verification says so (1.5817ms)
+✔ BLOCKED entry lists every mandatory attack as NOT_RUN, nothing zero-filled (1.4167ms)
+✔ unknown attack status and protocol are flagged, not reinterpreted (3.6612ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 1
+ℹ duration_ms 255.8161
+
+✖ failing tests:
+
+test at tests\heater.test.mjs:44:1
+⚠ pose images present (2.1976ms) # missing: idle, listening, thinking, hot_take, heat_check, vindicated, cooled
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'idle',
+  +   'listening',
+  +   'thinking',
+  +   'hot_take',
+  +   'heat_check',
+  +   'vindicated',
+  +   'cooled'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///C:/Users/nicho_yyv3g9s/AppData/Local/Temp/claude/6f3eaf0eb1f7cd63/a7e4e5a3-018f-4430-a9fb-444ec76a178c/scratchpad/hc/apps/web/tests/heater.test.mjs:45:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'idle', 'listening', 'thinking', 'hot_take', 'heat_check', 'vindicated', 'cooled' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+exit: 0

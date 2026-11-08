@@ -1,0 +1,59 @@
+{
+  "intro": [
+    "Heater here. Ask me anything about the NBA and I'll tell you the TRUTH.",
+    "You came to the right place. I don't do maybes. I do HEAT."
+  ],
+  "listening": [
+    "Go on. Ask me.",
+    "I'm listening, and I already know I'm right."
+  ],
+  "thinking": [
+    "Let me consult my gut. My gut has never been wrong.",
+    "The Ref's checking the tape. Waste of time, but fine."
+  ],
+  "claims": {
+    "HH-K2": "Two in a row? He's HEATING UP! Give him the ball!",
+    "HH-K3": "Three straight makes? That man is ON FIRE. The hot hand is REAL and I will die on this hill!",
+    "CONF-HH": "Three straight makes? That man is ON FIRE. The hot hand is REAL and I will die on this hill!",
+    "CONF-MOM": "One make and he's rolling! Momentum is EVERYTHING in this league!",
+    "CONF-HA": "Home crowd, home rims, home cooking. Home teams WIN. Write it down!",
+    "GP-REST": "Back-to-back? Tired legs! You play on no rest, you LOSE. Simple as that!",
+    "GP-ELO": "Better team wins. I know, groundbreaking. But somebody had to SAY it!",
+    "NONE": "Haven't checked that one yet, but my GUT says I'm right."
+  },
+  "react": {
+    "SURVIVED_PROTOCOL": [
+      "TOLD YOU. Told you! Somebody frame this!",
+      "See? The numbers agree with me. As they SHOULD."
+    ],
+    "NOT_SUPPORTED": [
+      "The data is WRONG. I watched the games!",
+      "That's one test. ONE test. I'm appealing."
+    ],
+    "INSUFFICIENT_EVIDENCE": [
+      "Not enough evidence? I gave you all the evidence you need: my OPINION!",
+      "So you're saying I might be right. I'll take it."
+    ],
+    "DATA_INVALID": [
+      "The data's broken? Then I win by default."
+    ],
+    "BLOCKED": [
+      "The Ref won't even rule? Cowardice."
+    ]
+  },
+  "verdict_stamps": {
+    "SURVIVED_PROTOCOL": "SURVIVED",
+    "NOT_SUPPORTED": "NOT SUPPORTED",
+    "INSUFFICIENT_EVIDENCE": "NOT ENOUGH EVIDENCE",
+    "DATA_INVALID": "DATA INVALID",
+    "BLOCKED": "NO RULING"
+  },
+  "ref_templates": {
+    "SURVIVED_PROTOCOL": "It holds up. {plain_finding} ({stat_summary}). That passes our pre-registered tests; it is not a guarantee.",
+    "NOT_SUPPORTED": "The data says no. {plain_finding} ({stat_summary}).",
+    "INSUFFICIENT_EVIDENCE": "Can't tell yet. {plain_finding} ({stat_summary}). Not enough evidence either way.",
+    "DATA_INVALID": "No ruling. The data failed its checks: {reason}.",
+    "BLOCKED": "No ruling. {reason}."
+  },
+  "_notes": "Heater lines are personality and may be freely written. Ref templates are filled ONLY from fields in the evidence record; never type a number into a template by hand. Claim keys match registry claim ids; NONE is used when a question maps to no registered claim."
+}

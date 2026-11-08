@@ -1,0 +1,167 @@
+{
+  "format": "heatcheck-quote-mappings/1",
+  "run": "20261107T222950Z",
+  "captured": [
+    "2026-11-07T22:29:52.415653Z",
+    "2026-11-07T22:29:58.548346Z"
+  ],
+  "forecast_input": {
+    "path": "tests/fixtures/live/forecasts.SAMPLE.json",
+    "sha256": "2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c",
+    "is_sample": true,
+    "source": {
+      "results": "SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.",
+      "fetched_utc": "SAMPLE: 2026-11-07T22:30:00Z (approximate browser read)",
+      "sha256": "SAMPLE: no source file was hashed",
+      "cross_check": "NOT_RUN"
+    },
+    "data_cutoff_utc": "2026-11-07T22:00:00Z"
+  },
+  "note": "Ids, labels and statuses as captured (PROPOSED until Max verifies them). No prices: they come from /api/investigate.",
+  "mappings": [
+    {
+      "mapping_id": "map:nba:0022600190:KALSHI:KXNBAGAME-26NOV07BKNATL-ATL:yes",
+      "game_id": "nba:0022600190",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07BKNATL-ATL:yes",
+      "team_id": "nba-team:1610612737",
+      "label": "YES (Atlanta)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600190-kx-2229",
+      "records_sha256": "f74bb28251d8f04634d2b7d174ca315c2ce2681e7e1889bf10ed33f7ffee49fb"
+    },
+    {
+      "mapping_id": "map:nba:0022600190:POLYMARKET:54981282061197287727673827028104030796914805657711098653861260722552109635113",
+      "game_id": "nba:0022600190",
+      "venue": "POLYMARKET",
+      "contract_id": "54981282061197287727673827028104030796914805657711098653861260722552109635113",
+      "team_id": "nba-team:1610612737",
+      "label": "Hawks",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600190-pm-2229",
+      "records_sha256": "e531ad76e9aeb1052f04e6dee0d56ddebada7982117f6f85d5bf4c428ac75852"
+    },
+    {
+      "mapping_id": "map:nba:0022600191:KALSHI:KXNBAGAME-26NOV07NYKCLE-CLE:yes",
+      "game_id": "nba:0022600191",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07NYKCLE-CLE:yes",
+      "team_id": "nba-team:1610612739",
+      "label": "YES (Cleveland)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600191-kx-2229",
+      "records_sha256": "42a5e28ee049864d4f5befdaea82bd32fc3718eea0b663ebdb2b98f3bed9b611"
+    },
+    {
+      "mapping_id": "map:nba:0022600191:POLYMARKET:60955229673760716456263204416898543673892689428977581401929964569716185748287",
+      "game_id": "nba:0022600191",
+      "venue": "POLYMARKET",
+      "contract_id": "60955229673760716456263204416898543673892689428977581401929964569716185748287",
+      "team_id": "nba-team:1610612739",
+      "label": "Cavaliers",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600191-pm-2229",
+      "records_sha256": "af42bca349ea9ddb0783003a12ed8084cf76aeeae7aa96b7ec5bcb208f831889"
+    },
+    {
+      "mapping_id": "map:nba:0022600192:KALSHI:KXNBAGAME-26NOV07WASOKC-OKC:yes",
+      "game_id": "nba:0022600192",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07WASOKC-OKC:yes",
+      "team_id": "nba-team:1610612760",
+      "label": "YES (Oklahoma City)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600192-kx-2229",
+      "records_sha256": "5aa396bd713cdfd11950cd6bb224aa3ad8ed3041218f99ba4cc7f23880a114ce"
+    },
+    {
+      "mapping_id": "map:nba:0022600192:POLYMARKET:66537882599737940156471066272898803866527274084473053049426291500098109418778",
+      "game_id": "nba:0022600192",
+      "venue": "POLYMARKET",
+      "contract_id": "66537882599737940156471066272898803866527274084473053049426291500098109418778",
+      "team_id": "nba-team:1610612760",
+      "label": "Thunder",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600192-pm-2229",
+      "records_sha256": "3f37651144f6f8e1fa737e0c3fdf8d29b8191ea69cbed5d8943e4c346fab82b9"
+    },
+    {
+      "mapping_id": "map:nba:0022600193:KALSHI:KXNBAGAME-26NOV07ORLGSW-GSW:yes",
+      "game_id": "nba:0022600193",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07ORLGSW-GSW:yes",
+      "team_id": "nba-team:1610612744",
+      "label": "YES (Golden State)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600193-kx-2229",
+      "records_sha256": "2065306c6e69a8a4de04f6d10ad6058a876d461943dc5249f9f0678ccceb0384"
+    },
+    {
+      "mapping_id": "map:nba:0022600193:POLYMARKET:23904303204222395938248616518334978671748463657071577968878478247188605665854",
+      "game_id": "nba:0022600193",
+      "venue": "POLYMARKET",
+      "contract_id": "23904303204222395938248616518334978671748463657071577968878478247188605665854",
+      "team_id": "nba-team:1610612744",
+      "label": "Warriors",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600193-pm-2229",
+      "records_sha256": "550070145b62790b1133fc75021551f7ba722cae4e9264154345d32c7f846414"
+    },
+    {
+      "mapping_id": "map:nba:0022600194:KALSHI:KXNBAGAME-26NOV07HOUPHX-PHX:yes",
+      "game_id": "nba:0022600194",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07HOUPHX-PHX:yes",
+      "team_id": "nba-team:1610612756",
+      "label": "YES (Phoenix)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600194-kx-2229",
+      "records_sha256": "d1659b71ea877d1283e559a55f6b0c41211575eab5c024768c54f6b6e30611b9"
+    },
+    {
+      "mapping_id": "map:nba:0022600194:POLYMARKET:10104737213854710263895946005185957401288376283963812623329700694279202258427",
+      "game_id": "nba:0022600194",
+      "venue": "POLYMARKET",
+      "contract_id": "10104737213854710263895946005185957401288376283963812623329700694279202258427",
+      "team_id": "nba-team:1610612756",
+      "label": "Suns",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600194-pm-2229",
+      "records_sha256": "9f2f81b9c6932b9ad8c2e81717fc5ab114a2d6459a073c790972909459b12556"
+    },
+    {
+      "mapping_id": "map:nba:0022600195:KALSHI:KXNBAGAME-26NOV07SASPOR-POR:yes",
+      "game_id": "nba:0022600195",
+      "venue": "KALSHI",
+      "contract_id": "KXNBAGAME-26NOV07SASPOR-POR:yes",
+      "team_id": "nba-team:1610612757",
+      "label": "YES (Portland)",
+      "status": "PROPOSED",
+      "two_sided": false,
+      "bundle": "0022600195-kx-2229",
+      "records_sha256": "6536aa0429bb9e5ca353d75307ddf8ffea33c935e26a95cdc35cf6bd4ec1292c"
+    },
+    {
+      "mapping_id": "map:nba:0022600195:POLYMARKET:100938068625435351729413355008380181702901748373348600743777690605897615529768",
+      "game_id": "nba:0022600195",
+      "venue": "POLYMARKET",
+      "contract_id": "100938068625435351729413355008380181702901748373348600743777690605897615529768",
+      "team_id": "nba-team:1610612757",
+      "label": "Trail Blazers",
+      "status": "PROPOSED",
+      "two_sided": true,
+      "bundle": "0022600195-pm-2229",
+      "records_sha256": "876b14e8a2a9ece9fcf54e7a84c24a2e402931a3be8386429c8ed85473f3bafc"
+    }
+  ]
+}

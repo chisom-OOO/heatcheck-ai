@@ -1,0 +1,61 @@
+# HeatCheck check run
+date_utc: 2026-11-07T21:04:37Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/heater-character
+commit: 23cf5371c33d459b7c0ffb41511515e766f4e8fd
+worktree clean: True
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv run ruff check apps/web
+All checks passed!
+exit: 0
+
+## cd apps\web && node --test tests/heater.test.mjs tests/referee.test.mjs
+✔ one pose map covers all 9 states; unsure and blocked borrow thinking and listening (4.8805ms)
+✔ pose images present (0.2365ms)
+✔ every pose image present is a 687x1024 WebP (7.5466ms)
+✔ the SVG rig is gone: no heater.svg and no SVG mount (1.008ms)
+✔ CSS: 200 ms crossfade, #12121A stage, radial edge mask, every state, reduced motion (1.9827ms)
+✔ fixture is a byte copy of Max's committed ledger (1.9925ms)
+✔ verdict -> end state and chip; unknown verdicts never vindicate (0.4883ms)
+✔ card model for HH-K2: the Ref's numbers come only from the record (125.1761ms)
+✔ Heater's line is a hot take, never the claim description (2.2099ms)
+✔ personality file formats: table, {lines}, {claims}, default fallback, rotation (0.5913ms)
+✔ Ref in plain English: words first, numbers second, every number from the record (3.87ms)
+✔ stamps, takes and reactions come from heater_personality.json (0.5949ms)
+✔ offline routing of the example questions (2.5776ms)
+✔ demo page: no debug text in the default view (1.8036ms)
+✔ every committed record maps to a state and a chip without problems (1.8288ms)
+✔ bad input is refused, never zero-filled (1.0952ms)
+✔ emphasis words and boundary word lookup (0.849ms)
+✔ voices: Heater and Ref get different voices when two exist (1.6937ms)
+✔ module is pure: no DOM or network globals used (2.8343ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (6.5127ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (1.7142ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.3662ms)
+✔ unknown attack outcome and non-finite numbers are flagged (1.3342ms)
+✔ other formats are read but flagged (1.1211ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (3.314ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.3674ms)
+✔ ledger entry HH-K2 maps to claim, attacks, verdict, evidence (4.7448ms)
+✔ ledger entry without server verification says so (1.8802ms)
+✔ BLOCKED entry lists every mandatory attack as NOT_RUN, nothing zero-filled (1.511ms)
+✔ unknown attack status and protocol are flagged, not reinterpreted (1.8693ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 390.0585
+exit: 0
+
+## cd apps\web && uv run python -m unittest discover -s tests -q
+----------------------------------------------------------------------
+Ran 80 tests in 10.229s
+
+OK
+exit: 0

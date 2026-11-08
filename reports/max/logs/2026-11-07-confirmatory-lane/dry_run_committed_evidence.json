@@ -1,0 +1,76 @@
+{
+ "mode": "DRY_RUN",
+ "ready": false,
+ "state": "UNRUN_NOT_READY",
+ "family_id": "FAM-CONF-2024-25-v1",
+ "family_hash": "684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0",
+ "seal_id": "870135b5-07a2-4748-b580-d99d7cebee7c",
+ "code_hash": "ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e",
+ "plan_hashes": {
+  "CONF-HA": "6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13",
+  "CONF-MOM": "f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503",
+  "CONF-HH": "46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3"
+ },
+ "statements": {
+  "CONF-HA": "In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games.",
+  "CONF-MOM": "In 2024-25, within a player's game, a field-goal attempt is more likely to be made after a made field goal than after a missed one, beyond what within-player-game shuffling produces.",
+  "CONF-HH": "In 2024-25, within a player's game, a field-goal attempt is more likely to be made after three straight made field goals than after three straight misses, beyond what within-player-game shuffling produces."
+ },
+ "checks": [
+  {
+   "check": "family_manifest",
+   "status": "PASS",
+   "detail": "family.json self-hash 684da846334bf72a7125add17130ffc00bc41749dcf0b010166a7375a2e1f9e0"
+  },
+  {
+   "check": "family_hypotheses",
+   "status": "PASS",
+   "detail": "hypotheses ['CONF-HA', 'CONF-HH', 'CONF-MOM']"
+  },
+  {
+   "check": "plan:CONF-HA",
+   "status": "PASS",
+   "detail": "plan hash 6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13 vs family 6799901f8aa25c398e0ca88dfb8858a914036ee830daedbfbf2c27f8ecf2dd13"
+  },
+  {
+   "check": "plan:CONF-MOM",
+   "status": "PASS",
+   "detail": "plan hash f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503 vs family f01ed8cbb47c6384a5ca86e7a0b87f764ab956d44b950e6062811a942b804503"
+  },
+  {
+   "check": "plan:CONF-HH",
+   "status": "PASS",
+   "detail": "plan hash 46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3 vs family 46cdc53649612e808793564917ca570ff2e0249464dfd8f4cf3fd9244bf4a8e3"
+  },
+  {
+   "check": "research_code",
+   "status": "PASS",
+   "detail": "recomputed ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e vs frozen ebf6aaa4c8e69130f85b6b06e2879d57501d383d1cf170f96a0e3dd49702f09e over 9 files"
+  },
+  {
+   "check": "seal",
+   "status": "PASS",
+   "detail": "1 seal(s) for EPOCH-CONF-2024-25-001; family seal 870135b5-07a2-4748-b580-d99d7cebee7c"
+  },
+  {
+   "check": "registration",
+   "status": "PASS",
+   "detail": "1 registration(s) for EPOCH-CONF-2024-25-001"
+  },
+  {
+   "check": "exposure",
+   "status": "PASS",
+   "detail": "0 reservation(s) on EPOCH-CONF-2024-25-001: UNRUN"
+  },
+  {
+   "check": "sealed_data",
+   "status": "NOT_CHECKED",
+   "detail": "no 2024-25 data directory on this machine; the seal accepts only identical bytes (rebuild with build_confirmatory.py)"
+  },
+  {
+   "check": "platform",
+   "status": "FAIL",
+   "detail": "Research's custodian needs fcntl: run final on Linux/macOS, not Windows"
+  }
+ ]
+}

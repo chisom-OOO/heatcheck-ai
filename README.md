@@ -7,7 +7,66 @@ applies registered tests and preserves the evidence. The intended product also
 includes a planted-truth harness, voice/page/file interaction and optional
 read-only NBA forecast/quote comparisons with Polymarket/Kalshi.
 
+## Run the demo (Windows)
+
+Prerequisites: [uv](https://docs.astral.sh/uv/getting-started/installation/) (it fetches
+Python 3.12 itself), and internet access on the first run. Then, in the repository root:
+
+```powershell
+.\demo.cmd
+```
+
+On any OS the same command is `uv run --frozen --group research python tools/demo.py`.
+
+This one command:
+
+1. **First run only (a few minutes, about 46 MB downloaded).** It downloads the three pinned
+   public archives from `shufinskiy/nba_data` at the commit in
+   `incoming/research-20261107/raw/repo/COMMIT`, and verifies them against Research's
+   `SHA256SUMS`; any mismatch stops the demo. It builds Research's 2023-24 tables with
+   Research's unchanged `build_dataset.py`, then bridges game `nba:0022300061` into a
+   `heatcheck-records/1` bundle. Finally it checks that the bundle's `records_sha256` equals
+   the data identity in the committed evidence ledger. All of this is written to git-ignored
+   `data/`, because raw redistribution rights are unverified.
+2. It copies the committed evidence ledger `evidence/evidence.jsonl` to
+   `logs/demo/evidence.jsonl` (git-ignored). The committed file is never written. If an older
+   demo ledger lacks committed entries, the launcher says so; run once with `--fresh-ledger`.
+3. It starts two local servers and opens both pages:
+   - `http://127.0.0.1:8770/`: the **dialogue console**. Ask Heater (the Discoverer) a
+     question; the Ref answers from the evidence ledger. This is Max's API test page for
+     `POST /api/dialogue`.
+   - `http://127.0.0.1:8765/`: **Experience's UI**. It shows the same ledger read-only, and
+     new dialogue entries appear there.
+
+Ctrl+C stops both servers.
+
+| Option | Effect |
+|---|---|
+| `--no-llm` | Deterministic templates only, with no model calls. This is automatic when `META_API_KEY` is not set. |
+| `--no-browser` | Do not open the browser. |
+| `--setup-only` | Build the data and the ledger, then exit. |
+| `--fresh-ledger` | Reset the demo ledger to the committed one. |
+
+With `META_API_KEY` set in the environment, the question mapping and Heater use live Meta
+model calls (`muse-spark-1.3`, minimal reasoning). The Ref never calls a model: its text is a
+deterministic template built from the evidence entry. Spend is logged per call to
+`logs/llm_usage.jsonl`. The key stays in the server process. The endpoint contract is in
+`docs/DIALOGUE_API.md`.
+
+Known limits:
+- Experience's UI does not yet send questions to `/api/dialogue`; the console page does.
+- The hot-hand tests (HH-K3, HH-K2) run live on one real game: HH-K3 needs more data and is
+  INSUFFICIENT_EVIDENCE; HH-K2 is NOT_SUPPORTED.
+- GP-REST (INSUFFICIENT_EVIDENCE) and GP-ELO (SURVIVED_PROTOCOL) answer from Research's
+  recorded 2023-24 final (custodian receipt 3e238d2d), copied into the ledger, not recomputed.
+- Confirmatory claims (CONF-*) answer in dry-run mode: no verdict until the single recorded
+  final run.
+
 ## Current truth
+
+*Partly superseded on branch `max/integrate-r001-e001` (7 November 2026, evening): the
+agent loop, evidence ledger, dialogue API and Experience's UI exist there; see "Run the
+demo" above and `reports/`. The paragraph below describes the morning skeleton.*
 
 This is a LOCAL PREPARATION SKELETON created 7 November 2026. Reserved Python
 packages, development tooling and specifications exist. No NBA data, agent loop,
@@ -47,5 +106,5 @@ uv run ruff check .
 ```
 
 These validate preparation/tooling only, not mathematical or application gates.
-There is no launch command or website address. Create actual discriminating tests
+For the demo, see "Run the demo (Windows)" above. Create actual discriminating tests
 when functionality exists; do not turn placeholders into claimed capabilities.

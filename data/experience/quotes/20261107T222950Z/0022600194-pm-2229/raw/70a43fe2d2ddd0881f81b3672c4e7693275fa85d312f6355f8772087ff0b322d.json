@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600194",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600194"
+    },
+    "home_team_id": "nba-team:1610612756",
+    "away_team_id": "nba-team:1610612745",
+    "scheduled_tip_utc": "2026-11-08T02:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file."
+  },
+  "captures": [
+    {
+      "venue": "POLYMARKET",
+      "kind": "MARKET",
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-hou-phx-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "34bfab6a2a5950cf4eac66528fe34ff48c4a764e3e32e312cd95ee50eb57a99c",
+      "fetch_start_utc": "2026-11-07T22:29:56.530857Z",
+      "received_utc": "2026-11-07T22:29:56.601117Z"
+    },
+    {
+      "venue": "POLYMARKET",
+      "kind": "BOOK",
+      "source": "GET https://clob.polymarket.com/book?token_id=10104737213854710263895946005185957401288376283963812623329700694279202258427",
+      "http_status": 200,
+      "payload_sha256": "e55f8ee20c3a8fd74a180dababe101433addf4626f6e4b3d58cb8e9e22136d85",
+      "fetch_start_utc": "2026-11-07T22:29:56.617107Z",
+      "received_utc": "2026-11-07T22:29:56.700690Z",
+      "market_payload_sha256": "34bfab6a2a5950cf4eac66528fe34ff48c4a764e3e32e312cd95ee50eb57a99c",
+      "target": {
+        "game_id": "nba:0022600194",
+        "team_id": "nba-team:1610612756",
+        "contract_id": "10104737213854710263895946005185957401288376283963812623329700694279202258427",
+        "expected_label": "Suns"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600194 (HOU at PHX, tip 2026-11-08T02:00:00Z), POLYMARKET contract 10104737213854710263895946005185957401288376283963812623329700694279202258427 labelled 'Suns' = home team wins. Received 2026-11-07T22:29:56.601117Z (market) and 2026-11-07T22:29:56.700690Z (book), local clock. Game list: game_id, tip_utc and team ids from a hand-made SAMPLE forecast file (not Research's) tests/fixtures/live/forecasts.SAMPLE.json sha256 2e2ff9132755e924e5e25d7030ddbdb0fa6e70693dbdcbd042784776fd45634c; source.results: SAMPLE: hand-made by Experience. Game ids, tips and teams copied from the public NBA.com schedule page (www.nba.com/schedule and its /game/ links) read in a browser at about 2026-11-07T22:30Z. Not Research's file.. Mapping PROPOSED for Max to verify. SAMPLE INPUT: the game list was hand-made; the venue prices are real. "
+}

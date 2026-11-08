@@ -1,0 +1,32 @@
+code commit 491e09e6e4f8026b5ddd79ab584d617e77445eba
+## ledger before
+9ed579a0814874e2b6aadd7ca6ddae3be3120d2c15d88e4f46e1c0a09acbf43f  evidence/custodian_ledger.jsonl
+3
+$ python -I scripts/confirmatory.py seal $DATA2024 evidence
+{
+  "seal_id": "870135b5-07a2-4748-b580-d99d7cebee7c",
+  "epoch_id": "EPOCH-CONF-2024-25-001",
+  "input_hash": "3540dfe18eca85697e0c3ec6f0f7f35de2b84368e39ddf4d5f769f1556c388f4",
+  "data_hashes": {
+    "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+    "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+    "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+    "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+  },
+  "at_utc": "2026-11-07T17:52:37.225836Z",
+  "retry": false,
+  "n_games": 1230
+}
+exit=0
+$ (repeat: idempotent)
+  "retry": true,
+## ledger after
+5d2258cef431625f6fcfeaff7a0fc11654b0137171b63e05add8057b96d6798d  evidence/custodian_ledger.jsonl
+4
+previous ledger lines byte-identical; seal appended
+$ probe: a shot-level reservation of a sealed game by another family
+['SHOT:0022400500:12'] REFUSED: games are sealed under epoch EPOCH-CONF-2024-25-001; refused for E-PROBE
+['0022400001'] REFUSED: games are sealed under epoch EPOCH-CONF-2024-25-001; refused for E-PROBE
+['nba:0022300950'] REFUSED: 1 games already exposed under receipt(s) ['3e238d2d-030e-45b4-aae7-db0787ecb873']; e.g. ['nba:0022300950']

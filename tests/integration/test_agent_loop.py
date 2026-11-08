@@ -96,15 +96,57 @@ def test_jone_cannot_propose_unregistered_or_extra_fields(raw):
         parse_proposal(raw)
 
 
-def test_omitted_mandatory_attack_blocks(tmp_path):
+def test_challenger_cannot_remove_required_attacks(tmp_path):
+    """User rule (2026-11-07, RV-AL4/AL5): the Referee enforces the mandatory and applicable
+    attack set itself; a Challenger can add, never remove. (Before this rule the omission
+    produced BLOCKED; now the omitted attacks run anyway and the omission is recorded.)"""
     class LazyChallenger(DeterministicChallenger):
         def select(self, claim, view):
-            return ["A-INPUT-INTEGRITY", "A-SAMPLE-SIZE"]  # skips the permutation null
+            return ["A-INPUT-INTEGRITY", "A-SAMPLE-SIZE"]  # skips the permutation null and optionals
 
     view, _ = league_view(201, 0.6)
-    e = run_once(view, EvidenceLedger(tmp_path / "l.jsonl"), challenger=LazyChallenger())
-    assert e["identity"]["decision"] == "BLOCKED"
-    assert "A-PERMUTATION-NULL" in e["identity"]["reason"]
+    lazy = run_once(view, EvidenceLedger(tmp_path / "l.jsonl"), challenger=LazyChallenger())
+    full = run_once(view, EvidenceLedger(tmp_path / "f.jsonl"))
+    ch = lazy["identity"]["challenger"]
+    assert ch["selected_attacks"] == ["A-INPUT-INTEGRITY", "A-SAMPLE-SIZE"]
+    assert "A-PERMUTATION-NULL" in ch["omitted_required_attacks"]
+    assert ch["attacks_run"] == full["identity"]["challenger"]["attacks_run"] == \
+        ch["referee_required_attacks"]
+    assert lazy["identity"]["decision"] == full["identity"]["decision"]
+    assert lazy["identity"]["attack_results"] == full["identity"]["attack_results"]
+
+
+def test_referee_requires_applicable_optional_attacks_when_set_unknown():
+    """decide() without a required set demands every registered attack, so dropping an
+    optional attack can never yield SURVIVED_PROTOCOL."""
+    claim = CLAIMS["HH-K3"]
+    ok = {"status": "EXECUTED", "reason": "ok", "details": {"sufficient": True}}
+    base = {"A-INPUT-INTEGRITY": ok, "A-SAMPLE-SIZE": ok,
+            "A-PERMUTATION-NULL": {**ok, "p_value": 0.001, "effect_estimate": 0.08}}
+    assert decide(claim, base, True)[0] == "INSUFFICIENT_EVIDENCE"
+    assert decide(claim, base, True, required=sorted(base))[0] == "SURVIVED_PROTOCOL"
+
+
+@pytest.mark.parametrize("raw", [
+    '{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}',
+    '{"claim_id": ["HH-K3"], "rationale": "x"}',
+    '{"claim_id": "HH-K3", "rationale": ["x"]}',
+    '{"claim_id": "HH-K3", "rationale": "x", "extra": 1}',
+    '{"claim_id": 3, "rationale": "x"}',
+    '{"claim_id": "HH-K3", "rationale": NaN}',
+    '["HH-K3"]',
+])
+def test_proposal_parsing_is_strict(raw):
+    with pytest.raises(ProposalRefused):
+        parse_proposal(raw)
+
+
+@pytest.mark.parametrize("sel", [["A-PERMUTATION-NULL", "A-PERMUTATION-NULL"], ["A-MADE-UP"],
+                                 [1], "A-PERMUTATION-NULL", None])
+def test_selection_validation_is_strict(sel):
+    from heatcheck.agents.roles import validate_selection
+    with pytest.raises(ProposalRefused):
+        validate_selection(CLAIMS["HH-K3"], sel)
 
 
 def test_referee_ignores_persuasive_rationale(tmp_path):

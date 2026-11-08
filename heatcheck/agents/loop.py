@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from heatcheck.agents.attacks import IMPLEMENTATIONS
+from heatcheck.agents.confirmatory import LANE_DEVELOPMENT
 from heatcheck.agents.registry import REGISTRY_VERSION, catalogue
 from heatcheck.agents.roles import (
     REFEREE_IDENTITY,
@@ -20,6 +21,7 @@ from heatcheck.agents.roles import (
     decide,
     describe_ways_wrong,
     parse_proposal,
+    required_attacks,
     validate_selection,
 )
 from heatcheck.agents.views import ShotView
@@ -53,22 +55,32 @@ def run_once(view: ShotView | None, ledger: EvidenceLedger, *, view_identity: di
         return None
     data_ok = view is not None and claim.data_requirement == "SHOT_VIEW"
     selected: list[str] = []
+    required: list[str] = []
+    to_run: list[str] = []
     results: dict[str, dict] = {}
     if data_ok:
+        # The Referee's required set is computed here, deterministically, from the view. The
+        # Challenger can add registered attacks to it, never remove any (RV-AL4/AL5).
+        required = required_attacks(claim, view)
         selected = validate_selection(claim, challenger.select(claim, view))
-        for attack_id in selected:
+        to_run = sorted(set(required) | set(selected))
+        for attack_id in to_run:
             results[attack_id] = IMPLEMENTATIONS[attack_id](claim, view)
-    decision, reason = decide(claim, results, data_ok)
+    decision, reason = decide(claim, results, data_ok, required=required if data_ok else None)
     identity = {
         "protocol_version": PROTOCOL_VERSION,
         "registry_version": REGISTRY_VERSION,
+        "lane": LANE_DEVELOPMENT,
         "channel": claim.channel,
         "claim": {"claim_id": claim.claim_id, "version": claim.version,
                   "plan": claim.plan(), "canonical_plan_hash": claim.plan_hash()},
         "data": vid,
         "proposer": {**jone.identity, "rationale": rationale},
         "challenger": {**challenger.identity, "selected_attacks": selected,
-                       "ways_claim_could_be_wrong": describe_ways_wrong(selected)},
+                       "referee_required_attacks": required,
+                       "omitted_required_attacks": sorted(set(required) - set(selected)),
+                       "attacks_run": to_run,
+                       "ways_claim_could_be_wrong": describe_ways_wrong(to_run)},
         "referee": REFEREE_IDENTITY,
         "code": code_identity(),
         "attack_results": [results[a] for a in sorted(results)],

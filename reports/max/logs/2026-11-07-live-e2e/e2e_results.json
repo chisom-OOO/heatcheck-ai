@@ -1,0 +1,280 @@
+{
+  "turns": [
+    {
+      "case": "INSUFFICIENT_EVIDENCE",
+      "question": "Is the hot hand real? Do guys hit more after three straight makes than after three straight misses?",
+      "expected_claim": "HH-K3",
+      "mapped_claim": "HH-K3",
+      "mapping_ok": true,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "INSUFFICIENT_EVIDENCE",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "8c9263541baf1c4f7fcbc91191e00d3284f0ce4b04e873863adf5e9706244a59",
+      "sources": {
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN (LLM not called: every applicable registered attack is already required)",
+        "heater": "LLM",
+        "ref": "LLM"
+      },
+      "heater_text": "LISTEN FOLKS! The Ref says we just DON'T HAVE THE PROOF yet! I'm rolling with the whistle on this one!",
+      "ref_text": "The call here is insufficient evidence.\nAfter 3 straight makes n=14 and after 3 straight misses n=18, with >= 30 each needed, from 181 field goal attempts in 1 games.",
+      "heater_fell_back": false,
+      "ref_fell_back": false,
+      "guard_fallback": false,
+      "wall_ms": 8500.5,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 2553.8,
+          "first_text_ms": null,
+          "prompt_tokens": 428,
+          "completion_tokens": 308,
+          "reasoning_tokens": 290,
+          "est_cost_usd": 0.001844
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3392.3,
+          "first_text_ms": 3295.6,
+          "prompt_tokens": 226,
+          "completion_tokens": 353,
+          "reasoning_tokens": 316,
+          "est_cost_usd": 0.00178275
+        },
+        {
+          "role": "ref",
+          "status": "OK",
+          "latency_ms": 5723.6,
+          "first_text_ms": null,
+          "prompt_tokens": 184,
+          "completion_tokens": 983,
+          "reasoning_tokens": 931,
+          "est_cost_usd": 0.00440775
+        }
+      ],
+      "turn_cost_usd": 0.008034
+    },
+    {
+      "case": "NOT_SUPPORTED",
+      "question": "After a player makes two in a row, is the next shot more likely to go in than after two misses in a row?",
+      "expected_claim": "HH-K2",
+      "mapped_claim": "HH-K2",
+      "mapping_ok": true,
+      "verdict": "NOT_SUPPORTED",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "NOT_SUPPORTED",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "39bae7eb1b1434760c7019280536ab3ac5c6e03d775413199a437bc881a9720e",
+      "sources": {
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN (LLM not called: every applicable registered attack is already required)",
+        "heater": "LLM",
+        "ref": "LLM"
+      },
+      "heater_text": "OH BABY, WHAT A STREAK DEBATE! The Ref says NOT SUPPORTED, so WE HONOR THE WHISTLE! No hot streak crown tonight!",
+      "ref_text": "The claim Same as HH-K3 with streak length 2 is not supported by the registered checks. The record lists p=0.2390 (alpha 0.05), bias-corrected effect +0.0740 (floor 0.01), field_goal_attempts 181, games 1.",
+      "heater_fell_back": false,
+      "ref_fell_back": false,
+      "guard_fallback": false,
+      "wall_ms": 6616.7,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1165.1,
+          "first_text_ms": null,
+          "prompt_tokens": 434,
+          "completion_tokens": 109,
+          "reasoning_tokens": 91,
+          "est_cost_usd": 0.00100575
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 3221.3,
+          "first_text_ms": 2876.9,
+          "prompt_tokens": 207,
+          "completion_tokens": 328,
+          "reasoning_tokens": 285,
+          "est_cost_usd": 0.00165275
+        },
+        {
+          "role": "ref",
+          "status": "OK",
+          "latency_ms": 5317.7,
+          "first_text_ms": null,
+          "prompt_tokens": 164,
+          "completion_tokens": 938,
+          "reasoning_tokens": 866,
+          "est_cost_usd": 0.0041915
+        }
+      ],
+      "turn_cost_usd": 0.00685
+    },
+    {
+      "case": "BLOCKED",
+      "question": "Do back-to-backs and rest days change who wins?",
+      "expected_claim": "GP-REST",
+      "mapped_claim": "GP-REST",
+      "mapping_ok": true,
+      "verdict": "BLOCKED",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "BLOCKED",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "41e630f22b105611b2341c59510535e21de9287246b2aeb24fce84e79a64b427",
+      "sources": {
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN",
+        "heater": "LLM",
+        "ref": "LLM"
+      },
+      "heater_text": "TIRED LEGS LOSE FIGHTS, FOLKS! The Ref says this test is BLOCKED, so we got no proof tonight. Just my opinion, rest is a KILLER edge!",
+      "ref_text": "You asked about Rest-day difference and back-to-backs improve pre-tip win forecasts over Elo. The record says blocked: the test could not run with no GAME_SEASON_VIEW implemented for GP-REST, with field_goal_attempts at 181 and games at 1.",
+      "heater_fell_back": false,
+      "ref_fell_back": false,
+      "guard_fallback": false,
+      "wall_ms": 5846.0,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1281.6,
+          "first_text_ms": null,
+          "prompt_tokens": 420,
+          "completion_tokens": 188,
+          "reasoning_tokens": 170,
+          "est_cost_usd": 0.001324
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 2762.6,
+          "first_text_ms": 2582.2,
+          "prompt_tokens": 199,
+          "completion_tokens": 407,
+          "reasoning_tokens": 356,
+          "est_cost_usd": 0.0019785
+        },
+        {
+          "role": "ref",
+          "status": "OK",
+          "latency_ms": 4539.1,
+          "first_text_ms": null,
+          "prompt_tokens": 152,
+          "completion_tokens": 748,
+          "reasoning_tokens": 684,
+          "est_cost_usd": 0.003369
+        }
+      ],
+      "turn_cost_usd": 0.006672
+    },
+    {
+      "case": "NONE (no registered test)",
+      "question": "Who is the best free throw shooter in the league?",
+      "expected_claim": "NONE",
+      "mapped_claim": "NONE",
+      "mapping_ok": true,
+      "verdict": null,
+      "lane": null,
+      "committed_verdict": null,
+      "verdict_matches_committed": null,
+      "evidence_record_id": null,
+      "sources": {
+        "mapping": "LLM",
+        "heater": "LLM",
+        "ref": "TEMPLATE_NO_REGISTERED_TEST"
+      },
+      "heater_text": "LISTEN, folks, the Ref says nothing was run! So this is just my opinion, but NOBODY is smoother at the stripe!",
+      "ref_text": "No registered test exists for this question, so nothing was run and there is no verdict. Registered claims: HH-K3, HH-K2, GP-REST, CONF-HA, CONF-MOM, CONF-HH.",
+      "heater_fell_back": false,
+      "ref_fell_back": true,
+      "guard_fallback": false,
+      "wall_ms": 3369.3,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1659.6,
+          "first_text_ms": null,
+          "prompt_tokens": 419,
+          "completion_tokens": 160,
+          "reasoning_tokens": 144,
+          "est_cost_usd": 0.00120375
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 1707.8,
+          "first_text_ms": 1594.4,
+          "prompt_tokens": 181,
+          "completion_tokens": 320,
+          "reasoning_tokens": 282,
+          "est_cost_usd": 0.00158625
+        }
+      ],
+      "turn_cost_usd": 0.00279
+    },
+    {
+      "case": "CONFIRMATORY (dry run, no verdict)",
+      "question": "Do home teams really win more than half their games?",
+      "expected_claim": "CONF-HA",
+      "mapped_claim": "CONF-HA",
+      "mapping_ok": true,
+      "verdict": null,
+      "lane": "CONFIRMATORY",
+      "committed_verdict": null,
+      "verdict_matches_committed": null,
+      "evidence_record_id": null,
+      "sources": {
+        "mapping": "LLM",
+        "challenger": "NOT_APPLICABLE (confirmatory: frozen pre-registered procedure)",
+        "heater": "LLM",
+        "ref": "TEMPLATE_CONFIRMATORY_NOT_RUN"
+      },
+      "heater_text": "Oh this is JUICY, folks! Home crowd brings the NOISE! We wait for the Ref to call it official!",
+      "ref_text": "CONF-HA is a pre-registered confirmatory claim on the sealed 2024-25 season: In 2024-25 NBA regular-season games not played at a neutral site, the designated home team wins more than half of the games. Its single final test has not been run, so there is no verdict yet. It runs once, recorded, after the reviewer verifies the seal. Dry run: plans, code and seal match; the sealed data were not checked on this machine.",
+      "heater_fell_back": false,
+      "ref_fell_back": true,
+      "guard_fallback": false,
+      "wall_ms": 4392.2,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1388.6,
+          "first_text_ms": null,
+          "prompt_tokens": 419,
+          "completion_tokens": 166,
+          "reasoning_tokens": 148,
+          "est_cost_usd": 0.00122925
+        },
+        {
+          "role": "heater",
+          "status": "OK",
+          "latency_ms": 2996.3,
+          "first_text_ms": 2787.9,
+          "prompt_tokens": 225,
+          "completion_tokens": 369,
+          "reasoning_tokens": 335,
+          "est_cost_usd": 0.0017252
+        }
+      ],
+      "turn_cost_usd": 0.002954
+    }
+  ],
+  "usage_total": {
+    "calls": 13,
+    "ok": 13,
+    "est_cost_usd": 0.0273,
+    "tokens": {
+      "prompt": 3658,
+      "completion": 5377,
+      "reasoning": 4898
+    }
+  },
+  "cap_usd": 1.0,
+  "committed_ledger": "reports\\max\\logs\\2026-11-07-al-fixes\\evidence_real_game_v2.jsonl"
+}

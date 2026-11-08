@@ -28,10 +28,11 @@ hide a failure or secret-file reads/prints. Provider keys stay server-side.
 7. Before accepting a milestone, assign a reviewer other than the author. Derive
 expectations and replay actual checks against exact candidate bytes. Static-only
 review leaves execution gates NOT_RUN. Preserve root-cause defects/repair evidence.
-8. No commit until the user creates the new repository and the first local commit
-is authorised. No push/publication/deployment/PR/remote setting change from this
-preparation. The pre-push hook has no automatic calendar unlock. No outside
-messages, paid signup or wallet/order writes without explicit user instruction.
+8. Sessions commit and push freely to their own branches only (max/*, research/*,
+experience/*, review/*); Max integrates. Nothing goes to main (no PR into main,
+no merge into main) without the user's explicit instruction. No force-push. Ask
+the user before any paid service, key, account, order, outside message,
+publication, deployment or remote setting change.
 9. Record actual commands, source/data/config/seed/environment, raw outputs and
 PASS/FAIL/NOT_RUN with scope. One scaffold check is not an NBA/statistics/browser gate.
 10. Keep source/state/contracts/gates/decisions current. Preserve real preparation

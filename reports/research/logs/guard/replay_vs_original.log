@@ -1,0 +1,16 @@
+original run created_at_utc: 2026-11-07T15:22:57.394556Z (predates guard fix)
+replay   run created_at_utc: 2026-11-07T17:17:44.532237Z mode AMENDED_REPLAY
+receipt original/replay: 3e238d2d-030e-45b4-aae7-db0787ecb873 3e238d2d-030e-45b4-aae7-db0787ecb873 same: True
+claim_plan_hash same: True a8d8129283fbf1b57e119aec83b7904948dd9e5250647148465b5a030e312cf8
+data_hashes: original copied from plan; replay recomputed from inputs; equal: True
+input_hash: dbb4d3e4a4bba2cc449dcb754f8dfb9d03165d38986a521a41202fa47ca5b567
+code hash: plan d496e34eca5139024537016f235dd070bd5f439ddfa899861ac905097ee8de56 | replay 656861b1b8b6acc377c3b9506005eda78854790ae77752a7143b956641135bfa
+decisions identical: True
+scores identical: True
+counts_coverage identical: True
+H1: original INSUFFICIENT_EVIDENCE mean=0.020059408874263322 ci=[-0.0043295841147450095, 0.04380908955080787] holm=0.048995100489951 | replay INSUFFICIENT_EVIDENCE mean=0.020059408874263322
+H2: original SURVIVED_PROTOCOL mean=0.06437803424852673 ci=[0.010614956616349275, 0.1281682849877349] holm=0.045795420457954206 | replay SURVIVED_PROTOCOL mean=0.06437803424852673
+original sensitivity_exploratory: {"mean": 0.06437803424852673, "ci": [NaN, NaN], "p_one_sided": NaN, "n_obs": 300, "n_days": 39, "nonoverlap_blocks": 2, "status": "INSUFFICIENT_BLOCKS"}
+replay   sensitivity_exploratory: {"H1": {"14": {"status": "NOT_COMPUTED", "days": 39, "nonoverlap_blocks": 2, "reason": "39-day final window gives 2 non-overlapping 14-day blocks, below the pre-registered minimum of 5"}, "28": {"status": "NOT_COMPUTED", "days": 39, "nonoverlap_blocks": 1, "reason": "39-day final window gives 1 non-overlapping 28-day blocks, below the pre-registered minimum of 5"}}, "H2": {"14": {"status": "NOT_COMPUTED", "days": 39, "nonoverlap_blocks": 2, "reason": "39-day final window gives 2 non-overlapping 14-day blocks, below the pre-registered minimum of 5"}, "28": {"status": "NOT_COMPUTED", "days": 39, "nonoverlap_blocks": 1, "reason": "39-day final window gives 1 non-overlapping 28-day blocks, below the pre-registered minimum of 5"}}}
+replay ledger history: [('reserve', '2026-11-07T15:22:56.888622Z'), ('spend', '2026-11-07T15:22:57.393605Z'), ('replay', '2026-11-07T17:17:24.704799Z')]
+replay entry original_input_binding: NONE_PREDATES_BINDING | retry: True

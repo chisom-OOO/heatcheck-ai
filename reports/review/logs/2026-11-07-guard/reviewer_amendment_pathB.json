@@ -1,0 +1,22 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "amendment_type": "CODE_IDENTITY_ONLY",
+  "amendment_id": "GP-2023-24-C1-vs-B1-AMEND-1",
+  "amends_plan_hash": "a8d8129283fbf1b57e119aec83b7904948dd9e5250647148465b5a030e312cf8",
+  "reason": "reviewer independent replay of c822b55",
+  "code_files": [
+    "src/heatcheck/features.py",
+    "src/heatcheck/kernels.py",
+    "src/heatcheck/splits.py",
+    "src/heatcheck/custodian.py",
+    "src/heatcheck/util.py",
+    "src/heatcheck/store.py",
+    "src/heatcheck/canonical.py",
+    "scripts/build_dataset.py",
+    "scripts/game_prediction.py"
+  ],
+  "code_hash": "656861b1b8b6acc377c3b9506005eda78854790ae77752a7143b956641135bfa",
+  "decision_content": "unchanged; read from the original plan only",
+  "created_utc": "2026-11-07T17:31:30.502093Z",
+  "canonical_amendment_hash": "3785cd78588b3203265a91c92a22d731e4f1f6b878e669e29549e8297ef53cf4"
+}

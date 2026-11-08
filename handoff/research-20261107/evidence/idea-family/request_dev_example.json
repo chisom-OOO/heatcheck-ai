@@ -1,0 +1,101 @@
+{
+  "format": "heatcheck-idea-family/1",
+  "ideas": [
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "away_back_to_back",
+        "level": "yes",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "home_back_to_back",
+        "level": "yes",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "rest_advantage",
+        "level": "home_more",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "elo_gap",
+        "level": "home_fav_100+",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "day_of_week",
+        "level": "Sun",
+        "alternative": "two_sided"
+      }
+    },
+    {
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "feature": "month",
+        "level": "12",
+        "alternative": "two_sided"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "1",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "3",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_misses",
+        "level": "2",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "shot_value",
+        "level": "3",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "4",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "1",
+        "alternative": "two_sided"
+      }
+    }
+  ]
+}

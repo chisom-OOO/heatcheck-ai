@@ -330,34 +330,43 @@ async function cancelRun() {
 }
 
 // ------------------------------------------------------------------ 6 verdict
-// Renders the Referee evidence view (web/referee.js). Today's runs come from the stand-in engine and
-// are labelled so; a record opened from disk is rendered through the same view. PROVISIONAL until
-// Max's Referee evidence record format is delivered.
+// Renders the Referee evidence view (web/referee.js). Sources: Max's evidence ledger (verified by the
+// server), a record opened from disk (unverified), or the stand-in engine (labelled as stand-in).
+// Ledger statuses are shown as recorded (EXECUTED is not "passed"; the Referee's reason says what it meant).
 const OUTCOME_CELL = { PASSED: ["pass", "✓ passed"], FAILED: ["fail", "✕ failed"], NOT_RUN: ["not-run", "– not run"],
-  ERROR: ["fail", "! error"], UNRECOGNISED: ["fail", "? unrecognised outcome"] };
+  ERROR: ["fail", "! error"], EXECUTED: ["", "● executed"], UNSUPPORTED: ["not-run", "– unsupported"],
+  UNRECOGNISED: ["fail", "? unrecognised outcome"] };
+const SOURCE_BANNER = {
+  STAND_IN_ENGINE: (vm) => el("div", { class: "banner warn" }, el("strong", { text: "Stand-in engine output, not a Referee record. " }),
+    "Shown in the Referee evidence layout so the screen is ready for the real record. ", el("span", { class: "hint", text: vm.format_status })),
+  LEDGER_ENTRY: (vm) => el("div", { class: vm.verified ? "banner info" : "banner warn" },
+    el("strong", { text: vm.verified ? "Referee evidence ledger entry, hashes verified by the server. " : "Referee evidence ledger entry opened from a file: hashes NOT verified. " }),
+    el("span", { class: "hint", text: vm.format_status })),
+  REFEREE_RECORD: (vm) => el("div", { class: "banner info" }, el("strong", { text: "Referee evidence record opened from a file. " }), el("span", { class: "hint", text: vm.format_status })),
+};
 function valueEl(tag, v, attrs = {}) {
   return el(tag, { ...attrs, class: [attrs.class, v && v.available ? null : "unavailable"].filter(Boolean).join(" ") || null, text: referee.show(v) });
 }
 function renderRefereeView(vm, { historical = false } = {}) {
   $("verdict-card").hidden = false;
-  const src = vm.source === "STAND_IN_ENGINE"
-    ? el("div", { class: "banner warn" }, el("strong", { text: "Stand-in engine output, not a Referee record. " }),
-        "Shown in the Referee evidence layout so the screen is ready for the real record. ", el("span", { class: "hint", text: vm.format_status }))
-    : el("div", { class: "banner info" }, el("strong", { text: "Referee evidence record opened from a file. " }), el("span", { class: "hint", text: vm.format_status }));
+  const src = (SOURCE_BANNER[vm.source] || SOURCE_BANNER.REFEREE_RECORD)(vm);
   $("ref-source").replaceChildren(src, el("div", { class: "row" }, vm.data_mode ? modeBadge(vm.data_mode) : el("span", { class: "chip", text: "data mode not recognised" }),
     historical ? el("span", { class: "chip", text: "historical: claim changed since" }) : null));
 
   const c = vm.claim;
-  $("ref-claim").replaceChildren(...(c ? [["Statement", c.statement], ["Claim ID", c.claim_id], ["Plan hash", c.plan_hash], ["Revision", c.revision]]
+  $("ref-claim").replaceChildren(...(c ? [["Statement", c.statement], ["Claim ID", c.claim_id], ["Plan hash", c.plan_hash], ["Revision", c.revision],
+    ...(c.estimand ? [["Estimand", c.estimand]] : [])]
     .flatMap(([k, v]) => [el("dt", { text: k }), valueEl("dd", v, { class: k === "Plan hash" ? "mono" : null })])
     : [el("dt", { text: "Claim" }), el("dd", { class: "unavailable", text: "unavailable: no claim in this record" })]));
 
   const tb = $("attacks").tBodies[0];
   tb.replaceChildren(...(vm.attacks.length ? vm.attacks.map((a) => {
     const [cls, label] = OUTCOME_CELL[a.outcome] || OUTCOME_CELL.UNRECOGNISED;
-    return el("tr", {}, valueEl("td", a.test_id, { class: "mono" }), el("td", { class: cls, text: label }),
+    return el("tr", {}, el("td", {}, valueEl("span", a.test_id, { class: "mono" }), a.mandatory ? el("span", { class: "hint", text: " (mandatory)" }) : null),
+      el("td", { class: cls || null, text: label }),
       valueEl("td", a.statistic, { class: "num" }), valueEl("td", a.p_value, { class: "num" }),
-      el("td", {}, valueEl("span", a.method), a.reason ? el("span", { class: "hint", text: " " + a.reason }) : null));
+      el("td", {}, valueEl("span", a.method), a.reason ? el("span", { class: "hint", text: " " + a.reason }) : null,
+        a.challenge ? el("div", { class: "hint", text: "Challenger: " + a.challenge }) : null));
   }) : [el("tr", {}, el("td", { colspan: "5", class: "unavailable", text: "No attacks reported." }))]));
 
   const vd = vm.verdict;
@@ -365,6 +374,7 @@ function renderRefereeView(vm, { historical = false } = {}) {
     el("span", { class: "icon", "aria-hidden": "true", text: vd.icon }),
     el("div", {}, el("div", { class: "label", text: vd.decision }), el("div", { text: vd.plain }),
       vd.reason ? el("p", { class: "why hint", text: vd.reason }) : null,
+      vd.referee ? el("p", { class: "hint mono", text: "Referee: " + vd.referee }) : null,
       el("p", { class: "hint", text: "A claim that does not survive is not proof of luck: it did not survive this protocol on this data." }))));
 
   $("ref-evidence").replaceChildren(...(vm.evidence.length ? vm.evidence.map((e) => el("li", {}, el("span", { class: "k", text: e.label }), valueEl("span", e.value, { class: "v" })))
@@ -374,14 +384,42 @@ function renderRefereeView(vm, { historical = false } = {}) {
   $("ref-problems-wrap").hidden = !vm.problems.length;
   announce(`Referee view: ${vd.decision}. ${vm.attacks.length} attacks listed.`);
 }
-async function openRefereeFile(file) {
-  let rec;
-  try { rec = JSON.parse(await file.text()); } catch (e) { rec = null; announce("That file is not valid JSON."); }
-  const vm = referee.fromRecord(rec);
-  if (rec === null) vm.problems.unshift(`${file.name}: not valid JSON`);
+function showRecordOnly(vm) {
   renderRefereeView(vm);
   $("btn-reveal").hidden = true; $("standin-extras").hidden = true;
-  for (const id of ["dl-json", "dl-csv"]) { $(id).removeAttribute("href"); $(id).hidden = true; }   // a file record is not a server run
+  for (const id of ["dl-json", "dl-csv"]) { $(id).removeAttribute("href"); $(id).hidden = true; }   // not a server run
+}
+async function openRefereeFile(file) {
+  const text = await file.text();
+  let rec = null, note = null;
+  try { rec = JSON.parse(text); } catch {
+    // a ledger is JSONL: show its first line and say so
+    const lines = text.split("\n").filter((l) => l.trim());
+    try { rec = JSON.parse(lines[0]); note = `${file.name}: JSONL with ${lines.length} lines; showing line 1 (load it through the server to browse all, verified)`; }
+    catch { rec = null; }
+  }
+  const vm = referee.isLedgerEntry(rec) ? referee.fromLedgerEntry(rec, false) : referee.fromRecord(rec);
+  if (rec === null) { vm.problems.unshift(`${file.name}: not valid JSON`); announce("That file is not valid JSON."); }
+  if (note) vm.problems.unshift(note);
+  showRecordOnly(vm);
+}
+async function loadLedger() {
+  const box = $("ledger-list");
+  try {
+    const out = await api("GET", "evidence");
+    $("ledger-meta").textContent = `${out.ledger} · ${out.entries.length} entries · ${out.verified_by}`;
+    box.replaceChildren(...out.entries.map((e) => {
+      const id = e.identity || {};
+      return el("li", {}, el("button", { class: "ghost", onclick: () => showRecordOnly(referee.fromLedgerEntry(e, true)) },
+        el("span", { class: "mono", text: (id.claim && id.claim.claim_id) || "?" }), " ",
+        el("strong", { text: id.decision || "no decision" }), " ",
+        el("span", { class: "hint mono", text: e.evidence_id.slice(0, 12) + "…" })));
+    }));
+    if (!out.entries.length) box.replaceChildren(el("li", { class: "unavailable", text: "The ledger has no entries." }));
+  } catch (e) {
+    $("ledger-meta").textContent = "";
+    box.replaceChildren(el("li", { class: "unavailable", text: `Ledger unavailable (${e.code || e.status}): ${e.message}` }));
+  }
 }
 function renderVerdict(r) {
   const res = r.result;
@@ -649,6 +687,7 @@ async function boot() {
   $("btn-run").addEventListener("click", runLoop);
   $("btn-cancel").addEventListener("click", cancelRun);
   $("btn-reveal").addEventListener("click", reveal);
+  $("btn-ledger").addEventListener("click", loadLedger);
   $("ref-file").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) openRefereeFile(f); e.target.value = ""; });
   $("btn-mic").addEventListener("click", () => voice.toggle());
   $("btn-stop-speak").addEventListener("click", () => voice.stopSpeaking());

@@ -1,0 +1,79 @@
+{
+ "format": "heatcheck-market-investigation/1",
+ "mode": "LIVE",
+ "as_of_utc": "2026-11-08T00:18:13.316436Z",
+ "data_note": "LIVE quote.",
+ "is_sample": false,
+ "label": "DESCRIPTIVE FORECAST",
+ "game": {
+  "game_id": "nba:0022600191",
+  "tip_utc": "2026-11-08T01:00:00Z",
+  "home_team": "Cleveland Cavaliers",
+  "away_team": "New York Knicks"
+ },
+ "team": "Cleveland Cavaliers",
+ "flag": "FORECAST_ABOVE_ASK",
+ "forecast": {
+  "p_team_win": "0.661772",
+  "model": "B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, carry 0.75*r+0.25*1505 between seasons. Ratings use results through 2026-11-06 ET (balldontlie for 2026-27); the same ratings price Saturday and Sunday. Game 189 DEN vs IND is at a neutral site (Arena CDMX, NBA schedule PDF): no home court.",
+  "inputs_used": [
+   "elo_rating_home",
+   "elo_rating_away",
+   "home_court"
+  ],
+  "data_cutoff_utc": "2026-11-07T07:00:00Z"
+ },
+ "quote": {
+  "record_id": "quote:map:nba:0022600191:POLYMARKET:60955229673760716456263204416898543673892689428977581401929964569716185748287:fe9e5e8b3ac1f544",
+  "venue": "POLYMARKET",
+  "best_bid": "0.36",
+  "best_ask": "0.37",
+  "received_utc": "2026-11-08T00:18:01.673168Z",
+  "status": "OK"
+ },
+ "heater_text": "The model has Cleveland Cavaliers at 66.2% to win. That is above the market's ask of 37.0%. It only uses elo_rating_home, elo_rating_away, home_court. Could rest, injuries or lineup news explain the gap? Those are questions to investigate, because the model can't see them.",
+ "heater_source": "TEMPLATE",
+ "hypothetical": false,
+ "challenger_checks": [
+  {
+   "check_id": "GAME_MATCH",
+   "status": "PASS",
+   "detail": "nba:0022600191: same teams and tip time in both sources"
+  },
+  {
+   "check_id": "OUTCOME_MATCH",
+   "status": "PASS",
+   "detail": "contract pays if nba-team:1610612739 wins (INCLUDES_OVERTIME)"
+  },
+  {
+   "check_id": "QUOTE_FRESH",
+   "status": "PASS",
+   "detail": "latest quote 12s old, limit 60s"
+  },
+  {
+   "check_id": "QUOTE_SIDE",
+   "status": "PASS",
+   "detail": "YES contract on nba-team:1610612739: best bid 0.36, best ask 0.37 (probability dollars); not an executable order"
+  },
+  {
+   "check_id": "FORECAST_CUTOFF",
+   "status": "PASS",
+   "detail": "data cutoff 2026-11-07T07:00:00Z is before tip 2026-11-08T01:00:00Z"
+  },
+  {
+   "check_id": "MISSING_INPUTS",
+   "status": "INFO",
+   "detail": "model uses only elo_rating_home, elo_rating_away, home_court; it does not see lineups, injuries, rest, recent_form, matchups"
+  },
+  {
+   "check_id": "MARKET_SKILL_EVIDENCE",
+   "status": "INFO",
+   "detail": "no evaluation shows this model beats the market; none has been run"
+  }
+ ],
+ "thesis": null,
+ "verdict": "Worth investigating \u00b7 Edge unverified",
+ "ref_text": "Worth investigating \u00b7 Edge unverified. The forecast and the quote are for the same game, team and outcome, and the quote is fresh. No evaluation shows this model beats the market, so a gap between them is a question to investigate, not a finding.",
+ "evidence_id": "0bbb970d12772a8370fd9d346bee2b6a6437c4875b50c126b7b205cf0e3f456b",
+ "recorded_at_utc": "2026-11-08T00:18:14.526038Z"
+}

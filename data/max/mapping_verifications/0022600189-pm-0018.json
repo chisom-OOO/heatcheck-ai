@@ -1,0 +1,119 @@
+{
+ "bundle_dir": "data/experience/quotes/20261108T001759Z/0022600189-pm-0018",
+ "verifications": [
+  {
+   "bundle_records_sha256": "b6a1486098e9f209f6da46f05d96d7f1943b0ffbcbd1f93ddedefe543eca5a80",
+   "checks": [
+    {
+     "check": "venue",
+     "detail": "market POLYMARKET:6428606 venue POLYMARKET",
+     "status": "PASS"
+    },
+    {
+     "check": "payload_bound",
+     "detail": "payload sha256 687f4c96a4175e64 is a source snapshot of the market record",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_text_hash",
+     "detail": "sha256(description) acaf4caf98ef4ee3 vs record acaf4caf98ef4ee3",
+     "status": "PASS"
+    },
+    {
+     "check": "market_id",
+     "detail": "payload id 6428606",
+     "status": "PASS"
+    },
+    {
+     "check": "moneyline",
+     "detail": "sportsMarketType 'moneyline'",
+     "status": "PASS"
+    },
+    {
+     "check": "known_teams",
+     "detail": "home Pacers, away Nuggets",
+     "status": "PASS"
+    },
+    {
+     "check": "game_id",
+     "detail": "mapping nba:0022600189 game nba:0022600189",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_template",
+     "detail": "rules text follows the exact winner template",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_teams",
+     "detail": "rules name 'Nuggets' and 'Pacers'; game teams ['Nuggets', 'Pacers']",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_scheduled_time",
+     "detail": "rules 'Saturday, November 7, 2026 at 5:00 PM ET' vs tip 2026-11-07T22:00:00Z = 'Saturday, November 7, 2026 at 5:00 PM ET'",
+     "status": "PASS"
+    },
+    {
+     "check": "game_start_time",
+     "detail": "payload gameStartTime '2026-11-07 22:00:00+00' vs scheduled tip 2026-11-07T22:00:00Z",
+     "status": "PASS"
+    },
+    {
+     "check": "overtime_rule",
+     "detail": "rules state overtime counts: True; mapping says INCLUDES_OVERTIME",
+     "status": "PASS"
+    },
+    {
+     "check": "cancel_rule",
+     "detail": "cancellation/postponement sentence copied exactly",
+     "status": "PASS"
+    },
+    {
+     "check": "contract_is_team",
+     "detail": "contract 100155597339.. is outcome 'Pacers' (TEAM_WINS)",
+     "status": "PASS"
+    },
+    {
+     "check": "record_outcome_label",
+     "detail": "market record labels the contract 'Pacers'",
+     "status": "PASS"
+    },
+    {
+     "check": "active",
+     "detail": "active True, closed False",
+     "status": "PASS"
+    }
+   ],
+   "format": "heatcheck-mapping-verification/1",
+   "game_record_sha256": "11f0b9829d27a14fcb8a7a2a50022725121dfc91d267ccb491b0242bfd57b770",
+   "outcome": "VERIFIED",
+   "payload_sha256": "687f4c96a4175e64d4815477016a5d975d360ccf4c6d0c65d01756ec1fb84fc3",
+   "proposed_mapping_record_sha256": "d694d83f86fb1c0833c1ca02a0035e5ec8e9f84b73fe9d980eaa7d4673333f65",
+   "record": {
+    "body": {
+     "cancel_postpone_convention": "RULES TEXT: If the game is canceled, does not start by Monday, November 9, 2026, 11:59 PM ET, or is abandoned with no official result by that time, this market will resolve 50-50.",
+     "contract_id": "100155597339514587735512788056351223587036241159790520590685103796616707991866",
+     "game_id": "nba:0022600189",
+     "mapping_id": "map:nba:0022600189:POLYMARKET:100155597339514587735512788056351223587036241159790520590685103796616707991866",
+     "mapping_provenance": "experience-adapters/1 keyword read of rules_text_sha256 acaf4caf98ef4ee32083e2a86c8c7df9dd0a2ace07648c8299ee9d89e982b923 and outcome label 'Pacers'; verified by MAX heatcheck/contracts/mapping_verification.py v1 at 2026-11-08T00:18:13Z",
+     "outcome_direction": "TEAM_WINS",
+     "overtime_convention": "INCLUDES_OVERTIME",
+     "reason": "Max verified 16/16 checks against stored rules text sha256 acaf4caf98ef4ee32083e2a86c8c7df9dd0a2ace07648c8299ee9d89e982b923 (heatcheck-mapping-verification/1).",
+     "status": "VERIFIED",
+     "team_id": "nba-team:1610612754",
+     "venue_market_record_id": "POLYMARKET:6428606"
+    },
+    "data_mode": "RECORDED_MARKET",
+    "format_version": "heatcheck-records/1",
+    "protocol_version": "heatcheck-nba/1",
+    "record_id": "map:nba:0022600189:POLYMARKET:100155597339514587735512788056351223587036241159790520590685103796616707991866",
+    "record_type": "VENUE_MAPPING"
+   },
+   "rules_text_sha256": "acaf4caf98ef4ee32083e2a86c8c7df9dd0a2ace07648c8299ee9d89e982b923",
+   "venue_market_record_sha256": "f9810ee611cfc3bbd7b33334f4cdf627b246a38b053b4eb492340d56fffe7b6c",
+   "verified_utc": "2026-11-08T00:18:13Z",
+   "verifier": "MAX heatcheck/contracts/mapping_verification.py v1"
+  }
+ ]
+}

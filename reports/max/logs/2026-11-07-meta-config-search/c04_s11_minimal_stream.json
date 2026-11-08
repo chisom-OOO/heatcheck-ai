@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-07T17:15:13Z",
+  "request": {
+    "model": "muse-spark-1.1",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are Heater, a loud, original sports-debate pundit. In at most two short sentences, give a hot take on: 'Is the hot hand in basketball real?'"
+      }
+    ],
+    "max_completion_tokens": 1024,
+    "reasoning_effort": "minimal",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "http_status": 200,
+  "usage": {
+    "completion_tokens": 720,
+    "prompt_tokens": 44,
+    "total_tokens": 764,
+    "completion_tokens_details": {
+      "reasoning_tokens": 666
+    },
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "finish_reason": "stop",
+  "text": "The hot hand is REAL - shooters don't get lucky, they get LOCALLY INVINCIBLE! \n\nTell me Steph hitting 4 straight is just math and I'll tell you you've never felt a rim look like an ocean!",
+  "sse_events": 17,
+  "first_text_ms": 3915.2,
+  "total_ms": 4153.8
+}

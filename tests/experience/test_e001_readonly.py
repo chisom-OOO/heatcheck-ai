@@ -40,9 +40,27 @@ def test_a5_no_write_calls_routes_or_methods(path):
 
 
 def test_allowlist_has_only_public_read_paths():
-    for prefixes in ALLOW.values():
-        for p in prefixes:
-            assert not WRITE_ROUTE.search(p)
+    for patterns in ALLOW.values():
+        for p in patterns:
+            assert not WRITE_ROUTE.search(p.pattern)
+            assert "." not in p.pattern and "%" not in p.pattern   # no dot or encoded segment
+
+
+def test_every_recorded_capture_url_passes_the_allowlist():
+    """The exact GETs of both committed bundles (authored shapes and the real capture)."""
+    import json
+
+    seen = 0
+    for bundle in ("e001", "e001-recorded-0022600189"):
+        for raw in (ROOT / "tests" / "fixtures" / "quotes" / bundle / "raw").glob("*.json"):
+            obj = json.loads(raw.read_text(encoding="utf-8"))
+            if not (isinstance(obj, dict) and "capture_log_version" in obj):
+                continue
+            for entry in obj["captures"]:
+                url = entry["source"].split("GET ", 1)[1]
+                assert check_request("GET", url)
+                seen += 1
+    assert seen >= 8
 
 
 @pytest.mark.parametrize("method", ["POST", "PUT", "PATCH", "DELETE", "get"])

@@ -250,10 +250,12 @@ def latest_revisions(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(best.values(), key=lambda e: e["body"]["sequence"])
 
 
-def reference_features(events: list[dict[str, Any]], home: str, away: str) -> dict[str, dict]:
+def reference_features(events: list[dict[str, Any]], home: str, away: str, *,
+                       count_free_throws: bool = True) -> dict[str, dict]:
     """Reviewer's own minimum features keyed by provider_event_id of each shot.
 
-    Uses only events with a strictly smaller provider sequence than the shot.
+    Uses only events with a strictly smaller provider sequence than the shot. DATA_FORMAT does
+    not say whether prior attempts/makes include free throws, so both definitions are offered.
     """
     out: dict[str, dict] = {}
     evs = latest_revisions(events)
@@ -267,7 +269,8 @@ def reference_features(events: list[dict[str, Any]], home: str, away: str) -> di
             if p["action"] == "SHOT" and p["shot"]["made"]:
                 pts[p["team_id"]] += p["shot"]["points_if_made"]
         opp = away if b["team_id"] == home else home
-        mine = [p for p in prior if p["action"] == "SHOT" and p["player_id"] == b["player_id"]]
+        mine = [p for p in prior if p["action"] == "SHOT" and p["player_id"] == b["player_id"]
+                and (count_free_throws or p["shot"]["kind"] == "FIELD_GOAL")]
         clock = b["clock_seconds_remaining"]
         out[b["provider_event_id"]] = {
             "pre_shot_margin_shooting_team": pts[b["team_id"]] - pts[opp],

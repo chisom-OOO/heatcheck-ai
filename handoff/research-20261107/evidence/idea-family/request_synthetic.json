@@ -1,0 +1,109 @@
+{
+  "format": "heatcheck-idea-family/1",
+  "ideas": [
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "1",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "2",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "3",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_makes",
+        "level": "4",
+        "alternative": "greater"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_misses",
+        "level": "1",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_misses",
+        "level": "2",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_misses",
+        "level": "3",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "after_misses",
+        "level": "4",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "shot_value",
+        "level": "3",
+        "alternative": "less"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "1",
+        "alternative": "two_sided"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "2",
+        "alternative": "two_sided"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "3",
+        "alternative": "two_sided"
+      }
+    },
+    {
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "condition": "period",
+        "level": "4",
+        "alternative": "two_sided"
+      }
+    }
+  ]
+}

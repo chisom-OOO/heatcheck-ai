@@ -1,0 +1,15 @@
+code: research/scenario-effects @ 6c0ff1b + empirical-Bayes shrinkage
+$ python -I handoff/research-20261107/scripts/scenario_effects.py $DATA2023 $DATA2024 $CSV2025 data/scenario $RAW2023 $RAW2024
+{
+ "coverage": {
+  "player_team_keys": 1203,
+  "with_ge_5_games_missed": 1046,
+  "with_ge_10_games_missed": 903,
+  "with_ge_20_games_missed": 660,
+  "distinct_players": 796,
+  "games": 3690,
+  "team_games": 7380,
+  "shown_by_default": 489
+ },
+ "schedule": {
+exit=0

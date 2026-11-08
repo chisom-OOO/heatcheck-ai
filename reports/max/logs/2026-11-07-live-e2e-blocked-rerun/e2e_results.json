@@ -1,0 +1,73 @@
+{
+  "turns": [
+    {
+      "case": "BLOCKED",
+      "question": "Do back-to-backs and rest days change who wins?",
+      "expected_claim": "GP-REST",
+      "mapped_claim": "GP-REST",
+      "mapping_ok": true,
+      "verdict": "BLOCKED",
+      "lane": "DEVELOPMENT",
+      "committed_verdict": "BLOCKED",
+      "verdict_matches_committed": true,
+      "evidence_record_id": "41e630f22b105611b2341c59510535e21de9287246b2aeb24fce84e79a64b427",
+      "sources": {
+        "mapping": "LLM",
+        "challenger": "DETERMINISTIC_STANDIN",
+        "heater": "TEMPLATE (fallback: no complete reply within 8 s)",
+        "ref": "LLM"
+      },
+      "heater_text": "Heater here! The Ref says that test can't run yet. Stay tuned.",
+      "ref_text": "The claim about rest-day difference and back-to-backs improving pre-tip win forecasts over Elo is blocked: the test could not run. The reason given is no GAME_SEASON_VIEW implemented for GP-REST.",
+      "heater_fell_back": true,
+      "ref_fell_back": false,
+      "guard_fallback": false,
+      "wall_ms": 9372.4,
+      "calls": [
+        {
+          "role": "discoverer_map",
+          "status": "OK",
+          "latency_ms": 1345.8,
+          "first_text_ms": null,
+          "prompt_tokens": 420,
+          "completion_tokens": 117,
+          "reasoning_tokens": 99,
+          "est_cost_usd": 0.00061635
+        },
+        {
+          "role": "ref",
+          "status": "OK",
+          "latency_ms": 2552.4,
+          "first_text_ms": null,
+          "prompt_tokens": 137,
+          "completion_tokens": 430,
+          "reasoning_tokens": 379,
+          "est_cost_usd": 0.00199875
+        },
+        {
+          "role": "heater",
+          "status": "TIMEOUT",
+          "latency_ms": 8001.0,
+          "first_text_ms": null,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "reasoning_tokens": null,
+          "est_cost_usd": null
+        }
+      ],
+      "turn_cost_usd": 0.002615
+    }
+  ],
+  "usage_total": {
+    "calls": 3,
+    "ok": 2,
+    "est_cost_usd": 0.002615,
+    "tokens": {
+      "prompt": 557,
+      "completion": 547,
+      "reasoning": 478
+    }
+  },
+  "cap_usd": 0.1,
+  "committed_ledger": "reports\\max\\logs\\2026-11-07-al-fixes\\evidence_real_game_v2.jsonl"
+}

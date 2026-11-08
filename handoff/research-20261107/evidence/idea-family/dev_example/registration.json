@@ -1,0 +1,141 @@
+{
+  "B": 999,
+  "alpha": 0.05,
+  "code_hash": "6e3378adc7021eff8a4c0462cf7e6af7572e2e0dd17a2612ea18186508169205",
+  "created_utc": "2026-11-07T22:26:21.229208Z",
+  "data_identity": {
+    "game_view_sha256": "018b5793973069606cd0d7b0d6faa8aaf8dd6ba2386d46f057b7b2ba1d0aa288",
+    "logical_table_hashes": {
+      "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+      "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+      "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+      "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0",
+      "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+      "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+      "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed"
+    },
+    "n_fga": 165710,
+    "n_games": 926,
+    "season": "2023-24",
+    "shot_view_sha256": "d3267cc1d215842a0070a88f0fbd22c9bc26a1248677ececa6b6ca17145c4836",
+    "split": "development (fit+tune+calibration)",
+    "split_manifest_hash": "30fded21be74e8b4fe0992908a402b8ef471c18414c5674ad7c90d1291508fcf"
+  },
+  "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+  "format": "heatcheck-idea-family/1",
+  "ideas": [
+    {
+      "idea_hash": "e5d599684213dfa7c9d25c02d18c892c5babe32c93f070a73f196120520054ff",
+      "params": {
+        "alternative": "greater",
+        "feature": "away_back_to_back",
+        "level": "yes"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "be5e45c6739d94c8ac1c9aa89523d52ce3cd89f191a3a11a9f9ca3644e4bcfe3",
+      "params": {
+        "alternative": "less",
+        "feature": "home_back_to_back",
+        "level": "yes"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+      "params": {
+        "alternative": "greater",
+        "feature": "rest_advantage",
+        "level": "home_more"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "79f97d47cf813759aa5a6876dc6a68a6652fa3d3e74c9efe055e14f3356d5c65",
+      "params": {
+        "alternative": "greater",
+        "feature": "elo_gap",
+        "level": "home_fav_100+"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "6e2c78a904ef5fc19a8ba80032873fce1579924f8d188f634fb654b735c06505",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "day_of_week",
+        "level": "Sun"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "37fb1dfd72941a08655b5e4cfcb0c9965d54c1ff939fec5d05da6688619704af",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "month",
+        "level": "12"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "1"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    },
+    {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "3"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    },
+    {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "2"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    },
+    {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "params": {
+        "alternative": "less",
+        "condition": "shot_value",
+        "level": "3"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    },
+    {
+      "idea_hash": "db56353916638a8b44d8f1aee9953efc6352b086fa02ed87c556a835224d8760",
+      "params": {
+        "alternative": "less",
+        "condition": "period",
+        "level": "4"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    },
+    {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "1"
+      },
+      "template": "SHOT_MAKE_AFTER_CONDITION"
+    }
+  ],
+  "label": "EXPLORATORY",
+  "mode": "development",
+  "multiplicity": "Holm across all 12 ideas",
+  "n_ideas": 12,
+  "seed_rule": "int(idea_hash[:8], 16)"
+}

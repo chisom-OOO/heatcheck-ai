@@ -126,7 +126,7 @@ def parse_book(
         where = f"{key}[{i}]"
         if not isinstance(row, list) or len(row) != 2:
             raise AdapterError(f"{where}: a level is [price, size]; got {row!r}")
-        levels.append(level("BID", row[0], row[1], where))
+        levels.append(level("BID", row[0], row[1], where, tick=market["body"]["tick_size"]))
     note = (
         "Kalshi reports bids only; no ask is stored. The complement of the other "
         "contract's bids stays in the raw payload for Research's normaliser."

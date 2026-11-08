@@ -1,0 +1,309 @@
+# HeatCheck check run
+date_utc: 2026-11-07T22:36:16Z
+host: Windows 10.0.26200.0
+repo: C:\Users\NICHO_~2\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/live-quotes-tonight
+commit: ef9cbbaa618550e80264863cd954e10a0882a8e0
+worktree clean: True
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv sync --frozen --group dev
+Checked 8 packages in 11ms
+exit: 0
+
+## uv run python tools/check_scaffold.py
+PASS: preparation contracts/guard only; application/research gates NOT_RUN
+exit: 0
+
+## uv run ruff check .
+All checks passed!
+exit: 0
+
+## uv run pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.7.0 -- C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+configfile: pyproject.toml
+testpaths: tests
+collecting ... collected 380 items / 3 errors / 5 skipped
+
+=================================== ERRORS ====================================
+________ ERROR collecting tests/integration/test_confirmatory_lane.py _________
+ImportError while importing test module 'C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\tests\integration\test_confirmatory_lane.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\test_confirmatory_lane.py:17: in <module>
+    from heatcheck.agents.dialogue import (
+heatcheck\agents\dialogue.py:43: in <module>
+    from heatcheck.agents.loop import run_once
+heatcheck\agents\loop.py:14: in <module>
+    from heatcheck.agents.attacks import IMPLEMENTATIONS
+heatcheck\agents\attacks.py:8: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+_________ ERROR collecting tests/integration/test_recorded_results.py _________
+ImportError while importing test module 'C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\tests\integration\test_recorded_results.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\test_recorded_results.py:20: in <module>
+    from heatcheck.agents.dialogue import (
+heatcheck\agents\dialogue.py:43: in <module>
+    from heatcheck.agents.loop import run_once
+heatcheck\agents\loop.py:14: in <module>
+    from heatcheck.agents.attacks import IMPLEMENTATIONS
+heatcheck\agents\attacks.py:8: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+_____________ ERROR collecting tests/review/test_rv_agent_loop.py _____________
+ImportError while importing test module 'C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\tests\review\test_rv_agent_loop.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\review\test_rv_agent_loop.py:16: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_agent_loop.py:17: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\integration\test_dialogue.py:23: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\integration\test_research_bridge.py:14: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+ERROR tests/integration/test_confirmatory_lane.py
+ERROR tests/integration/test_recorded_results.py
+ERROR tests/review/test_rv_agent_loop.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!
+======================== 5 skipped, 3 errors in 3.23s =========================
+exit: 2
+
+## uv run python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=faa3d335b941d6c7103271ec3c75ed474b29f753ff588b26fb1012aa1e627465
+exit: 0
+
+## uv run python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001
+PASS tests/fixtures/quotes/e001: bundle e001-syn-quote-fixture-1 modes=['SYNTHETIC'] records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit: 0
+
+## uv run python tests/experience/make_e001_bundle.py --check
+PASS: E-001 bundle reproducible, records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+exit: 0
+
+## uv run pytest -q --ignore=tests/integration/test_confirmatory_lane.py --ignore=tests/integration/test_recorded_results.py --ignore=tests/review/test_rv_agent_loop.py
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 56%]
+....................F.ss................................................ [ 75%]
+..................................ssss.ss.....xx...x......x.x.x.xxxx.... [ 94%]
+....x.......xx...xxx                                                     [100%]
+================================== FAILURES ===================================
+__________ test_committed_ledger_migrated_without_changing_evidence ___________
+
+tmp_path = WindowsPath('C:/Users/nicho_yyv3g9s/AppData/Local/Temp/pytest-of-nicho_yyv3g9s/pytest-29/test_committed_ledger_migrated0')
+
+    def test_committed_ledger_migrated_without_changing_evidence(tmp_path):
+        es = EvidenceLedger.open_readonly(COMMITTED).all()
+        assert es[0]["evidence_id"] == ORIGINAL_IDS[0]
+        assert [e["identity"]["decision"] for e in es] == ["INSUFFICIENT_EVIDENCE", "NOT_SUPPORTED", "BLOCKED"]
+        # The committed pre-chain bytes (git) and the migrated file agree on every original field.
+>       old = subprocess.run(["git", "show", f"cb7320c:{COMMITTED.relative_to(ROOT).as_posix()}"],
+                             cwd=ROOT, capture_output=True, check=False)
+
+tests\integration\test_ledger_chain.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:548: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1026: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['git', 'show', 'cb7320c:reports/max/logs/202...>
+args = 'git show cb7320c:reports/max/logs/2026-11-07-loop/evidence_real_game.jsonl'
+executable = None, preexec_fn = None, close_fds = False, pass_fds = ()
+cwd = 'C:\\Users\\nicho_yyv3g9s\\AppData\\Local\\Temp\\claude\\6f3eaf0eb1f7cd63\\a7e4e5a3-018f-4430-a9fb-444ec76a178c\\scratchpad\\hc'
+env = None, startupinfo = <subprocess.STARTUPINFO object at 0x00000240DF3DAF90>
+creationflags = 0, shell = False, p2cread = Handle(1244), p2cwrite = -1
+c2pread = 12, c2pwrite = Handle(1340), errread = 13, errwrite = Handle(1356)
+unused_restore_signals = True, unused_gid = None, unused_gids = None
+unused_uid = None, unused_umask = -1, unused_start_new_session = False
+unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1538: FileNotFoundError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_agent_loop.py:17: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\integration\test_dialogue.py:23: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\integration\test_research_bridge.py:14: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [6] tests\review\test_rv_preshot_invariance.py:76: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+FAILED tests/integration/test_ledger_chain.py::test_committed_ledger_migrated_without_changing_evidence
+1 failed, 355 passed, 13 skipped, 16 xfailed in 22.18s
+exit: 1
+
+## set "PATH=C:\Users\nicho_yyv3g9s\AppData\Local\GitHubDesktop\app-3.6.10\resources\app\git\cmd;%PATH%" && uv run pytest -q tests/integration/test_ledger_chain.py
+............                                                             [100%]
+12 passed in 2.51s
+exit: 0
+
+## uv run python -m heatcheck.markets.live_quotes validate tests/fixtures/live/forecasts.SAMPLE.json
+PASS tests/fixtures/live/forecasts.SAMPLE.json: heatcheck-live-forecast/1, 6 games, SAMPLE (hand-made)
+exit: 0
+
+## for /d %d in (data\experience\quotes\20261107T222950Z\00*) do @uv run python -m heatcheck.contracts.bundle %d
+PASS data\experience\quotes\20261107T222950Z\0022600190-kx-2229: bundle 0022600190-kx-2229 modes=['RECORDED_MARKET'] records_sha256=f74bb28251d8f04634d2b7d174ca315c2ce2681e7e1889bf10ed33f7ffee49fb [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600190-pm-2229: bundle 0022600190-pm-2229 modes=['RECORDED_MARKET'] records_sha256=e531ad76e9aeb1052f04e6dee0d56ddebada7982117f6f85d5bf4c428ac75852 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600191-kx-2229: bundle 0022600191-kx-2229 modes=['RECORDED_MARKET'] records_sha256=42a5e28ee049864d4f5befdaea82bd32fc3718eea0b663ebdb2b98f3bed9b611 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600191-pm-2229: bundle 0022600191-pm-2229 modes=['RECORDED_MARKET'] records_sha256=af42bca349ea9ddb0783003a12ed8084cf76aeeae7aa96b7ec5bcb208f831889 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600192-kx-2229: bundle 0022600192-kx-2229 modes=['RECORDED_MARKET'] records_sha256=5aa396bd713cdfd11950cd6bb224aa3ad8ed3041218f99ba4cc7f23880a114ce [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600192-pm-2229: bundle 0022600192-pm-2229 modes=['RECORDED_MARKET'] records_sha256=3f37651144f6f8e1fa737e0c3fdf8d29b8191ea69cbed5d8943e4c346fab82b9 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600193-kx-2229: bundle 0022600193-kx-2229 modes=['RECORDED_MARKET'] records_sha256=2065306c6e69a8a4de04f6d10ad6058a876d461943dc5249f9f0678ccceb0384 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600193-pm-2229: bundle 0022600193-pm-2229 modes=['RECORDED_MARKET'] records_sha256=550070145b62790b1133fc75021551f7ba722cae4e9264154345d32c7f846414 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600194-kx-2229: bundle 0022600194-kx-2229 modes=['RECORDED_MARKET'] records_sha256=d1659b71ea877d1283e559a55f6b0c41211575eab5c024768c54f6b6e30611b9 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600194-pm-2229: bundle 0022600194-pm-2229 modes=['RECORDED_MARKET'] records_sha256=9f2f81b9c6932b9ad8c2e81717fc5ab114a2d6459a073c790972909459b12556 [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600195-kx-2229: bundle 0022600195-kx-2229 modes=['RECORDED_MARKET'] records_sha256=6536aa0429bb9e5ca353d75307ddf8ffea33c935e26a95cdc35cf6bd4ec1292c [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+PASS data\experience\quotes\20261107T222950Z\0022600195-pm-2229: bundle 0022600195-pm-2229 modes=['RECORDED_MARKET'] records_sha256=876b14e8a2a9ece9fcf54e7a84c24a2e402931a3be8386429c8ed85473f3bafc [GAME=1, QUOTE=1, RAW_SNAPSHOT=3, VENUE_MAPPING=1, VENUE_MARKET=1]
+exit: 0
+
+## uv run pytest tests/experience/test_live_quotes.py -q
+.........................................................                [100%]
+57 passed in 5.31s
+exit: 0

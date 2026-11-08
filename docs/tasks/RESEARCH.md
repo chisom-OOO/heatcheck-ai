@@ -36,7 +36,14 @@ shot's pre-shot features.
 3. **Pure feature builder** in `heatcheck/research/` (no I/O). Its input is the game's
    `EVENT` records; its output is the `FEATURE_ROW` records. Minimum features:
    `pre_shot_margin_shooting_team`, `player_prior_attempts_in_game`,
-   `player_prior_makes_in_game`, `period`, `clock_seconds_remaining`. The current shot's
+   `player_prior_makes_in_game`, `period`, `clock_seconds_remaining`.
+   **Free throws are out of scope (user decision, 7 November; docs/DECISIONS.md).**
+   SHOT_ASSOCIATION covers field-goal attempts only. `player_prior_attempts_in_game` and
+   `player_prior_makes_in_game` count the player's earlier **field-goal** attempts and makes
+   in the game. Free throws are excluded from both counts and are never shot targets.
+   (Max clarification, not part of the user decision: `pre_shot_margin_shooting_team` is the
+   score margin and so still includes free-throw points. Research may challenge this.) The
+   current shot's
    `made`, its points and `assisted_post_outcome` are never inputs to its own row. When the
    event order is unresolved, emit `missing_reason` or exclude the row and record why in the
    manifest's `exclusions`.

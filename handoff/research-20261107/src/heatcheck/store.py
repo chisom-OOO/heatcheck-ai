@@ -1,0 +1,92 @@
+"""SQLite persistence. Public and restricted tables live in separate database files so that
+file-system permissions (or a separate process owned by Max) can gate the restricted one.
+Isolation is LOGICAL ONLY until such permissions are applied (Research §06)."""
+from __future__ import annotations
+
+import os
+import sqlite3
+from pathlib import Path
+
+import pandas as pd
+
+
+def _to_sql_frame(df: pd.DataFrame) -> pd.DataFrame:
+    d = df.copy()
+    for c in d.columns:
+        if isinstance(d[c].dtype, pd.DatetimeTZDtype):
+            d[c] = d[c].dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        elif d[c].dtype == bool:
+            d[c] = d[c].astype(int)
+    return d
+
+
+def publish(db_path: Path, tables: dict[str, pd.DataFrame], restricted: bool = False) -> None:
+    """Write all tables in ONE transaction to a temp file, then atomically rename."""
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = db_path.with_suffix(".tmp")
+    if tmp.exists():
+        tmp.unlink()
+    con = sqlite3.connect(tmp)
+    try:
+        con.execute("BEGIN")
+        for name, df in tables.items():
+            _to_sql_frame(df).to_sql(name, con, index=False)
+        con.commit()
+    except Exception:
+        con.rollback(); con.close(); tmp.unlink(missing_ok=True); raise
+    con.close()
+    os.replace(tmp, db_path)
+    if restricted:
+        os.chmod(db_path, 0o600)
+
+
+def read(db_path: Path, table: str) -> pd.DataFrame:
+    con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    try:
+        return pd.read_sql(f"SELECT * FROM {table}", con)
+    finally:
+        con.close()
+
+
+# --------------------------------------------------------------------------- logical table hashes (RV-R1)
+# frame_hash() at build time runs on in-memory frames. publish() stores tz-datetimes as strings, bools as
+# 0/1 and nullable Int64 ids as REAL. logical_frame() undoes exactly those conversions so the hash of
+# the STORED bytes can be compared with the frozen plan. Any other drift changes the hash: fail closed.
+TABLES = {  # table -> (database file stem, sort keys); mirrors scripts/build_dataset.py
+    "games": ("public", ["game_id"]),
+    "events": ("public", ["game_id", "sequence"]),
+    "exclusions": ("public", ["game_id"]),
+    "games_2022": ("public", ["game_id"]),
+    "quarantine": ("public", ["game_id"]),
+    "game_labels": ("restricted_labels", ["game_id"]),
+    "shot_labels": ("restricted_labels", ["target_id"]),
+    "game_labels_2022": ("restricted_labels", ["game_id"]),
+}
+_BOOL_COLS = {"neutral_site", "clock_regress"}
+_NULLABLE_INT_COLS = {"team_id", "person_id", "assist_person_id", "block_person_id"}
+
+
+def logical_frame(df: pd.DataFrame) -> pd.DataFrame:
+    d = df.copy()
+    for c in d.columns:
+        if c.endswith("_utc"):
+            d[c] = pd.to_datetime(d[c], utc=True, format="%Y-%m-%dT%H:%M:%S.%fZ")
+        elif c in _BOOL_COLS:
+            d[c] = d[c].astype(bool)
+        elif c in _NULLABLE_INT_COLS:
+            d[c] = d[c].astype("Int64")
+    return d
+
+
+SEASON_TABLES = ("games", "events", "exclusions", "quarantine", "game_labels", "shot_labels")   # one-season build
+BUILD_2023_TABLES = ("games", "events", "exclusions", "games_2022", "game_labels", "shot_labels",
+                     "game_labels_2022")   # scripts/build_dataset.py output; the GAME_PREDICTION plan's data_hashes
+
+
+def logical_table_hashes(data_dir: Path, tables=None) -> dict[str, str]:
+    """Recompute logical table hashes from the actual SQLite files in `data_dir`
+    (default: the 2023-24 build's tables, BUILD_2023_TABLES)."""
+    from .util import frame_hash
+    names = list(BUILD_2023_TABLES) if tables is None else list(tables)
+    return {t: frame_hash(logical_frame(read(Path(data_dir) / f"{TABLES[t][0]}.sqlite", t)), TABLES[t][1])
+            for t in names}

@@ -1,0 +1,8 @@
+game nba:0022600191 New York Knicks @ Cleveland Cavaliers baseline p_home 0.661772
+J. Allen (CLE): missed 24, shrunk -0.062 95% [-0.188, +0.065] (raw -0.172 [-0.389, +0.033], factor 0.358)
+scenario (shrunk, default): CLE without J. Allen + NYK on a back-to-back -> 0.649 80% [0.562, 0.727] 95% [0.513, 0.764]
+scenario (shrunk): CLE without J. Allen only -> 0.599 95% [0.463, 0.722]
+previous unshrunk result for the same two changes: 0.533, 80% [0.384, 0.676], 95% [0.311, 0.742]
+card: Cleveland Cavaliers without J. Allen 0.599 {'low': '0.485', 'high': '0.704', 'level': '0.90'} n 24
+card: Cleveland Cavaliers without D. Mitchell 0.604 {'low': '0.501', 'high': '0.699', 'level': '0.90'} n 43
+card: Cleveland Cavaliers without E. Mobley 0.645 {'low': '0.556', 'high': '0.726', 'level': '0.90'} n 58

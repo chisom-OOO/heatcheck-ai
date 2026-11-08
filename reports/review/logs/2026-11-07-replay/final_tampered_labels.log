@@ -1,0 +1,133 @@
+{
+  "protocol_version": "heatcheck-nba/1",
+  "run_type": "EvaluationRun",
+  "phase": "FINAL",
+  "claim_plan_hash": "a8d8129283fbf1b57e119aec83b7904948dd9e5250647148465b5a030e312cf8",
+  "final_epoch_id": "EPOCH-GP-2023-24-001",
+  "exposure_receipt_id": "3e238d2d-030e-45b4-aae7-db0787ecb873",
+  "receipt_was_retry": true,
+  "code_config_environment_hash": "d496e34eca5139024537016f235dd070bd5f439ddfa899861ac905097ee8de56",
+  "data_hashes": {
+    "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+    "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+    "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+    "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed",
+    "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+    "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+    "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0"
+  },
+  "data_mode": "REAL_NBA_RETROSPECTIVE",
+  "pseudo_out_of_sample": true,
+  "counts_coverage": {
+    "final_games": 300,
+    "c1_fallbacks_to_B0": 0,
+    "dropped_games": 0
+  },
+  "scores": {
+    "B0": {
+      "log_loss": 0.7022488798464078,
+      "brier": 0.2544802663458268
+    },
+    "B1": {
+      "log_loss": 0.6681615258198011,
+      "brier": 0.2360066317736906
+    },
+    "C1": {
+      "log_loss": 0.6519904172408536,
+      "brier": 0.2262138952135233
+    }
+  },
+  "decisions": {
+    "H1": {
+      "decision": "INSUFFICIENT_EVIDENCE",
+      "reason": "CI includes values on both sides of the decision thresholds",
+      "mean_improvement_nats": 0.016171108578947546,
+      "ci95": [
+        -0.005948315273248866,
+        0.03886486585129539
+      ],
+      "p_one_sided": 0.0832916708329167,
+      "p_holm": 0.1665833416658334,
+      "n_games": 300,
+      "days": 39,
+      "nonoverlap_7d_blocks": 5
+    },
+    "H2": {
+      "decision": "INSUFFICIENT_EVIDENCE",
+      "reason": "CI includes values on both sides of the decision thresholds",
+      "mean_improvement_nats": 0.03408735402660669,
+      "ci95": [
+        -0.031243007155240456,
+        0.09949409040019085
+      ],
+      "p_one_sided": 0.1581841815818418,
+      "p_holm": 0.1665833416658334,
+      "n_games": 300,
+      "days": 39,
+      "nonoverlap_7d_blocks": 5
+    }
+  },
+  "sensitivity_exploratory": {
+    "H1": {
+      "14": {
+        "mean": 0.016171108578947546,
+        "ci": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "n_obs": 300,
+        "n_days": 39,
+        "nonoverlap_blocks": 2,
+        "status": "INSUFFICIENT_BLOCKS"
+      },
+      "28": {
+        "mean": 0.016171108578947546,
+        "ci": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "n_obs": 300,
+        "n_days": 39,
+        "nonoverlap_blocks": 1,
+        "status": "INSUFFICIENT_BLOCKS"
+      }
+    },
+    "H2": {
+      "14": {
+        "mean": 0.03408735402660669,
+        "ci": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "n_obs": 300,
+        "n_days": 39,
+        "nonoverlap_blocks": 2,
+        "status": "INSUFFICIENT_BLOCKS"
+      },
+      "28": {
+        "mean": 0.03408735402660669,
+        "ci": [
+          NaN,
+          NaN
+        ],
+        "p_one_sided": NaN,
+        "n_obs": 300,
+        "n_days": 39,
+        "nonoverlap_blocks": 1,
+        "status": "INSUFFICIENT_BLOCKS"
+      }
+    }
+  },
+  "seed_manifest": {
+    "bootstrap": 20261107
+  },
+  "caveats": [
+    "Outcomes are public; LLM roles may have memorised them (pseudo-out-of-sample).",
+    "Single season; final = last ~25% of season incl. late-season rest/tanking effects.",
+    "Block bootstrap p-value is approximate under weak-dependence assumptions."
+  ],
+  "created_at_utc": "2026-11-07T16:19:02.911931Z"
+}

@@ -1,0 +1,25 @@
+PASSED tests/integration/test_dialogue.py::test_guard_rejects_invented_number
+PASSED tests/integration/test_dialogue.py::test_guard_rejects_sign_flip_spelled_and_percent_numbers
+PASSED tests/integration/test_dialogue.py::test_guard_rejects_wrong_or_overclaimed_verdict
+PASSED tests/integration/test_dialogue.py::test_template_always_passes_guard[SURVIVED_PROTOCOL]
+PASSED tests/integration/test_dialogue.py::test_template_always_passes_guard[NOT_SUPPORTED]
+PASSED tests/integration/test_dialogue.py::test_template_always_passes_guard[INSUFFICIENT_EVIDENCE]
+PASSED tests/integration/test_dialogue.py::test_template_always_passes_guard[DATA_INVALID]
+PASSED tests/integration/test_dialogue.py::test_template_always_passes_guard[BLOCKED]
+PASSED tests/integration/test_dialogue.py::test_ref_with_invented_number_falls_back_to_template
+PASSED tests/integration/test_dialogue.py::test_ref_llm_text_shown_when_guard_passes
+PASSED tests/integration/test_dialogue.py::test_none_runs_no_test_and_ref_says_so
+PASSED tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "HH-K9"}]
+PASSED tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "HH-K3", "x": 1}]
+PASSED tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[not json]
+PASSED tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "run_my_custom_test"}]
+PASSED tests/integration/test_dialogue.py::test_keyword_standin_mapping
+PASSED tests/integration/test_dialogue.py::test_llm_challenger_cannot_add_unregistered_or_drop_mandatory
+PASSED tests/integration/test_dialogue.py::test_timeout_falls_back_within_deadline
+PASSED tests/integration/test_dialogue.py::test_http_error_and_missing_key_fall_back
+PASSED tests/integration/test_dialogue.py::test_empty_or_truncated_reply_is_a_failure
+PASSED tests/integration/test_dialogue.py::test_contributor_models_refused
+PASSED tests/integration/test_dialogue.py::test_usage_logged_per_call_without_key_or_prompt
+PASSED tests/integration/test_dialogue.py::test_endpoint_returns_four_fields_and_rejects_bad_requests
+PASSED tests/integration/test_dialogue.py::test_no_test_template_lists_registered_claims
+24 passed in 33.21s

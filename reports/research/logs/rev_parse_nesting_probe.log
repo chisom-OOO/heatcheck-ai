@@ -1,0 +1,8 @@
+## does 'git -C <bundled raw/repo> rev-parse HEAD' return the upstream commit when the handoff sits inside another git checkout?
+$ git -C handoff/research-20261107/raw/repo rev-parse HEAD
+6c732d4bbf8652236a42848ec79389622879b5a4
+exit=0
+$ cat handoff/research-20261107/raw/repo/COMMIT
+46488f0f8e1cab58fc1256511ea808166a443a15
+$ git rev-parse HEAD   # heatcheck-ai checkout
+6c732d4bbf8652236a42848ec79389622879b5a4

@@ -5,6 +5,11 @@
 # Bundles are content-addressed: hashes cover exact bytes, so never convert line endings.
 tests/fixtures/** -text
 data/bundles/** -text
+data/experience/** -text
 *.jsonl -text
 # Team handoffs are imported byte-for-byte; their code hashes cover exact bytes.
 incoming/** -text
+# Research handoff working copy: frozen code hashes cover exact bytes.
+handoff/** -text
+# Windows batch files need CRLF.
+*.cmd text eol=crlf

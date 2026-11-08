@@ -7,6 +7,7 @@ earlier shot byte-identical, and the builder must not depend on input list order
 from __future__ import annotations
 
 import copy
+import json
 import os
 import random
 
@@ -112,9 +113,21 @@ def test_candidate_builder_ignores_input_order(no_network):  # noqa: F811
         rows_by_shot(build(shuffled), events), "rows depend on input list order, not sequence"
 
 
-def test_candidate_builder_ignores_assist_and_future_revision(no_network):  # noqa: F811
-    """Changing post-outcome assist attribution, or adding a later revision of a *later*
-    event, must not change any earlier shot's row."""
+def _decision_content(rows: dict[str, bytes]) -> dict[str, tuple]:
+    """What a model can see: feature values, cutoff and declared max input. Provenance
+    hashes are excluded on purpose: they must change when an input EVENT's bytes change."""
+    out = {}
+    for k, raw in rows.items():
+        b = json.loads(raw)["body"]
+        out[k] = (json.dumps(b["features"], sort_keys=True), json.dumps(b["cutoff"], sort_keys=True),
+                  b["max_input_sequence"])
+    return out
+
+
+def test_candidate_builder_ignores_assist_attribution(no_network):  # noqa: F811
+    """Changing post-outcome assist attribution must not change any feature value.
+    (Revised 2026-11-07 after Max's diagnosis: the first version compared whole rows, and
+    source_record_hashes legitimately change when an input EVENT's assist field changes.)"""
     build = candidate_builder()
     events = synthetic_game()
     base = rows_by_shot(build(copy.deepcopy(events)), events)
@@ -125,14 +138,42 @@ def test_candidate_builder_ignores_assist_and_future_revision(no_network):  # no
             e["body"]["shot"]["assisted_post_outcome"] = not bool(
                 e["body"]["shot"]["assisted_post_outcome"])
     after = rows_by_shot(build(mutated), mutated)
-    assert base == after, "assist attribution changed a pre-shot feature row"
+    assert _decision_content(base) == _decision_content(after), \
+        "assist attribution changed a pre-shot feature value"
+
+
+def test_reviewer_builder_passes_assist_check():
+    """Positive control for the revised assist test (the old version failed this)."""
+    events = synthetic_game()
+    mutated = copy.deepcopy(events)
+    for e in mutated:
+        if e["body"]["shot"] and e["body"]["shot"]["made"] and e["body"]["shot"]["kind"] == "FIELD_GOAL":
+            e["body"]["shot"]["assisted_post_outcome"] = not bool(e["body"]["shot"]["assisted_post_outcome"])
+    a = rows_by_shot(reference_builder(copy.deepcopy(events)), events)
+    b = rows_by_shot(reference_builder(mutated), mutated)
+    assert _decision_content(a) == _decision_content(b)
 
 
 def test_candidate_builder_emits_valid_records(no_network):  # noqa: F811
     build = candidate_builder()
-    rows = build(synthetic_game())
+    events = synthetic_game()
+    rows = build(copy.deepcopy(events))
     assert rows, "builder produced no rows"
     for r in rows:
         validate_record(r)
-    shots = [e for e in synthetic_game() if e["body"]["action"] == "SHOT"]
-    assert len(rows_by_shot(rows, synthetic_game())) == len(shots), "not one row per shot"
+    got = set(rows_by_shot(rows, events))
+    fgs = {e["body"]["provider_event_id"] for e in events
+           if e["body"]["action"] == "SHOT" and e["body"]["shot"]["kind"] == "FIELD_GOAL"}
+    assert fgs <= got, f"field goals without a row: {sorted(fgs - got)}"
+
+
+def test_candidate_builder_covers_free_throws(no_network):  # noqa: F811
+    """R-001 deliverable 1: one PRE_SHOT_MAKE row per shot attempt. Free throws are shot
+    attempts in heatcheck-records/1 (action SHOT, kind FREE_THROW)."""
+    build = candidate_builder()
+    events = synthetic_game()
+    got = set(rows_by_shot(build(copy.deepcopy(events)), events))
+    fts = {e["body"]["provider_event_id"] for e in events
+           if e["body"]["action"] == "SHOT" and e["body"]["shot"]["kind"] == "FREE_THROW"}
+    assert fts <= got, (f"EXPECTED a row per free throw (R-001 deliverable 1); ACTUAL none for "
+                        f"{sorted(fts - got)}. Needs a row or a Max-approved exclusion policy.")

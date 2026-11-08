@@ -1,0 +1,9 @@
+{
+  "what": "Byte-for-byte copy of Max's committed evidence ledger, so the Heater demo page can load a real record from the static server.",
+  "source_path": "reports/max/logs/2026-11-07-loop/evidence_real_game.jsonl",
+  "source_commit": "c8831e6 (origin/max/integrate-r001-e001 @ 9723771)",
+  "bytes": 18611,
+  "sha256": "a48b6d83567d0b4409000cc1fc1b0e536f982bb39f5727f9ea0d60c58d9a771d",
+  "verified_in_browser": false,
+  "check": "apps/web/tests/heater.test.mjs fails if this copy differs from the source file."
+}

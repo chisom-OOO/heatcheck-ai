@@ -1,0 +1,4 @@
+PASSED tests/integration/test_referee_view.py::test_committed_fixture_is_the_projection_of_the_committed_entry
+PASSED tests/integration/test_referee_view.py::test_projection_copies_values_and_does_not_modify_the_entry
+PASSED tests/integration/test_referee_view.py::test_committed_ledger_line_unchanged
+3 passed in 0.08s

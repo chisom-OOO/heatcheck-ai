@@ -1,0 +1,58 @@
+.....F.........................                                          [100%]
+================================== FAILURES ===================================
+_________________ test_rv_al5_loop_accepts_minimal_challenger _________________
+
+tmp_path = WindowsPath('C:/Users/chiso/AppData/Local/Temp/pytest-of-chiso/pytest-492/test_rv_al5_loop_accepts_minim0')
+
+    def test_rv_al5_loop_accepts_minimal_challenger(tmp_path):
+        class MandatoryOnly(DeterministicChallenger):
+            identity = {**DeterministicChallenger.identity, "version": "rv-mandatory-only"}
+    
+            def select(self, claim, view):
+                return sorted(a.attack_id for a in ATTACKS.values() if a.mandatory)
+    
+        view = tiny_view()
+        full = run_once(view, EvidenceLedger(tmp_path / "a.jsonl"))
+        mini = run_once(view, EvidenceLedger(tmp_path / "b.jsonl"), challenger=MandatoryOnly())
+        have_optional = set(full["identity"]["challenger"]["selected_attacks"]) - \
+            set(mini["identity"]["challenger"]["selected_attacks"])
+        assert have_optional, "control: the full Challenger should select optional attacks here"
+>       pytest.fail(f"EXPECTED refusal of a selection that omits applicable optional attacks "
+                    f"{sorted(have_optional)}; ACTUAL accepted, decision {mini['identity']['decision']}")
+E       Failed: EXPECTED refusal of a selection that omits applicable optional attacks ['A-SHOT-VALUE-SELECTION', 'A-SPLIT-HALF-REPLICATION']; ACTUAL accepted, decision NOT_SUPPORTED
+
+tests\review\test_rv_agent_loop.py:144: Failed
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/review/test_rv_agent_loop.py::test_control_committed_ledger_verifies_and_naive_tamper_detected
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al1_forged_decision_with_recomputed_hashes_detected
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al2_deleted_line_detected
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al3_concurrent_put_of_same_identity_is_one_line
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al4_challenger_cannot_drop_applicable_optional_attacks
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "hh-k3", "rationale": "x"}]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3 ", "rationale": "x"}]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_al7_rationale_is_free_text_in_evidence
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref1_guard_allows_numbers_in_record[Not enough evidence: 14 attempts after three makes and 18 after three misses; 30 needed.]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref1_guard_allows_numbers_in_record[The permutation p-value was 0.061, which is reported but not decisive.]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[invented]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sum]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[percent_of_p]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[complement]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sign_flip]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[other_record]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[hash_digits]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[claim_id_digit]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[spelled]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sci]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[leading_dot]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[rounded_up]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[thousands]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[unicode_digits]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[fullwidth]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[fraction]
+PASSED tests/review/test_rv_agent_loop.py::test_rv_ref3_guard_ignores_numbers_only_in_jone_rationale
+FAILED tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger
+1 failed, 30 passed in 3.29s
