@@ -1,0 +1,12 @@
+commit: 94b599ffd56a380d64a146eb9f6b3871452e4bed
+command: node apps/web/tests/layout/frost_layout.mjs reports/experience/2026-11-08-0939-big-cast-layout
+edge: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+
+PASS home-1440x900
+PASS dialogue-1440x900
+PASS market-1440x900
+PASS home-1920x1080
+PASS dialogue-1920x1080
+PASS market-1920x1080
+6/6 cases PASS
+exit=0
