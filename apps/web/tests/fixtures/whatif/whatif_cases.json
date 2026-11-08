@@ -30,11 +30,11 @@
     "interpretation_id": "edfd1dbb09423c2cef09642c390aa423ae3fa9061af58d84429d9badbdce1761",
     "message_sha256": "e99cd9f8b6572f47d475ce56a869dfa575da27e2c97b0953ca29e5de763606f1",
     "heater_text": "Here's how I read your scenario for Boston Celtics at Milwaukee Bucks: The game is played on a neutral floor: no home court. Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "ESTIMATE",
     "game_id": "nba:0022600200",
     "game": "Boston Celtics at Milwaukee Bucks",
     "focus_team": "Boston Celtics",
@@ -98,8 +98,8 @@
       "detail": "forecast data to 2026-11-07T07:00:00Z, 19 h before this scenario (limit 48 h)"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. This is a what-if, not a forecast: Boston Celtics goes from 73.3% to 83.0%. Nothing here shows the model beats the market.",
+    "verdict": "ESTIMATE · Edge unverified",
+    "ref_text": "ESTIMATE · Edge unverified. This is a what-if, not a forecast: Boston Celtics goes from 73.3% to 83.0%. Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -114,7 +114,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "ESTIMATE"
+    "stamp": "ESTIMATE",
+    "number_source": "DATA"
    }
   },
   "assume_pp": {
@@ -146,14 +147,14 @@
     "interpretation": [
      "Your assumption: it costs Boston Celtics 5 percentage points."
     ],
-    "interpretation_id": "1a104f1fe66d0a9c850f771bde7151d4aff99cac322e98f351eb4c208b12c327",
+    "interpretation_id": "039fa81066513452960858903a76d099a2d0544b6bc32594b9e1b1d5aa597702",
     "message_sha256": "eeaea5d661d669f5303c81f26597304a22456800de407250c908cdae986d7519",
     "heater_text": "Here's how I read your scenario for Boston Celtics at Milwaukee Bucks: Your assumption: it costs Boston Celtics 5 percentage points. Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "YOUR ASSUMPTION",
     "game_id": "nba:0022600200",
     "game": "Boston Celtics at Milwaukee Bucks",
     "focus_team": "Boston Celtics",
@@ -215,8 +216,8 @@
       "detail": "forecast data to 2026-11-07T07:00:00Z, 19 h before this scenario (limit 48 h)"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. This is a what-if, not a forecast: Boston Celtics goes from 73.3% to 68.3%. Nothing here shows the model beats the market.",
+    "verdict": "YOUR ASSUMPTION · Edge unverified",
+    "ref_text": "YOUR ASSUMPTION · Edge unverified. This is a what-if, not a forecast: Boston Celtics goes from 73.3% to 68.3%. Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -231,7 +232,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "YOUR ASSUMPTION"
+    "stamp": "YOUR ASSUMPTION",
+    "number_source": "USER"
    }
   },
   "player_out": {
@@ -265,11 +267,11 @@
     "interpretation_id": "28e3a9ae1fcc0156284cbe362b85deccc4c227060a09081eb0227f18888679a4",
     "message_sha256": "10486a134045a45a975ef5207b2358cbbae60f9d809323ebc9e7b6f9ec58540f",
     "heater_text": "Here's how I read your scenario for Los Angeles Lakers at Detroit Pistons: Cade Cunningham does not play for Detroit Pistons. Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "ESTIMATE",
     "game_id": "nba:0022600197",
     "game": "Los Angeles Lakers at Detroit Pistons",
     "focus_team": "Detroit Pistons",
@@ -426,8 +428,8 @@
       "detail": "42 games behind player_out"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. This is a what-if, not a forecast: Detroit Pistons goes from 67.6% to 67.6% (range 57.5% to 76.2%). Nothing here shows the model beats the market.",
+    "verdict": "ESTIMATE · Edge unverified",
+    "ref_text": "ESTIMATE · Edge unverified. This is a what-if, not a forecast: Detroit Pistons goes from 67.6% to 67.6% (range 57.5% to 76.2%). Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -442,7 +444,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "ESTIMATE"
+    "stamp": "ESTIMATE",
+    "number_source": "DATA"
    }
   },
   "price": {
@@ -471,16 +474,16 @@
      }
     ],
     "interpretation": [
-     "The market prices Los Angeles Lakers at 30.0% (a hypothetical price)."
+     "The market prices Los Angeles Lakers at 30.0% (your price)."
     ],
     "interpretation_id": "692fc97acaf1a25ec7cd0f1b826f2255b3b849c3ad424a71bffd925778b42faf",
     "message_sha256": "7296005570a7895b9edb21de58c489384ef703b024ace7f337cae8be9c198fab",
-    "heater_text": "Here's how I read your scenario for Los Angeles Lakers at Detroit Pistons: The market prices Los Angeles Lakers at 30.0% (a hypothetical price). Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "heater_text": "Here's how I read your scenario for Los Angeles Lakers at Detroit Pistons: The market prices Los Angeles Lakers at 30.0% (your price). Is that right? Confirm and I'll run it.",
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "YOUR ASSUMPTION",
     "game_id": "nba:0022600197",
     "game": "Los Angeles Lakers at Detroit Pistons",
     "focus_team": "Los Angeles Lakers",
@@ -502,7 +505,7 @@
        "source_text": "priced at 30%"
       },
       "type": "HYPOTHETICAL_PRICE",
-      "text": "Hypothetical market price 30.0% for Los Angeles Lakers; it changes the comparison, not the forecast.",
+      "text": "Your market price 30.0% for Los Angeles Lakers; it changes the comparison, not the forecast.",
       "n": null,
       "verdict": null,
       "caveats": [],
@@ -534,8 +537,8 @@
       "detail": "forecast data to 2026-11-07T07:00:00Z, 19 h before this scenario (limit 48 h)"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. Against a hypothetical market price of 30.0%, the unchanged forecast for Los Angeles Lakers sits 2.4 points above it. Nothing here shows the model beats the market.",
+    "verdict": "YOUR ASSUMPTION · Edge unverified",
+    "ref_text": "YOUR ASSUMPTION · Edge unverified. Against your market price of 30.0%, the unchanged forecast for Los Angeles Lakers sits 2.4 points above it. Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -550,7 +553,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "YOUR ASSUMPTION"
+    "stamp": "YOUR ASSUMPTION",
+    "number_source": "USER"
    }
   },
   "points": {
@@ -582,14 +586,14 @@
     "interpretation": [
      "Your assumption: it costs Boston Celtics 3 points."
     ],
-    "interpretation_id": "31a1083a4afe8de856cc2b733284118cb8bc175fe46226f8054ac76501b78785",
+    "interpretation_id": "ebf38041ddf64e31e343a1c563c59a5b8991fc7da5deca66c943b4b895124919",
     "message_sha256": "9303a9bd6e176c9eaa2e157fd1601172b3df0a70defbe259d5d067af788d5433",
     "heater_text": "Here's how I read your scenario for Boston Celtics at Milwaukee Bucks: Your assumption: it costs Boston Celtics 3 points. Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "NO NUMBER",
     "game_id": "nba:0022600200",
     "game": "Boston Celtics at Milwaukee Bucks",
     "focus_team": "Boston Celtics",
@@ -644,8 +648,8 @@
       "detail": "forecast data to 2026-11-07T07:00:00Z, 19 h before this scenario (limit 48 h)"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. No scenario number: none of these changes can be quantified with the current model. Nothing here shows the model beats the market.",
+    "verdict": "NO NUMBER · Edge unverified",
+    "ref_text": "NO NUMBER · Edge unverified. No scenario number: none of these changes can be quantified with the current model. Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -660,7 +664,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "NO NUMBER"
+    "stamp": "NO NUMBER",
+    "number_source": null
    }
   },
   "no_data": {
@@ -694,11 +699,11 @@
     "interpretation_id": "7449704dbd49ea01ad1e87c05133044faf4ee325bb96e9cf73fca02b5a0f09ba",
     "message_sha256": "02012955e79721b562b333fb158c0798b3dfb9937f343d481ffcb74d379e410e",
     "heater_text": "Here's how I read your scenario for Los Angeles Lakers at Detroit Pistons: Nobody Atall does not play for Detroit Pistons. Is that right? Confirm and I'll run it.",
-    "label": "HYPOTHETICAL"
+    "label": "READ_BACK"
    },
    "estimate": {
     "format": "heatcheck-whatif/1",
-    "label": "HYPOTHETICAL",
+    "label": "NO NUMBER",
     "game_id": "nba:0022600197",
     "game": "Los Angeles Lakers at Detroit Pistons",
     "focus_team": "Detroit Pistons",
@@ -752,8 +757,8 @@
       "detail": "forecast data to 2026-11-07T07:00:00Z, 19 h before this scenario (limit 48 h)"
      }
     ],
-    "verdict": "HYPOTHETICAL · Edge unverified",
-    "ref_text": "HYPOTHETICAL · Edge unverified. No scenario number: none of these changes can be quantified with the current model. Nothing here shows the model beats the market.",
+    "verdict": "NO NUMBER · Edge unverified",
+    "ref_text": "NO NUMBER · Edge unverified. No scenario number: none of these changes can be quantified with the current model. Nothing here shows the model beats the market.",
     "sample_note": null,
     "provider": {
      "name": "research-scenario-effects",
@@ -768,7 +773,8 @@
       "2026-11-08T01:25:44.092466Z"
      ]
     },
-    "stamp": "NO NUMBER"
+    "stamp": "NO NUMBER",
+    "number_source": null
    }
   }
  }

@@ -34,10 +34,10 @@ export function confirmBody(it) {
 const pct = (p) => `${(Math.round(Number(p) * 1000) / 10).toFixed(1)}%`;
 
 export const TYPE_LABEL = {
-  MODEL_RECALC: "MODEL RECALCULATED",
+  MODEL_RECALC: "ESTIMATE",  // the forecast's own Elo model, recalculated: a number from data
   ESTIMATE: "ESTIMATE",
   YOUR_ASSUMPTION: "YOUR ASSUMPTION",
-  HYPOTHETICAL_PRICE: "HYPOTHETICAL PRICE",
+  HYPOTHETICAL_PRICE: "YOUR ASSUMPTION",  // a market price the user supplied
   NO_NUMBER: "NO NUMBER",
   FAILED_TEST: "FAILED OUR TEST",
 };
@@ -46,8 +46,11 @@ export const TYPE_LABEL = {
  *  data, YOUR ASSUMPTION when it depends on a number the user supplied, SAMPLE, or NO NUMBER. The page never
  *  decides it; an answer without a known stamp shows NO NUMBER. */
 export const STAMPS = { ESTIMATE: "insufficient", "YOUR ASSUMPTION": "insufficient", SAMPLE: "blocked", "NO NUMBER": "blocked" };
+const SOURCE_STAMP = { DATA: "ESTIMATE", USER: "YOUR ASSUMPTION" };
 export function whatifStamp(est) {
-  const text = Object.hasOwn(STAMPS, est?.stamp) ? est.stamp : "NO NUMBER";
+  let text = Object.hasOwn(STAMPS, est?.stamp) ? est.stamp : "NO NUMBER";
+  // The server also says where the number comes from; if the two ever disagree, show no number.
+  if (est && "number_source" in est && SOURCE_STAMP[est.number_source] && SOURCE_STAMP[est.number_source] !== text) text = "NO NUMBER";
   return { text, kind: STAMPS[text] };
 }
 
@@ -83,7 +86,7 @@ export function scenarioView(est) {
     baselineNote: est.baseline ? `Live forecast, data to ${fmtUtc(est.baseline.data_cutoff_utc)}` : (est.sample_note || ""),
     scenarioLabel: `Scenario (${whatifStamp(est).text})`,
     scenario: scen,
-    price: est.hypothetical_price != null ? `Hypothetical market price: ${pct(est.hypothetical_price)}` : "",
+    price: est.hypothetical_price != null ? `Your market price: ${pct(est.hypothetical_price)}` : "",
     effects,
     flags,
     verdict: est.verdict,
@@ -103,7 +106,7 @@ export function renderInterpretation(root, it, { onConfirm, onCancel } = {}) {
   root.replaceChildren();
   root.hidden = false;
   const head = el("header", "scn-head");
-  head.append(el("span", "scn-badge", "HYPOTHETICAL"), el("span", "scn-title", `${it.game} · how Heater read it`));
+  head.append(el("span", "scn-badge", "CONFIRM"), el("span", "scn-title", `${it.game} · how Heater read it`));
   root.append(head);
   const ul = el("ul", "scn-list");
   for (const line of it.interpretation || []) ul.append(el("li", "", line));

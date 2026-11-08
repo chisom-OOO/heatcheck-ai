@@ -152,6 +152,14 @@ is refused.
 
 `POST /api/scenario/estimate` returns it as `stamp` (`heatcheck.agents.scenario.stamp_for`); preset
 scenarios carry `label: "ESTIMATE"`. The page never decides the stamp: `whatifStamp(est)` in
-`apps/web/web/whatif/whatif.js` shows the server's value (unknown values show NO NUMBER). The Ref
-line keeps the verdict "HYPOTHETICAL · Edge unverified". Tests: `tests/integration/test_scenario.py`
+`apps/web/web/whatif/whatif.js` shows the server's value (unknown values show NO NUMBER).
+The response also carries `number_source`: "DATA" (ESTIMATE), "USER" (YOUR ASSUMPTION) or null; the
+page shows NO NUMBER if the two ever disagree.
+
+Same word everywhere (user's instruction, 8 Nov ~04:10): the what-if panel badge, the Ref verdict
+`"<STAMP> · Edge unverified"` (e.g. "ESTIMATE · Edge unverified", "YOUR ASSUMPTION · Edge
+unverified") and the start of the Ref line all use the stamp's word. "HYPOTHETICAL" is no longer
+shown in the what-if panel or Ref line; this supersedes the "HYPOTHETICAL · Edge unverified" wording
+in §5 above. A user's market price is shown as "Your market price" (API field names such as
+`hypothetical_price` are unchanged). The read-back before confirmation is badged CONFIRM (no number). Tests: `tests/integration/test_scenario.py`
 (`test_stamp_rule_…`), `apps/web/tests/whatif.test.mjs` (fixture generated from the server code).

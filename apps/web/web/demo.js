@@ -565,7 +565,7 @@ async function runScenario(question, gameId) {
   });
 }
 
-/** After confirmation: the Ref runs it; baseline vs scenario side by side, marked HYPOTHETICAL. */
+/** After confirmation: the Ref runs it; baseline vs scenario side by side, marked with the server's stamp. */
 async function runEstimate(it) {
   if (state.busy) return;
   state.busy = true;
