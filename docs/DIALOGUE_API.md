@@ -319,3 +319,26 @@ evidence_id, recorded_at_utc`. Probabilities and prices are decimal strings.
 - `404 {"error"}` when the game is not in the forecast file or the mapping/quote is not in the
   bundle. `200` with `Can't compare` and `evidence_id: null` when the forecast file is missing
   or invalid.
+
+
+## Ref headline (`ref_headline`, 8 Nov 2026)
+
+Every `/api/dialogue` answer carries `ref_headline`: a deterministic capitals headline built only from
+`verdict` and a short claim title (`HEADLINE_TITLES` in `heatcheck/api/display_titles.py`, falling back to
+the display title). No model is called. `ref_text` is unchanged: it is still the one-sentence explanation.
+
+| verdict | ref_headline |
+|---|---|
+| `SURVIVED_PROTOCOL` | `SURVIVED: {TITLE} HOLDS UP` |
+| `NOT_SUPPORTED` | `NOT SUPPORTED: {TITLE} DOESN'T SHOW` |
+| `INSUFFICIENT_EVIDENCE` | `NOT ENOUGH EVIDENCE: {TITLE} NOT SHOWN` |
+| `DATA_INVALID` | `DATA INVALID: NO RULING` |
+| `BLOCKED`, or no registered test (`claim_id` `NONE`) | `NO TEST: NO RULING` |
+| registered claim with no record yet (`verdict` null) | `null` |
+
+Chips: "Is the hot hand real?" gives `NOT ENOUGH EVIDENCE: HOT HAND NOT SHOWN`; "Do home teams win more?"
+gives `SURVIVED: HOME ADVANTAGE HOLDS UP`; "Does rest matter?" gives
+`NOT ENOUGH EVIDENCE: REST AND BACK-TO-BACKS NOT SHOWN`.
+
+`/api/investigate` answers carry `ref_headline: null`. Market verdicts ("Worth investigating · Edge
+unverified", "Can't compare") are not protocol verdicts, and no headline pattern was given for them.

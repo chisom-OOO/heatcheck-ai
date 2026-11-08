@@ -513,3 +513,26 @@ def test_other_wording_still_goes_to_the_model(view, tmp_path, q):
     t = FakeTransport(mapping='{"claim_id": "NONE"}')
     got, source, _ = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t))._map(q)
     assert (got, source) == ("NONE", "LLM") and len(t.calls) == 1
+
+
+# ------------------------------------------------------------------ ref_headline (user, 8 Nov)
+
+def test_ref_headline_patterns():
+    from heatcheck.api.display_titles import ref_headline
+    assert ref_headline("INSUFFICIENT_EVIDENCE", "GP-REST") == "NOT ENOUGH EVIDENCE: REST AND BACK-TO-BACKS NOT SHOWN"
+    assert ref_headline("SURVIVED_PROTOCOL", "CONF-HA") == "SURVIVED: HOME ADVANTAGE HOLDS UP"
+    assert ref_headline("NOT_SUPPORTED", "HH-K3") == "NOT SUPPORTED: HOT HAND DOESN'T SHOW"
+    assert ref_headline("DATA_INVALID", "CONF-HH") == "DATA INVALID: NO RULING"
+    assert ref_headline("BLOCKED", "GP-ELO") == "NO TEST: NO RULING"
+    assert ref_headline(None, "NONE") == "NO TEST: NO RULING"
+    assert ref_headline(None, "GP-ELO") is None
+    assert ref_headline("INSUFFICIENT_EVIDENCE", "XX-NEW") == "NOT ENOUGH EVIDENCE: XX-NEW NOT SHOWN"
+
+
+def test_every_turn_carries_a_ref_headline_matching_its_verdict(view, tmp_path):
+    from heatcheck.api.display_titles import ref_headline
+    d = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), None)
+    for q in ("Is the hot hand real?", "Does rest matter?", "Do home teams win more?", "What's for dinner?"):
+        out = d.turn(q)
+        assert "ref_headline" in out and out["ref_headline"] == ref_headline(out["verdict"], out["claim_id"])
+        assert out["ref_text"]   # ref_text is still the explanation
