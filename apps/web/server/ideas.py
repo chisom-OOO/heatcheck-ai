@@ -156,6 +156,22 @@ def read_family(d):
            "data": {k: (reg.get("data_identity") or {}).get(k) for k in ("season", "split", "n_games", "n_fga")},
            "results": results, "truth": None, "scoreboard": None,
            "checks": ["registration_hash matches registration.json", "ideas match the registration"]}
+    note_path = os.path.join(d, "NOTE.json")
+    if os.path.isfile(note_path):  # Research's plain-words note on the family (e.g. "lead, not finding")
+        fam["research_note"] = None
+        try:
+            _, note = _load(note_path)
+            text = note.get("note") if isinstance(note, dict) else None
+            if not isinstance(note, dict) or note.get("format") != "heatcheck-idea-family-note/1":
+                raise Refused("NOTE.json is not heatcheck-idea-family-note/1")
+            if note.get("cites_results_sha256") != res_sha:
+                raise Refused("NOTE.json does not cite these results (cites_results_sha256 differs)")
+            if not isinstance(text, str) or not text.strip() or len(text) > 2000:
+                raise Refused("NOTE.json has no usable note text")
+            fam["research_note"] = text
+            fam["checks"].append("Research's note cites these results")
+        except (Refused, OSError) as e:
+            fam["checks"].append(f"Research's note not shown: {e}")
     if res["mode"] == "synthetic":
         has_sb = os.path.isfile(os.path.join(d, "scoreboard.json"))
         has_truth = os.path.isfile(os.path.join(d, "truth.json"))

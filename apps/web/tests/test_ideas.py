@@ -75,6 +75,31 @@ class TestReader(unittest.TestCase):
         with open(API_CAPTURE, encoding="utf-8") as f:
             self.assertEqual(json.load(f), json.loads(json.dumps(ideas.read_all(FIX))))
 
+    def _write_note(self, fam, **over):
+        with open(os.path.join(self.copy, fam, "results.json"), "rb") as f:
+            sha = hashlib.sha256(f.read()).hexdigest()
+        note = {"format": "heatcheck-idea-family-note/1", "kind": "LEAD_NOT_FINDING",
+                "cites_results_sha256": sha, "note": "Lead, not finding. Holm is applied within each family."}
+        note.update(over)
+        with open(os.path.join(self.copy, fam, "NOTE.json"), "w") as f:
+            json.dump(note, f)
+
+    def _family(self, name):
+        return next(f for f in ideas.read_all(self.copy)["families"] if f["name"] == name)
+
+    def test_research_note_is_shown_only_when_it_cites_these_results(self):
+        self.assertNotIn("research_note", self._family("dev_example"))           # no note: field absent
+        self._write_note("dev_example")
+        f = self._family("dev_example")
+        self.assertTrue(f["research_note"].startswith("Lead, not finding."))
+        self.assertIn("Research's note cites these results", f["checks"])
+        self._write_note("dev_example", cites_results_sha256="0" * 64)          # stale note
+        f = self._family("dev_example")
+        self.assertIsNone(f["research_note"])
+        self.assertTrue(any("not shown" in c and "cites_results_sha256" in c for c in f["checks"]))
+        self._write_note("dev_example", format="other/1")
+        self.assertIsNone(self._family("dev_example")["research_note"])
+
     def test_changed_registration_is_refused(self):
         self.edit("dev_example/registration.json", lambda b: b.replace(b'"B": 999', b'"B": 99'), raw=True)
         self.assertIn("registration_hash differs", self.refused()["dev_example"])
