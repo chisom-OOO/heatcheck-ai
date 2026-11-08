@@ -59,3 +59,34 @@ def test_same_day_results_not_used_and_hash_and_required_ids(tmp_path):
 def test_home_court_and_neutral():
     assert LF.p_home(1505, 1505) == pytest.approx(1 / (1 + 10 ** (-100 / 400)))
     assert LF.p_home(1505, 1505, neutral=True) == pytest.approx(0.5)
+
+
+def _bdl(gid, date, dt, status, home, away, hs=None, vs=None, season=2026, post=False):
+    return {"id": gid, "date": date, "datetime": dt, "season": season, "status": status, "postseason": post,
+            "home_team": {"abbreviation": home}, "visitor_team": {"abbreviation": away},
+            "home_team_score": hs, "visitor_team_score": vs}
+
+
+def test_balldontlie_path_uses_only_earlier_finals_and_binds_hashes(tmp_path):
+    root = Path(__file__).resolve().parents[3]
+    st = json.loads((root / "data/live/work/elo_state.json").read_text())
+    (tmp_path / "elo_state.json").write_text(json.dumps(st))
+    raw = tmp_path / "raw"; raw.mkdir()
+    page = {"data": [_bdl(1, "2026-11-05", "2026-11-06T00:00:00.000Z", "Final", "IND", "DEN", 120, 100),
+                     _bdl(2, "2026-11-07", "2026-11-07T17:00:00.000Z", "Final", "ATL", "BKN", 90, 130),   # same day: unused
+                     _bdl(3, "2026-10-10", "2026-10-10T23:00:00.000Z", "Final", "OKC", "WAS", 80, 140, post=False, season=2025),
+                     _bdl(4, "2026-11-07", "2026-11-08T00:30:00.000Z", "7:30 pm ET", "ATL", "BKN")]}
+    (raw / "p1.json").write_text(json.dumps(page))
+    gl = root / "data/live/raw/gamelist_handcopied_20261107.json"
+    LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "f.json", "2026-11-08T00:00:00Z", "TEST")
+    f = json.loads((tmp_path / "f.json").read_text())
+    assert f["data_cutoff_utc"] == "2026-11-06T04:00:00Z" and len(f["games"]) == 7
+    ind = next(g for g in f["games"] if g["game_id"] == "nba:0022600189")
+    base = st["ratings_2026_27_start"]
+    assert ind["elo_home"] > base["1610612754"] and ind["elo_away"] < base["1610612743"]   # IND beat DEN on 11-05
+    atl = next(g for g in f["games"] if g["game_id"] == "nba:0022600190")
+    assert atl["elo_home"] == pytest.approx(round(base["1610612737"], 3))                  # 11-07 result not used
+    assert f["source"]["sha256"] == hashlib.sha256((raw / "p1.json").read_bytes()).hexdigest()
+    (raw / "p2.json").write_text(json.dumps({"data": [_bdl(9, "2026-11-01", "2026-11-01T23:00:00.000Z", "Final", "XYZ", "DEN", 1, 0)]}))
+    with pytest.raises(SystemExit, match="XYZ"):
+        LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "g.json", "x", "TEST")
