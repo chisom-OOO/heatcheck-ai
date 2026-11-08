@@ -22,7 +22,7 @@ and tells you which ones are real and which ones were luck.
 
 > **The brief:** *Finding patterns in data is easy; knowing which ones to trust is hard. Create an AI researcher that tests its own ideas and can tell a real discovery from a lucky one.*
 
-HeatCheck splits that job between two characters. **Heater** is a loud, AI-voiced pundit who proposes ideas and hot takes. **The Ref** is plain code: it applies tests that were registered before the data was opened, and nothing Heater says can change a verdict. Every decision goes into an append-only, hash-chained evidence ledger.
+HeatCheck splits that job between three characters. **Heater** is a loud, AI-voiced pundit who proposes ideas and hot takes. **Frost** challenges him with questions tied to checks that actually ran. **The Ref** is plain code: it applies tests that were registered before the data was opened, and nothing Heater says can change a verdict. Every decision goes into an append-only, hash-chained evidence ledger.
 
 ## Headline results
 
@@ -58,6 +58,8 @@ HeatCheck splits that job between two characters. **Heater** is a loud, AI-voice
 
 <sub>From the local demo. Market prices shown are recorded, labelled RECORDED on screen.</sub>
 
+![Frost challenges Heater on the hot hand before the Ref rules: was the season sealed, was the bar raised for testing several ideas, and is "not shown" the same as "no effect"; each question has an answer chip from the evidence record](docs/assets/frost-challenge.png)
+
 ## How it works
 
 ```mermaid
@@ -65,7 +67,7 @@ flowchart LR
     U(["You ask<br/><i>voice or text</i>"]) --> H["Heater<br/><i>muse-spark-1.3<br/>routes the question,<br/>proposes ideas</i>"]
     H --> R{"Registered?<br/><i>strict grammar,<br/>frozen before testing</i>"}
     R -->|no| N["No test exists:<br/>the Ref says so"]
-    R -->|yes| C["Challenger<br/><i>required attacks:<br/>sample size, leakage,<br/>baselines, nulls</i>"]
+    R -->|yes| C["Frost, the Challenger<br/><i>required attacks:<br/>sample size, leakage,<br/>baselines, nulls;<br/>asks them out loud</i>"]
     C --> F["Ref<br/><i>deterministic rule<br/>+ Holm correction</i>"]
     F --> L[("Evidence ledger<br/><i>append-only,<br/>hash-chained</i>")]
     F --> V(["Verdict stamp<br/><i>+ plain-English answer</i>"])
@@ -99,6 +101,7 @@ sequenceDiagram
 ```
 
 - **No model decides anything.** The model maps your question to a registered claim, writes Heater's lines and proposes ideas in a fixed grammar. A guard rejects any number in Heater's text that isn't in the evidence record. The Ref's verdict and explanation are templates filled only from the ledger.
+- **Frost asks the awkward questions.** Before the Ref rules, Frost (a cool-headed second character) puts up to three challenges to Heater, each tied to a check that actually ran or a fact in the record: was the season sealed, did it hold in two separate slices, was the bar raised for testing several ideas. Each challenge comes with an answer chip filled only from the evidence record, so every number in it can be traced. The model may reword Frost's question but not the answer, and the same number guard applies. On the market board, Frost asks about the model's home-team bias, whether the contract really matches the game, and what the forecast can't see.
 - **Every idea counts.** When Heater proposes several ideas, all of them are registered before computing and corrected together. Survivors are labelled *a lead, not a finding* until they pass a sealed test.
 - **Final data is guarded.** Re-spelled game ids, shot-level ids and changed data all map back to the same reserved games and are refused.
 
