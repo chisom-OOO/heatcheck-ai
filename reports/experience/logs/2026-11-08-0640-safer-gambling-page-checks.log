@@ -1,0 +1,1198 @@
+# HeatCheck check run
+date_utc: 2026-11-08T06:15:22Z
+host: Windows 10.0.26200.0
+repo: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+branch: experience/market-board
+commit: 7a49dd545990839ebb262a8a833f8eeec3e40b44
+worktree clean: True
+python: Python 3.12.13
+uv: uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)
+
+## uv sync --frozen --all-groups
+Checked 38 packages in 20ms
+exit: 0
+
+## uv run --frozen --all-groups python tools/check_scaffold.py
+PASS: preparation contracts; 15 gate(s) marked, each with reviewer and evidence
+exit: 0
+
+## uv run --frozen --all-groups ruff check .
+All checks passed!
+exit: 0
+
+## uv run --frozen --all-groups pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.7.0 -- C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\nicho_yyv3g9s\AppData\Local\Temp\claude\6f3eaf0eb1f7cd63\a7e4e5a3-018f-4430-a9fb-444ec76a178c\scratchpad\hc
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collecting ... collected 884 items / 2 skipped
+
+tests/contracts/test_eligibility.py::test_eligible_when_received_before_cutoff PASSED [  0%]
+tests/contracts/test_eligibility.py::test_quote_received_after_cutoff_is_ineligible PASSED [  0%]
+tests/contracts/test_eligibility.py::test_latest_of_several_eligible_is_selected PASSED [  0%]
+tests/contracts/test_eligibility.py::test_stale_quote PASSED             [  0%]
+tests/contracts/test_eligibility.py::test_unverified_mapping_blocks PASSED [  0%]
+tests/contracts/test_eligibility.py::test_latest_non_ok_quote_is_not_skipped PASSED [  0%]
+tests/contracts/test_eligibility.py::test_freshness_threshold_must_be_configured PASSED [  0%]
+tests/contracts/test_live_forecast.py::test_sample_fixture_is_valid_and_flagged_sample PASSED [  0%]
+tests/contracts/test_live_forecast.py::test_non_sample_shape_is_valid_and_not_flagged PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_empty_games_list_is_valid PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[wrong format] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[wrong label] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[unknown top field] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[missing games] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[empty inputs] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[duplicate input] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[cutoff without Z] PASSED [  1%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[cutoff equals tip] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[cutoff after tip] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[p above 1] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[p negative] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[p as percent string] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[p boolean] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[bad game id namespace] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[short game id] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[duplicate game id] PASSED [  2%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[bad team id] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[same teams] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[unknown game field] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[brier above 1] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[fractional games] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[bad cross_check] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_invalid_cases_are_refused[sample hash not hex] PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_real_file_may_not_use_sample_placeholders PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_real_file_needs_real_fetch_time PASSED [  3%]
+tests/contracts/test_live_forecast.py::test_sample_marker_must_lead_results PASSED [  4%]
+tests/contracts/test_live_forecast.py::test_non_strict_json_is_refused[{"format": NaN}] PASSED [  4%]
+tests/contracts/test_live_forecast.py::test_non_strict_json_is_refused[{"a": 1, "a": 2}] PASSED [  4%]
+tests/contracts/test_live_forecast.py::test_non_strict_json_is_refused[\xff\xfe] PASSED [  4%]
+tests/contracts/test_live_forecast.py::test_non_strict_json_is_refused[[1,] PASSED [  4%]
+tests/contracts/test_mapping_verification.py::test_et_phrase_handles_dst PASSED [  4%]
+tests/contracts/test_mapping_verification.py::test_team_table_has_thirty_distinct_teams PASSED [  4%]
+tests/contracts/test_mapping_verification.py::test_recorded_polymarket_mapping_verifies[bundle0] PASSED [  4%]
+tests/contracts/test_mapping_verification.py::test_recorded_polymarket_mapping_verifies[bundle1] PASSED [  4%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[rules hash differs] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[overtime sentence removed] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[other team in rules] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[resolution not the winner] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[scheduled time differs] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[cancel rule changed] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[game start time differs] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[not moneyline] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[contract is the away token] PASSED [  5%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[mapping says regulation only] PASSED [  6%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[market closed] PASSED [  6%]
+tests/contracts/test_mapping_verification.py::test_each_mismatch_leaves_mapping_proposed[payload not bound] PASSED [  6%]
+tests/contracts/test_mapping_verification.py::test_apply_swaps_in_verified_record_only_when_bound PASSED [  6%]
+tests/contracts/test_mapping_verification.py::test_committed_verification_documents_bind_current_bundles PASSED [  6%]
+tests/contracts/test_records.py::test_reference_bundle_loads_and_is_reproducible PASSED [  6%]
+tests/contracts/test_records.py::test_canonical_bytes_are_order_independent_and_reject_nonfinite PASSED [  6%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-unknown fields] PASSED [  6%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-namespace] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-must differ] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-season] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-UTC] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[GAME-<lambda>-calendar] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>-shot object] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>->= 1] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[EVENT-<lambda>-integer] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-strictly before] PASSED [  7%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-post-outcome] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[FEATURE_ROW-<lambda>-exactly one] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[RESTRICTED_LABEL-<lambda>-needs exactly] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-<= 1_0] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-decimal string] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-<= 1_1] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-crossed] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-use EMPTY] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-needs a reason] PASSED [  8%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[QUOTE-<lambda>-before fetch] PASSED [  9%]
+tests/contracts/test_records.py::test_invalid_records_are_rejected[VENUE_MAPPING-<lambda>-overtime] PASSED [  9%]
+tests/contracts/test_records.py::test_quote_subsecond_receive_after_fetch_is_valid PASSED [  9%]
+tests/contracts/test_records.py::test_envelope_checks PASSED             [  9%]
+tests/contracts/test_records.py::test_tampered_raw_payload_fails PASSED  [  9%]
+tests/contracts/test_records.py::test_tampered_records_fail PASSED       [  9%]
+tests/contracts/test_records.py::test_crlf_conversion_is_detected PASSED [  9%]
+tests/contracts/test_records.py::test_dangling_references_fail PASSED    [  9%]
+tests/contracts/test_records.py::test_mapping_team_must_be_participant PASSED [  9%]
+tests/contracts/test_records.py::test_unsafe_raw_path_fails PASSED       [ 10%]
+tests/contracts/test_records.py::test_encoding_is_stable_under_input_order PASSED [ 10%]
+tests/contracts/test_records.py::test_cli_reports_pass_and_fail PASSED   [ 10%]
+tests/contracts/test_records.py::test_experience_shape_recorded_market_bundle_validates PASSED [ 10%]
+tests/contracts/test_records.py::test_research_shape_real_nba_bundle_validates PASSED [ 10%]
+tests/contracts/test_records.py::test_events_cannot_attach_to_market_mode_game PASSED [ 10%]
+tests/contracts/test_records.py::test_real_record_cannot_reference_synthetic_game PASSED [ 10%]
+tests/contracts/test_records.py::test_game_tip_times_scheduled_or_observed PASSED [ 10%]
+tests/experience/test_e001_integrity.py::test_bundle_has_five_raw_payloads PASSED [ 10%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[4f7956f1d1e96f9897ec9e10a3ff66633f3e88360aee654df6566785fa999a60.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[a92f676d989d9e652b3357541d7881b1fe82d7eadaed91b5108170a64da6f30b.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_a3_one_changed_byte_fails[fbae709cc911445bb8f1f866f5349ff233b8e1caa65c85c0b94a2213775abb44.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[1b71c9dac4448553b8056ece538a5b70174b06802fafa25307fde561d50588f8.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[4f7956f1d1e96f9897ec9e10a3ff66633f3e88360aee654df6566785fa999a60.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[a92f676d989d9e652b3357541d7881b1fe82d7eadaed91b5108170a64da6f30b.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[ebf1fc997f3ce7d70b1d7de2636ffd339d83d6f82137adaadb0b6180bf7176c3.json] PASSED [ 11%]
+tests/experience/test_e001_integrity.py::test_replay_itself_checks_each_raw_hash[fbae709cc911445bb8f1f866f5349ff233b8e1caa65c85c0b94a2213775abb44.json] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[__init__.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[capture.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[common.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[kalshi.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[live.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[polymarket.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_a5_no_write_calls_routes_or_methods[replay.py] PASSED [ 12%]
+tests/experience/test_e001_readonly.py::test_allowlist_has_only_public_read_paths PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_every_recorded_capture_url_passes_the_allowlist PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[POST] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[PUT] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[PATCH] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[DELETE] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_non_get[get] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://example.com/markets] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://clob.polymarket.com/order] PASSED [ 13%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://api.elections.kalshi.com/trade-api/v2/portfolio/orders] PASSED [ 14%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[http://clob.polymarket.com/book?token_id=1] PASSED [ 14%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://user:pw@clob.polymarket.com/book?token_id=1] PASSED [ 14%]
+tests/experience/test_e001_readonly.py::test_a5_live_client_refuses_off_allowlist_url[https://clob.polymarket.com:8443/book?token_id=1] PASSED [ 14%]
+tests/experience/test_e001_readonly.py::test_allowed_read_passes_the_check_without_network PASSED [ 14%]
+tests/experience/test_e001_recorded.py::test_a1_recorded_bundle_validates PASSED [ 14%]
+tests/experience/test_e001_recorded.py::test_a2_recorded_replay_offline_is_byte_identical PASSED [ 14%]
+tests/experience/test_e001_recorded.py::test_recorded_build_is_reproducible PASSED [ 14%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[00b07d6757cce90edd219c0a1726efd0dd3adf8fad164ced7837e99d2712f1e3.json] PASSED [ 14%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[1a20c5a26edd9a20f21c20ef5a0b3f13c92d1ae9250f2c20797d77d37df54ad1.json] PASSED [ 15%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[8f21824b541d67d4f8e596c440e0034036b0c7d65410a56b80d9f4de4a54c0a9.json] PASSED [ 15%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[eaa2b3f8bc5ec772e719a096add93c638aebcdff6fecd28a45e6295f29d42e8f.json] PASSED [ 15%]
+tests/experience/test_e001_recorded.py::test_a3_recorded_changed_byte_fails[eb4a5699e024258863e6d92ec3dc2367659b9a6140174a9e8d848f0e75b59654.json] PASSED [ 15%]
+tests/experience/test_e001_recorded.py::test_a6_recorded_labelling_and_identity PASSED [ 15%]
+tests/experience/test_e001_refusals.py::test_polymarket_price_in_cents_refused PASSED [ 15%]
+tests/experience/test_e001_refusals.py::test_kalshi_price_in_cents_refused PASSED [ 15%]
+tests/experience/test_e001_refusals.py::test_kalshi_legacy_integer_cent_book_refused PASSED [ 15%]
+tests/experience/test_e001_refusals.py::test_numeric_price_refused_as_unknown_unit PASSED [ 15%]
+tests/experience/test_e001_refusals.py::test_missing_received_utc_refused[pm] PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_missing_received_utc_refused[ks] PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_received_before_fetch_start_refused PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_outcome_absent_from_metadata_refused[pm] PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_outcome_absent_from_metadata_refused[ks] PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_book_for_another_token_refused PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_mapping_refuses_label_mismatch PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_polymarket_midpoint_level_refused PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_polymarket_midpoint_instead_of_levels_refused PASSED [ 16%]
+tests/experience/test_e001_refusals.py::test_kalshi_last_trade_instead_of_levels_refused PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_last_trade_field_beside_levels_is_not_stored PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_polymarket_empty_book_is_empty_status PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_kalshi_empty_book_is_empty_status PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_zero_price_level_refused PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_crossed_book_is_error_not_ok PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_paused_market_quote_is_paused PASSED [ 17%]
+tests/experience/test_e001_refusals.py::test_regulation_only_rules_read_as_such PASSED [ 17%]
+tests/experience/test_e001_replay.py::test_a1_validator_cli_passes PASSED [ 17%]
+tests/experience/test_e001_replay.py::test_a2_replay_offline_is_byte_identical PASSED [ 18%]
+tests/experience/test_e001_replay.py::test_generator_reproduces_committed_bundle PASSED [ 18%]
+tests/experience/test_e001_replay.py::test_a6_labelled_as_synthetic PASSED [ 18%]
+tests/experience/test_e001_replay.py::test_bundle_is_small PASSED        [ 18%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_boundaries[1794067205100-OK] PASSED [ 18%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_boundaries[1794067140100-OK] PASSED [ 18%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_boundaries[1794067140099-STALE] PASSED [ 18%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_boundaries[1793980800100-STALE] PASSED [ 18%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_outside_plausible_range_refused[1794067205101] PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_provider_time_outside_plausible_range_refused[1793980800099] PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_paused_wins_over_stale_and_empty_wins_over_both PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_fetch_window_bound PASSED   [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_tick_follows_the_market_metadata PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_tick_refuses_levels_but_not_an_empty_book PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_zero_size_refused_in_any_spelling[0] PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_zero_size_refused_in_any_spelling[0.00] PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_zero_size_refused_in_any_spelling[0.0000] PASSED [ 19%]
+tests/experience/test_e001_rv_fixes.py::test_team_table_is_thirty_distinct_teams PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_team_id_refused[syn-team:XYZ] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_team_id_refused[nba-team:42] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_team_id_refused[team:BOS] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_team_id_refused[BOS] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_unknown_team_id_refused[] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[YES (Indiana)-named0] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[Pacers-named1] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[YES (Boston Celtics)-named2] PASSED [ 20%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[NO-named3] PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[Los Angeles-named4] PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[LA Clippers-named5] PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[Celtics vs Knicks-named6] PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_teams_named[Netsuke-named7] PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_label_naming_two_teams_refused PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_correct_mappings_still_propose PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_kalshi_ticker_team_code_must_be_the_mapped_team PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_kalshi_no_contract_refused_even_with_matching_ticker PASSED [ 21%]
+tests/experience/test_e001_rv_fixes.py::test_timestamp_unit_refused_with_reason[1794067200-epoch seconds, not milliseconds] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_timestamp_unit_refused_with_reason[1794067200050000-not epoch milliseconds] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_timestamp_unit_refused_with_reason[179406720005-not epoch milliseconds] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_timestamp_unit_refused_with_reason[\uff11\uff17\uff19\uff14\uff10\uff16\uff17\uff12\uff10\uff10\uff10\uff15\uff10-not epoch milliseconds] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[Resolves Yes if Boston lead at the end of regulation.-REGULATION_ONLY] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[If tied at the end of regulation, the game goes to overtime.-UNKNOWN] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[Not including overtime.-REGULATION_ONLY] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[The market does not include any overtime.-REGULATION_ONLY] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[Final score including overtime.-INCLUDES_OVERTIME] PASSED [ 22%]
+tests/experience/test_e001_rv_fixes.py::test_overtime_reading_edges[Regulation time only. Final score including any overtime.-UNKNOWN] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://gamma-api.polymarket.com/markets/slug/nba-den-ind-2026-11-07] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://gamma-api.polymarket.com/markets?slug=nba-den-ind-2026-11-07] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://gamma-api.polymarket.com/events?tag=nba] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://clob.polymarket.com/book?token_id=1001] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND/orderbook] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://api.elections.kalshi.com/trade-api/v2/markets?event_ticker=KXNBAGAME-26NOV07DENIND] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_public_reads_still_allowed[https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07DENIND] PASSED [ 23%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://clob.polymarket.com/book/] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://clob.polymarket.com/books] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://gamma-api.polymarket.com/markets/slug/a/b] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://gamma-api.polymarket.com/markets/slug/..] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://gamma-api.polymarket.com/markets/slug/a%2F..] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://api.elections.kalshi.com/trade-api/v2/markets/X/orderbook/extra] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://api.elections.kalshi.com/trade-api/v2/markets/./orderbook] PASSED [ 24%]
+tests/experience/test_e001_rv_fixes.py::test_near_miss_paths_refused[https://api.elections.kalshi.com/trade-api/v2/portfolio/balance] PASSED [ 24%]
+tests/experience/test_live_quotes.py::test_sample_file_is_valid_and_labelled_sample PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-format is] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-not before tip_utc] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-ending in Z0] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-ending in Z1] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-probability in [0, 1]0] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-probability in [0, 1]1] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-probability in [0, 1]2] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-not a known nba-team0] PASSED [ 25%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-not a known nba-team1] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-does not name ATL] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-10-digit] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-repeated] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-same team] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-brier] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_format_rules_are_enforced[<lambda>-non-empty list] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_a_real_file_needs_a_real_hash_and_fetch_time PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_max_format_rules_are_enforced[<lambda>-exactly 'DESCRIPTIVE FORECAST'] PASSED [ 26%]
+tests/experience/test_live_quotes.py::test_max_format_rules_are_enforced[<lambda>-cross_check] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_max_format_rules_are_enforced[<lambda>-fetched_utc of a SAMPLE] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_max_format_rules_are_enforced[<lambda>-sha256 of a SAMPLE] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_sample_is_decided_by_source_results_only PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_sample_file_passes_maxs_own_validator PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_index_lists_every_matched_mapping_without_prices PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-11-08T00:30:00Z-2026-11-07] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-11-08T04:59:00Z-2026-11-07] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-11-08T05:00:00Z-2026-11-08] PASSED [ 27%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-04-15T03:30:00Z-2026-04-14] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-04-15T04:00:00Z-2026-04-15] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-03-08T06:59:00Z-2026-03-08] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_us_eastern_date[2026-11-01T05:30:00Z-2026-11-01] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_slug_and_ticker_match_the_earlier_recorded_game PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_replay_of_the_live_run_reproduces_every_match PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_committed_run_is_labelled_sample_and_carries_no_forecast_value PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600190-kx-2229] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600190-pm-2229] PASSED [ 28%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600191-kx-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600191-pm-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600192-kx-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600192-pm-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600193-kx-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600193-pm-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600194-kx-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600194-pm-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600195-kx-2229] PASSED [ 29%]
+tests/experience/test_live_quotes.py::test_committed_bundles_rebuild_byte_identically[0022600195-pm-2229] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-is not the tip] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-missing or not a UTC time] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-not one ATL outcome0] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-not one ATL outcome1] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-does not name exactly] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-moneyline] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07-<lambda>-POLYMARKET-market not open] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL-<lambda>-KALSHI-does not name ATL alone] PASSED [ 30%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL-<lambda>-KALSHI-is not open] PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL-<lambda>-KALSHI-is not within0] PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL-<lambda>-KALSHI-is not within1] PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_uncertain_candidates_are_rejected[https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07BKNATL-<lambda>-KALSHI-does not name exactly] PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_swapped_home_and_away_finds_nothing PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_wrong_date_finds_nothing PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_slug_found_but_tip_differs_is_rejected_not_matched PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_network_failure_is_an_error_not_a_quote PASSED [ 31%]
+tests/experience/test_live_quotes.py::test_invalid_forecast_is_refused_before_any_request PASSED [ 32%]
+tests/experience/test_live_quotes.py::test_run_times_are_utc_z PASSED    [ 32%]
+tests/integration/test_agent_loop.py::test_null_leagues_rarely_survive PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_planted_leagues_are_detected PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_truth_never_reaches_view_or_evidence PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_ledger_retry_is_idempotent_and_tamper_evident PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[{"claim_id": "HOT-HAND-ANYTHING", "rationale": "x"}] PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[{"claim_id": "HH-K3", "rationale": "x", "alpha": 0.5}] PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_jone_cannot_propose_unregistered_or_extra_fields[the player is clearly clutch] PASSED [ 32%]
+tests/integration/test_agent_loop.py::test_challenger_cannot_remove_required_attacks PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_referee_requires_applicable_optional_attacks_when_set_unknown PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": ["HH-K3"], "rationale": "x"}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": "HH-K3", "rationale": ["x"]}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": "HH-K3", "rationale": "x", "extra": 1}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": 3, "rationale": "x"}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[{"claim_id": "HH-K3", "rationale": NaN}] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_proposal_parsing_is_strict[["HH-K3"]] PASSED [ 33%]
+tests/integration/test_agent_loop.py::test_selection_validation_is_strict[sel0] PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_selection_validation_is_strict[sel1] PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_selection_validation_is_strict[sel2] PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_selection_validation_is_strict[A-PERMUTATION-NULL] PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_selection_validation_is_strict[None] PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_referee_ignores_persuasive_rationale PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_game_prediction_claim_is_blocked_without_season_view PASSED [ 34%]
+tests/integration/test_agent_loop.py::test_real_game_decision_follows_independent_sample_count SKIPPED [ 34%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_on_committed_evidence_matches_and_writes_nothing PASSED [ 34%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_ready_only_when_every_check_passes PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_edited_plan PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_rehashed_plan_not_in_family PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_changed_research_code PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_seal_and_registration_mismatch PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_data_differing_from_seal PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_detects_existing_reservation PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_dry_run_mode_never_calls_the_runner_or_writes PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_final_refuses_without_authoriser_or_when_not_ready PASSED [ 35%]
+tests/integration/test_confirmatory_lane.py::test_final_records_all_three_once_marked_confirmatory PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_final_result_not_matching_the_family_is_refused[family_hash-0000000000000000000000000000000000000000000000000000000000000000] PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_final_result_not_matching_the_family_is_refused[code_hash-0000000000000000000000000000000000000000000000000000000000000000] PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_final_result_not_matching_the_family_is_refused[data_hashes-value2] PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_final_result_not_matching_the_family_is_refused[lane-DEVELOPMENT] PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_final_result_without_custodian_spend_is_refused PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_mapping_accepts_confirmatory_ids PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_dialogue_confirmatory_turn_in_dry_run_runs_nothing PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_committed_final_done_records_three_and_never_runs PASSED [ 36%]
+tests/integration/test_confirmatory_lane.py::test_result_file_without_finished_reservation_never_runs PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_finished_final_with_edited_plan_is_not_recorded PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_home_advantage_routes_to_conf_ha_even_if_llm_says_gp_elo[Do home teams win more?] PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_home_advantage_routes_to_conf_ha_even_if_llm_says_gp_elo[Is home court advantage real?] PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_home_advantage_routes_to_conf_ha_even_if_llm_says_gp_elo[Do teams win more at home?] PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_elo_question_still_maps_by_llm PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_dialogue_home_question_speaks_survived_from_committed_final PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_dialogue_confirmatory_final_turn_speaks_from_the_record PASSED [ 37%]
+tests/integration/test_confirmatory_lane.py::test_development_loop_entries_are_marked_development PASSED [ 38%]
+tests/integration/test_confirmatory_lane.py::test_final_whose_reservation_names_another_plan_is_refused PASSED [ 38%]
+tests/integration/test_dialogue.py::test_guard_rejects_invented_number PASSED [ 38%]
+tests/integration/test_dialogue.py::test_guard_rejects_sign_flip_spelled_and_percent_numbers PASSED [ 38%]
+tests/integration/test_dialogue.py::test_guard_rejects_wrong_or_overclaimed_verdict PASSED [ 38%]
+tests/integration/test_dialogue.py::test_template_always_passes_guard[SURVIVED_PROTOCOL] PASSED [ 38%]
+tests/integration/test_dialogue.py::test_template_always_passes_guard[NOT_SUPPORTED] PASSED [ 38%]
+tests/integration/test_dialogue.py::test_template_always_passes_guard[INSUFFICIENT_EVIDENCE] PASSED [ 38%]
+tests/integration/test_dialogue.py::test_template_always_passes_guard[DATA_INVALID] PASSED [ 38%]
+tests/integration/test_dialogue.py::test_template_always_passes_guard[BLOCKED] PASSED [ 39%]
+tests/integration/test_dialogue.py::test_ref_is_deterministic_and_never_calls_the_model PASSED [ 39%]
+tests/integration/test_dialogue.py::test_heater_with_invented_number_falls_back_to_fixed_line PASSED [ 39%]
+tests/integration/test_dialogue.py::test_ref_template_shows_display_title_and_reason PASSED [ 39%]
+tests/integration/test_dialogue.py::test_none_runs_no_test_and_ref_says_so PASSED [ 39%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "HH-K9"}] PASSED [ 39%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "HH-K3", "x": 1}] PASSED [ 39%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[not json] PASSED [ 39%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "run_my_custom_test"}] PASSED [ 39%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "NONE", "claim_id": "HH-K3"}] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": ["HH-K3"]}] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "hh-k3"}] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_unregistered_mapping_is_never_run[{"claim_id": "HH-K3 "}] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_keyword_standin_mapping PASSED  [ 40%]
+tests/integration/test_dialogue.py::test_llm_challenger_not_called_when_nothing_is_addable PASSED [ 40%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": ["A-EXTRA"]}-True] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": []}-True] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": ["A-EXTRA"], "attacks": []}-False] PASSED [ 40%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": ["A-MADE-UP"]}-False] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": ["A-EXTRA", "A-EXTRA"]}-False] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": "A-EXTRA"}-False] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_llm_challenger_can_only_add_and_parses_strictly[{"attacks": [], "drop": ["A-PERMUTATION-NULL"]}-False] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_displayed_claim_and_verdict_are_what_ran PASSED [ 41%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[p was 6.1e-2.] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[n was \uff11\uff14.] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[Half of the shots went in.] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[Players get 3 times hotter.] PASSED [ 41%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[There is a 6.1% chance.] PASSED [ 42%]
+tests/integration/test_dialogue.py::test_guard_refuses_number_smuggling_forms[Fourteen of them went in.] PASSED [ 42%]
+tests/integration/test_dialogue.py::test_timeout_falls_back_within_deadline PASSED [ 42%]
+tests/integration/test_dialogue.py::test_http_error_and_missing_key_fall_back PASSED [ 42%]
+tests/integration/test_dialogue.py::test_empty_or_truncated_reply_is_a_failure PASSED [ 42%]
+tests/integration/test_dialogue.py::test_contributor_models_refused PASSED [ 42%]
+tests/integration/test_dialogue.py::test_usage_logged_per_call_without_key_or_prompt PASSED [ 42%]
+tests/integration/test_dialogue.py::test_endpoint_returns_four_fields_and_rejects_bad_requests PASSED [ 42%]
+tests/integration/test_dialogue.py::test_no_test_template_lists_registered_claims PASSED [ 42%]
+tests/integration/test_dialogue.py::test_console_page_served_and_other_paths_404 PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_is_written_without_the_verdict PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_that_mentions_the_ref_falls_back[The Ref says NOT SUPPORTED, folks!] PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_that_mentions_the_ref_falls_back[It SURVIVED the checks!] PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_that_mentions_the_ref_falls_back[No registered test, so just my opinion!] PASSED [ 43%]
+tests/integration/test_dialogue.py::test_no_test_question_take_says_nothing_about_tests_and_reaction_does PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_with_betting_wording_falls_back[The hot hand is a LOCK!] PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_with_betting_wording_falls_back[BET the rested team!] PASSED [ 43%]
+tests/integration/test_dialogue.py::test_heater_take_with_betting_wording_falls_back[That's FREE MONEY, folks!] PASSED [ 44%]
+tests/integration/test_dialogue.py::test_heater_take_with_betting_wording_falls_back[You CAN'T LOSE with shooters!] PASSED [ 44%]
+tests/integration/test_dialogue.py::test_heater_take_with_betting_wording_falls_back[Guaranteed hot hand, baby!] PASSED [ 44%]
+tests/integration/test_dialogue.py::test_heater_take_with_better_between_lockdown_is_kept PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_enumerations_equal_research_code PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Do tired teams on a back-to-back lose more on the road?] PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Is the hot hand real? Three in a row and you're on fire] PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Do shooters go cold after two misses?] PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Are three-pointers streakier in the fourth quarter?] PASSED [ 44%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Do favourites cover at home on Sundays in December?] PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_keyword_proposals_validate_in_both_validators[Does rest matter?] PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_expected_ideas_for_back_to_back PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_streak_level_from_message PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_synthetic_mode_drops_game_ideas_and_ot PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_nothing_fits_returns_no_request PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_free_throws_never_proposed PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_llm_valid_proposal_used PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_llm_invalid_proposal_refused_not_repaired[{"format":"heatcheck-idea-family/1","ideas":[{"template":"SHOT_MAKE_AFTER_CONDITION","params":{"condition":"after_makes","level":3,"alternative":"greater"}}]}-level] PASSED [ 45%]
+tests/integration/test_idea_proposer.py::test_llm_invalid_proposal_refused_not_repaired[{"format":"heatcheck-idea-family/1","ideas":[{"template":"SHOT_MAKE_AFTER_CONDITION","params":{"condition":"after_makes","level":"3","alternative":"greater","seed":"1"}}]}-keys] PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_llm_invalid_proposal_refused_not_repaired[{"format":"heatcheck-idea-family/1","ideas":[{"template":"GAME_HOME_WIN_SPLIT","params":{"feature":"travel_miles","level":"yes","alternative":"greater"}}]}-feature] PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_llm_invalid_proposal_refused_not_repaired[{"format":"heatcheck-idea-family/1","ideas":[], "rationale":"x"}-keys] PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_llm_invalid_proposal_refused_not_repaired[{"format":"heatcheck-idea-family/1","ideas":[{"template":"SHOT_MAKE_AFTER_CONDITION","params":{"condition":"period","level":"OT","alternative":"less"}},{"template":"SHOT_MAKE_AFTER_CONDITION","params":{"alternative":"less","condition":"period","level":"OT"}}]}-duplicates] PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_llm_failure_falls_back PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_proposer_never_sees_data PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_model_family_bounded_3_to_6_with_keyword_fallback PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_idea_board_shows_only_model_proposals_matching_their_request PASSED [ 46%]
+tests/integration/test_idea_proposer.py::test_idea_board_links_research_run_to_the_proposal_only_by_exact_request PASSED [ 46%]
+tests/integration/test_ledger_chain.py::test_chain_links_and_head PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[forge_middle] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[delete_first] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[delete_middle] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[swap] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[insert_copy] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_tampering_detected[edit_chain_field] PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_truncating_the_tail_needs_an_external_head PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_legacy_unchained_line_refused PASSED [ 47%]
+tests/integration/test_ledger_chain.py::test_open_readonly_never_creates_or_writes PASSED [ 48%]
+tests/integration/test_ledger_chain.py::test_committed_ledger_migrated_without_changing_evidence PASSED [ 48%]
+tests/integration/test_ledger_chain.py::test_migration_tool_refuses_chained_file PASSED [ 48%]
+tests/integration/test_live_forecast_route.py::test_sample_file_is_served_flagged_sample PASSED [ 48%]
+tests/integration/test_live_forecast_route.py::test_unconfigured_and_missing_are_unavailable PASSED [ 48%]
+tests/integration/test_live_forecast_route.py::test_invalid_file_returns_reason_only PASSED [ 48%]
+tests/integration/test_market_investigation.py::test_stored_proposed_mapping_cannot_compare PASSED [ 48%]
+tests/integration/test_market_investigation.py::test_matched_fresh_card_is_worth_investigating PASSED [ 48%]
+tests/integration/test_market_investigation.py::test_away_team_probability_is_complement PASSED [ 48%]
+tests/integration/test_market_investigation.py::test_live_quote_older_than_limit_is_stale PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_one_sided_book_cannot_compare PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_swapped_teams_fail_game_match PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_tip_time_mismatch_fails_game_match PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_cutoff_after_comparison_time_fails PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_after_tip_is_not_pregame PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_sample_forecast_cannot_compare PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_missing_inputs_reported PASSED [ 49%]
+tests/integration/test_market_investigation.py::test_guard_allows_inputs_and_questions[The model has Indiana at 40.0%. Is Indiana rested after travel?] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_allows_inputs_and_questions[Elo ratings and home court put Indiana at 40.0%, above the ask of 27.0%. Could injuries matter?] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[Indiana is rested, so the model likes them.-rest] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[The market missed a back-to-back.-rest] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[Haliburton's injury explains it.-injuries] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[You should bet Indiana.-betting] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[Edge found on Indiana.-betting] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[Indiana sits at 55%.-number 55%] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_guard_rejects[This proves the model is right.-betting] PASSED [ 50%]
+tests/integration/test_market_investigation.py::test_llm_text_shown_only_if_guard_passes PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_hypothetical_gets_fixed_answer PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_back_to_back_thesis_uses_research_recorded_check PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_ledger_records_forecast_quote_verdict PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_recorded_mode_end_to_end PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_recorded_with_max_verification_is_worth_investigating PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_searches_bundle_directory_and_live_staleness PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_without_forecast_cannot_compare PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_rejects_bad_body[{}] PASSED [ 51%]
+tests/integration/test_market_investigation.py::test_route_rejects_bad_body[{"game_id":"x","mapping_id":"y"}] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_route_rejects_bad_body[{"game_id":"x","mapping_id":"y","message":1}] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_latest_quote_matches_eligibility_rule_on_verified_mapping[2026-11-07T16:21:17.710454Z] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_latest_quote_matches_eligibility_rule_on_verified_mapping[2026-11-07T16:21:30Z] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_latest_quote_matches_eligibility_rule_on_verified_mapping[2026-11-07T16:30:00Z] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_latest_quote_matches_eligibility_rule_on_verified_mapping[2026-11-07T16:00:00Z] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_home_bias_caveat_text_is_researchs_fixed_text PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_home_bias_caveat_when_model_favours_home_more_than_market PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_no_home_bias_caveat_when_model_not_above_the_ask[0.2] PASSED [ 52%]
+tests/integration/test_market_investigation.py::test_no_home_bias_caveat_when_model_not_above_the_ask[0.265] PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_no_home_bias_caveat_for_the_away_team_or_a_sample PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_heater_first_line_never_mentions_the_ref_or_its_verdict PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_llm_heater_is_not_given_the_verdict_or_the_bias PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_llm_take_that_mentions_the_ref_falls_back_to_the_template PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_board_load_with_no_message_does_not_call_the_model PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_no_home_bias_caveat_when_the_card_cannot_compare PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_every_market_heater_template_and_reaction_has_no_betting_wording PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_model_heater_line_with_betting_wording_falls_back_to_the_template[Indiana is a lock tonight?] PASSED [ 53%]
+tests/integration/test_market_investigation.py::test_model_heater_line_with_betting_wording_falls_back_to_the_template[That's a value bet, folks?] PASSED [ 54%]
+tests/integration/test_market_investigation.py::test_model_heater_line_with_betting_wording_falls_back_to_the_template[You can't lose with Indiana?] PASSED [ 54%]
+tests/integration/test_market_investigation.py::test_model_heater_line_with_betting_wording_falls_back_to_the_template[Lock it in: Indiana?] PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_recording_copies_decisions_verbatim_and_binds_sources PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_committed_ledger_holds_loop_entries_then_recorded_finals PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_tampered_sources_are_refused[replay-does not reproduce] PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_tampered_sources_are_refused[plan-canonical_plan_hash] PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_tampered_sources_are_refused[spend-never spent] PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_tampered_sources_are_refused[reserve_plan-different plan hash] PASSED [ 54%]
+tests/integration/test_recorded_results.py::test_gp_rest_answers_from_the_recorded_final_not_blocked PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_gp_elo_answers_survived_from_the_recorded_final PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_recorded_only_claim_without_record_gives_no_verdict PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_ref_template_passes_the_guard_for_every_committed_entry PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_heater_guard_rejects_invented_number_against_recorded_entry PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_every_mappable_claim_has_a_display_title_outside_the_evidence PASSED [ 55%]
+tests/integration/test_recorded_results.py::test_display_titles_endpoint PASSED [ 55%]
+tests/integration/test_research_bridge.py::test_bridge_loads_research_code_unchanged PASSED [ 55%]
+tests/integration/test_research_bridge.py::test_bridge_rows_validate_on_reference_events PASSED [ 55%]
+tests/integration/test_research_bridge.py::test_real_game_bundle_rebuilds_byte_identically SKIPPED [ 56%]
+tests/integration/test_responsible_use.py::test_responsible_use_file_is_the_agreed_text PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_docs_carry_the_full_text_verbatim_with_the_read_only_line[README.md] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_docs_carry_the_full_text_verbatim_with_the_read_only_line[docs/SUBMISSION.md] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[bet] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[bets] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[betting] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[wager] PASSED [ 56%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[value bet] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[free money] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[guaranteed] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[sure thing] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[can't lose] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[cannot lose] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[a lock] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[lock it in] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_each_betting_phrase_is_caught_in_any_case[mortal lock] PASSED [ 57%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[better] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[between] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[lockdown] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[The Lakers look better tonight] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[locked in the vault] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[a locker room] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[alphabet] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_ordinary_words_pass[lockout] PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_every_server_heater_template_and_fallback_is_clean PASSED [ 58%]
+tests/integration/test_responsible_use.py::test_heater_personality_file_is_clean PASSED [ 59%]
+tests/integration/test_responsible_use.py::test_market_guard_rejects_betting_wording PASSED [ 59%]
+tests/integration/test_responsible_use.py::test_no_page_file_links_to_a_trading_page PASSED [ 59%]
+tests/integration/test_responsible_use.py::test_no_server_code_or_served_market_data_links_to_a_trading_page PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[find me an interesting market tonight-OPEN_BOARD-None] PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[What are the odds tonight?-OPEN_BOARD-None] PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[which games are on tonight-OPEN_BOARD-None] PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[What about the Celtics game?-OPEN_CARD-200] PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[Knicks vs Cavs-OPEN_CARD-191] PASSED [ 59%]
+tests/integration/test_scenario.py::test_route[show me OKC-OPEN_CARD-192] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[how about Brooklyn tonight-OPEN_CARD-199] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[Is the hot hand real?-DIALOGUE-None] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[Do home teams win more?-DIALOGUE-None] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[Does rest matter?-DIALOGUE-None] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[What if Cleveland played on a neutral floor?-SCENARIO-191] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[Assume it costs Boston 5%-SCENARIO-200] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route[Cleveland without Donovan Mitchell-SCENARIO-191] PASSED [ 60%]
+tests/integration/test_scenario.py::test_route_brooklyn_after_saturday_tip_picks_sunday PASSED [ 60%]
+tests/integration/test_scenario.py::test_aliases_cover_all_thirty_teams PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ATL-Atlanta Hawks] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ATL-atlanta] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ATL-hawks] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BOS-Boston Celtics] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BOS-boston] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BOS-celtics] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BOS-celts] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BKN-Brooklyn Nets] PASSED [ 61%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BKN-brooklyn] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[BKN-nets] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHA-Charlotte Hornets] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHA-charlotte] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHA-hornets] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHI-Chicago Bulls] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHI-chicago] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CHI-bulls] PASSED [ 62%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CLE-Cleveland Cavaliers] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CLE-cleveland] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[CLE-cavs] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DAL-Dallas Mavericks] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DAL-dallas] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DAL-mavs] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DEN-Denver Nuggets] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DEN-denver] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DEN-nuggets] PASSED [ 63%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DET-Detroit Pistons] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DET-detroit] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[DET-pistons] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[GSW-Golden State Warriors] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[GSW-golden state] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[GSW-warriors] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[GSW-dubs] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[HOU-Houston Rockets] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[HOU-houston] PASSED [ 64%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[HOU-rockets] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[IND-Indiana Pacers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[IND-indiana] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[IND-pacers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAC-LA Clippers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAC-los angeles clippers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAC-clippers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAC-clips] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAL-Los Angeles Lakers] PASSED [ 65%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAL-la lakers] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[LAL-lakers] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MEM-Memphis Grizzlies] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MEM-memphis] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MEM-grizzlies] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MEM-grizz] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIA-Miami Heat] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIA-miami] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIL-Milwaukee Bucks] PASSED [ 66%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIL-milwaukee] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIL-bucks] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIN-Minnesota Timberwolves] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIN-minnesota] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIN-wolves] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIN-t-wolves] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[MIN-twolves] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NOP-New Orleans Pelicans] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NOP-new orleans] PASSED [ 67%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NOP-pelicans] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NOP-pels] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NYK-New York Knicks] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NYK-new york] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[NYK-knicks] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[OKC-Oklahoma City Thunder] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[OKC-oklahoma city] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[OKC-thunder] PASSED [ 68%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[OKC-okc] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ORL-Orlando Magic] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ORL-orlando] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[ORL-magic] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHI-Philadelphia 76ers] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHI-philadelphia] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHI-philly] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHI-76ers] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHI-sixers] PASSED [ 69%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHX-Phoenix Suns] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHX-phoenix] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[PHX-suns] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-Portland Trail Blazers] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-portland] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-trail blazers] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-trailblazers] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-trail-blazers] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[POR-blazers] PASSED [ 70%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAC-Sacramento Kings] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAC-sacramento] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAC-kings] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAS-San Antonio Spurs] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAS-san antonio] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[SAS-spurs] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[TOR-Toronto Raptors] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[TOR-toronto] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[TOR-raptors] PASSED [ 71%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[UTA-Utah Jazz] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[UTA-utah] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[UTA-jazz] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[WAS-Washington Wizards] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[WAS-washington] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[WAS-wizards] PASSED [ 72%]
+tests/integration/test_scenario.py::test_every_alias_names_its_team_any_case_or_punctuation[WAS-wiz] PASSED [ 72%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[spurs vs trailblazers?] PASSED [ 72%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[Spurs vs. Trail Blazers] PASSED [ 72%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[trailblazers vs spurs] PASSED [ 73%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[Blazers at Spurs] PASSED [ 73%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[spurs @ blazers] PASSED [ 73%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[SPURS-BLAZERS] PASSED [ 73%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[san antonio v portland] PASSED [ 73%]
+tests/integration/test_scenario.py::test_rehearsal_spurs_blazers_opens_the_card_in_either_order[rip city vs spurs] PASSED [ 73%]
+tests/integration/test_scenario.py::test_before_tip_is_not_under_way_and_intro_says_so_after PASSED [ 73%]
+tests/integration/test_scenario.py::test_ordinary_words_are_not_teams_unless_they_are_nicknames[was the hot hand real?] PASSED [ 73%]
+tests/integration/test_scenario.py::test_ordinary_words_are_not_teams_unless_they_are_nicknames[min minutes] PASSED [ 73%]
+tests/integration/test_scenario.py::test_ordinary_words_are_not_teams_unless_they_are_nicknames[is HeatCheck any good?] PASSED [ 74%]
+tests/integration/test_scenario.py::test_ordinary_words_are_not_teams_unless_they_are_nicknames[den of thieves] PASSED [ 74%]
+tests/integration/test_scenario.py::test_ordinary_words_are_not_teams_unless_they_are_nicknames[the magic number] PASSED [ 74%]
+tests/integration/test_scenario.py::test_heat_alone_is_not_miami PASSED  [ 74%]
+tests/integration/test_scenario.py::test_parse_each_kind PASSED          [ 74%]
+tests/integration/test_scenario.py::test_interpretation_needs_confirmation_and_shows_no_number PASSED [ 74%]
+tests/integration/test_scenario.py::test_confirmation_is_bound_to_the_exact_interpretation PASSED [ 74%]
+tests/integration/test_scenario.py::test_baseline_reproduces_and_game_189_is_neutral PASSED [ 74%]
+tests/integration/test_scenario.py::test_neutral_and_swap_recalculate_with_the_forecasts_own_elo PASSED [ 75%]
+tests/integration/test_scenario.py::test_neutral_on_a_neutral_game_is_flagged_not_double_counted PASSED [ 75%]
+tests/integration/test_scenario.py::test_neutral_plus_swap_is_a_conflict_with_no_number PASSED [ 75%]
+tests/integration/test_scenario.py::test_user_adjustments PASSED         [ 75%]
+tests/integration/test_scenario.py::test_stub_gives_no_number_for_player_out_and_rest PASSED [ 75%]
+tests/integration/test_scenario.py::test_research_estimates_ranges_sample_size_failed_and_staleness PASSED [ 75%]
+tests/integration/test_scenario.py::test_double_count_adjustment_and_player_out_same_team PASSED [ 75%]
+tests/integration/test_scenario.py::test_market_price_only_compares_the_unchanged_forecast PASSED [ 75%]
+tests/integration/test_scenario.py::test_sample_forecast_gives_no_numbers PASSED [ 75%]
+tests/integration/test_scenario.py::test_forecast_staleness_flag PASSED  [ 76%]
+tests/integration/test_scenario.py::test_ref_never_claims_an_edge_or_a_bet[What if Cleveland played on a neutral floor?] PASSED [ 76%]
+tests/integration/test_scenario.py::test_ref_never_claims_an_edge_or_a_bet[Assume it costs Boston 5%] PASSED [ 76%]
+tests/integration/test_scenario.py::test_ref_never_claims_an_edge_or_a_bet[Cleveland without Donovan Mitchell] PASSED [ 76%]
+tests/integration/test_scenario.py::test_ref_never_claims_an_edge_or_a_bet[What if OKC were priced at 90%?] PASSED [ 76%]
+tests/integration/test_scenario.py::test_http_route_parse_confirm_estimate_and_ledger PASSED [ 76%]
+tests/integration/test_scenario.py::test_menu_with_the_stub_is_unavailable_and_says_why PASSED [ 76%]
+tests/integration/test_scenario.py::test_menu_meets_experiences_rules_and_routes_failed_and_missing PASSED [ 76%]
+tests/integration/test_scenario.py::test_http_get_scenario PASSED        [ 76%]
+tests/integration/test_scenario.py::test_research_worked_example_reproduced_point_and_interval PASSED [ 77%]
+tests/integration/test_scenario.py::test_menu_on_a_sunday_game_meets_experiences_rules PASSED [ 77%]
+tests/integration/test_scenario.py::test_hidden_players_and_raw_only_in_evidence PASSED [ 77%]
+tests/integration/test_scenario.py::test_free_text_player_with_no_estimate_says_no_data PASSED [ 77%]
+tests/integration/test_scenario.py::test_get_serves_researchs_own_answers_with_raw_only_in_evidence PASSED [ 77%]
+tests/integration/test_scenario.py::test_free_text_estimate_shows_shrunk_and_keeps_raw_only_in_evidence PASSED [ 77%]
+tests/integration/test_scenario.py::test_stamp_rule_estimate_from_data_your_assumption_from_user_numbers PASSED [ 77%]
+tests/integration/test_scenario.py::test_confirmation_survives_the_browser_json_round_trip PASSED [ 77%]
+tests/integration/test_transcription.py::test_request_is_the_documented_multipart_with_the_key_only_in_the_header PASSED [ 77%]
+tests/integration/test_transcription.py::test_multipart_is_well_formed PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[empty] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[over-2MB] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[not-wav] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[44k] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[stereo] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[too-short] PASSED [ 78%]
+tests/integration/test_transcription.py::test_bad_clips_are_refused_before_any_call[over-30s] PASSED [ 78%]
+tests/integration/test_transcription.py::test_wav_seconds_of_a_good_clip PASSED [ 78%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[blank] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[no-field] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[400] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[401] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[429] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[500] PASSED [ 79%]
+tests/integration/test_transcription.py::test_provider_failures_are_clear_and_never_carry_the_key[network] PASSED [ 79%]
+tests/integration/test_transcription.py::test_no_key_means_off_and_no_call PASSED [ 79%]
+tests/integration/test_transcription.py::test_usage_log_has_duration_and_cost_and_no_audio PASSED [ 79%]
+tests/integration/test_transcription.py::test_failed_calls_are_logged_too PASSED [ 80%]
+tests/integration/test_transcription.py::test_rate_limit PASSED          [ 80%]
+tests/integration/test_transcription.py::test_http_route_returns_the_transcript PASSED [ 80%]
+tests/integration/test_transcription.py::test_http_route_errors PASSED   [ 80%]
+tests/review/test_rv_agent_loop.py::test_control_committed_ledger_verifies_and_naive_tamper_detected PASSED [ 80%]
+tests/review/test_rv_agent_loop.py::test_rv_al1_forged_decision_with_recomputed_hashes_detected PASSED [ 80%]
+tests/review/test_rv_agent_loop.py::test_rv_al2_deleted_line_detected PASSED [ 80%]
+tests/review/test_rv_agent_loop.py::test_rv_al3_concurrent_put_of_same_identity_is_one_line PASSED [ 80%]
+tests/review/test_rv_agent_loop.py::test_rv_al4_challenger_cannot_drop_applicable_optional_attacks PASSED [ 80%]
+tests/review/test_rv_agent_loop.py::test_rv_al5_loop_accepts_minimal_challenger PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "rationale": "x", "params": {"alpha": 0.5}}] PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "hh-k3", "rationale": "x"}] PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3 ", "rationale": "x"}] PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": ["HH-K3"], "rationale": "x"}] PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al6_jone_cannot_smuggle_ids_or_params[{"claim_id": "HH-K3", "claim_id": "GP-REST", "rationale": "x"}] PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_al7_rationale_is_free_text_in_evidence PASSED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_ref1_guard_allows_numbers_in_record[Not enough evidence: 14 attempts after three makes and 18 after three misses; 30 needed.] SKIPPED [ 81%]
+tests/review/test_rv_agent_loop.py::test_rv_ref1_guard_allows_numbers_in_record[The permutation p-value was 0.061, which is reported but not decisive.] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[invented] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sum] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[percent_of_p] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[complement] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sign_flip] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[other_record] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[hash_digits] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[claim_id_digit] SKIPPED [ 82%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[spelled] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[sci] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[leading_dot] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[rounded_up] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[thousands] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[unicode_digits] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[fullwidth] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref2_guard_refuses_numbers_not_in_record[fraction] SKIPPED [ 83%]
+tests/review/test_rv_agent_loop.py::test_rv_ref3_guard_ignores_numbers_only_in_jone_rationale SKIPPED [ 83%]
+tests/review/test_rv_candidates.py::test_research_real_bundle SKIPPED    [ 84%]
+tests/review/test_rv_candidates.py::test_research_synthetic_fixture SKIPPED [ 84%]
+tests/review/test_rv_candidates.py::test_experience_bundle PASSED        [ 84%]
+tests/review/test_rv_candidates.py::test_experience_bundle_cli_validator PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_clean_has_no_problems PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_real_mode_requirements_fire PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-HOME/AWAY REVERSED] PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-tied] PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-REVERSED] PASSED [ 84%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-not in game] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-LEAK] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-suggests outcome] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-matches neither] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-reviewer recomputed] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-no PRE_SHOT_MAKE row] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_check_fires[<lambda>-overtime period] PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_research_leak_via_label_input_fires PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_experience_clean_has_no_problems PASSED [ 85%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-off tick] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-not traceable] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-DIRECT only] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-not positive] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-STALE] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-after received] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-fetch took] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-not a pre-tip] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-status POSTPONED] PASSED [ 86%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-not comparable] PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-without a rules_text_sha256] PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-requires PROPOSED] PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_experience_check_fires[<lambda>-manual confirmation] PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_experience_double_mapping_fires PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_experience_snapshot_outside_fetch_window_fires_twice PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_research_prev_named_features_not_flagged PASSED [ 87%]
+tests/review/test_rv_checks_selftest.py::test_research_fga_only_counts_accepted_but_mixing_flagged PASSED [ 87%]
+tests/review/test_rv_e001_adapter.py::test_control_fixture_book_parses_ok PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.537] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.0053] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u1_off_tick_price_refused[0.005] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u2_zero_size_level_refused PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[-0.5] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[ 0.52] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[0.52 ] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[5.2e-1] PASSED [ 88%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[0,52] PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u3_malformed_price_strings_refused[0.5200000] PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_u4_kalshi_off_tick_refused PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t1_epoch_seconds_mistaken_for_ms_refused PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t2_provider_time_after_receipt_refused PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_s1_two_hour_old_book_not_ok PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_s2_day_long_fetch_window_refused PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t3_noncanonical_capture_times_refused[2026-11-07T16:00:00+00:00] PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t3_noncanonical_capture_times_refused[2026-11-07T16:00:00z] PASSED [ 89%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t3_noncanonical_capture_times_refused[2026-11-07 16:00:00Z] PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_t3_noncanonical_capture_times_refused[1794067200] PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_o1_no_contract_proposed_as_yes_team_win_refused PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_o2_team_not_named_by_outcome_refused PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_o3_book_without_asset_id_refused PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_o4_misaligned_outcome_token_order_detectable PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[If the game is tied at the end of regulation, overtime periods count toward the result.-expected0] PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[Resolves on the final score including any overtime; it does not resolve at the end of regulation.-expected1] PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[Resolves on the score at the end of regulation only. Overtime is not included.-expected2] PASSED [ 90%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[The result will be determined based on the final score including any overtime periods.-expected3] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[Overtime does not count.-expected4] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot1_overtime_reading[Includes OT.-expected5] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_ot2_overtime_unknown_on_real_kalshi_text PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book/../order] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/book%2F..%2Forder] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://clob.polymarket.com/bookkeeping] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://gamma-api.polymarket.com/marketsX/admin] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/markets/../portfolio/orders] PASSED [ 91%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r1_allowlist_prefix_bypass_refused[https://api.elections.kalshi.com/trade-api/v2/events/../portfolio/balance] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r2_host_tricks_refused[https://gamma-api.polymarket.com@evil.example/markets] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r2_host_tricks_refused[https://evil.example/?h=clob.polymarket.com/book] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r2_host_tricks_refused[http://clob.polymarket.com/book] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r2_host_tricks_refused[https://clob.polymarket.com:8443/book] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r2_host_tricks_refused[https://CLOB.polymarket.com./book] PASSED [ 92%]
+tests/review/test_rv_e001_adapter.py::test_rv_e_r3_replay_reads_only_bundle PASSED [ 92%]
+tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_is_invariant[syn_ot] PASSED [ 92%]
+tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_is_invariant[ref] PASSED [ 92%]
+tests/review/test_rv_preshot_invariance.py::test_negative_control_leaky_builder_is_caught[syn_ot] PASSED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_negative_control_leaky_builder_is_caught[ref] PASSED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_harness_is_sensitive_downstream PASSED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_free_throw_and_overtime_values PASSED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_invariance SKIPPED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_downstream_sensitive SKIPPED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_ignores_input_order SKIPPED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_ignores_assist_attribution SKIPPED [ 93%]
+tests/review/test_rv_preshot_invariance.py::test_reviewer_builder_passes_assist_check PASSED [ 94%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_emits_valid_records SKIPPED [ 94%]
+tests/review/test_rv_preshot_invariance.py::test_candidate_builder_covers_free_throws SKIPPED [ 94%]
+tests/review/test_rv_validator_probes.py::test_control_reference_bundle_passes PASSED [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l1_max_input_sequence_equal_to_cutoff_rejected PASSED [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l2_utc_cutoff_fractional_second_leak_rejected PASSED [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l3_cutoff_after_target_shot_rejected PASSED [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l4_source_hashes_include_target_shot_rejected PASSED [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected XFAIL [ 94%]
+tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected XFAIL [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_l7_reference_fixture_inputs_precede_cutoff PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g1_event_team_not_in_game_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g2_feature_row_target_from_other_game_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected XFAIL [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g4_mapping_team_not_in_game_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g5_quote_contract_not_mapping_contract_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g6_real_id_in_synthetic_record_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_g7_mapping_game_mismatch_with_shot_game_rejected PASSED [ 95%]
+tests/review/test_rv_validator_probes.py::test_rv_o1_final_score_swapped_against_events_rejected PASSED [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o2_shot_made_label_contradicts_event_rejected PASSED [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected XFAIL [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o4_final_tie_rejected PASSED [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected XFAIL [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o6_bid_ask_swapped_ok_rejected PASSED [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected XFAIL [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_u1_cents_price_rejected PASSED [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] XFAIL [ 96%]
+tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] XFAIL [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] XFAIL [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected XFAIL [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[2024-01-01T00:00:00+00:00] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[2024-01-01T00:00:00] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[2024-01-01 00:00:00Z] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[1704067200] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[2024-01-01T00:00:00.1234567Z] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u4_non_canonical_timestamps_rejected[2024-02-30T00:00:00Z] PASSED [ 97%]
+tests/review/test_rv_validator_probes.py::test_rv_u5_epoch_millis_integer_rejected PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u6_received_before_fetch_fractional_rejected PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected XFAIL [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_control_snapshot_inside_fetch_window_passes PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected[years_later] PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected[1ms_before_fetch] PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected[1ms_after_receipt] PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_raw_snapshot_time_outside_fetch_window_rejected[tz_shift_5h] PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u8_quote_pointing_at_pbp_snapshot_rejected PASSED [ 98%]
+tests/review/test_rv_validator_probes.py::test_rv_u9_manifest_created_utc_is_validated PASSED [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected XFAIL [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected XFAIL [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_s3_stale_quote_requires_reason PASSED [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_t0_control_verified_includes_overtime_passes PASSED [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_t1_verified_unknown_overtime_rejected PASSED [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected XFAIL [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected XFAIL [ 99%]
+tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected XFAIL [100%]
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\review\incoming\test_rv_research_custodian.py:17: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC
+SKIPPED [1] tests\review\incoming\test_rv_research_preshot.py:25: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SRC and _DATA (built dataset)
+SKIPPED [1] tests\integration\test_agent_loop.py:174: NOT_RUN: real-game bundle not built (tools/bridge_r001_game.py)
+SKIPPED [1] tests\integration\test_research_bridge.py:45: NOT_RUN: Research canonical build not present (data is not redistributable)
+SKIPPED [19] tests\review\test_rv_agent_loop.py:196: NOT_RUN: Ref number guard not landed; set HEATCHECK_REVIEW_REF_GUARD
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_BUNDLE to the candidate bundle directory
+SKIPPED [1] tests\review\review_support.py:104: NOT_RUN: set HEATCHECK_REVIEW_RESEARCH_SYN_BUNDLE to the candidate bundle directory
+SKIPPED [6] tests\review\test_rv_preshot_invariance.py:76: NOT_RUN: set HEATCHECK_REVIEW_FEATURE_BUILDER=module:function (Research builder)
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l5_target_id_resolves_to_no_event_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_l6_source_hashes_reference_unknown_records_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_g3_team_win_label_team_not_in_game_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o3_team_win_contradicts_final_score_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o5_quote_level_derived_complement_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_o7_both_outcomes_mapped_to_same_team_win_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.537] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.0053] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u2_off_tick_price_rejected[0.005] - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u3_zero_size_level_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_u7_provider_time_after_received_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s1_ok_quote_with_two_hour_old_provider_time_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_s2_ok_quote_with_one_day_fetch_window_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t2_verified_regulation_only_for_team_wins_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+=========== 839 passed, 31 skipped, 16 xfailed in 213.84s (0:03:33) ===========
+exit: 0
+
+## uv run --frozen --all-groups python tools/make_reference_bundle.py --check
+PASS: reference bundle reproducible, records_sha256=faa3d335b941d6c7103271ec3c75ed474b29f753ff588b26fb1012aa1e627465
+exit: 0
+
+## uv run --frozen --all-groups python -m heatcheck.contracts.bundle tests/fixtures/quotes/e001
+PASS tests/fixtures/quotes/e001: bundle e001-syn-quote-fixture-1 modes=['SYNTHETIC'] records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843 [GAME=1, QUOTE=2, RAW_SNAPSHOT=5, VENUE_MAPPING=2, VENUE_MARKET=2]
+exit: 0
+
+## uv run --frozen --all-groups python tests/experience/make_e001_bundle.py --check
+PASS: E-001 bundle reproducible, records_sha256=b98438c49e35115bd0130e95988c3d8393f79d7315691c95044f0cfe2987e843
+exit: 0
+
+## cd apps\web && uv run --frozen --all-groups python -m unittest discover -s tests -v
+test_cancel (test_api.Api.test_cancel) ... ok
+test_claim_needs_every_field (test_api.Api.test_claim_needs_every_field) ... ok
+test_cross_origin_post_refused (test_api.Api.test_cross_origin_post_refused) ... ok
+test_file_endpoint (test_api.Api.test_file_endpoint) ... ok
+test_full_synthetic_run_reveal_export (test_api.Api.test_full_synthetic_run_reveal_export) ... ok
+test_gates_endpoint (test_api.Api.test_gates_endpoint) ... ok
+test_host_header_rebinding_refused (test_api.Api.test_host_header_rebinding_refused) ... ok
+test_idempotent_run_and_late_edit (test_api.Api.test_idempotent_run_and_late_edit) ... ok
+test_keepalive_unread_body_does_not_corrupt_next_request (test_api.Api.test_keepalive_unread_body_does_not_corrupt_next_request) ... ok
+test_market_flow (test_api.Api.test_market_flow) ... ok
+test_methods_and_bad_json (test_api.Api.test_methods_and_bad_json) ... ok
+test_oversize_json_refused (test_api.Api.test_oversize_json_refused) ... ok
+test_page_and_screen_sources (test_api.Api.test_page_and_screen_sources) ... ok
+test_real_mode_blocked_not_invented (test_api.Api.test_real_mode_blocked_not_invented) ... ok
+test_stale_confirmation_refused (test_api.Api.test_stale_confirmation_refused) ... ok
+test_static_traversal_and_headers (test_api.Api.test_static_traversal_and_headers) ... ok
+test_transcribe_is_forwarded_to_max_api (test_api.Api.test_transcribe_is_forwarded_to_max_api) ... ok
+test_cancel_then_provider_completion_does_not_restore (test_core.TestAuthority.test_cancel_then_provider_completion_does_not_restore) ... ok
+test_concurrent_starts_create_one_run (test_core.TestAuthority.test_concurrent_starts_create_one_run) ... ok
+test_double_confirmation_idempotent (test_core.TestAuthority.test_double_confirmation_idempotent) ... ok
+test_edit_revokes_confirmation (test_core.TestAuthority.test_edit_revokes_confirmation) ... ok
+test_export_after_edit_keeps_history (test_core.TestAuthority.test_export_after_edit_keeps_history) ... ok
+test_late_completion_after_edit_is_historical (test_core.TestAuthority.test_late_completion_after_edit_is_historical) ... ok
+test_replacement_run_supersedes (test_core.TestAuthority.test_replacement_run_supersedes) ... ok
+test_retry_same_request_id_returns_same_run (test_core.TestAuthority.test_retry_same_request_id_returns_same_run) ... ok
+test_stale_hash_and_revision_refused (test_core.TestAuthority.test_stale_hash_and_revision_refused) ... ok
+test_absent_listing (test_core.TestComparison.test_absent_listing) ... ok
+test_expected_statuses (test_core.TestComparison.test_expected_statuses) ... ok
+test_quote_types (test_core.TestComparison.test_quote_types) ... ok
+test_every_invalid_fixture_rejected (test_core.TestContracts.test_every_invalid_fixture_rejected) ... ok
+test_infinity_rejected (test_core.TestContracts.test_infinity_rejected) ... ok
+test_valid_fixtures_validate (test_core.TestContracts.test_valid_fixtures_validate) ... ok
+test_analyse_has_no_truth_argument (test_core.TestEngineIsolation.test_analyse_has_no_truth_argument) ... ok
+test_bad_data_invalid (test_core.TestEngineIsolation.test_bad_data_invalid) ... ok
+test_cancel_returns_none (test_core.TestEngineIsolation.test_cancel_returns_none) ... ok
+test_custodian_bounds (test_core.TestEngineIsolation.test_custodian_bounds) ... ok
+test_custodian_does_not_expose_config_attributes (test_core.TestEngineIsolation.test_custodian_does_not_expose_config_attributes) ... ok
+test_deterministic (test_core.TestEngineIsolation.test_deterministic) ... ok
+test_generated_data_carries_no_config (test_core.TestEngineIsolation.test_generated_data_carries_no_config) ... ok
+test_streak_stat_tiny_exact (test_core.TestEngineIsolation.test_streak_stat_tiny_exact) ... ok
+test_formula_cells_neutralised_on_export (test_core.TestFiles.test_formula_cells_neutralised_on_export) ... ok
+test_preview_counts (test_core.TestFiles.test_preview_counts) ... ok
+test_rejections (test_core.TestFiles.test_rejections) ... ok
+test_traversal_name_reduced (test_core.TestFiles.test_traversal_name_reduced) ... ok
+test_clutch_never_chooses_definition (test_core.TestIntake.test_clutch_never_chooses_definition) ... ok
+test_commands (test_core.TestIntake.test_commands) ... ok
+test_spans_point_into_text (test_core.TestIntake.test_spans_point_into_text) ... ok
+test_unsupported_and_injection_is_data (test_core.TestIntake.test_unsupported_and_injection_is_data) ... ok
+test_la_city_alone_does_not_identify (test_core.TestMapping.test_la_city_alone_does_not_identify) ... ok
+test_ok_requires_human (test_core.TestMapping.test_ok_requires_human) ... ok
+test_polymarket_outcome_by_label_not_position (test_core.TestMapping.test_polymarket_outcome_by_label_not_position) ... ok
+test_rules_change_invalidates (test_core.TestMapping.test_rules_change_invalidates) ... ok
+test_semantic_failures (test_core.TestMapping.test_semantic_failures) ... ok
+test_target_not_in_game (test_core.TestMapping.test_target_not_in_game) ... ok
+test_float_and_off_grid_rejected (test_core.TestQuotes.test_float_and_off_grid_rejected) ... ok
+test_freshness (test_core.TestQuotes.test_freshness) ... ok
+test_kalshi_derived_ask (test_core.TestQuotes.test_kalshi_derived_ask) ... ok
+test_missing_side_and_crossed (test_core.TestQuotes.test_missing_side_and_crossed) ... ok
+test_only_probability_dollars (test_core.TestQuotes.test_only_probability_dollars) ... ok
+test_synthetic_example_from_spec (test_core.TestQuotes.test_synthetic_example_from_spec) ... ok
+test_committed_book_snapshot_clock_order (test_core.TestTimestampsAndUnits.test_committed_book_snapshot_clock_order) ... ok
+test_committed_envelopes_use_z_and_one_unit_label (test_core.TestTimestampsAndUnits.test_committed_envelopes_use_z_and_one_unit_label) ... ok
+test_iso_z (test_core.TestTimestampsAndUnits.test_iso_z) ... ok
+test_429_bounded_retry_honours_retry_after (test_core.TestVenues.test_429_bounded_retry_honours_retry_after) ... ok
+test_allowlist (test_core.TestVenues.test_allowlist) ... ok
+test_book_hash_and_timestamps (test_core.TestVenues.test_book_hash_and_timestamps) ... ok
+test_every_fixture_book_has_provider_time_at_or_before_receipt (test_core.TestVenues.test_every_fixture_book_has_provider_time_at_or_before_receipt) ... ok
+test_legacy_cents_book_refused (test_core.TestVenues.test_legacy_cents_book_refused) ... ok
+test_malformed_and_oversize (test_core.TestVenues.test_malformed_and_oversize) ... ok
+test_no_write_capability (test_core.TestVenues.test_no_write_capability) ... ok
+test_polymarket_misaligned_tokens (test_core.TestVenues.test_polymarket_misaligned_tokens) ... ok
+test_polymarket_prefers_clob_token_ids (test_core.TestVenues.test_polymarket_prefers_clob_token_ids) ... ok
+test_private_resolution_refused (test_core.TestVenues.test_private_resolution_refused) ... ok
+test_provider_time_after_receipt_refused (test_core.TestVenues.test_provider_time_after_receipt_refused) ... ok
+test_redirect_refused (test_core.TestVenues.test_redirect_refused) ... ok
+test_endpoint (test_evidence.TestEvidenceApi.test_endpoint) ... ok
+test_committed_ledger_verifies (test_evidence.TestEvidenceReader.test_committed_ledger_verifies) ... ok
+test_read_never_writes (test_evidence.TestEvidenceReader.test_read_never_writes) ... ok
+test_tampered_decision_refused (test_evidence.TestEvidenceReader.test_tampered_decision_refused) ... ok
+test_unconfigured_and_wrong_type (test_evidence.TestEvidenceReader.test_unconfigured_and_wrong_type) ... ok
+test_committed_model_proposal_is_listed_not_run (test_ideas.TestProposals.test_committed_model_proposal_is_listed_not_run) ... ok
+test_request_not_matching_the_model_output_is_refused (test_ideas.TestProposals.test_request_not_matching_the_model_output_is_refused) ... ok
+test_a_confirmatory_word_is_not_an_idea_verdict (test_ideas.TestReader.test_a_confirmatory_word_is_not_an_idea_verdict) ... ok
+test_changed_registration_is_refused (test_ideas.TestReader.test_changed_registration_is_refused) ... ok
+test_committed_api_capture_equals_the_reader_output (test_ideas.TestReader.test_committed_api_capture_equals_the_reader_output) ... ok
+test_missing_directory_is_a_plain_404_reason (test_ideas.TestReader.test_missing_directory_is_a_plain_404_reason) ... ok
+test_non_strict_json_is_refused (test_ideas.TestReader.test_non_strict_json_is_refused) ... ok
+test_research_families_verify_and_development_comes_first (test_ideas.TestReader.test_research_families_verify_and_development_comes_first) ... ok
+test_research_note_is_shown_only_when_it_cites_these_results (test_ideas.TestReader.test_research_note_is_shown_only_when_it_cites_these_results) ... ok
+test_results_must_list_exactly_the_registered_ideas (test_ideas.TestReader.test_results_must_list_exactly_the_registered_ideas) ... ok
+test_scoreboard_and_truth_must_cite_these_results (test_ideas.TestReader.test_scoreboard_and_truth_must_cite_these_results) ... ok
+test_scoreboard_without_truth_is_refused (test_ideas.TestReader.test_scoreboard_without_truth_is_refused) ... ok
+test_route_says_why_when_there_are_no_results (test_ideas.TestRoute.test_route_says_why_when_there_are_no_results) ... ok
+test_route_serves_the_verified_families (test_ideas.TestRoute.test_route_serves_the_verified_families) ... ok
+test_default_index_is_the_newest_capture_run_and_has_no_prices (test_proxy.TestMappingIndex.test_default_index_is_the_newest_capture_run_and_has_no_prices) ... ok
+test_no_absolute_api_url_in_page_code (test_proxy.TestPageUsesRelativeUrls.test_no_absolute_api_url_in_page_code) ... ok
+test_csp_allows_same_origin_only (test_proxy.TestPassThrough.test_csp_allows_same_origin_only) ... ok
+test_every_captured_exchange_passes_through_unchanged (test_proxy.TestPassThrough.test_every_captured_exchange_passes_through_unchanged) ... ok
+test_home_advantage_answer_is_the_confirmatory_survived_record (test_proxy.TestPassThrough.test_home_advantage_answer_is_the_confirmatory_survived_record) ... ok
+test_local_routes_are_not_forwarded (test_proxy.TestPassThrough.test_local_routes_are_not_forwarded) ... ok
+test_max_error_statuses_come_back_as_is (test_proxy.TestPassThrough.test_max_error_statuses_come_back_as_is) ... ok
+test_request_body_and_method_reach_max_unchanged (test_proxy.TestPassThrough.test_request_body_and_method_reach_max_unchanged) ... ok
+test_root_serves_the_demo_page (test_proxy.TestPassThrough.test_root_serves_the_demo_page) ... ok
+test_same_origin_post_is_accepted_cross_origin_refused (test_proxy.TestPassThrough.test_same_origin_post_is_accepted_cross_origin_refused) ... ok
+test_scenario_is_forwarded_with_its_query_string (test_proxy.TestPassThrough.test_scenario_is_forwarded_with_its_query_string) ... ok
+test_upstream_down_is_a_plain_502 (test_proxy.TestPassThrough.test_upstream_down_is_a_plain_502) ... ok
+test_upstream_must_be_loopback (test_proxy.TestPassThrough.test_upstream_must_be_loopback) ... ok
+
+----------------------------------------------------------------------
+Ran 107 tests in 16.200s
+
+OK
+exit: 0
+
+## cd apps\web && node --test tests/responsible.test.mjs tests/safer_gambling.test.mjs tests/board-lazy.test.mjs tests/heater-order.test.mjs tests/voice.test.mjs tests/scenario.test.mjs tests/speech.test.mjs tests/whatif.test.mjs tests/ideas.test.mjs tests/board.test.mjs tests/heater.test.mjs tests/referee.test.mjs
+✔ opening the board asks only for the forecast and the mappings, then draws every card, pending (12.7188ms)
+✔ comparisons run one at a time in card order and fill each card in place as they answer (32.8482ms)
+✔ loadBoard (both steps) still returns every comparison, as before (5.9732ms)
+✔ the board says why after 5 s when Max's server does not answer, with a Try again button (10.7057ms)
+✔ a server that is down, and a card whose comparison never answers, both say so plainly (31.156ms)
+✔ board load sends an empty message (no model call); Ask sends ASK_MESSAGE so the model voices the card (3.5259ms)
+✔ demo.js: the home view is drawn before any network wait; the board loads only when opened (1.9431ms)
+✔ demo.js: Ask re-investigates with ASK_MESSAGE before Heater speaks, redraws the card, falls back to the board answer (1.1503ms)
+✔ the board loads tonight's games through relative URLs only (6.9729ms)
+✔ each card shows forecast, price, difference, both timestamps and inputs; SAMPLE and Can't compare plainly (3.3577ms)
+✔ renderBoard draws a SAMPLE banner and six cards, all text via textContent (5.6509ms)
+✔ a real (non-sample) comparison renders as Worth investigating with the gap against bid/ask (1.0207ms)
+✔ a RECORDED comparison says RECORDED with the quote time on the card and in the Ref line (1.307ms)
+✔ Kalshi bids-only, unknown game and a down API all say Can't compare plainly (5.0838ms)
+✔ Heater's market line names inputs in plain words (0.6968ms)
+✔ 'Do home teams win more?' -> CONF-HA SURVIVED: vindicated pose, SURVIVED stamp, never-seen season (153.0729ms)
+✔ Max: the card shows the server's caveats (home-bias note) and nothing it did not send (1.6922ms)
+✔ Max's server: the take is verdict-blind, the verdict lines are heater_reaction (3.5767ms)
+✔ every line Heater can open with is verdict-blind (3.3922ms)
+✔ dialogueLines: Max's take first, his reaction last; an older verdict-aware take is held back (2.3789ms)
+✔ splitTake keeps every sentence, in order, and puts only the pre-empting ones after the stamp (1.8813ms)
+✔ marketReaction: Max's heater_reaction after the stamp, after any held-back sentence (0.5356ms)
+✔ demo.js, every Ref flow: Heater's opener, then the Ref, then the stamp, then the reaction (2.3307ms)
+✔ one pose map covers all 9 states; unsure and blocked borrow thinking and listening (3.3847ms)
+✔ pose images present (3.4692ms)
+✔ every pose image present is a 687x1024 WebP (13.6831ms)
+✔ the SVG rig is gone: no heater.svg and no SVG mount (1.7642ms)
+✔ CSS: 200 ms crossfade, #12121A stage, radial edge mask, every state, reduced motion (1.9171ms)
+✔ fixture is a byte copy of Max's committed ledger (4.1283ms)
+✔ verdict -> end state and chip; unknown verdicts never vindicate (0.9544ms)
+✔ card model for HH-K2: the Ref's numbers come only from the record (122.4194ms)
+✔ Heater's line is a hot take, never the claim description (3.6464ms)
+✔ personality file formats: table, {lines}, {claims}, default fallback, rotation (0.8963ms)
+✔ Ref in plain English: words first, numbers second, every number from the record (7.2371ms)
+✔ stamps, takes and reactions come from heater_personality.json (0.778ms)
+✔ offline routing of the example questions (2.8701ms)
+✔ demo page: no debug text in the default view (3.7137ms)
+✔ every committed record maps to a state and a chip without problems (2.4216ms)
+✔ bad input is refused, never zero-filled (1.4886ms)
+✔ emphasis words and boundary word lookup (0.6773ms)
+✔ voices: Heater and Ref get different voices when two exist (1.022ms)
+✔ loadIdeas asks the UI server with a relative URL only (8.897ms)
+✔ each idea reads as a plain sentence (2.3493ms)
+✔ numbers and the chance check are Research's, worded plainly (123.7421ms)
+✔ a CANDIDATE is a lead, never a finding: no SURVIVED, no vindicated pose (1.4308ms)
+✔ Heater pitches each idea with no digits (1.0824ms)
+✔ synthetic leagues report the planted-truth check as counts (2.1366ms)
+✔ renderIdeas: twelve idea cards with Ask Heater, two SYNTHETIC league cards without (3.0288ms)
+✔ no results, or a refused family, is said plainly (1.8521ms)
+✔ module is pure: no DOM or network globals used (3.0937ms)
+✔ provisional record maps to claim, attacks, verdict, evidence (3.9449ms)
+✔ unknown verdict is shown as supplied, never mapped to a known one (1.6125ms)
+✔ missing sections are listed as gaps, nothing is zero-filled (0.4453ms)
+✔ unknown attack outcome and non-finite numbers are flagged (2.4014ms)
+✔ other formats are read but flagged (3.4376ms)
+✔ stand-in run is labelled stand-in and reports unrun mandatory attacks (6.1764ms)
+✔ stand-in run without a matching plan does not borrow another claim (0.7517ms)
+✔ ledger entry HH-K2 maps to claim, attacks, verdict, evidence (3.3858ms)
+✔ ledger entry without server verification says so (4.2734ms)
+✔ BLOCKED entry lists every mandatory attack as NOT_RUN, nothing zero-filled (1.7646ms)
+✔ unknown attack status and protocol are flagged, not reinterpreted (3.1401ms)
+✔ demo.html footer carries Max's short text exactly, outside every hidden section (2.7445ms)
+✔ loadResponsibleUse returns Max's short and full text, unchanged (2.3397ms)
+✔ loadResponsibleUse gives null on a missing file, a bad shape or a network error (static footer stands) (1.0611ms)
+✔ firstTimeThisSession: true once, then false; also when storage is missing or throws (0.8314ms)
+✔ the board header shows the full notice above the cards when prices are shown (2.7088ms)
+✔ no notice element without text, and none on the board's error view (0.8715ms)
+✔ the first market Ask, card what-if or own scenario shows the notice before Heater speaks (1.1028ms)
+✔ the page reads Max's file at start, updates the footer from it, and passes the full text to the board (0.7881ms)
+✔ the notice wording lives only in Max's file and the static footer copy (4.3427ms)
+✔ the word list catches the phrases and lets ordinary words through (5.3096ms)
+✔ heater_personality.json (the lines the demo uses) has no betting wording (2.6945ms)
+✔ responsible_use.json has the short and full text (2.0906ms)
+✔ PLACEHOLDER_LINES (fallback if the personality file fails to load) have no betting wording (0.488ms)
+✔ loadScenarios asks one relative URL, with the game id encoded (5.2141ms)
+✔ no endpoint, Max down, or no answer is said plainly (1.8191ms)
+✔ a scenario must be an ESTIMATE with its point inside its range, n and caveats (0.9635ms)
+✔ the whole answer is refused when it does not belong to this card (1.0297ms)
+✔ baseline and scenario side by side, with change, range, n and caveats (31.8863ms)
+✔ Heater reacts to the direction of the change, with no digits (1.1403ms)
+✔ the Ref words the estimate and always keeps 'Edge unverified' (1.2559ms)
+✔ stamp is ESTIMATE (or SAMPLE); Heater never ends vindicated (0.6583ms)
+✔ renderScenarios: ESTIMATE label, two cells, a range bar, n and caveats under it (2.0225ms)
+✔ on the board: 'What if…?' loads once, shows SAMPLE scenarios as SAMPLE, and hands Ask to the demo (4.017ms)
+✔ 'Your own scenario' box: under the presets, sends the typed text with this card's game, and fetches nothing itself (4.072ms)
+✔ no box without onOwnScenario; and demo.js hands the box to Max's free-text flow with the card's game id (1.9632ms)
+✔ a preset ESTIMATE looks exactly like a typed ESTIMATE from Max's server (0.7278ms)
+✔ demo.js: typed what-ifs show the server's stamp, presets their label; one whatifStamp only (1.5092ms)
+✔ without onScenario the board has no What if button (Max's existing board unchanged) (0.3083ms)
+✔ the guard is the fallback duration plus a fixed grace (1.2691ms)
+✔ voice on, speech never ends: speak() still resolves at the guard, not before (1.753ms)
+✔ voice on, speech ends normally: speak() resolves at onend and the guard does nothing later (1.0855ms)
+✔ a market answer's stamp is set after the Ref's line, so it shows even when speech never ends (2.7567ms)
+✔ support: recording works in Opera, Firefox and Chrome; speech is only a fallback where it runs (4.1718ms)
+✔ no 'not supported in this browser' line for Opera any more (0.6543ms)
+✔ encodeWav: 16 kHz mono 16-bit PCM header and samples, clamped (0.8788ms)
+✔ every failure has a clear line (0.5944ms)
+✔ default path: record, encode WAV, POST to /api/transcribe, transcript back (not asked) (98.0641ms)
+✔ service failure: clear line, and the next tap falls back to browser speech (79.9397ms)
+✔ network failure with no browser speech: says type the question (92.8016ms)
+✔ nothing heard does not switch to the fallback (110.585ms)
+✔ mic blocked shows the blocked line and records nothing (32.0607ms)
+✔ recording stops by itself at the limit (30 s by default) (174.0409ms)
+✔ fixture is generated by Max's code, not hand-written (1.0744ms)
+✔ route and scenario calls use relative URLs only, and a down router falls back to the dialogue (1.0954ms)
+✔ confirmation echoes exactly what the server showed (0.328ms)
+✔ neutral floor: baseline vs scenario side by side, ESTIMATE (model recalculated from data) (0.6124ms)
+✔ your own adjustment is labelled as yours (0.2835ms)
+✔ game points without a conversion, and a player with no estimate, give no number (0.2509ms)
+✔ player out uses Research's shrunk estimate, labelled ESTIMATE, with a range and n (0.3188ms)
+✔ a hypothetical price leaves the forecast unchanged and says so (1.3633ms)
+✔ a SAMPLE estimate never shows a number (0.2958ms)
+✔ no view text calls anything an edge found or a bet (0.8754ms)
+✔ stamp: the page shows the server's stamp (ESTIMATE from data, YOUR ASSUMPTION from the user's number) (0.3232ms)
+✔ demo.js stamps a what-if with whatifStamp, not a fixed word (1.2418ms)
+✔ number_source: the stamp must agree with where the server says the number came from (0.35ms)
+ℹ tests 116
+ℹ suites 0
+ℹ pass 116
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30775.616
+exit: 0
