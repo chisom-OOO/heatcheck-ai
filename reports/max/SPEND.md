@@ -21,9 +21,11 @@ Model rules:
 | 19:54 | Live end-to-end, 5 turns (this report) | 13 / 13 | 0.027300 | `logs/2026-11-07-live-e2e/llm_usage.jsonl` |
 | 19:56 | BLOCKED turn rerun after the `ref_brief` fix (1 Heater TIMEOUT) | 2 + 1 timed out / 3 | 0.002615, plus ≤ 0.0044 for the timed-out call (usage not returned) | `logs/2026-11-07-live-e2e-blocked-rerun/llm_usage.jsonl` |
 | 20:40 | Live end-to-end, 6 turns, deterministic Ref (mapping + Heater only) | 12 / 12 | 0.017785 | `logs/2026-11-07-live-e2e-ref-template/llm_usage.jsonl` |
-| **Total** | | | **≈ 0.061 logged; ≤ 0.068 with upper bounds** | |
+| 21:25 | Demo run with the model on (Discoverer map + Heater; 1 map TIMEOUT, usage not returned) | 5 + 1 timed out / 6 | 0.008061, plus ≤ 0.0044 for the timed-out call | `logs/llm_usage.jsonl` (git-ignored), rows 2026-11-07T21:25:12–21:26:09Z |
+| 8 Nov 01:53 | Heater idea proposer, "Does rest matter?" (muse-spark-1.3, 535 + 628 tokens) | 1 / 1 | 0.003338 | `data/max/idea_requests/does_rest_matter_heater_dev.model_output.json`; `logs/llm_usage.jsonl` |
+| **Total** | | | **≈ 0.072 logged; ≤ 0.084 with upper bounds** | |
 
-Remaining under the $5 approval: at least $4.93.
+Remaining under the $5 approval: at least $4.91 (updated 8 Nov 02:20 UTC).
 
 The demo (`demo.cmd`) makes live calls whenever `META_API_KEY` is set. Those calls are logged
 to `logs/llm_usage.jsonl` (git-ignored) and are not in this table. A turn costs about
