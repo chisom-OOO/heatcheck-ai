@@ -576,6 +576,8 @@ def investigate(
         "hypothetical": hypothetical, "frost": frost, "frost_reaction": frost_reaction,
         "challenger_checks": [c.as_dict() for c in checks], "thesis": thesis,
         "verdict": verdict, "ref_text": ref_text, "caveats": caveats,
+        # Market verdicts are not protocol verdicts; no headline pattern was given for them.
+        "ref_headline": None,
     }
     identity = {
         "protocol_version": PROTOCOL_VERSION, "format": FORMAT, "lane": LANE, "channel": CHANNEL,
