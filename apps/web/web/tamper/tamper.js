@@ -10,12 +10,15 @@ const el = (tag, cls, text) => {
   return e;
 };
 
-/** Draw the panel for a flip view. ``recent`` are the page's last ledger entries (shown above the new
- *  row so it is seen arriving); ``status`` is the line under the panel. */
-export function renderTamper(root, view, { recent = [], status = "" } = {}) {
+/** Draw the panel for a flip view. ``recent`` are the earlier tamper-ledger rows (shown above the new
+ *  row so it is seen arriving), ``row`` the new one (from GET /api/tamper/events), ``rowNote`` why it
+ *  is missing; ``status`` is the line under the panel. */
+export function renderTamper(root, view, { recent = [], row = null, rowNote = "", status = "" } = {}) {
   const parts = [];
   if (view?.mock) parts.push(el("p", "tamper-mock", "MOCK REPLY: no request was sent and no file was changed"));
-  if (view && !view.ok) {
+  if (view?.notDetected) {
+    parts.push(el("p", "tamper-problem tamper-alarm", `CHECK FAILED: ${view.problem}.`));
+  } else if (view && !view.ok) {
     parts.push(el("p", "tamper-problem", `Nothing was flipped: ${view.problem}.`));
   } else if (view) {
     const dl = el("dl", "tamper-facts");
@@ -24,9 +27,9 @@ export function renderTamper(root, view, { recent = [], status = "" } = {}) {
     }
     parts.push(dl);
     const table = el("table", "tamper-ledger");
-    table.append(el("caption", "", "Evidence ledger"));
+    table.append(el("caption", "", "Tamper ledger (hash-chained, logs/tamper_events.jsonl)"));
     const head = el("tr");
-    for (const h of ["Claim", "Decision", "Evidence id", "Reason"]) head.append(el("th", "", h));
+    for (const h of ["Entry", "Verdict", "Evidence id", "Validator message"]) head.append(el("th", "", h));
     const thead = el("thead");
     thead.append(head);
     table.append(thead);
@@ -36,11 +39,13 @@ export function renderTamper(root, view, { recent = [], status = "" } = {}) {
       tr.append(el("td", "", r.claim), el("td", "", r.decision), el("td", "mono", r.id), el("td", "", r.reason));
       body.append(tr);
     };
-    recent.map(ledgerRowView).filter(Boolean).forEach((r) => addRow(r, false));
-    if (view.row) addRow(view.row, true);
+    const view1 = (r) => (r && "fullId" in r ? r : ledgerRowView(r));
+    recent.map(view1).filter(Boolean).forEach((r) => addRow(r, false));
+    const fresh = view1(row) || view.row;
+    if (fresh) addRow(fresh, true);
     table.append(body);
     parts.push(table);
-    if (!view.row) parts.push(el("p", "tamper-problem", "The reply has no new ledger row."));
+    if (!fresh) parts.push(el("p", "tamper-problem", rowNote || "The new ledger row is not in the reply."));
   }
   parts.push(el("p", "tamper-status", status));
   root.replaceChildren(...parts);
