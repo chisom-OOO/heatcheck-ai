@@ -502,7 +502,9 @@ def test_the_three_chips_are_routed_without_the_model(view, tmp_path, q, cid):
     t = FakeTransport(mapping='{"claim_id": "NONE"}')   # the model would say NONE
     d = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t))
     got, source, ident = d._map(q)
-    assert got == cid and source.startswith("FIXED_CHIP_RULE") and ident["rule"] == "CHIP_ROUTES"
+    # the home chip is caught by the existing home-advantage keyword rule first; the others by CHIP_ROUTES
+    assert got == cid and ident["kind"] == "DETERMINISTIC_RULE"
+    assert source.startswith("KEYWORD_RULE" if cid == "CONF-HA" else "FIXED_CHIP_RULE")
     assert t.calls == []
 
 

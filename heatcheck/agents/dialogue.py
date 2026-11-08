@@ -666,13 +666,13 @@ class Dialogue:
     def _map(self, question: str) -> tuple[str, str, dict]:
         # Home-advantage questions always go to the confirmatory CONF-HA result (user
         # instruction, 7 November), never to GP-ELO, whatever the LLM would choose.
+        if HOME_ADVANTAGE.search(question):   # also covers the "Do home teams win more?" chip
+            return "CONF-HA", "KEYWORD_RULE (home advantage -> CONF-HA)", {
+                "kind": "DETERMINISTIC_RULE", "model": None, "prompt": None, "rule": "HOME_ADVANTAGE"}
         chip = chip_route(question)
         if chip is not None:
             return chip, f"FIXED_CHIP_RULE ({question.strip()} -> {chip})", {
                 "kind": "DETERMINISTIC_RULE", "model": None, "prompt": None, "rule": "CHIP_ROUTES"}
-        if HOME_ADVANTAGE.search(question):
-            return "CONF-HA", "KEYWORD_RULE (home advantage -> CONF-HA)", {
-                "kind": "DETERMINISTIC_RULE", "model": None, "prompt": None, "rule": "HOME_ADVANTAGE"}
         if self.llm:
             messages = [{"role": "system", "content": MAP_SYSTEM.format(
                 catalogue=json.dumps(mapping_catalogue()))},

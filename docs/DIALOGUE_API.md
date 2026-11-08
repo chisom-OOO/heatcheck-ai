@@ -222,7 +222,7 @@ Real example: `POST /api/dialogue {"question": "Is the hot hand real?"}` on the 
 }
 ```
 
-**Fixed routes for the page's three chips** (before any model call, like home advantage): "Is the hot hand real?" -> CONF-HH, "Does rest matter?" -> GP-REST, "Do home teams win more?" -> CONF-HA (exact text; case, spaces and the final "?" ignored; `sources.mapping` = `FIXED_CHIP_RULE (...)`). Any other wording is mapped by the model.
+**Fixed routes for the page's three chips** (before any model call, like home advantage): "Is the hot hand real?" -> CONF-HH, "Does rest matter?" -> GP-REST, "Do home teams win more?" -> CONF-HA (exact text; case, spaces and the final "?" ignored; `sources.mapping` = `FIXED_CHIP_RULE (...)`, or `KEYWORD_RULE (home advantage -> CONF-HA)` for the home chip, which the existing home-advantage rule catches first). Any other wording is mapped by the model.
 
 ## Tamper demo: `POST /api/tamper/flip`, `POST /api/tamper/restore`, `GET /api/tamper/events` (added 8 Nov 2026)
 
