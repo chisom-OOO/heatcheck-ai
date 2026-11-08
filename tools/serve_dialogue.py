@@ -12,7 +12,7 @@ newest quote for the requested mapping is used). Max's verified mappings are app
 labels every response "RECORDED game" (the 03:00 fallback); otherwise quotes are compared live.
 With --live-forecast, POST /api/route and POST /api/scenario[/estimate] are served too; confirmed
 scenarios are recorded in --scenario-ledger (default logs/scenarios.jsonl). Research's scenario
-effects are a stub until research/scenario-effects is merged.
+effects come from research/scenario-effects (data/scenario tables).
 
 The Meta key is read from META_API_KEY in this process's environment. Without it, or with
 --no-llm, every turn uses the deterministic stand-ins and templates. Token usage per call is
@@ -73,9 +73,13 @@ def main(argv: list[str]) -> int:
                            else ROOT / "data" / "max" / "mapping_verifications"))
     scn = None
     if lf is not None:
+        from heatcheck.agents.research_scenario import ABSENCE, SCHEDULE, ResearchScenario
+        provider = ResearchScenario() if ABSENCE.exists() and SCHEDULE.exists() else None
+        print("scenario effects: " + ("Research's tables " + provider.identity["tables_sha256"]["absence"][:12]
+                                      if provider else "STUB (data/scenario tables missing)"))
         scn = ScenarioConfig(ledger=EvidenceLedger(Path(argv[argv.index("--scenario-ledger") + 1])
                                                    if "--scenario-ledger" in argv
-                                                   else ROOT / "logs" / "scenarios.jsonl"))
+                                                   else ROOT / "logs" / "scenarios.jsonl"), provider=provider)
     srv = serve(dialogue, port, lf, inv, scn)
     print(f"dialogue API on http://127.0.0.1:{srv.server_address[1]}/api/dialogue")
     srv.serve_forever()

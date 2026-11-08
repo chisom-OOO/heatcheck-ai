@@ -43,6 +43,7 @@ PROTOCOL_VERSION = "scenario-1"
 LANE = "SCENARIO"
 VERDICT = "HYPOTHETICAL · Edge unverified"
 HOME_COURT_ELO = 100.0  # B1 Elo constant, stated in the live forecast's model text
+Z95 = 1.959963984540054  # same constant as Research's combiner
 MIN_N = 30              # same floor as the hot-hand comparison: below this a sample is "small"
 FORECAST_MAX_AGE = timedelta(hours=48)
 ESTIMATE_MAX_AGE = timedelta(days=400)
@@ -438,6 +439,11 @@ def p_from_elo(diff: float) -> float:
     return 1.0 / (1.0 + 10.0 ** (-diff / 400.0))
 
 
+def elo_from_p(p: float) -> float:
+    """Inverse of p_from_elo: the forecast's probability in Elo units (exact baseline)."""
+    return 400.0 * math.log10(p / (1.0 - p))
+
+
 @dataclass
 class Check:
     check_id: str
@@ -626,13 +632,14 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
         if any(e.included and e.elo_shift_home is not None for e in effects) and h0 is None:
             scen = None
         else:
-            d0 = (row["elo_home"] - row["elo_away"] + h0) if h0 is not None else None
+            d0 = elo_from_p(float(row["p_home_win"])) if h0 is not None else None
             mid = lo = hi = None
             if d0 is not None:
                 inc = [e for e in effects if e.included and e.elo_shift_home is not None]
                 mid = d0 + sum(e.elo_shift_home for e in inc)
-                lo = d0 + sum(e.elo_range_home[0] for e in inc)
-                hi = d0 + sum(e.elo_range_home[1] for e in inc)
+                # Research's combiner: each 95% interval as a normal, combined in quadrature
+                sd = math.sqrt(sum(((e.elo_range_home[1] - e.elo_range_home[0]) / (2 * Z95)) ** 2 for e in inc))
+                lo, hi = mid - Z95 * sd, mid + Z95 * sd
                 pm, pl, ph = (p_from_elo(x) for x in (mid, lo, hi))
             else:
                 pm = pl = ph = baseline_home
@@ -733,7 +740,7 @@ def scenario_menu(row: dict, forecast_doc: dict, is_sample: bool, forecast_sha25
     changes = provider.menu(ctx)
     if changes is None:
         return {**base, "status": "UNAVAILABLE", "reason": NOT_MERGED}
-    d0 = row["elo_home"] - row["elo_away"] + h0
+    d0 = elo_from_p(p_home)
     as_of = _parse_utc(as_of_utc)
     for c in changes:
         text = str(c.get("text") or "").strip()
@@ -766,7 +773,7 @@ def scenario_menu(row: dict, forecast_doc: dict, is_sample: bool, forecast_sha25
                 "range": {"low": _prob_str(pl), "high": _prob_str(ph), "level": f"{float(level):.2f}"},
                 "n": n, "n_unit": r.get("n_unit") or "games", "caveats": caveats,
                 "method": r.get("method") or "", "verdict": r.get("verdict") or "NOT_TESTED",
-                "change": c}
+                "change": c, "evidence": r.get("evidence") or {}}
         dt = r.get("data_through_utc")
         if n < MIN_N:
             item["caveats"] = caveats + [f"small sample: {n} {item['n_unit']} (under {MIN_N})"]

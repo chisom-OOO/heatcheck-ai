@@ -23,6 +23,7 @@ from heatcheck.agents.scenario import (
     ResearchStub,
     check_confirmation,
     estimate_scenario,
+    elo_from_p,
     home_court_in_forecast,
     p_from_elo,
     parse_changes,
@@ -183,7 +184,7 @@ def test_user_adjustments():
         def points_to_elo(self):
             return 28.0
     c = est("assume it costs Boston 3 points", bos, WithConversion())
-    d = bos["elo_home"] - bos["elo_away"] + 100
+    d = elo_from_p(bos["p_home_win"])
     assert c["scenario"]["p"] == round(1 - p_from_elo(d + 84), 4)
     huge = est("Assume it costs Boston 90%", bos)
     assert huge["scenario"] is None and any(x["check_id"] == "RANGE" for x in huge["challenger_checks"])
@@ -213,7 +214,7 @@ def test_research_estimates_ranges_sample_size_failed_and_staleness():
             "verdict": "INSUFFICIENT_EVIDENCE", "data_through_utc": "2024-06-01T00:00:00Z",
             "caveats": ["test double"], "interval": "90% test interval"}
     e = est("Cleveland without Donovan Mitchell", cle, FakeResearch(PLAYER_OUT=good))
-    d = cle["elo_home"] - cle["elo_away"] + 100
+    d = elo_from_p(cle["p_home_win"])
     assert e["scenario"]["p"] == round(p_from_elo(d - 40), 4)
     assert e["scenario"]["range"] == [round(p_from_elo(d - 70), 4), round(p_from_elo(d - 10), 4)]
     ch = {c["check_id"]: c["status"] for c in e["challenger_checks"]}
@@ -375,7 +376,7 @@ def test_menu_meets_experiences_rules_and_routes_failed_and_missing():
     m = scenario_menu(cle, DOC, False, SHA, NOW, P([b2b, hurt]))
     experience_rules(m, "Cleveland Cavaliers", cle["p_home_win"])
     assert len(m["scenarios"]) == 1 and len(m["failed_tests"]) == 1
-    d = cle["elo_home"] - cle["elo_away"] + 100
+    d = elo_from_p(cle["p_home_win"])
     s = m["scenarios"][0]
     assert s["p_team_win"] == f"{p_from_elo(d + 30):.6f}"           # the Knicks get worse: Cleveland up
     assert s["range"] == {"low": f"{p_from_elo(d + 5):.6f}", "high": f"{p_from_elo(d + 55):.6f}", "level": "0.90"}
@@ -401,3 +402,74 @@ def test_http_get_scenario(server):
             raise AssertionError("expected an error")
         except urllib.error.HTTPError as e:
             assert e.code == code
+
+
+# ------------------------------------------------------------------ Research's real functions (research/scenario-effects@d6ad25a)
+
+from heatcheck.agents.research_scenario import ResearchScenario, name_matches, shown_by_default  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def rs():
+    return ResearchScenario()
+
+
+def _allen(rs, row):
+    return next(k for k, v in rs.absence.items() if v.get("player_name") == "J. Allen" and v["team_id"] == row["home_team_id"])
+
+
+def test_research_worked_example_reproduced_point_and_interval(rs):
+    """Research's report: CLE without J. Allen + NYK back-to-back -> 0.533, 95% [0.311, 0.742]."""
+    row = G["191"]
+    theirs = rs.mod.scenario_probability(row["p_home_win"], row["home_team_id"], row["away_team_id"],
+                                         [{"type": "player_absence", "key": _allen(rs, row), "side": "home"},
+                                          {"type": "schedule", "effect": "back_to_back", "side": "away"}],
+                                         rs.absence, rs.schedule)
+    assert round(theirs["scenario_p_home"], 3) == 0.533
+    mine = est("What if Cleveland were without Jarrett Allen and the Knicks on a back-to-back?", row, rs)
+    assert [e["type"] for e in mine["effects"]] == ["ESTIMATE", "ESTIMATE"]
+    assert mine["scenario"]["p"] == round(theirs["scenario_p_home"], 4)
+    assert mine["scenario"]["range"] == [round(x, 4) for x in theirs["ci95"]]
+
+
+def test_menu_on_a_sunday_game_meets_experiences_rules(rs):
+    row = G["197"]  # LA Lakers at Detroit, Sunday
+    m = scenario_menu(row, DOC, False, SHA, NOW, rs)
+    experience_rules(m, "Detroit Pistons", row["p_home_win"])
+    assert m["status"] == "OK" and len(m["scenarios"]) >= 4
+    for s in m["scenarios"]:
+        c = s["change"]
+        if c["kind"] == "PLAYER_OUT":
+            change = {"type": "player_absence", "key": c["key"], "side": "home" if c["team"] == row["home_team"] else "away"}
+        else:
+            eff = "back_to_back" if c["detail"] == "back-to-back" else "three_in_four"
+            change = {"type": "schedule", "effect": eff, "side": "home" if c["team"] == row["home_team"] else "away"}
+        r = rs.mod.scenario_probability(row["p_home_win"], row["home_team_id"], row["away_team_id"], [change],
+                                        rs.absence, rs.schedule)
+        assert s["p_team_win"] == f"{r['scenario_p_home']:.6f}"
+        assert s["range"]["low"] == f"{r['ci95'][0]:.6f}" and s["range"]["high"] == f"{r['ci95'][1]:.6f}"
+    b2b = next(s for s in m["scenarios"] if "back-to-back" in s["text"])
+    assert b2b["verdict"] == "INSUFFICIENT_EVIDENCE" and b2b["caveats"][0].startswith("unproven")
+
+
+def test_hidden_players_and_raw_only_in_evidence(rs):
+    low = next(r for r in rs.absence.values() if "low_involvement_outcome_dependent_appearance" in r["flags"]
+               and r.get("player_name") and r["n_games_missed"] >= 5)
+    assert shown_by_default(low)[0] is False
+    flagged = {**low, "flags": ["absences_mix_rest_injury_suspension_and_coach_decisions"], "shown_by_default": False}
+    assert shown_by_default(flagged)[0] is False
+    assert shown_by_default({**flagged, "shown_by_default": None, "flags": ["not_shown_by_default"]})[0] is False
+    assert shown_by_default({**low, "flags": []})[0] is True
+    for g in GAMES:
+        for s in scenario_menu(g, DOC, False, SHA, NOW, rs)["scenarios"]:
+            if s["change"]["kind"] == "PLAYER_OUT":
+                row = rs.absence[s["change"]["key"]]
+                assert shown_by_default(row)[0] and "2025-26" in row["seasons"]
+                assert "raw" not in json.dumps({k: v for k, v in s.items() if k != "evidence"})
+    assert name_matches("Jarrett Allen", "J. Allen") and name_matches("Allen", "J. Allen")
+    assert not name_matches("Grayson Allen", "J. Allen")
+
+
+def test_free_text_player_with_no_estimate_says_no_data(rs):
+    e = est("Cleveland without Nobody Atall", G["191"], rs)
+    assert e["scenario"] is None and e["effects"][0]["type"] == "NO_NUMBER" and "No data" in e["effects"][0]["text"]
