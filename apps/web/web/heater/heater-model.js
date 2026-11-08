@@ -10,15 +10,17 @@ export const STATES = Object.freeze([
   "cooled", "unsure", "blocked", "heat_check",
 ]);
 
-/** The seven pose images (apps/web/web/heater/poses/<name>.webp, 687x1024). */
+/** The six pose images in use (apps/web/web/heater/poses/<name>.webp, 687x1024). hot_take.webp is
+ *  not used: the art shows Heater with three arms (user, 8 Nov 2026). */
 export const POSES = Object.freeze([
-  "idle", "listening", "thinking", "hot_take", "heat_check", "vindicated", "cooled",
+  "idle", "listening", "thinking", "heat_check", "vindicated", "cooled",
 ]);
 
 /** The single pose map: state -> pose image. unsure and blocked borrow thinking and
- *  listening until their own images exist. */
+ *  listening until their own images exist; hot_take borrows thinking (ball spinning, hand on hip)
+ *  until a two-armed hot_take image exists. */
 export const POSE_FOR_STATE = Object.freeze({
-  idle: "idle", listening: "listening", thinking: "thinking", hot_take: "hot_take",
+  idle: "idle", listening: "listening", thinking: "thinking", hot_take: "thinking",
   heat_check: "heat_check", vindicated: "vindicated", cooled: "cooled",
   unsure: "thinking", blocked: "listening",
 });

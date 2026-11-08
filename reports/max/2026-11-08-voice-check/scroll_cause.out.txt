@@ -1,0 +1,6 @@
+{
+ "scrolls": 10,
+ "scrolls_while_speaking": 10,
+ "scrolls_without_a_new_line_in_prior_1.5s": [],
+ "adds": 17
+}
