@@ -21,7 +21,7 @@ import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from 
 import {
   ESTIMATE_URL, SCENARIO_URL, confirmBody, whatifStamp, postJson, renderEstimate, renderInterpretation, routeMessage,
 } from "./whatif/whatif.js";
-import { createVoice } from "./voice.js";
+import { MIC, createVoice } from "./voice.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
@@ -676,13 +676,14 @@ async function askMarket(g) {
 // ------------------------------------------------------------------ voice input
 const micStatus = $("mic-status");
 const voice = createVoice({
-  provider: () => (window.SpeechRecognition || window.webkitSpeechRecognition ? "browser" : "server"),
+  // Browser speech recognition only: the server transcription route has no provider in the demo.
+  provider: () => "browser",
   onState: (s) => {
     if (s === "LISTENING") state.heater?.setState("listening");
     else if (!state.busy && state.heater?.state === "listening") state.heater.setState("idle");
   },
   onTranscript: (text) => { micStatus.textContent = ""; ui.q.value = text; ask(text); },
-  onStatus: (s) => { micStatus.textContent = /Hearing|Listening|Recording|Transcribing/.test(s) ? s.replace(/^●\s*/, "") : ""; },
+  onStatus: (s) => { micStatus.textContent = /^(Hearing|Listening)/.test(s) ? s : ""; },
   onError: (e) => { micStatus.textContent = e; },
 });
 // voice.js writes text labels into the button; keep a drawn mic icon instead
@@ -705,7 +706,12 @@ const keepIcon = () => {
 };
 keepIcon();
 new MutationObserver(keepIcon).observe(micBtn, { childList: true, characterData: true, subtree: true, attributeFilter: ["aria-pressed"] });
-micBtn.addEventListener("click", () => voice.toggle());
+if (voice.support.ok) {
+  micBtn.addEventListener("click", () => voice.toggle());   // toggle() reaches rec.start() with no await
+} else {
+  micBtn.hidden = true;
+  micStatus.textContent = MIC.UNSUPPORTED;
+}
 
 // ------------------------------------------------------------------ debug drawer
 let dbg = null;
