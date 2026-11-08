@@ -28,10 +28,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from heatcheck.agents import frost
 from heatcheck.agents.confirmatory import (
     CONFIRMATORY_IDS,
     EVIDENCE,
@@ -528,7 +529,33 @@ class Dialogue:
     def turn(self, question: str) -> dict[str, Any]:
         out = self._turn(question)
         out["heater_reaction"] = heater_reaction(out)
+        # Turns with no evidence entry (no registered test, not yet run): same keys, no challenges.
+        out.setdefault("frost", [])
+        out.setdefault("frost_reaction", frost.FROST_REACTION[None])
         return out
+
+    def _frost_phrase(self, chal, facts) -> dict[str, str]:
+        """Adviser's guarded rephrase of Frost's QUESTION only; any failure keeps the template.
+        Adapted by Max: MetaChat has complete(role, messages), not chat(...); the 4 s deadline never
+        raises the client's own; the calls run in parallel, so Frost adds at most one deadline."""
+        from concurrent.futures import ThreadPoolExecutor
+        llm = replace(self.llm, timeout_s=min(4.0, self.llm.timeout_s), max_completion_tokens=60)
+
+        def one(c):
+            try:
+                text = llm.complete("frost", [{"role": "system", "content": frost.FROST_SYSTEM},
+                                              {"role": "user", "content": c.question}]).text
+            except Exception:
+                return None
+            if number_violations(text, facts) or take_mentions_ref(text) or len(text) > 220:
+                return None                   # fall back to the template question
+            return text.strip()
+
+        if not chal:
+            return {}
+        with ThreadPoolExecutor(max_workers=len(chal)) as pool:
+            texts = list(pool.map(one, chal))
+        return {c.check: t for c, t in zip(chal, texts, strict=True) if t}
 
     def _turn(self, question: str) -> dict[str, Any]:
         sources: dict[str, str] = {"ref": "TEMPLATE"}
@@ -584,6 +611,10 @@ class Dialogue:
         if ident.get("source") == RECORDED_SOURCE:
             out["phase"] = ident["phase"]
             out["custodian_receipt_id"] = ident["custodian"]["receipt_id"]
+        chal = frost.select(facts)
+        phrased = self._frost_phrase(chal, facts) if self.llm else None   # guarded, see _frost_phrase
+        out["frost"] = frost.to_payload(chal, phrased)
+        out["frost_reaction"] = frost.FROST_REACTION.get(ident["decision"], frost.FROST_REACTION[None])
         return out
 
     def _confirmatory_turn(self, question, claim_id, map_identity, sources) -> dict[str, Any]:

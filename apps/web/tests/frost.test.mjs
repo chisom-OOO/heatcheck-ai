@@ -163,10 +163,11 @@ test("when Frost takes the Ref's only British voice, the Ref moves to another vo
   assert.equal(ref.name, "Microsoft Davis Online");
   assert.notEqual(ref, heater);
   assert.deepEqual(pickCastVoices([]), { heater: null, frost: null, ref: null });
-  // the adviser's settings for Frost (0.95 / 0.9) equal the Ref's VOICE.ref, so only the voice itself
-  // keeps them apart; the Ref's settings are unchanged
+  // Frost keeps the adviser's settings; the Ref's differ (user, 8 Nov: rate 1.0, pitch 1.05), so the two
+  // never sound the same even on a machine with a single British voice
   assert.deepEqual(FROST_VOICE, { lang: "en-GB", rate: 0.95, pitch: 0.9 });
-  assert.deepEqual(VOICE.ref, { rate: 0.95, pitch: 0.9 });
+  assert.deepEqual(VOICE.ref, { rate: 1.0, pitch: 1.05 });
+  assert.notDeepEqual([VOICE.ref.rate, VOICE.ref.pitch], [FROST_VOICE.rate, FROST_VOICE.pitch]);
 });
 
 test("Chrome: Frost takes Google UK English Male, which pickVoices gives the Ref, so the Ref moves to UK Female", () => {

@@ -33,6 +33,7 @@ from heatcheck.agents.llm import MetaChat  # noqa: E402
 from heatcheck.agents.recorded import find_recorded  # noqa: E402
 from heatcheck.agents.views import shot_view_from_events  # noqa: E402
 from heatcheck.api.dialogue_server import InvestigationConfig, ScenarioConfig, serve  # noqa: E402
+from heatcheck.api.tamper import Tamper  # noqa: E402
 from heatcheck.api.transcription import MODEL as TRANSCRIBE_MODEL  # noqa: E402
 from heatcheck.api.transcription import Transcriber  # noqa: E402
 from heatcheck.contracts.bundle import load_bundle  # noqa: E402
@@ -86,7 +87,13 @@ def main(argv: list[str]) -> int:
     # Voice transcription (POST /api/transcribe) is a paid model call: on only with the model.
     transcriber = Transcriber() if use_llm and os.environ.get("META_API_KEY") else None
     print(f"  /api/transcribe: {'Meta ' + TRANSCRIBE_MODEL if transcriber else 'off (no key or --no-llm)'}")
-    srv = serve(dialogue, port, lf, inv, scn, transcriber)
+    # Judge-operated tamper demo: flips a byte in a scratch copy of the committed ledger (read-only);
+    # attempts are recorded in their own hash-chained ledger. --no-tamper turns it off.
+    tamper = None if "--no-tamper" in argv else Tamper(
+        ROOT / "evidence" / "evidence.jsonl", ROOT / "logs" / "tamper_scratch",
+        EvidenceLedger(ROOT / "logs" / "tamper_events.jsonl"))
+    print(f"  /api/tamper: {'on (events in logs/tamper_events.jsonl)' if tamper else 'off'}")
+    srv = serve(dialogue, port, lf, inv, scn, transcriber, tamper)
     print(f"dialogue API on http://127.0.0.1:{srv.server_address[1]}/api/dialogue")
     srv.serve_forever()
     return 0

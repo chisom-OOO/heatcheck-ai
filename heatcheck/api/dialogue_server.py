@@ -48,6 +48,7 @@ from heatcheck.agents.scenario import (
     scenario_menu,
 )
 from heatcheck.api.display_titles import DISPLAY_TITLES
+from heatcheck.api.tamper import Tamper, TamperError
 from heatcheck.api.transcription import MAX_BYTES as TRANSCRIBE_MAX
 from heatcheck.api.transcription import TranscribeError, Transcriber
 from heatcheck.contracts.bundle import BundleError, load_bundle
@@ -337,7 +338,7 @@ SCENARIO_PATHS = ("/api/route", "/api/scenario", "/api/scenario/estimate")
 
 def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
                  investigation: InvestigationConfig | None = None, scenario: ScenarioConfig | None = None,
-                 transcriber: Transcriber | None = None):
+                 transcriber: Transcriber | None = None, tamper: Tamper | None = None):
     lock = threading.Lock()  # one turn at a time: the ledger is append-only and file-backed
 
     class Handler(BaseHTTPRequestHandler):
@@ -362,6 +363,10 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
         def do_GET(self):
             """GET / serves the console page (static file, no data embedded);
             GET /api/display-titles returns the presentation-only claim title map."""
+            if self.path == "/api/tamper/events":
+                if tamper is None:
+                    return self._send(503, {"error": "TAMPER_OFF", "message": "The tamper demo is off on this server."})
+                return self._send(200, {"events": tamper.events_list()})
             if self.path == "/api/display-titles":
                 return self._send(200, {"display_titles": DISPLAY_TITLES})
             if self.path == "/api/live-forecast":
@@ -447,6 +452,18 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
         def do_POST(self):
             if self.path == "/api/transcribe":
                 return self._transcribe()
+            if self.path in ("/api/tamper/flip", "/api/tamper/restore"):
+                n = int(self.headers.get("Content-Length") or 0)
+                if 0 < n <= MAX_BODY:
+                    self.rfile.read(n)   # no body is needed; read any so the client sees the answer
+                if tamper is None:
+                    return self._send(503, {"error": "TAMPER_OFF", "message": "The tamper demo is off on this server."})
+                try:
+                    if self.path.endswith("/flip"):
+                        return self._send(200, tamper.flip())
+                    return self._send(200, tamper.restore())
+                except TamperError as e:
+                    return self._send(e.status, e.body())
             if self.path not in ("/api/dialogue", "/api/investigate", *SCENARIO_PATHS):
                 return self._send(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
@@ -484,6 +501,6 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
 def serve(dialogue: Dialogue, port: int = 8770, live_forecast: Path | None = None,
           investigation: InvestigationConfig | None = None,
           scenario: ScenarioConfig | None = None,
-          transcriber: Transcriber | None = None) -> ThreadingHTTPServer:
+          transcriber: Transcriber | None = None, tamper: Tamper | None = None) -> ThreadingHTTPServer:
     return ThreadingHTTPServer(("127.0.0.1", port),
-                               make_handler(dialogue, live_forecast, investigation, scenario, transcriber))
+                               make_handler(dialogue, live_forecast, investigation, scenario, transcriber, tamper))
