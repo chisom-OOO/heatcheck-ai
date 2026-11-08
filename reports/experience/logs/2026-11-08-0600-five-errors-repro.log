@@ -1,0 +1,50 @@
+# Attempts to reproduce Max's '5 Python unit-test errors' (commit 25bb5b8)
+date_utc: 2026-11-08T04:42:31Z
+
+## A apps/web, --all-groups, git on PATH
+cwd: <repo>\apps\web
+command: uv run --frozen --all-groups python -m unittest discover -s tests
+exit: 0
+Ran 107 tests in 13.464s
+OK
+
+## B apps/web, default groups
+cwd: <repo>\apps\web
+command: uv run --frozen python -m unittest discover -s tests
+exit: 0
+Ran 107 tests in 14.233s
+OK
+
+## C apps/web, PYTHONIOENCODING unset (cp1252 console)
+cwd: <repo>\apps\web
+command: uv run --frozen python -m unittest discover -s tests
+exit: 0
+Ran 107 tests in 13.954s
+OK
+
+## D repo root, unittest -s apps/web/tests
+cwd: <repo>
+command: uv run --frozen --all-groups python -m unittest discover -s apps/web/tests
+exit: 0
+Ran 107 tests in 13.549s
+OK
+
+## E repo root, pytest apps/web/tests
+cwd: <repo>
+command: uv run --frozen --all-groups pytest apps/web/tests -q
+exit: 0
+107 passed in 16.84s
+
+## F incoming/experience-20261107 handoff suite
+cwd: <repo>\incoming\experience-20261107
+command: uv run --frozen --all-groups python -m unittest discover -s tests
+exit: 0
+Ran 68 tests in 8.448s
+OK
+
+## G repo root pytest, git NOT on PATH
+cwd: <repo>
+command: uv run --frozen --all-groups pytest -q
+exit: 1
+FAILED tests/integration/test_ledger_chain.py::test_committed_ledger_migrated_without_changing_evidence
+1 failed, 763 passed, 43 skipped, 16 xfailed in 158.34s (0:02:38)

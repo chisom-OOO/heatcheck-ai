@@ -319,6 +319,43 @@ export function takeFor(claimId, personality, turn = 0) {
   return heaterLineFor(claimId in t ? claimId : "NONE", { ...t, "*": t.NONE || PLACEHOLDER_LINES["*"] }, turn);
 }
 
+// Heater never pre-empts the Ref (rehearsal fix, 8 Nov 2026): before the stamp, Heater may not
+// mention the Ref or say or hint at any verdict. These are the words that would.
+const PREEMPT = new RegExp([
+  "\\bref(eree)?\\b", "\\bref's\\b", "\\bverdicts?\\b", "\\bruled\\b", "\\bruling\\b",
+  "\\bsurviv", "\\bnot supported\\b", "\\binsufficient\\b", "\\bdata (is |was )?(invalid|broken)\\b",
+  "\\bblocked\\b", "\\bcan'?t run\\b", "\\bworth investigating\\b", "\\bcan'?t compare\\b",
+  "\\bedge unverified\\b", "\\bcandidate\\b", "\\bno sign of\\b", "\\bthrew out\\b", "\\bcalled it\\b",
+].join("|"), "i");
+
+/** True when ``text`` mentions the Ref or a verdict, so it may be said only after the stamp. */
+export const preemptsRef = (text) => PREEMPT.test(String(text || ""));
+
+/** Split a Heater line by sentence: ``first`` keeps, in order, the sentences that do not pre-empt
+ *  the Ref; ``later`` the ones that do, for after the stamp. Nothing is dropped or reworded. */
+export function splitTake(text) {
+  const sentences = String(text || "").trim().split(/(?<=[.!?…])\s+(?=["'(A-Z])/).filter(Boolean);
+  return {
+    first: sentences.filter((s) => !preemptsRef(s)).join(" "),
+    later: sentences.filter((s) => preemptsRef(s)).join(" "),
+  };
+}
+
+/** Heater's two lines for a dialogue answer. ``take`` is said before the Ref: the API's heater_text
+ *  (since Max's 8 Nov fix, the hot take only) when it does not pre-empt the Ref, else ``fallbackTake()``.
+ *  ``lastWord`` is said after the stamp: the API's heater_reaction, else a take that was held back,
+ *  else "" (the page then uses reactFor). ``api`` is null offline or for a forced record. */
+export function dialogueLines(api, fallbackTake) {
+  const str = (x) => (typeof x === "string" ? x.trim() : "");
+  const apiTake = str(api?.heater_text);
+  const takeOk = Boolean(apiTake) && !preemptsRef(apiTake);
+  return {
+    take: takeOk ? apiTake : fallbackTake(),
+    takeFromApi: takeOk,
+    lastWord: str(api?.heater_reaction) || (apiTake && !takeOk ? apiTake : ""),
+  };
+}
+
 /** Heater's reaction to a verdict ("react": decision -> [lines]). */
 export function reactFor(decision, personality, turn = 0) {
   const r = personality?.react?.[decision];

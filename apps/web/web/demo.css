@@ -359,3 +359,9 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
 
 /* Max: model-bias caveat on a market card (server text) */
 .mcard-caveat{margin:6px 0 0;padding:6px 8px;border-left:3px solid #f5b83d;font-size:13px;line-height:1.35;color:inherit;opacity:.92}
+
+/* Experience: board cards drawn before Max's comparison answers, and the board's load error */
+.mcard.pending { opacity: .82; }
+.mcard-verdict.pending { font-style: italic; }
+.board-error { color: var(--heat); }
+.board-retry { margin-top: 8px; }

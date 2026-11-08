@@ -7,6 +7,8 @@
 
 export const VERDICT_WORTH = "Worth investigating · Edge unverified";
 export const VERDICT_CANT = "Can't compare";
+/** A card whose comparison has not answered yet: no verdict, no price, nothing to ask about. */
+export const VERDICT_CHECKING = "Checking the market…";
 
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -87,8 +89,9 @@ export function diffText(resp) {
 }
 
 /** Everything one card shows. ``row`` is the forecast row; ``resp`` Max's investigate response
- *  (or null); ``error`` why there is none. */
-export function cardView(row, { resp = null, error = null, forecast = null, isSample = false } = {}) {
+ *  (or null); ``error`` why there is none; ``pending`` while Max's comparison is still running. */
+export function cardView(row, { resp = null, error = null, forecast = null, isSample = false, pending = false } = {}) {
+  if (pending && !resp) return pendingView(row, { forecast, isSample });
   const sample = Boolean(resp ? resp.is_sample : isSample);
   const home = row.home_team;
   const teamName = resp?.team || home;
@@ -122,6 +125,32 @@ export function cardView(row, { resp = null, error = null, forecast = null, isSa
     // Max's server decides when a caveat applies (e.g. the model's home-team bias); the card shows its text.
     caveats: Array.isArray(resp?.caveats) ? resp.caveats.filter((c) => typeof c === "string" && c) : [],
     canAsk: Boolean(resp),
+    pending: false,
+  };
+}
+
+/** The card before Max's comparison answers: the forecast file's own row only. */
+function pendingView(row, { forecast, isSample }) {
+  const sample = Boolean(isSample);
+  return {
+    title: `${row.away_team} at ${row.home_team}`,
+    tip: `Tip ${fmtUtc(row.tip_utc)}`,
+    sample,
+    forecast: `${row.home_team} ${pct(row.p_home_win)} to win`,
+    forecastNote: sample ? "SAMPLE: invented value" : `Model: ${forecast?.model || ""}`,
+    price: "Checking…",
+    diff: sample ? "SAMPLE" : "Checking…",
+    cutoff: fmtUtc(forecast?.data_cutoff_utc),
+    recorded: false,
+    received: "Checking…",
+    inputs: inputsPlain(forecast?.inputs_used).join(", "),
+    verdict: VERDICT_CHECKING,
+    verdictKind: "pending",
+    why: "Max's server is comparing this game with the market's price; the card fills in when it answers.",
+    dataNote: sample ? "SAMPLE forecast: values are invented, not a real forecast." : "",
+    caveats: [],
+    canAsk: false,
+    pending: true,
   };
 }
 
@@ -137,6 +166,13 @@ export function marketRefPlain(resp) {
   }
   const why = failedReasons(resp);
   return `Can't compare: ${why.length ? why.join("; ") : "the comparison could not be run"}.${rec}`;
+}
+
+/** What Heater says after the market stamp: any sentence of his take the page held back because it
+ *  mentioned the Ref or a verdict (``split.later``), then Max's ``heater_reaction`` (the verdict-aware
+ *  line, e.g. the home-bias note on a home-above-ask card). Empty when there is neither. */
+export function marketReaction(split, resp) {
+  return [split?.later, resp?.heater_reaction].filter((t) => typeof t === "string" && t.trim()).join(" ");
 }
 
 /** Stamp text and colour class: SAMPLE says so plainly. */

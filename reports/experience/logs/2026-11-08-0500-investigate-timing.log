@@ -1,0 +1,20 @@
+# command (from the repo root, commit 897b5d2; Max's server code unchanged since 424b47c)
+uv run --frozen --all-groups python reports/experience/2026-11-08-0500-rehearsal/time_investigate.py .
+# date_utc: 2026-11-08T04:14:35Z
+bundles under quotes: 88
+live-forecast: OK 0.001s
+nba:0022600189 0022600189-pm-0215: HTTP 200 Can't compare 0.895s
+nba:0022600190 0022600190-pm-0215: HTTP 200 Can't compare 0.555s
+nba:0022600191 0022600191-pm-0215: HTTP 200 Can't compare 0.553s
+nba:0022600192 0022600192-pm-0215: HTTP 200 Can't compare 0.547s
+nba:0022600193 0022600193-pm-0215: HTTP 200 Can't compare 1.113s
+nba:0022600194 0022600194-pm-0215: HTTP 200 Can't compare 1.036s
+nba:0022600195 0022600195-pm-0215: HTTP 200 Can't compare 0.718s
+nba:0022600196 0022600196-pm-0215: HTTP 200 Can't compare 0.655s
+nba:0022600197 0022600197-pm-0215: HTTP 200 Can't compare 0.564s
+nba:0022600198 0022600198-pm-0215: HTTP 200 Can't compare 0.561s
+nba:0022600199 0022600199-pm-0215: HTTP 200 Can't compare 0.530s
+nba:0022600200 0022600200-pm-0215: HTTP 200 Can't compare 0.566s
+nba:0022600201 0022600201-pm-0215: HTTP 200 Can't compare 0.548s
+nba:0022600202 0022600202-pm-0215: HTTP 200 Can't compare 0.580s
+total 9.42s for 14 games
