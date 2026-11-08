@@ -68,6 +68,7 @@ export function renderIdeas(root, data, { onAsk } = {}) {
   for (const f of data.families.filter((x) => x.mode === "development")) {
     const sec = el("section", "idea-family");
     sec.append(el("h3", "idea-family-title", familyHeadline(f)));
+    if (f.research_note) sec.append(el("p", "board-note idea-family-note", f.research_note));
     sec.append(el("p", "board-note", CANDIDATE_NOTE));
     const grid = el("div", "board-grid");
     for (const r of f.results) {
