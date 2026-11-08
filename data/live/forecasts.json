@@ -1,0 +1,178 @@
+{
+  "format": "heatcheck-live-forecast/1",
+  "label": "DESCRIPTIVE FORECAST",
+  "model": "B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, carry 0.75*r+0.25*1505 between seasons. Ratings use results through 2026-11-06 ET (balldontlie for 2026-27); the same ratings price Saturday and Sunday. Game 189 DEN vs IND is at a neutral site (Arena CDMX, NBA schedule PDF): no home court.",
+  "inputs_used": [
+    "elo_rating_home",
+    "elo_rating_away",
+    "home_court"
+  ],
+  "data_cutoff_utc": "2026-11-07T07:00:00Z",
+  "source": {
+    "results": "balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie",
+    "fetched_utc": "2026-11-08T00:04:30Z",
+    "sha256": "bc04834a19aeb61f604890cf0efca5223934aade828a219ae5e3ea26fa422603",
+    "cross_check": "NOT_RUN"
+  },
+  "backtest_2024_25": {
+    "log_loss": 0.6289737469421883,
+    "brier": 0.21961561816347416,
+    "games": 1230
+  },
+  "games": [
+    {
+      "game_id": "nba:0022600189",
+      "tip_utc": "2026-11-07T22:00:00Z",
+      "home_team_id": "nba-team:1610612754",
+      "away_team_id": "nba-team:1610612743",
+      "home_team": "Indiana Pacers",
+      "away_team": "Denver Nuggets",
+      "p_home_win": 0.197324,
+      "elo_home": 1361.155,
+      "elo_away": 1604.899
+    },
+    {
+      "game_id": "nba:0022600190",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612737",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Brooklyn Nets",
+      "p_home_win": 0.864459,
+      "elo_home": 1559.153,
+      "elo_away": 1337.284
+    },
+    {
+      "game_id": "nba:0022600191",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612739",
+      "away_team_id": "nba-team:1610612752",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "New York Knicks",
+      "p_home_win": 0.661772,
+      "elo_home": 1593.641,
+      "elo_away": 1577.041
+    },
+    {
+      "game_id": "nba:0022600192",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612760",
+      "away_team_id": "nba-team:1610612764",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Washington Wizards",
+      "p_home_win": 0.936056,
+      "elo_home": 1703.838,
+      "elo_away": 1337.636
+    },
+    {
+      "game_id": "nba:0022600193",
+      "tip_utc": "2026-11-08T01:30:00Z",
+      "home_team_id": "nba-team:1610612744",
+      "away_team_id": "nba-team:1610612753",
+      "home_team": "Golden State Warriors",
+      "away_team": "Orlando Magic",
+      "p_home_win": 0.640267,
+      "elo_home": 1497.839,
+      "elo_away": 1497.687
+    },
+    {
+      "game_id": "nba:0022600194",
+      "tip_utc": "2026-11-08T02:00:00Z",
+      "home_team_id": "nba-team:1610612756",
+      "away_team_id": "nba-team:1610612745",
+      "home_team": "Phoenix Suns",
+      "away_team": "Houston Rockets",
+      "p_home_win": 0.475292,
+      "elo_home": 1493.803,
+      "elo_away": 1610.986
+    },
+    {
+      "game_id": "nba:0022600195",
+      "tip_utc": "2026-11-08T03:00:00Z",
+      "home_team_id": "nba-team:1610612757",
+      "away_team_id": "nba-team:1610612759",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "San Antonio Spurs",
+      "p_home_win": 0.501433,
+      "elo_home": 1562.963,
+      "elo_away": 1661.968
+    },
+    {
+      "game_id": "nba:0022600196",
+      "tip_utc": "2026-11-08T20:30:00Z",
+      "home_team_id": "nba-team:1610612741",
+      "away_team_id": "nba-team:1610612755",
+      "home_team": "Chicago Bulls",
+      "away_team": "Philadelphia 76ers",
+      "p_home_win": 0.363546,
+      "elo_home": 1380.057,
+      "elo_away": 1577.34
+    },
+    {
+      "game_id": "nba:0022600197",
+      "tip_utc": "2026-11-08T23:00:00Z",
+      "home_team_id": "nba-team:1610612765",
+      "away_team_id": "nba-team:1610612747",
+      "home_team": "Detroit Pistons",
+      "away_team": "Los Angeles Lakers",
+      "p_home_win": 0.675968,
+      "elo_home": 1647.39,
+      "elo_away": 1619.654
+    },
+    {
+      "game_id": "nba:0022600198",
+      "tip_utc": "2026-11-09T00:00:00Z",
+      "home_team_id": "nba-team:1610612750",
+      "away_team_id": "nba-team:1610612762",
+      "home_team": "Minnesota Timberwolves",
+      "away_team": "Utah Jazz",
+      "p_home_win": 0.903498,
+      "elo_home": 1593.59,
+      "elo_away": 1305.033
+    },
+    {
+      "game_id": "nba:0022600199",
+      "tip_utc": "2026-11-09T00:30:00Z",
+      "home_team_id": "nba-team:1610612742",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Dallas Mavericks",
+      "away_team": "Brooklyn Nets",
+      "p_home_win": 0.755213,
+      "elo_home": 1432.996,
+      "elo_away": 1337.284
+    },
+    {
+      "game_id": "nba:0022600200",
+      "tip_utc": "2026-11-09T01:00:00Z",
+      "home_team_id": "nba-team:1610612749",
+      "away_team_id": "nba-team:1610612738",
+      "home_team": "Milwaukee Bucks",
+      "away_team": "Boston Celtics",
+      "p_home_win": 0.267383,
+      "elo_home": 1380.842,
+      "elo_away": 1655.94
+    },
+    {
+      "game_id": "nba:0022600201",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612746",
+      "away_team_id": "nba-team:1610612740",
+      "home_team": "LA Clippers",
+      "away_team": "New Orleans Pelicans",
+      "p_home_win": 0.727341,
+      "elo_home": 1482.605,
+      "elo_away": 1412.157
+    },
+    {
+      "game_id": "nba:0022600202",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612758",
+      "away_team_id": "nba-team:1610612748",
+      "home_team": "Sacramento Kings",
+      "away_team": "Miami Heat",
+      "p_home_win": 0.456053,
+      "elo_home": 1356.198,
+      "elo_away": 1486.814
+    }
+  ]
+}

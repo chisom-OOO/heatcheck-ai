@@ -1,0 +1,69 @@
+{
+  "what": "Hand-copied NBA game list for the fallback DESCRIPTIVE FORECAST. Not a fetched payload: cdn.nba.com returned 403 to every machine tried.",
+  "sunday_2026_11_08": "not included: no copy of Sunday's slate exists in the repository",
+  "games": [
+    {
+      "game_id": "nba:0022600189",
+      "tip_utc": "2026-11-07T22:00:00Z",
+      "home_team_id": "nba-team:1610612754",
+      "away_team_id": "nba-team:1610612743",
+      "home_team": "Indiana Pacers",
+      "away_team": "Denver Nuggets",
+      "provenance": "Experience E-001 GAME record (experience/live-quote: tests/fixtures/quotes/e001-recorded-0022600189/records.jsonl), from NBA.com"
+    },
+    {
+      "game_id": "nba:0022600190",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612737",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Brooklyn Nets",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600191",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612739",
+      "away_team_id": "nba-team:1610612752",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "New York Knicks",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600192",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612760",
+      "away_team_id": "nba-team:1610612764",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Washington Wizards",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600193",
+      "tip_utc": "2026-11-08T01:30:00Z",
+      "home_team_id": "nba-team:1610612744",
+      "away_team_id": "nba-team:1610612753",
+      "home_team": "Golden State Warriors",
+      "away_team": "Orlando Magic",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600194",
+      "tip_utc": "2026-11-08T02:00:00Z",
+      "home_team_id": "nba-team:1610612756",
+      "away_team_id": "nba-team:1610612745",
+      "home_team": "Phoenix Suns",
+      "away_team": "Houston Rockets",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600195",
+      "tip_utc": "2026-11-08T03:00:00Z",
+      "home_team_id": "nba-team:1610612757",
+      "away_team_id": "nba-team:1610612759",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "San Antonio Spurs",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    }
+  ]
+}

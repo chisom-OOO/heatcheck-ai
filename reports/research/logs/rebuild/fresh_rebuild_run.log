@@ -1,0 +1,79 @@
+start 2026-11-07T20:12:07Z on Linux 6.18.44-fc-v310 x86_64, 4 CPUs; uv package cache was warm (cold install adds download time)
+20:12:07 + set -euo pipefail
+20:12:07 + WORK=/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/fresh/hc-rebuild
+20:12:07 + mkdir -p /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/fresh/hc-rebuild
+20:12:07 + cd /tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/fresh/hc-rebuild
+20:12:07 + COMMIT=e7e885763cc1f787d451b76afc7dafe3d1574a34
+20:12:07 + UP=https://raw.githubusercontent.com/shufinskiy/nba_data/46488f0f8e1cab58fc1256511ea808166a443a15/datasets
+20:12:07 + git clone -q --branch research/r001-guard-fixes https://github.com/chisom-OOO/heatcheck-ai repo
+20:12:08 + git -C repo checkout -q e7e885763cc1f787d451b76afc7dafe3d1574a34
+20:12:08 + H=repo/handoff/research-20261107
+20:12:08 + uv venv -q -p 3.13 venv
+20:12:08 + uv pip install -q -p venv/bin/python numpy==2.5.3 pandas==3.0.5 scipy==1.18.1 scikit-learn==1.9.1 pytest
+20:12:09 + mkdir -p up/datasets up/extracted
+20:12:09 + echo 46488f0f8e1cab58fc1256511ea808166a443a15
+20:12:09 + curl -sSfL -o up/datasets/cdnnba_2024.tar.xz https://raw.githubusercontent.com/shufinskiy/nba_data/46488f0f8e1cab58fc1256511ea808166a443a15/datasets/cdnnba_2024.tar.xz
+20:12:10 + curl -sSfL -o up/datasets/nbastats_2024.tar.xz https://raw.githubusercontent.com/shufinskiy/nba_data/46488f0f8e1cab58fc1256511ea808166a443a15/datasets/nbastats_2024.tar.xz
+20:12:11 + cd up/datasets
+20:12:11 + sha256sum -c -
+20:12:11 cdnnba_2024.tar.xz: OK
+20:12:11 nbastats_2024.tar.xz: OK
+20:12:11 + for f in up/datasets/*.tar.xz
+20:12:11 + tar -xJf up/datasets/cdnnba_2024.tar.xz -C up/extracted
+20:12:12 + for f in up/datasets/*.tar.xz
+20:12:12 + tar -xJf up/datasets/nbastats_2024.tar.xz -C up/extracted
+20:12:13 + venv/bin/python -I repo/handoff/research-20261107/scripts/build_confirmatory.py up data2024 up/extracted
+20:13:11 {
+20:13:11   "hashes": {
+20:13:11     "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+20:13:11     "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+20:13:11     "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+20:13:11     "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+20:13:11     "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+20:13:11     "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+20:13:11   },
+20:13:11   "counts": {
+20:13:11     "raw_rows": 686008,
+20:13:11     "raw_games": 1230,
+20:13:11     "duplicate_sequence": 0,
+20:13:11     "duplicate_event_id": 0,
+20:13:11     "clock_regress_steps": 2,
+20:13:11     "neutral_site_games_flagged": 5,
+20:13:11     "games_included": 1230,
+20:13:11     "games_excluded": 0,
+20:13:11     "events_included": 686008,
+20:13:11     "field_goal_attempts": 219529,
+20:13:11     "points_check_mismatch": 0,
+20:13:11     "non_regular_season_ids_excluded": [],
+20:13:11     "quarantined_game_ids": [
+20:13:11       "0022400072"
+20:13:11     ],
+20:13:11     "games_sealable": 1230,
+20:13:11     "events_sealable": 686008,
+20:13:11     "field_goal_attempts_sealable": 219529
+20:13:11   },
+20:13:11   "reconciliation": {
+20:13:11     "MATCH": 1229,
+20:13:11     "SCORE_MISMATCH": 1
+20:13:11   },
+20:13:11   "exclusions": []
+20:13:11 }
+20:13:11 + venv/bin/python -I - repo/handoff/research-20261107 data2024
+20:13:29 events       MATCH 6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada
+20:13:29 exclusions   MATCH 1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb
+20:13:29 game_labels  MATCH f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2
+20:13:29 games        MATCH 46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193
+20:13:29 quarantine   MATCH 1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca
+20:13:29 shot_labels  MATCH 5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f
+20:13:29 SEAL MATCH
+20:13:29 + cd repo/handoff/research-20261107
+20:13:29 + HC_DATA_2024=/tmp/claude-0/-home-user-heatcheck-ai/caed0bea-de49-5c10-96e3-5357228342ec/scratchpad/fresh/hc-rebuild/data2024
+20:13:29 + ../../../venv/bin/python -m pytest -q -p no:cacheprovider -rs tests/test_confirmatory.py -k real_2024
+20:14:04 ..                                                                       [100%]
+20:14:04 2 passed, 14 deselected in 34.87s
+
+real	1m57.398s
+user	1m49.123s
+sys	0m5.650s
+exit=0
+end 2026-11-07T20:14:04Z

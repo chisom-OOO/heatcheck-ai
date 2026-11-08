@@ -324,3 +324,31 @@ def test_gp_second_amendment_runs_only_with_reviewer_signoff(tmp_path):
     assert r["replay"]["reviewer_signoff"]["reviewer"] == "pytest-reviewer"
     orig = json.loads((ROOT / "evidence/game_prediction_final.json").read_text())
     assert r["decisions"] == orig["decisions"]
+
+
+def test_write_once_never_overwrites(tmp_path):
+    gp = _gp()
+    p = tmp_path / "r.json"
+    assert gp._write_once(p, "first\n") == p
+    assert gp._write_once(p, "second\n").name == "r.rerun-1.json"
+    assert gp._write_once(p, "third\n").name == "r.rerun-2.json"
+    assert p.read_text() == "first\n"
+
+
+@real
+def test_gp_replay_rerun_keeps_first_result_file(tmp_path):
+    gp = _gp(); out = _evidence_copy(tmp_path)
+    gp.amend(DATA, out, "test amendment 2")
+    am2 = json.loads((out / "claim_plan_GP.amendment-2.json").read_text())
+    (out / "claim_plan_GP.amendment-2.signoff.json").write_text(json.dumps(
+        {"reviewer": "pytest-reviewer", "receipt_id": "3e238d2d-030e-45b4-aae7-db0787ecb873",
+         "amendment_hash": am2["canonical_amendment_hash"]}))
+    name = "game_prediction_final.replay-GP-2023-24-C1-vs-B1-AMEND-2"
+    gp.final(DATA, out)
+    first = (out / f"{name}.json").read_bytes()
+    gp.final(DATA, out)                                   # rerun: replay retry
+    assert (out / f"{name}.json").read_bytes() == first   # first result untouched (timestamp included)
+    rerun = json.loads((out / f"{name}.rerun-1.json").read_text())
+    assert rerun["replay"]["retry"] is True and rerun["decisions"] == json.loads(first)["decisions"]
+    committed = ROOT / "evidence/game_prediction_final.replay-GP-2023-24-C1-vs-B1-AMEND-1.json"
+    assert (out / committed.name).read_bytes() == committed.read_bytes()

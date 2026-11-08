@@ -1,0 +1,102 @@
+"""live_forecast.forecast(): logic on a SYNTHETIC test schedule in the scheduleLeagueV2 shape (test fixture,
+never data). Checks: payload hash binding, D5 date rule, required games, cutoff before every tip, output
+fields. Real-schedule parsing is verified on Max's raw file when it arrives."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+spec = importlib.util.spec_from_file_location("live_forecast_cli", ROOT / "scripts/live_forecast.py")
+LF = importlib.util.module_from_spec(spec); spec.loader.exec_module(LF)
+
+
+def _g(gid, utc, status, home, away, hs=None, as_=None, neutral=False):
+    return {"gameId": gid, "gameStatus": status, "gameDateTimeUTC": utc, "isNeutral": neutral,
+            "homeTeam": {"teamId": home, "teamCity": "Home", "teamName": str(home), "score": hs},
+            "awayTeam": {"teamId": away, "teamCity": "Away", "teamName": str(away), "score": as_}}
+
+
+def _setup(tmp_path, extra=(), drop=None):
+    games = [_g("0022600100", "2026-11-06T00:00:00Z", 3, 1610612738, 1610612752, 110, 100),   # Nov 5 ET: used
+             _g("0022600150", "2026-11-07T17:00:00Z", 3, 1610612743, 1610612747, 90, 99)]     # Nov 7 ET: not used
+    games += [_g(gid, "2026-11-08T00:30:00Z", 1, 1610612737 + i, 1610612750 + i)
+              for i, gid in enumerate(LF.REQUIRED_IDS) if gid != drop]
+    games += list(extra)
+    raw = json.dumps({"leagueSchedule": {"gameDates": [{"games": games}]}}).encode()
+    (tmp_path / "sched.json").write_bytes(raw)
+    st = {"ratings_2026_27_start": {str(t): 1505.0 for t in range(1610612737, 1610612767)},
+          "backtest_2024_25": {"log_loss": 0.63, "brier": 0.22, "games": 1230},
+          "last_completed_game_utc": "2026-04-13T03:05:51Z"}
+    (tmp_path / "elo_state.json").write_text(json.dumps(st))
+    return hashlib.sha256(raw).hexdigest()
+
+
+def test_forecast_shape_cutoff_and_date_rule(tmp_path):
+    sha = _setup(tmp_path)
+    LF.forecast(tmp_path, tmp_path / "sched.json", tmp_path / "f.json", sha, "2026-11-07T23:10:00Z", "TEST")
+    f = json.loads((tmp_path / "f.json").read_text())
+    assert f["label"] == "DESCRIPTIVE FORECAST" and f["source"]["sha256"] == sha and len(f["games"]) == 7
+    assert f["data_cutoff_utc"] == "2026-11-06T04:00:00Z"            # last used tip + 4 h bound
+    assert all(g["tip_utc"] > f["data_cutoff_utc"] for g in f["games"])
+    g = f["games"][0]
+    assert set(g) == {"game_id", "tip_utc", "home_team_id", "away_team_id", "home_team", "away_team",
+                      "p_home_win", "elo_home", "elo_away"} and g["game_id"].startswith("nba:")
+    assert 0 < g["p_home_win"] < 1
+
+
+def test_same_day_results_not_used_and_hash_and_required_ids(tmp_path):
+    sha = _setup(tmp_path)
+    with pytest.raises(SystemExit, match="sha256"):
+        LF.forecast(tmp_path, tmp_path / "sched.json", tmp_path / "f.json", "0" * 64, "x", "TEST")
+    sha2 = _setup(tmp_path, drop="0022600189")
+    with pytest.raises(SystemExit, match="0022600189"):
+        LF.forecast(tmp_path, tmp_path / "sched.json", tmp_path / "f.json", sha2, "x", "TEST")
+
+
+def test_home_court_and_neutral():
+    assert LF.p_home(1505, 1505) == pytest.approx(1 / (1 + 10 ** (-100 / 400)))
+    assert LF.p_home(1505, 1505, neutral=True) == pytest.approx(0.5)
+
+
+def _bdl(gid, date, dt, status, home, away, hs=None, vs=None, season=2026, post=False):
+    return {"id": gid, "date": date, "datetime": dt, "season": season, "status": status, "postseason": post,
+            "home_team": {"abbreviation": home}, "visitor_team": {"abbreviation": away},
+            "home_team_score": hs, "visitor_team_score": vs}
+
+
+def test_balldontlie_path_uses_only_earlier_finals_and_binds_hashes(tmp_path):
+    root = Path(__file__).resolve().parents[3]
+    st = json.loads((root / "data/live/work/elo_state.json").read_text())
+    (tmp_path / "elo_state.json").write_text(json.dumps(st))
+    raw = tmp_path / "raw"; raw.mkdir()
+    page = {"data": [_bdl(1, "2026-11-05", "2026-11-06T00:00:00.000Z", "Final", "IND", "DEN", 120, 100),
+                     _bdl(2, "2026-11-07", "2026-11-07T17:00:00.000Z", "Final", "ATL", "BKN", 90, 130),   # same day: unused
+                     _bdl(3, "2026-10-10", "2026-10-10T23:00:00.000Z", "Final", "OKC", "WAS", 80, 140, post=False, season=2025),
+                     _bdl(4, "2026-11-07", "2026-11-08T00:30:00.000Z", "7:30 pm ET", "ATL", "BKN")]}
+    gl_games = json.loads((root / "data/live/raw/gamelist_handcopied_20261107.json").read_text())["games"]
+    inv = {int(k): v for k, v in st["tricodes"].items()}
+    for i, g in enumerate(gl_games):   # the listed games must exist in balldontlie (cross-check)
+        if g["game_id"] != "nba:0022600190":
+            page["data"].append(_bdl(100 + i, "2026-11-07", g["tip_utc"].replace("Z", ".000Z"), "scheduled",
+                                     inv[int(g["home_team_id"].split(":")[1])], inv[int(g["away_team_id"].split(":")[1])]))
+    (raw / "01-p1.json").write_text(json.dumps(page))
+    gl = root / "data/live/raw/gamelist_handcopied_20261107.json"
+    LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "f.json", "2026-11-08T00:00:00Z", "TEST")
+    f = json.loads((tmp_path / "f.json").read_text())
+    assert f["data_cutoff_utc"] == "2026-11-06T04:00:00Z" and len(f["games"]) == 7
+    ind = next(g for g in f["games"] if g["game_id"] == "nba:0022600189")
+    base = st["ratings_2026_27_start"]
+    assert ind["elo_home"] > base["1610612754"] and ind["elo_away"] < base["1610612743"]   # IND beat DEN on 11-05
+    atl = next(g for g in f["games"] if g["game_id"] == "nba:0022600190")
+    assert atl["elo_home"] == pytest.approx(round(base["1610612737"], 3))                  # 11-07 result not used
+    assert f["source"]["sha256"] == hashlib.sha256((raw / "01-p1.json").read_bytes()).hexdigest()
+    gl_missing = tmp_path / "gl_missing.json"
+    gl_missing.write_text(json.dumps({"games": [dict(gl_games[0], tip_utc="2026-11-07T21:00:00Z")]}))
+    with pytest.raises(SystemExit, match="not matched in balldontlie"):
+        LF.forecast_bdl(tmp_path, raw, gl_missing, tmp_path / "h.json", "x", "TEST")
+    (raw / "02-p2.json").write_text(json.dumps({"data": [_bdl(9, "2026-11-01", "2026-11-01T23:00:00.000Z", "Final", "XYZ", "DEN", 1, 0)]}))
+    with pytest.raises(SystemExit, match="XYZ"):
+        LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "g.json", "x", "TEST")

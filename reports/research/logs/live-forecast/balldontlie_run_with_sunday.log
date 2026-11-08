@@ -1,0 +1,140 @@
+code: research/live-forecast working tree on 634a817 (+ neutral flag, balldontlie cross-check, combined list, shorter model text)
+$ python -I handoff/research-20261107/scripts/live_forecast.py balldontlie data/live/work data/live/raw/balldontlie data/live/raw/gamelist_20261107_08.json data/live/forecasts.json 2026-11-08T00:04:30Z "fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d"
+{
+  "completed_2026_27_used": 132,
+  "files": [
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    },
+    {
+    }
+  ],
+  "data_cutoff_utc": "2026-11-07T07:00:00Z",
+  "games": [
+    [
+      "nba:0022600189",
+      "Denver Nuggets",
+      "@",
+      "Indiana Pacers",
+      0.197324
+    ],
+    [
+      "nba:0022600190",
+      "Brooklyn Nets",
+      "@",
+      "Atlanta Hawks",
+      0.864459
+    ],
+    [
+      "nba:0022600191",
+      "New York Knicks",
+      "@",
+      "Cleveland Cavaliers",
+      0.661772
+    ],
+    [
+      "nba:0022600192",
+      "Washington Wizards",
+      "@",
+      "Oklahoma City Thunder",
+      0.936056
+    ],
+    [
+      "nba:0022600193",
+      "Orlando Magic",
+      "@",
+      "Golden State Warriors",
+      0.640267
+    ],
+    [
+      "nba:0022600194",
+      "Houston Rockets",
+      "@",
+      "Phoenix Suns",
+      0.475292
+    ],
+    [
+      "nba:0022600195",
+      "San Antonio Spurs",
+      "@",
+      "Portland Trail Blazers",
+      0.501433
+    ],
+    [
+      "nba:0022600196",
+      "Philadelphia 76ers",
+      "@",
+      "Chicago Bulls",
+      0.363546
+    ],
+    [
+      "nba:0022600197",
+      "Los Angeles Lakers",
+      "@",
+      "Detroit Pistons",
+      0.675968
+    ],
+    [
+      "nba:0022600198",
+      "Utah Jazz",
+      "@",
+      "Minnesota Timberwolves",
+      0.903498
+    ],
+    [
+      "nba:0022600199",
+      "Brooklyn Nets",
+      "@",
+      "Dallas Mavericks",
+      0.755213
+    ],
+    [
+      "nba:0022600200",
+      "Boston Celtics",
+      "@",
+      "Milwaukee Bucks",
+      0.267383
+    ],
+    [
+      "nba:0022600201",
+      "New Orleans Pelicans",
+      "@",
+      "LA Clippers",
+      0.727341
+    ],
+    [
+      "nba:0022600202",
+      "Miami Heat",
+      "@",
+      "Sacramento Kings",
+      0.456053
+    ]
+  ]
+}
+exit=0
+$ (max/integrate-r001-e001 worktree) uv run --frozen python -m heatcheck.contracts.live_forecast data/live/forecasts.json
+validator at 4930adb
+PASS /home/user/heatcheck-ai/data/live/forecasts.json: heatcheck-live-forecast/1 non-sample, games=14, cutoff=2026-11-07T07:00:00Z
