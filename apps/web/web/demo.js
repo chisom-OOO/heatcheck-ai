@@ -302,7 +302,7 @@ async function runExchange(ex, show) {
         h.setState("thinking");
         const refLine = show.refLine();
         ui.ref.classList.remove("checking");
-        ui.refTitle.textContent = refHeadline(show.headline, show.stamp.text, show.title);
+        ui.refTitle.textContent = refHeadline(show.headline, { verdict: show.verdict, claimId: show.claimId, title: show.title, stampText: show.stamp.text });
         ui.refText.textContent = refLine;
         document.body.dataset.phase = "ref";
         keepInView(ui.ref, "end");
@@ -436,7 +436,7 @@ async function ask(question) {
     const heaterReaction = a.exchange.heaterReaction || a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "");
     await runExchange({ ...a.exchange, heaterReaction }, {
       title: CLAIM_TITLES[a.claimId] || a.claimId,
-      headline: a.refHeadline,
+      headline: a.refHeadline, verdict: decision, claimId: a.claimId,
       refLine: () => refLineFor(a),
       stamp: stampFor(decision, state.personality),
       heaterEnd: decision ? stateForDecision(decision) : "unsure",
@@ -472,7 +472,7 @@ async function ask(question) {
   const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
   const refLine = refLineFor(a);
   ui.ref.classList.remove("checking");
-  ui.refTitle.textContent = refHeadline(a.refHeadline, stampFor(decision, state.personality).text, CLAIM_TITLES[a.claimId] || a.claimId);
+  ui.refTitle.textContent = refHeadline(a.refHeadline, { verdict: decision, claimId: a.claimId, title: CLAIM_TITLES[a.claimId] || a.claimId, stampText: stampFor(decision, state.personality).text });
   ui.refText.textContent = refLine;
   document.body.dataset.phase = "ref";
   await h.speak(refLine, "ref", { voiceOn: state.voiceOn });
@@ -1043,7 +1043,7 @@ async function askMarket(g) {
   const line = marketRefPlain(resp);
   const stamp = marketStamp(resp);
   ui.ref.classList.remove("checking");
-  ui.refTitle.textContent = refHeadline(resp.ref_headline, stamp.text, `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`);
+  ui.refTitle.textContent = refHeadline(resp.ref_headline, { title: `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`, stampText: stamp.text });
   ui.refText.textContent = line;
   document.body.dataset.phase = "ref";
   await h.speak(line, "ref", { voiceOn: state.voiceOn });

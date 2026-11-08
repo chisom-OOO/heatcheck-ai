@@ -398,14 +398,22 @@ test("the question as asked replaces the wordmark during an exchange; the wordma
 
 test("Ref card: double-size badge, headline (ref_headline or verdict + title), explanation at 70%", async () => {
   const { refHeadline } = await import("../web/frost/frost-model.js");
-  assert.equal(refHeadline("HOT HAND: NOT SHOWN", "Not enough evidence", "Hot hand"), "HOT HAND: NOT SHOWN", "Max's field wins");
-  assert.equal(refHeadline(undefined, "Not enough evidence", "Hot hand: three in a row"), "Not enough evidence — Hot hand: three in a row");
-  assert.equal(refHeadline("  ", "", "Tamper test"), "Tamper test");
+  assert.equal(refHeadline("X FROM MAX", { verdict: "NOT_SUPPORTED", claimId: "CONF-HH" }), "X FROM MAX", "Max's field wins");
+  // Max's patterns (heatcheck/api/display_titles.py, e031a91), for answers without the field
+  assert.equal(refHeadline(undefined, { verdict: "INSUFFICIENT_EVIDENCE", claimId: "CONF-HH", title: "x" }), "NOT ENOUGH EVIDENCE: HOT HAND NOT SHOWN");
+  assert.equal(refHeadline(null, { verdict: "SURVIVED_PROTOCOL", claimId: "CONF-HA" }), "SURVIVED: HOME ADVANTAGE HOLDS UP");
+  assert.equal(refHeadline(null, { verdict: "NOT_SUPPORTED", claimId: "GP-REST" }), "NOT SUPPORTED: REST AND BACK-TO-BACKS DOESN'T SHOW");
+  assert.equal(refHeadline(null, { verdict: "DATA_INVALID", claimId: "CONF-HH" }), "DATA INVALID: NO RULING");
+  assert.equal(refHeadline(null, { verdict: null, claimId: "NONE" }), "NO TEST: NO RULING");
+  // market cards (no pattern from Max) and other cards: stamp words and title
+  assert.equal(refHeadline(null, { title: "Nets at Hawks · forecast vs. market", stampText: "Sample" }), "Sample — Nets at Hawks · forecast vs. market");
+  assert.equal(refHeadline("  ", { title: "Tamper test" }), "Tamper test");
   assert.match(HTML, /<header><span class="ref-badge">THE REF<\/span><\/header>\s*<p class="ref-title ref-headline" id="ref-title"><\/p>\s*<p class="ref-text" id="ref-text"><\/p>/);
   assert.match(CSS, /\.ref-badge \{ font: 700 1\.56rem\/1 var\(--mono\);/, "double the old .78rem");
   assert.match(CSS, /\.ref-headline \{[^}]*font: 700 30px\/1\.15 var\(--cond\); text-transform: uppercase; color: #2EC4B6;/);
   assert.match(CSS, /\.ref-text \{[^}]*font: 500 22px\/1\.4 [^}]*opacity: \.7;/);
   assert.match(JS, /refHeadline: forced \? null : api\?\.ref_headline \?\? null,/);
-  assert.match(JS, /ui\.refTitle\.textContent = refHeadline\(show\.headline, show\.stamp\.text, show\.title\);/);
+  assert.match(JS, /ui\.refTitle\.textContent = refHeadline\(show\.headline, \{ verdict: show\.verdict, claimId: show\.claimId, title: show\.title, stampText: show\.stamp\.text \}\);/);
+  assert.match(JS, /headline: a\.refHeadline, verdict: decision, claimId: a\.claimId,/);
   assert.match(JS, /headline: resp\.ref_headline,/);
 });
