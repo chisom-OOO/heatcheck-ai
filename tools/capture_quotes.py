@@ -76,7 +76,8 @@ def main(argv: list[str]) -> int:
     n_index = len(json.loads(index.read_text(encoding="utf-8"))["mappings"]) if index.is_file() else 0
     verified, v_lines = None, []
     if "--no-verify" not in argv and pm:
-        v = run([sys.executable, "tools/verify_mappings.py", str(VERIFICATIONS), *map(str, pm)])
+        rel = [str(p.relative_to(ROOT)).replace(os.sep, "/") for p in pm]  # repo-relative paths in the record
+        v = run([sys.executable, "tools/verify_mappings.py", str(VERIFICATIONS.relative_to(ROOT)), *rel])
         v_lines = [x for x in v.stdout.splitlines() if x.strip()]
         verified = sum("16/16 PASS" in x for x in v_lines)
         say(f"mapping verification: {verified}/{len(pm)} Polymarket bundles VERIFIED (exit {v.returncode})")

@@ -80,3 +80,8 @@ No order capability exists anywhere.
   has been run (G09 scope is game-prediction against baselines only).
 - Paid model use: ≈ US$0.072 logged of the $5 approval (`reports/max/SPEND.md`).
 - Integration to `main`: not done; needs the user's instruction.
+- CI runs only the root `tests/`; Research's handoff suite (92 passed, 8 skipped on Windows; three
+  files need Linux for `fcntl`) and Experience's `apps/web` suites (104 unittest, 71 node) are run
+  by hand only.
+- Known data defect: the git-ignored local 2023-24 build on Max's machine records a HeatCheck
+  commit as `upstream_revision`; rebuild before using it as provenance evidence.
