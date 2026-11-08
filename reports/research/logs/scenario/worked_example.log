@@ -1,0 +1,5 @@
+keys without a name: 38 of 1203
+game nba:0022600191 New York Knicks @ Cleveland Cavaliers baseline p_home 0.661772
+absence estimate used: J. Allen CLE missed 24 played 215 effect win prob -0.172 [-0.389, 0.033]
+scenario: home player absent + away team on a back-to-back -> 0.533 80% [0.384, 0.676] 95% [0.311, 0.742]
+refused as intended: change 1: three_in_four overlaps another rest change for the away team (double counting)
