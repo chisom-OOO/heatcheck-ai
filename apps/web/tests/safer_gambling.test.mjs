@@ -31,10 +31,9 @@ test("responsible_use.json has the short and full text", () => {
   assert.match(doc.full, /^Responsible use\. /);
 });
 
-// Open item for Experience (their file): heater-model.js PLACEHOLDER_LINES, used only if
-// heater_personality.json fails to load, contain "Bet the rested team" and "a LOCK".
-test("PLACEHOLDER_LINES (fallback if the personality file fails to load) have no betting wording",
-  { todo: "Experience: reword PLACEHOLDER_LINES GP-REST ('Bet the rested team') and '*' ('a LOCK')" }, () => {
+// heater-model.js PLACEHOLDER_LINES, used only if heater_personality.json fails to load. Experience
+// reworded "Bet the rested team" and "a LOCK" (8 Nov 2026), so this is a full test, no longer a todo.
+test("PLACEHOLDER_LINES (fallback if the personality file fails to load) have no betting wording", () => {
     const bad = strings(PLACEHOLDER_LINES).filter((s) => BETTING.test(s));
     assert.deepEqual(bad, []);
   });
