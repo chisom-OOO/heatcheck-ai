@@ -59,6 +59,7 @@ LIVE_FORECAST = ROOT / "data" / "live" / "forecasts.json"
 QUOTES = ROOT / "data" / "experience" / "quotes"
 VERIFICATIONS = ROOT / "data" / "max" / "mapping_verifications"
 INVESTIGATIONS = ROOT / "logs" / "demo" / "market_investigations.jsonl"
+SCENARIOS = ROOT / "logs" / "demo" / "scenarios.jsonl"
 UPSTREAM = "https://raw.githubusercontent.com/shufinskiy/nba_data/{commit}/datasets/{name}"
 API_PORT, UI_PORT = 8770, 8765
 
@@ -185,7 +186,8 @@ def main(argv: list[str]) -> int:
                             "--ledger", str(DEMO_LEDGER), "--port", str(API_PORT),
                             "--live-forecast", str(LIVE_FORECAST), "--quote-bundle", str(QUOTES),
                             "--verifications", str(VERIFICATIONS),
-                            "--investigation-ledger", str(INVESTIGATIONS)]
+                            "--investigation-ledger", str(INVESTIGATIONS),
+                            "--scenario-ledger", str(SCENARIOS)]
                            + (["--recorded"] if "--recorded-market" in argv else [])
                            + ([] if use_llm else ["--no-llm"]), cwd=ROOT)
     say("market card: forecast " + (str(LIVE_FORECAST.relative_to(ROOT)) if LIVE_FORECAST.exists()

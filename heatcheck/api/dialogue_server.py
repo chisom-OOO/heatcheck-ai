@@ -33,6 +33,19 @@ from pathlib import Path
 
 from heatcheck.agents.dialogue import Dialogue
 from heatcheck.agents.market_investigation import InvestigationInputError, investigate
+from heatcheck.agents.scenario import (
+    ConfirmationError,
+    EffectsProvider,
+    ResearchStub,
+    board_intro,
+    card_intro,
+    check_confirmation,
+    estimate_scenario,
+    parse_scenario,
+    pick_game,
+    route,
+    scenario_identity,
+)
 from heatcheck.api.display_titles import DISPLAY_TITLES
 from heatcheck.contracts.bundle import BundleError, load_bundle
 from heatcheck.contracts.live_forecast import (
@@ -195,8 +208,102 @@ def run_investigation(req: dict, live_forecast: Path | None, cfg: InvestigationC
     return 200, out
 
 
+@dataclass
+class ScenarioConfig:
+    """POST /api/scenario/estimate: where confirmed scenarios are recorded, and Research's effects."""
+
+    ledger: EvidenceLedger
+    provider: EffectsProvider | None = None  # ResearchStub until research/scenario-effects is merged
+    clock: object | None = None
+
+
+def _json_body(raw: bytes, keys: set[str], optional: frozenset[str] = frozenset()) -> dict:
+    try:
+        obj = json.loads(raw)
+    except (ValueError, UnicodeDecodeError):
+        raise ValueError("body is not JSON") from None
+    if not isinstance(obj, dict) or not keys <= set(obj) or set(obj) - keys - optional:
+        raise ValueError(f"body must have {sorted(keys)}" + (f" and optionally {sorted(optional)}" if optional else ""))
+    msg = obj.get("message")
+    if msg is not None and (not isinstance(msg, str) or not msg.strip() or len(msg) > MAX_QUESTION):
+        raise ValueError(f"message must be a non-empty string of at most {MAX_QUESTION} characters")
+    gid = obj.get("game_id")
+    if gid is not None and (not isinstance(gid, str) or len(gid) > 40):
+        raise ValueError("game_id must be a short string")
+    return obj
+
+
+def _now_z(clock=None) -> str:
+    return (clock or _now)()[:19] + "Z"
+
+
+def run_route(req: dict, live_forecast: Path | None, clock=None) -> dict:
+    """Where a free-text message goes: OPEN_BOARD, OPEN_CARD, SCENARIO or DIALOGUE."""
+    fc = live_forecast_payload(live_forecast)
+    games = fc["forecast"]["games"] if fc["status"] == "OK" else []
+    out = route(req["message"], games, _now_z(clock))
+    if out["action"] == "OPEN_BOARD":
+        out["heater_text"] = board_intro(len(games)) if games else (
+            "Tonight's board has no forecast to show right now; I'll open it so you can see why.")
+    elif out["action"] == "OPEN_CARD":
+        row = next(g for g in games if g["game_id"] == out["game_id"])
+        out["heater_text"] = card_intro(row)
+    out["forecast_status"] = fc["status"]
+    return out
+
+
+def run_scenario_parse(req: dict, live_forecast: Path | None, clock=None) -> tuple[int, dict]:
+    fc = live_forecast_payload(live_forecast)
+    if fc["status"] != "OK":
+        return 200, {"status": "NO_FORECAST", "label": "HYPOTHETICAL",
+                     "heater_text": f"I can't run a what-if without a forecast ({fc['reason']})."}
+    games = fc["forecast"]["games"]
+    gid = req.get("game_id")
+    if gid:
+        row = next((g for g in games if g["game_id"] == gid), None)
+        if row is None:
+            return 404, {"error": f"{gid} is not in the live forecast"}
+    else:
+        row, cands = pick_game(req["message"], games, _now_z(clock))
+        if row is None:
+            names = ", ".join(f"{g['away_team']} at {g['home_team']}" for g in cands[:4])
+            return 200, {"status": "NEEDS_GAME", "label": "HYPOTHETICAL",
+                         "candidates": [g["game_id"] for g in cands],
+                         "heater_text": "Which game do you mean? Name a team playing tonight"
+                         + (f" ({names})." if names else ".")}
+    out = parse_scenario(req["message"], row, fc["file_sha256"])
+    out["is_sample"] = fc["is_sample"]
+    return 200, out
+
+
+def run_scenario_estimate(req: dict, live_forecast: Path | None, cfg: ScenarioConfig) -> tuple[int, dict]:
+    fc = live_forecast_payload(live_forecast)
+    if fc["status"] != "OK":
+        return 409, {"error": f"forecast {fc['status']}: {fc['reason']}"}
+    row = next((g for g in fc["forecast"]["games"] if g["game_id"] == req["game_id"]), None)
+    if row is None:
+        return 404, {"error": f"{req['game_id']} is not in the live forecast"}
+    try:
+        changes, focus = check_confirmation(req, row, fc["file_sha256"])
+    except ConfirmationError as e:
+        return 409, {"error": str(e)}
+    as_of = (cfg.clock or _now)()
+    est = estimate_scenario(changes, row, fc["forecast"], fc["is_sample"], fc["file_sha256"], as_of,
+                            cfg.provider or ResearchStub(), focus_team=focus)
+    identity = scenario_identity(est, changes, req["interpretation_id"], fc["file_sha256"],
+                                 req.get("message_sha256"))
+    entry, _retried = cfg.ledger.put(identity)
+    est["evidence_id"] = entry["evidence_id"]
+    est["recorded_at_utc"] = entry["created_at_utc"]
+    return 200, est
+
+
+ESTIMATE_KEYS = {"game_id", "changes", "focus_team", "interpretation_id", "confirmed"}
+SCENARIO_PATHS = ("/api/route", "/api/scenario", "/api/scenario/estimate")
+
+
 def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
-                 investigation: InvestigationConfig | None = None):
+                 investigation: InvestigationConfig | None = None, scenario: ScenarioConfig | None = None):
     lock = threading.Lock()  # one turn at a time: the ledger is append-only and file-backed
 
     class Handler(BaseHTTPRequestHandler):
@@ -243,12 +350,37 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
             self.send_header("Access-Control-Allow-Headers", "Content-Type")
             self.end_headers()
 
+        def _scenario_post(self, raw: bytes):
+            try:
+                if self.path == "/api/route":
+                    req = _json_body(raw, {"message"})
+                elif self.path == "/api/scenario":
+                    req = _json_body(raw, {"message"}, frozenset({"game_id"}))
+                else:
+                    req = _json_body(raw, ESTIMATE_KEYS, frozenset({"message_sha256"}))
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
+            clock = scenario.clock if scenario else None
+            try:
+                if self.path == "/api/route":
+                    return self._send(200, run_route(req, live_forecast, clock))
+                if self.path == "/api/scenario":
+                    return self._send(*run_scenario_parse(req, live_forecast, clock))
+                if scenario is None:
+                    return self._send(503, {"error": "scenarios are not configured (no ledger)"})
+                with lock:
+                    return self._send(*run_scenario_estimate(req, live_forecast, scenario))
+            except Exception as e:  # never invent an estimate
+                return self._send(500, {"error": f"scenario failed: {type(e).__name__}"})
+
         def do_POST(self):
-            if self.path not in ("/api/dialogue", "/api/investigate"):
+            if self.path not in ("/api/dialogue", "/api/investigate", *SCENARIO_PATHS):
                 return self._send(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
             if n <= 0 or n > MAX_BODY:
                 return self._send(400, {"error": "missing or oversized body"})
+            if self.path in SCENARIO_PATHS:
+                return self._scenario_post(self.rfile.read(n))
             if self.path == "/api/investigate":
                 if investigation is None:
                     return self._send(503, {"error": "investigation is not configured (no quote source)"})
@@ -277,5 +409,7 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
 
 
 def serve(dialogue: Dialogue, port: int = 8770, live_forecast: Path | None = None,
-          investigation: InvestigationConfig | None = None) -> ThreadingHTTPServer:
-    return ThreadingHTTPServer(("127.0.0.1", port), make_handler(dialogue, live_forecast, investigation))
+          investigation: InvestigationConfig | None = None,
+          scenario: ScenarioConfig | None = None) -> ThreadingHTTPServer:
+    return ThreadingHTTPServer(("127.0.0.1", port),
+                               make_handler(dialogue, live_forecast, investigation, scenario))
