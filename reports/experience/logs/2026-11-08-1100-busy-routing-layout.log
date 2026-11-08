@@ -1,0 +1,16 @@
+commit: 027c4183b21c53f73c4562399f3c5bf360d0fc57
+command: node apps/web/tests/layout/frost_layout.mjs reports/experience/2026-11-08-1100-busy-routing-layout
+PASS home-1440x900
+PASS dialogue-1440x900
+PASS market-1440x900
+PASS followup-1440x900
+PASS unmapped-1440x900
+PASS maingame-1440x900
+PASS home-1920x1080
+PASS dialogue-1920x1080
+PASS market-1920x1080
+PASS followup-1920x1080
+PASS unmapped-1920x1080
+PASS maingame-1920x1080
+12/12 cases PASS
+exit: 0
