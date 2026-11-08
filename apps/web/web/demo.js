@@ -15,7 +15,7 @@ import {
 } from "./heater/heater-model.js";
 import { loadBoard, renderBoard } from "./market/board.js";
 import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
-import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } from "./market/scenario-model.js";
+import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp, whatifStamp } from "./market/scenario-model.js";
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
 import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
 import {
@@ -455,7 +455,7 @@ async function askScenario(g, s, data) {
   ui.refText.textContent = line;
   document.body.dataset.phase = "ref";
   await h.speak(line, "ref", { voiceOn: state.voiceOn });
-  const stamp = scenarioStamp(data);
+  const stamp = scenarioStamp(data, s);
   ui.stamp.className = `stamp ${stamp.kind}`;
   ui.stamp.textContent = stamp.text;
   ui.stamp.hidden = false;
@@ -595,8 +595,11 @@ async function runEstimate(it) {
   ui.refText.textContent = est.ref_text;
   document.body.dataset.phase = "ref";
   await h.speak(est.ref_text, "ref", { voiceOn: state.voiceOn });
-  ui.stamp.className = "stamp insufficient";
-  ui.stamp.textContent = "HYPOTHETICAL";
+  // ESTIMATE when the number comes from data, YOUR ASSUMPTION when the user supplied it (from Max's effects).
+  const stamp = whatifStamp(est);
+  log(`what-if stamp: ${stamp.text}`);
+  ui.stamp.className = `stamp ${stamp.kind}`;
+  ui.stamp.textContent = stamp.text;
   ui.stamp.hidden = false;
   restartAnim(ui.stamp);
   ui.ref.classList.add("slammed");

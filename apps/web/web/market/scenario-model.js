@@ -133,8 +133,35 @@ export function refScenarioText(s, data) {
 
 const lowerFirst = (t) => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
 
-/** Stamp: ESTIMATE, or SAMPLE when the numbers are invented. */
-export const scenarioStamp = (data) => (data.isSample ? { text: "SAMPLE", kind: "blocked" } : { text: "ESTIMATE", kind: "insufficient" });
+// Stamp rule (2026-11-08): ESTIMATE whenever the number comes from data, preset or typed;
+// YOUR ASSUMPTION when the user supplied the number. The stamp is read from what Max's API returns,
+// never inferred from the text.
+export const STAMP_ESTIMATE = { text: "ESTIMATE", kind: "insufficient" };
+export const STAMP_ASSUMPTION = { text: "YOUR ASSUMPTION", kind: "assumption" };
+const STAMP_SAMPLE = { text: "SAMPLE", kind: "blocked" };
+const STAMP_NO_NUMBER = { text: "NO NUMBER", kind: "blocked" };
+
+/** Preset scenario stamp: the scenario's own label from GET /api/scenario (readScenarios accepts only
+ *  "ESTIMATE"), or SAMPLE when the numbers are invented. */
+export function scenarioStamp(data, s) {
+  if (data.isSample) return STAMP_SAMPLE;
+  return s?.label === "ESTIMATE" ? STAMP_ESTIMATE : STAMP_NO_NUMBER;
+}
+
+/** Typed what-if stamp, from Max's POST /api/scenario/estimate answer. Only effects with
+ *  ``included: true`` feed the number. YOUR_ASSUMPTION (the user's own adjustment) or
+ *  HYPOTHETICAL_PRICE (a price the user typed) -> YOUR ASSUMPTION, even beside data effects;
+ *  otherwise a scenario number from ESTIMATE (Research's data) or MODEL_RECALC (the model's own
+ *  Elo) -> ESTIMATE; no number -> NO NUMBER; a SAMPLE forecast -> SAMPLE. */
+export function whatifStamp(est) {
+  if (!est || est.is_sample) return STAMP_SAMPLE;
+  const used = (est.effects || []).filter((e) => e.included);
+  const userNumber = (est.scenario && used.some((e) => e.type === "YOUR_ASSUMPTION"))
+    || (est.hypothetical_price != null && used.some((e) => e.type === "HYPOTHETICAL_PRICE"));
+  if (userNumber) return STAMP_ASSUMPTION;
+  if (est.scenario && used.some((e) => e.type === "ESTIMATE" || e.type === "MODEL_RECALC")) return STAMP_ESTIMATE;
+  return STAMP_NO_NUMBER;
+}
 
 /** Heater's end pose. Never vindicated: a scenario is an estimate, not a result. */
 export function scenarioEndState(s, data) {
