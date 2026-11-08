@@ -437,13 +437,14 @@ body[data-cast="frost"] .hero .h-root { height: min(calc(100vh - 230px), 720px);
 .cv-frost::before { right: -24px; width: 26px; height: 26px; background: var(--ice); clip-path: polygon(0 0, 100% 55%, 0 100%); }
 .cv-frost::after { right: -17px; width: 22px; height: 18px; margin-top: 4px; background: var(--ice-bg); clip-path: polygon(0 0, 100% 55%, 0 100%); }
 .cv-reaction .cv-text { font-size: 17px; }
+/* A result chip is a fact from the record, not a speaker: centred in the thread, grey on a subtle dark
+   background, no tail, a little smaller than the bubbles. The ice-blue left border is its only colour
+   (pass, fail and info chips look the same; the words say which). */
 .cv-chip {
-  align-self: flex-end; max-width: 80%; margin: -4px 14px 0 0; padding: 8px 12px; border-radius: 6px;
-  font-size: 14px; line-height: 1.4; color: #BFE6FF; background: #0B1B2B; border-left: 3px solid var(--ice);
-  overflow-wrap: anywhere; animation: pop-in .2s ease-out both;
+  align-self: center; max-width: 80%; margin: -4px 0 0; padding: 8px 14px; border-radius: 6px;
+  font-size: 16px; line-height: 1.4; color: #9B97AD; background: rgba(255, 255, 255, .045);
+  border-left: 3px solid var(--ice); overflow-wrap: anywhere; animation: pop-in .2s ease-out both;
 }
-.cv-chip.pass { border-left-color: var(--ref); }
-.cv-chip.fail { border-left-color: #FF8A8E; }
 body[data-cast="frost"] .ref { margin: 18px auto 0; width: min(100%, 620px); text-align: left; align-self: center; }
 body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-50%) rotate(-9deg); animation-name: slam-centre; max-width: 80%; }
 @keyframes slam-centre {

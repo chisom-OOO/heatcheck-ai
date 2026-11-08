@@ -295,7 +295,21 @@ test("a chip is its own item on Frost's side, with no voice; the tooltip holds i
   assert.match(src, /li\.title = chip\.source \? `\$\{chip\.text\} \(source: \$\{chip\.source\}\)` : chip\.text;/);
   assert.match(src, /li\.tabIndex = 0;/);
   assert.ok(!/speak/.test(src));
-  assert.match(CSS, /\.cv-chip \{\s*align-self: flex-end; max-width: 80%;/);
+});
+
+test("a result chip reads as a fact, not a speaker: centred, grey, no tail, smaller, ice border only", () => {
+  const i = CSS.indexOf(".cv-chip {");
+  const rule = CSS.slice(i, CSS.indexOf("}", i));
+  assert.match(rule, /align-self: center;/, "centred in the thread");
+  assert.match(rule, /color: #9B97AD;/, "grey text");
+  assert.match(rule, /background: rgba\(255, 255, 255, \.045\);/, "subtle dark background");
+  assert.match(rule, /border-left: 3px solid var\(--ice\);/, "ice-blue left border");
+  const size = Number(rule.match(/font-size: (\d+)px/)[1]);
+  const bubble = Number(CSS.match(/\.cv-text \{[^}]*font-size: (\d+)px/)[1]);
+  assert.ok(size < bubble && size >= bubble - 3, `slightly smaller than the bubbles (${size} vs ${bubble})`);
+  assert.ok(!/\.cv-chip::(before|after)/.test(CSS), "no bubble tail");
+  assert.ok(!/\.cv-chip\.(pass|fail|info)\s*\{/.test(CSS), "the border is the only colour: no pass/fail colours");
+  assert.ok(!/class(Name)? = [^;]*\bcv\b[^-]/.test(JS.slice(JS.indexOf("function convoChip("), JS.indexOf("\n}\n", JS.indexOf("function convoChip(")))), "not a .cv bubble");
 });
 
 test("ask() runs the Frost exchange only when the answer has one; otherwise the Heater-only flow is unchanged", () => {
