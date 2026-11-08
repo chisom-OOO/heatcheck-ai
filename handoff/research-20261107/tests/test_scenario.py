@@ -133,3 +133,50 @@ def test_low_involvement_flag():
     e = {x["player_id"]: x for x in SC.absence_effects(rows, app, {}, {}, B=20, involvement={(77, 1): 3.0})}
     assert "low_involvement_outcome_dependent_appearance" in e["nba-player:77"]["flags"]
     assert e["nba-player:77"]["median_events_per_game"] == 3.0
+
+
+# --------------------------------------------------------------------------- heatcheck-scenario/1 answer
+import re  # noqa: E402
+
+PROB = re.compile(r"^(0(\.\d+)?|1(\.0+)?)$")
+GAME = {"game_id": "nba:0022600191", "home_team_id": "nba-team:10", "away_team_id": "nba-team:20",
+        "home_team": "Home Team", "away_team": "Away Team"}
+ABS2 = {k: dict(v, player_name=f"P{i}", n_games_played=50 - i, seasons=["2025-26"], flags=[], key=k)
+        for i, (k, v) in enumerate(ABS.items()) if k != "nba-player:1|nba-team:20"}
+ABS2["nba-player:3|nba-team:20"] = dict(ABS["nba-player:1|nba-team:20"], player_id="nba-player:3", player_name="P3",
+                                        n_games_played=40, seasons=["2025-26"], flags=[], key="nba-player:3|nba-team:20")
+SCH2 = {"back_to_back": {**SCH["back_to_back"], "n_condition": 1313},
+        "three_in_four": {**SCH["three_in_four"], "n_condition": 1934}, "rest_diff": SCH["rest_diff"]}
+
+
+@pytest.mark.parametrize("team,base", [("nba-team:10", "0.6"), ("nba-team:20", "0.4")])
+def test_scenario_answer_meets_experience_rules(team, base):
+    a = SC.scenario_api_answer(GAME, team, "Card Team", base, "fc-1", ABS2, SCH2, source="test")
+    assert a["format"] == "heatcheck-scenario/1" and a["status"] == "OK" and a["is_sample"] is False
+    assert a["baseline"]["p_team_win"] == base and a["team"] == "Card Team" and a["scenarios"]
+    for s in a["scenarios"]:
+        assert s["label"] == "ESTIMATE" and all(PROB.match(x) for x in (s["p_team_win"], s["range"]["low"], s["range"]["high"]))
+        assert float(s["range"]["low"]) <= float(s["p_team_win"]) <= float(s["range"]["high"])
+        assert s["range"]["level"] == "0.90" and isinstance(s["n"], int) and s["n"] >= 1 and s["caveats"]
+    # an absence of the card team's own player lowers its chance; the away perspective is mirrored
+    own = next(s for s in a["scenarios"] if s["scenario_id"].endswith("absent:nba-player:1:nba-team:10"))
+    assert (float(own["p_team_win"]) < float(base)) == (team == "nba-team:10")
+    small = [s for s in a["scenarios"] if "nba-player:2" in s["scenario_id"]]
+    assert not small                                                       # 3 games missed: never offered
+
+
+def test_scenario_answer_refuses_team_not_in_game():
+    with pytest.raises(SC.ScenarioRefused):
+        SC.scenario_api_answer(GAME, "nba-team:99", "X", "0.5", "fc", ABS2, SCH2, source="t")
+
+
+def test_scenario_answer_skips_ambiguous_and_stale_players():
+    both = dict(ABS2, **{"nba-player:1|nba-team:20": dict(ABS2["nba-player:1|nba-team:10"], team_id="nba-team:20",
+                                                          key="nba-player:1|nba-team:20")})
+    old = dict(ABS2, **{"nba-player:3|nba-team:20": dict(ABS2["nba-player:3|nba-team:20"], seasons=["2023-24"])})
+    a = SC.scenario_api_answer(GAME, "nba-team:10", "H", "0.6", "fc", both, SCH2, source="t")
+    assert not [s for s in a["scenarios"] if "nba-player:1" in s["scenario_id"]]       # on both teams: skipped
+    b = SC.scenario_api_answer(GAME, "nba-team:10", "H", "0.6", "fc", old, SCH2, source="t")
+    assert not [s for s in b["scenarios"] if "nba-player:3" in s["scenario_id"]]       # not seen in 2025-26
+    ids = [s["scenario_id"] for s in a["scenarios"]]
+    assert len(ids) == len(set(ids))
