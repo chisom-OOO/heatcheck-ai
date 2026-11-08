@@ -13,7 +13,7 @@
   - Report: `reports/max/2026-11-08-0735-frost-tamper.md`; screenshots in
     `reports/max/2026-11-08-frost-demo/`.
 
-## In progress (user, ~08:25)
+## Done (user, ~08:25): chip routing 9cc7a67+2a106dc; docs commit below; merging to main
 1. **Fixed routing for the three chips**, like home advantage (rule before the model):
    "Is the hot hand real?" -> CONF-HH, "Does rest matter?" -> GP-REST,
    "Do home teams win more?" -> CONF-HA. Model mapping only for other text. Test, push.
