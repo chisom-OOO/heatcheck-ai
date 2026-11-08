@@ -112,7 +112,7 @@ HEATER_SYSTEM = (
     "At most three sentences: (a) my number against the market's number for the named team; "
     "(b) where my number comes from, in one clause: the ratings gap and home court, which are the "
     "only model inputs; (c) what I would want to check before reading anything into the gap, named "
-    "casually (injuries, rest, lineups), framed as \"I'd want to check ...\" or as a question, never "
+    "casually (injuries, rest, lineups), framed as a plain statement \"I'd want to check ...\" ending with a full stop, never "
     "stated as a reason. No betting language, never the words edge or value, never say the model "
     "beats the market: no evidence shows that.")
 
@@ -572,7 +572,10 @@ def investigate(
             except Exception as e:  # provider failure never invents text
                 heater_source = f"TEMPLATE (fallback: {type(e).__name__})"
             else:
-                bad = heater_guard(text, inputs, facts) + [f"ref:{w}" for w in take_mentions_ref(text)]
+                # "I'd want to check injuries ..." is the walk-through's own framing (user, 8 Nov), not a
+                # mention of the Ref's checks; any other "check", "verdict" or Ref wording still fails.
+                ref_hits = take_mentions_ref(CHECK_FRAME.sub("I'd want to see", text))
+                bad = heater_guard(text, inputs, facts) + [f"ref:{w}" for w in ref_hits]
                 if bad or not text:
                     heater_source = f"TEMPLATE (guard rejected: {bad[:4] or ['empty']})"
                 else:

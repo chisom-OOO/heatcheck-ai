@@ -511,3 +511,11 @@ def test_walk_through_never_shows_a_raw_probability_or_field_name(bundle):
     assert not re.search(r"\b0\.\d+", text)                  # no decimal fraction
     assert not re.search(r"\b[a-z]+(?:_[a-z0-9]+)+\b", text)   # no snake_case field name
     assert len(re.findall(r"[.!?](?:\s|$)", text)) <= 3
+
+
+def test_check_framing_is_not_a_ref_mention_but_other_check_wording_is():
+    from heatcheck.agents.dialogue import take_mentions_ref
+    from heatcheck.agents.market_investigation import CHECK_FRAME
+    ok = "Before I'd read anything into it I'd want to check injuries, rest and tonight's lineups."
+    assert take_mentions_ref(CHECK_FRAME.sub("I'd want to see", ok)) == []
+    assert take_mentions_ref(CHECK_FRAME.sub("I'd want to see", "The checks all passed, so it's real."))
