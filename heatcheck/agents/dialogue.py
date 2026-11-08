@@ -471,6 +471,18 @@ REF_MENTION = re.compile(
     r"\bdata\b", re.IGNORECASE)
 
 
+# Safer-gambling guard for every Heater line, model-written or template (8 Nov 2026). Whole words
+# or phrases, case-insensitive: "better", "between" and "lockdown" pass; "lock" only as a phrase.
+BETTING_WORDS = re.compile(
+    r"(?<![\w'’])(?:bet|bets|betting|wager|value bet|free money|guaranteed|sure thing|"
+    r"can['’]?t lose|cannot lose|a lock|lock it in|mortal lock)(?![\w'’])", re.IGNORECASE)
+
+
+def betting_words(text: str) -> list[str]:
+    """Betting-encouragement wording in a Heater line; empty means it may be said."""
+    return sorted({m.group(0).lower() for m in BETTING_WORDS.finditer(text or "")})
+
+
 def take_mentions_ref(text: str) -> list[str]:
     """Words that would have Heater speak about the Ref's verdict before the Ref has spoken."""
     return sorted({m.group(0).lower() for m in REF_MENTION.finditer(text or "")})
@@ -643,4 +655,7 @@ class Dialogue:
         ref_words = take_mentions_ref(text)
         if ref_words:
             return fallback, f"TEMPLATE (guard rejected Ref mention {ref_words[:4]})"
+        bet_words = betting_words(text)
+        if bet_words:
+            return fallback, f"TEMPLATE (guard rejected betting wording {bet_words[:4]})"
         return text, "LLM"

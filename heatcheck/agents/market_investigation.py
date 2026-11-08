@@ -30,7 +30,7 @@ from datetime import timedelta
 from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
-from heatcheck.agents.dialogue import number_violations, take_mentions_ref
+from heatcheck.agents.dialogue import betting_words, number_violations, take_mentions_ref
 from heatcheck.contracts.eligibility import LIVE_MAX_AGE, QuoteSelection
 from heatcheck.contracts.live_forecast import LiveForecast
 from heatcheck.contracts.records import PROTOCOL_VERSION, parse_utc, validate_record, validate_utc
@@ -158,6 +158,9 @@ def heater_guard(text: str, inputs_used: list[str], facts: dict) -> list[str]:
     problems = [f"number {n} is not on the card" for n in number_violations(text, facts)]
     for m in BANNED.finditer(text):
         problems.append(f"betting or over-claim wording {m.group(0)!r}")
+    for w in betting_words(text):
+        if not any(repr(w) in p.lower() for p in problems):
+            problems.append(f"betting wording {w!r}")
     covered = covered_factors(inputs_used)
     for s in _sentences(text):
         if s.rstrip().endswith("?"):
