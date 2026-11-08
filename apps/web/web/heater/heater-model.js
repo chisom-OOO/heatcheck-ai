@@ -358,6 +358,22 @@ export function dialogueLines(api, fallbackTake) {
   };
 }
 
+/** Heater's line when a question maps to no registered claim and no game (user, 8 Nov 2026). */
+export const UNMAPPED_FALLBACK = "I don't call games. Ask me about the hot hand, home advantage, rest, or pick a game from Tonight's games.";
+
+/** True when the answer names no registered claim: claim_id "NONE", missing or empty. */
+export const isUnmapped = (claimId) => typeof claimId !== "string" || !claimId.trim() || claimId === "NONE";
+
+/** What Heater says for an unmapped question: the server's own message (``message``, else
+ *  ``heater_text``), else UNMAPPED_FALLBACK. Nothing is made up here. */
+export function unmappedLine(body) {
+  for (const k of ["message", "heater_text"]) {
+    const v = body?.[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  return UNMAPPED_FALLBACK;
+}
+
 /** Heater's reaction to a verdict ("react": decision -> [lines]). */
 export function reactFor(decision, personality, turn = 0) {
   const r = personality?.react?.[decision];

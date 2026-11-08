@@ -41,8 +41,13 @@ function mockFrost(body) {
   return checks.map((c) => ({ check: c.check_id, question: `MOCK: what does ${c.check_id} say about this card?`,
     chip: `MOCK chip from the card's own check: ${c.status}: ${c.detail}`, source: c.check_id }));
 }
+/** MOCK: Max's documented "no registered test" answer (docs/DIALOGUE_API.md), for UNMAPPED_Q only. */
+const UNMAPPED_Q = "Who wins tonight?";
+const NONE_ANSWER = { heater_text: "MOCK server message: no registered test for that one.", ref_text: "No registered test exists for this question, so nothing was run and there is no verdict.",
+  evidence_record_id: null, verdict: null, claim_id: "NONE", claim_title: "No registered test", lane: null, evidence_source: null, sources: { ref: "TEMPLATE_NO_REGISTERED_TEST" } };
 function api(method, path, req) {
   if (path === "/api/route") return [200, { action: "DIALOGUE", game_id: null, reason: "mock" }];
+  if (path === "/api/dialogue" && method === "POST" && req?.question === UNMAPPED_Q) return [200, NONE_ANSWER];
   if (path === "/api/market-mappings") {
     return [200, { format: INDEX.format, mappings: INDEX.mappings.map((m) => Object.fromEntries(MAPPING_FIELDS.map((k) => [k, m[k]]))) }];
   }
@@ -244,6 +249,77 @@ async function homeCase(b, base, [w, h]) {
   return { case: name, pass: fails.length === 0, fails, final: s };
 }
 
+const ev = (b) => async (expr) => (await b.send("Runtime.evaluate", { expression: expr, returnByValue: true, awaitPromise: true })).result.value;
+const BUSY = `({ phase: document.body.dataset.phase, go: document.getElementById("go").disabled,
+  chips: [...document.querySelectorAll("#chips .chip")].map((c) => c.disabled), asked: document.getElementById("asked").textContent })`;
+async function untilDone(e, ms = 180000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) { if ((await e("document.body.dataset.phase")) === "done") return true; await sleep(250); }
+  return false;
+}
+
+/** Bug (8 Nov): after a market card's "Walk me through this game" the Ask button stayed disabled.
+ *  Ask the card, then click a chip question and type-and-Ask a second one, without reloading. */
+async function followupCase(b, base, [w, h]) {
+  const name = `followup-${w}x${h}`;
+  const e = ev(b);
+  await b.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+  await b.send("Page.navigate", { url: `${base}/demo.html?voice=0&board=1` });
+  for (let i = 0; i < 100 && !(await e("document.body.dataset.ready === '1'")); i++) await sleep(100);
+  for (let i = 0; i < 200 && !(await e("!!document.querySelector('.mcard-ask:not(.board-retry):not([disabled])')")); i++) await sleep(150);
+  await sleep(800);
+  await e("document.querySelector('.mcard-ask:not(.board-retry):not([disabled])').click(), true");
+  const fails = [];
+  const ok = (c, msg) => { if (!c) fails.push(msg); };
+  ok(await untilDone(e), "market card exchange reached done");
+  await sleep(500);
+  const afterCard = await e(BUSY);
+  ok(!afterCard.go && afterCard.chips.every((d) => !d), `after the card: Ask ${afterCard.go ? "disabled" : "enabled"}, chips ${afterCard.chips}`);
+  // a chip question (the chip button itself)
+  await e(`document.body.dataset.phase = ""; document.querySelector("#chips .chip").click(), true`);
+  await sleep(300);
+  const started = await e(BUSY);
+  ok(started.asked === "Is the hot hand real?", `chip question started ("${started.asked}")`);
+  ok(await untilDone(e), "chip question reached done");
+  await sleep(500);
+  const afterChip = await e(BUSY);
+  ok(!afterChip.go, `after the chip question: Ask ${afterChip.go ? "disabled" : "enabled"}`);
+  // typed in the box and submitted with the Ask button
+  await e(`document.body.dataset.phase = ""; document.getElementById("q").value = "Does rest matter?"; document.getElementById("go").click(), true`);
+  await sleep(300);
+  const typed = await e(BUSY);
+  ok(typed.asked === "Does rest matter?", `typed question started with Ask ("${typed.asked}")`);
+  ok(await untilDone(e), "typed question reached done");
+  const end = await e(BUSY);
+  ok(!end.go, `at the end: Ask ${end.go ? "disabled" : "enabled"}`);
+  const shot = await b.send("Page.captureScreenshot", { format: "png" });
+  writeFileSync(join(OUT, `${name}.png`), Buffer.from(shot.data, "base64"));
+  return { case: name, pass: fails.length === 0, fails, final: { afterCard, started, afterChip, typed, end } };
+}
+
+/** A question that maps to no registered claim: Heater's bubble with the server's message, Ask enabled. */
+async function unmappedCase(b, base, [w, h]) {
+  const name = `unmapped-${w}x${h}`;
+  const e = ev(b);
+  await b.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+  await b.send("Page.navigate", { url: `${base}/demo.html?voice=0&ask=${encodeURIComponent(UNMAPPED_Q)}` });
+  for (let i = 0; i < 100 && !(await e("document.body.dataset.ready === '1'")); i++) await sleep(100);
+  const fails = [];
+  const ok = (c, msg) => { if (!c) fails.push(msg); };
+  ok(await untilDone(e, 60000), "unmapped question reached done");
+  await sleep(500);
+  const s = await e(`({ ...${BUSY}, bubble: !document.getElementById("bubble").hidden, take: document.getElementById("take").textContent,
+    bubbleBox: (() => { const r = document.getElementById("bubble").getBoundingClientRect(); return { w: r.width, h: r.height }; })(),
+    ref: !document.getElementById("ref").hidden, stamp: !document.getElementById("stamp").hidden })`);
+  ok(s.bubble && s.bubbleBox.w > 0 && s.bubbleBox.h > 0, "Heater's bubble shown");
+  ok(s.take === NONE_ANSWER.heater_text, `bubble has the server's message ("${s.take}")`);
+  ok(!s.ref && !s.stamp, `no Ref card or stamp (ref ${s.ref}, stamp ${s.stamp})`);
+  ok(!s.go, `Ask ${s.go ? "disabled" : "enabled"} afterwards`);
+  const shot = await b.send("Page.captureScreenshot", { format: "png" });
+  writeFileSync(join(OUT, `${name}.png`), Buffer.from(shot.data, "base64"));
+  return { case: name, pass: fails.length === 0, fails, final: s };
+}
+
 mkdirSync(OUT, { recursive: true });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = `http://127.0.0.1:${server.address().port}`;
@@ -256,8 +332,11 @@ try {
   // check reads the declared family (Oswald / Nunito first)
   await b.send("Network.enable");
   await b.send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
-  for (const vp of VIEWPORTS) for (const kind of ["home", "dialogue", "market"]) {
-    const r = kind === "home" ? await homeCase(b, base, vp) : await runCase(b, base, vp, kind);
+  const ONLY = process.env.LAYOUT_ONLY ? process.env.LAYOUT_ONLY.split(",") : null;
+  const CASES = { home: homeCase, followup: followupCase, unmapped: unmappedCase };
+  for (const vp of VIEWPORTS) for (const kind of ["home", "dialogue", "market", "followup", "unmapped"]) {
+    if (ONLY && !ONLY.includes(kind)) continue;
+    const r = CASES[kind] ? await CASES[kind](b, base, vp) : await runCase(b, base, vp, kind);
     results.push(r);
     console.log(`${r.pass ? "PASS" : "FAIL"} ${r.case}${r.fails.length ? `\n  - ${r.fails.join("\n  - ")}` : ""}`);
   }

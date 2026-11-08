@@ -205,8 +205,8 @@ test("?tamper=mock: same shape as Max's reply, MOCK in every text value, and the
 
 // ---- page wiring (source order; the browser run is Max's, with demo.cmd)
 test("runTamper: flip, events, Ref line, then the stamp only for a caught flip; Restore appears once flipped", () => {
-  const i = JS.indexOf("async function runTamper(");
-  const src = JS.slice(i, JS.indexOf("\nasync function runRestore(", i));
+  const i = JS.indexOf("async function tamperTurn(");
+  const src = JS.slice(i, JS.indexOf("\nconst runRestore = ", i));
   const at = (s) => { const k = src.indexOf(s); assert.ok(k >= 0, s); return k; };
   assert.ok(at("postTamper(TAMPER_FLIP_URL") < at("postTamper(TAMPER_EVENTS_URL"));
   assert.ok(at("postTamper(TAMPER_EVENTS_URL") < at("renderTamper(ui.tamper, view"));
@@ -214,8 +214,10 @@ test("runTamper: flip, events, Ref line, then the stamp only for a caught flip; 
   assert.ok(at("await h.speak(refLine, \"ref\"") < at("if (view.ok && view.caught) {"));
   assert.ok(at("if (view.ok && view.caught) {") < at('stampFor("DATA_INVALID", state.personality)'));
   assert.ok(at('stampFor("DATA_INVALID", state.personality)') < at("} else if (view.notDetected) {"));
-  assert.match(src, /if \(state\.busy \|\| state\.tampered\) return;/, "one flip at a time until restored");
-  const r = JS.slice(JS.indexOf("async function runRestore("), JS.indexOf("\n}\n", JS.indexOf("async function runRestore(")));
+  // one flip at a time until restored (busyTurn refuses a second turn while one runs)
+  assert.match(JS, /const runTamper = \(\) => \(state\.tampered \? undefined : busyTurn\("tamper", tamperTurn\)\);/);
+  assert.match(JS, /const runRestore = \(\) => \(state\.tampered \? busyTurn\("restore", restoreTurn\) : undefined\);/);
+  const r = JS.slice(JS.indexOf("async function restoreTurn("), JS.indexOf("\n}\n", JS.indexOf("async function restoreTurn(")));
   assert.match(r, /postTamper\(TAMPER_RESTORE_URL/);
   assert.match(r, /if \(view\.ok\) \{[^}]*state\.tampered = false;\s*ui\.restoreBtn\.hidden = true;/);
   assert.match(JS, /ui\.tamperBtn\.disabled = b \|\| Boolean\(state\.tampered\);/);

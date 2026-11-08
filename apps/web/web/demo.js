@@ -12,6 +12,7 @@ import { loadPersonality, mount } from "./heater/heater.js";
 import {
   CLAIM_TITLES, DEFAULT_PERSONALITY, NEVER_SEEN, TIMING, fmtP, latestFor, parseJsonl, reactFor,
   dialogueLines, refPlain, routeQuestion, splitTake, stampFor, stateForDecision, takeFor,
+  isUnmapped, unmappedLine, UNMAPPED_FALLBACK,
 } from "./heater/heater-model.js";
 import { ASK_MESSAGE, investigateGames, investigateOne, loadForecast, renderBoard } from "./market/board.js";
 import {
@@ -93,9 +94,14 @@ async function askDialogue(question) {
   try {
     const r = await fetch(DIALOGUE_URL, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }), signal: ctl.signal });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      const e = new Error(`HTTP ${r.status}`);
+      e.body = await r.json().catch(() => null);   // a blocked reply may carry Heater's message
+      throw e;
+    }
     const d = await r.json();
-    if (typeof d.claim_id !== "string") throw new Error("no claim_id in reply");
+    // A reply with no claim (blocked / unmapped) is an unmapped answer, not a reason to guess one.
+    if (typeof d.claim_id !== "string") return { ...d, claim_id: "NONE" };
     return d;
   } finally {
     clearTimeout(t);
@@ -119,10 +125,12 @@ async function answer(question) {
     state.ledger = { entries: [], verified: false, source: `not loaded (${e.message})` };
   }
   let api = null;
+  let errorBody = null;
   try {
     api = await askDialogue(question);
     log(`dialogue API: claim ${api.claim_id}, verdict ${api.verdict}, evidence ${api.evidence_record_id}`);
   } catch (e) {
+    errorBody = e.body || null;
     log(`dialogue API unavailable (${e.name === "AbortError" ? "timeout" : e.message}); offline routing`);
   }
   if (api) state.ledger = await loadLedger();      // the API may have appended a new entry
@@ -149,6 +157,9 @@ async function answer(question) {
   const exchange = forced ? null : exchangeFromApi(api, { take });
   return { claimId, entry, apiOnly, take, lastWord, exchange, sample: Boolean(api?.is_sample),
     refHeadline: forced ? null : api?.ref_headline ?? null,
+    // no registered claim and no game: Heater's bubble with the server's message, else the fallback
+    unmapped: !forced && !entry && !apiOnly && isUnmapped(claimId),
+    unmappedText: unmappedLine(api || errorBody),
     takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
@@ -399,21 +410,60 @@ function evidenceDetails(entry, verified) {
 }
 
 // ------------------------------------------------------------------ the exchange
-async function ask(question) {
-  question = question.trim();
-  if (!question || state.busy) return;
+/** One turn with Ask, the chips and the view buttons disabled. They are re-enabled in ``finally``
+ *  after everything is drawn and spoken (or skipped with Space), on every path, errors included
+ *  (bug, 8 Nov: a market card's "Walk me through this game" left Ask disabled). */
+async function busyTurn(name, fn) {
+  if (state.busy) return;
+  state.busy = true;
+  setBusy(true);
+  try {
+    await fn();
+  } catch (e) {
+    log(`${name} failed: ${e?.message || e}`);
+    // a question that failed part-way is never left silent: Heater's fallback line
+    if (name === "question" && document.body.dataset.view === "talk") {
+      try { await showHeaterLine(UNMAPPED_FALLBACK); } catch { /* the controls still come back below */ }
+    }
+  } finally {
+    state.busy = false;
+    state.exchangeRunning = false;
+    state.skip = false;
+    ui.skipHint.hidden = true;
+    setBusy(false);
+    if (document.body.dataset.phase !== "done") document.body.dataset.phase = "done";
+  }
+}
+
+/** Heater alone says one line in his bubble (no Ref card, no stamp). */
+async function showHeaterLine(text) {
+  const h = state.heater;
+  ui.ref.hidden = true;
+  ui.stamp.hidden = true;
+  ui.convo.hidden = true;
+  setCast(false);
+  ui.take.textContent = text;
+  ui.bubble.hidden = false;
+  restartAnim(ui.bubble);
+  document.body.dataset.phase = "take";
+  h?.setState("unsure", { restart: true });
+  await h?.speak(text, "heater", { voiceOn: state.voiceOn });
+  document.body.dataset.phase = "done";
+}
+
+const ask = (question) => {
+  question = String(question || "").trim();
+  if (!question) return;
+  return busyTurn("question", () => askTurn(question));
+};
+
+async function askTurn(question) {
   // Free text first goes to Max's router: tonight's markets, one game's card, or a what-if.
   // Anything else (and any router failure) continues to the dialogue below.
-  state.busy = true;
-  setBusy(true);
   const routed = await routeMessage(question);
-  state.busy = false;
-  setBusy(false);
   log(`route: ${routed.action}${routed.game_id ? ` ${routed.game_id}` : ""} (${routed.reason})`);
   if (routed.action === "OPEN_BOARD" || routed.action === "OPEN_CARD") return openBoardFor(routed);
-  if (routed.action === "SCENARIO") return runScenario(question, routed.game_id);
-  state.busy = true;
-  setBusy(true);
+  if (routed.action === "SCENARIO") return scenarioTurn(question, routed.game_id);
   setView("talk");
   document.body.dataset.phase = "asking";
   const h = state.heater;
@@ -430,6 +480,12 @@ async function ask(question) {
   state.current = a;
   log(`claim ${a.claimId}; record ${a.entry ? a.entry.evidence_id.slice(0, 8) : "none"}; line from ${a.takeSource}`);
 
+  // No registered claim and no game: Heater says so in his bubble instead of staying silent.
+  if (a.unmapped) {
+    log(`unmapped question: Heater's ${a.unmappedText === UNMAPPED_FALLBACK ? "fallback" : "server"} line`);
+    return showHeaterLine(a.unmappedText);
+  }
+
   // With Frost's questions in the answer: Heater, Frost, the Ref in the middle column.
   if (a.exchange) {
     const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
@@ -445,8 +501,6 @@ async function ask(question) {
       sample: a.sample,
     });
     document.body.dataset.phase = "done";
-    state.busy = false;
-    setBusy(false);
     return;
   }
 
@@ -501,8 +555,6 @@ async function ask(question) {
     await h.speak(react, "heater", { voiceOn: state.voiceOn });
   }
   document.body.dataset.phase = "done";
-  state.busy = false;
-  setBusy(false);
 }
 
 function setBusy(b) {
@@ -521,10 +573,8 @@ function setBusy(b) {
 const mockFetch = TAMPER === "mock" ? mockTamperFetch() : null;
 const tamperFetch = () => mockFetch || globalThis.fetch.bind(globalThis);
 
-async function runTamper() {
-  if (state.busy || state.tampered) return;
-  state.busy = true;
-  setBusy(true);
+const runTamper = () => (state.tampered ? undefined : busyTurn("tamper", tamperTurn));
+async function tamperTurn() {
   setView("talk");
   reset();
   voice.stopSpeaking();
@@ -584,14 +634,10 @@ async function runTamper() {
     h.setState("unsure", { restart: true });
   }
   document.body.dataset.phase = "done";
-  state.busy = false;
-  setBusy(false);
 }
 
-async function runRestore() {
-  if (state.busy || !state.tampered) return;
-  state.busy = true;
-  setBusy(true);
+const runRestore = () => (state.tampered ? busyTurn("restore", restoreTurn) : undefined);
+async function restoreTurn() {
   const res = await postTamper(TAMPER_RESTORE_URL, tamperFetch());
   const view = restoreView(res.body, { httpStatus: res.status });
   log(`tamper restore: HTTP ${res.status}; ${view.ok ? "restored" : "failed"}`);
@@ -602,8 +648,6 @@ async function runRestore() {
     state.tampered = false;
     ui.restoreBtn.hidden = true;
   }
-  state.busy = false;
-  setBusy(false);
 }
 
 // ------------------------------------------------------------------ views: talk, market board, idea board
@@ -663,10 +707,8 @@ function ideaDetails(r, f) {
 }
 
 /** Heater pitches one idea; the Ref words Research's verdict; the stamp lands. */
-async function askIdea(r, f) {
-  if (state.busy) return;
-  state.busy = true;
-  setBusy(true);
+const askIdea = (r, f) => busyTurn("idea", () => ideaTurn(r, f));
+async function ideaTurn(r, f) {
   setView("talk");
   reset();
   voice.stopSpeaking();
@@ -706,8 +748,6 @@ async function askIdea(r, f) {
   ui.evidenceBody.replaceChildren(ideaDetails(r, f));
   ui.evidence.hidden = false;
   document.body.dataset.phase = "done";
-  state.busy = false;
-  setBusy(false);
 }
 
 // ------------------------------------------------------------------ market board
@@ -769,10 +809,8 @@ function scenarioDetails(s, data) {
 }
 
 /** Heater reacts to one scenario; the Ref words the estimate and keeps "Edge unverified". */
-async function askScenario(g, s, data) {
-  if (state.busy) return;
-  state.busy = true;
-  setBusy(true);
+const askScenario = (g, s, data) => busyTurn("scenario card", () => scenarioCardTurn(g, s, data));
+async function scenarioCardTurn(g, s, data) {
   setView("talk");
   reset();
   voice.stopSpeaking();
@@ -812,8 +850,6 @@ async function askScenario(g, s, data) {
   ui.evidenceBody.replaceChildren(scenarioDetails(s, data));
   ui.evidence.hidden = false;
   document.body.dataset.phase = "done";
-  state.busy = false;
-  setBusy(false);
 }
 
 /** Open the board from a typed message; Heater introduces it, or the named game's card. */
@@ -868,17 +904,15 @@ function whatifDetails(est) {
   return dl;
 }
 
+/** The end of a turn; busyTurn re-enables the controls when the turn's function returns. */
 function finishTurn(endState) {
   if (endState) state.heater.setState(endState, { restart: true });
   document.body.dataset.phase = "done";
-  state.busy = false;
-  setBusy(false);
 }
 
 /** Heater reads the scenario back; nothing is estimated until the user confirms. */
-async function runScenario(question, gameId) {
-  state.busy = true;
-  setBusy(true);
+const runScenario = (question, gameId) => busyTurn("what-if", () => scenarioTurn(question, gameId));
+async function scenarioTurn(question, gameId) {
   setView("talk");
   reset();
   showAsked(question);
@@ -914,10 +948,8 @@ async function runScenario(question, gameId) {
 }
 
 /** After confirmation: the Ref runs it; baseline vs scenario side by side, marked with the server's stamp. */
-async function runEstimate(it) {
-  if (state.busy) return;
-  state.busy = true;
-  setBusy(true);
+const runEstimate = (it) => busyTurn("what-if estimate", () => estimateTurn(it));
+async function estimateTurn(it) {
   const h = state.heater;
   document.body.dataset.phase = "check";
   ui.refTitle.textContent = `${it.game} · what-if`;
@@ -977,10 +1009,8 @@ const MARKET_OPENER = "Let's put this card under the lights.";
  *  The card's board answer was made without the model (empty message). Asking sends the card again
  *  with ASK_MESSAGE, so Max's server has the model voice it, and the card is redrawn from that answer
  *  so the card and the Ref say the same thing. If that call fails, the board's answer is used. */
-async function askMarket(g) {
-  if (!g.resp || state.busy) return;
-  state.busy = true;
-  setBusy(true);
+const askMarket = (g) => (g?.resp ? busyTurn("market card", () => marketTurn(g)) : undefined);
+async function marketTurn(g) {
   setView("talk");
   reset();
   showAsked(ASK_MESSAGE);   // what the card's Ask sends to Max's server
@@ -1023,8 +1053,6 @@ async function askMarket(g) {
     });
     document.body.dataset.phase = "done";
     log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);
-    state.busy = false;
-    setBusy(false);
     return;
   }
   ui.take.textContent = take;
@@ -1065,8 +1093,6 @@ async function askMarket(g) {
   }
   document.body.dataset.phase = "done";
   log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);
-  state.busy = false;
-  setBusy(false);
 }
 
 // ------------------------------------------------------------------ voice input
@@ -1188,10 +1214,13 @@ async function main() {
   if (p) { state.personality = p; state.personalitySource = "heater_personality.json"; }
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });
   // Space skips Heater and Frost's back-and-forth straight to the stamp (only while it runs).
+  // After the stamp (the reactions), Space stops the voice that is talking, so the turn ends and
+  // busyTurn re-enables Ask.
   document.addEventListener("keydown", (e) => {
-    if (!isSkipKey(e, { running: state.exchangeRunning })) return;
+    if (!isSkipKey(e, { running: state.exchangeRunning || state.busy })) return;
     e.preventDefault();
-    skipToStamp();
+    if (state.exchangeRunning) skipToStamp();
+    else { globalThis.speechSynthesis?.cancel(); log("skip: Space, speech stopped"); }
   });
   ui.chips.forEach((c) => c.addEventListener("click", () => { ui.q.value = c.textContent; ask(c.textContent); }));
   if (DEBUG) ledgerReady().then(buildDebug, () => {});

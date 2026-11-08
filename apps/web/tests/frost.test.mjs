@@ -313,13 +313,13 @@ test("a result chip reads as a fact, not a speaker: centred, grey, no tail, smal
 });
 
 test("ask() runs the Frost exchange only when the answer has one; otherwise the Heater-only flow is unchanged", () => {
-  const src = fnBody("ask");
+  const src = fnBody("askTurn");
   assert.ok(src.indexOf("if (a.exchange) {") < src.indexOf("// 1. Heater's hot take"));
   assert.match(src, /if \(a\.exchange\) \{[\s\S]*?await runExchange\(\{ \.\.\.a\.exchange, heaterReaction \}, \{[\s\S]*?frostEnd: frostEndState\(decision\),[\s\S]*?return;\s*\}/);
 });
 
 test("rehearsal fix 3: a market card with Frost's challenges runs the same sequence; without them, the old card flow", () => {
-  const src = fnBody("askMarket");
+  const src = fnBody("marketTurn");
   const at = (s) => { const i = src.indexOf(s); assert.ok(i >= 0, s); return i; };
   assert.ok(at("const exchange = exchangeFromApi(resp, { take });") < at("ui.take.textContent = take;"));
   assert.match(src, /if \(exchange\) \{\s*await runExchange\(\{ \.\.\.exchange, heaterReaction: marketReaction\(split, resp\) \}, \{/);
@@ -344,7 +344,8 @@ test("bubbles carry no name tag: one text paragraph, side and colour only", () =
 });
 
 test("Space is wired to skip, and the Ref's voice avoids Frost's while he is on stage", () => {
-  assert.match(JS, /document\.addEventListener\("keydown", \(e\) => \{\s*if \(!isSkipKey\(e, \{ running: state\.exchangeRunning \}\)\) return;\s*e\.preventDefault\(\);\s*skipToStamp\(\);/);
+  // before the stamp Space skips to it; after it (the reactions) Space stops the voice, so the turn ends
+  assert.match(JS, /document\.addEventListener\("keydown", \(e\) => \{\s*if \(!isSkipKey\(e, \{ running: state\.exchangeRunning \|\| state\.busy \}\)\) return;\s*e\.preventDefault\(\);\s*if \(state\.exchangeRunning\) skipToStamp\(\);\s*else \{ globalThis\.speechSynthesis\?\.cancel\(\);/);
   assert.match(JS, /state\.heater\.voicePicker = frost \? pickCastVoices : null;/);
   const heaterJs = readFileSync(join(WEB, "heater", "heater.js"), "utf8");
   assert.match(heaterJs, /\(this\.voicePicker \|\| pickVoices\)\(synth\.getVoices\(\)\)/);
@@ -416,4 +417,42 @@ test("Ref card: double-size badge, headline (ref_headline or verdict + title), e
   assert.match(JS, /ui\.refTitle\.textContent = refHeadline\(show\.headline, \{ verdict: show\.verdict, claimId: show\.claimId, title: show\.title, stampText: show\.stamp\.text \}\);/);
   assert.match(JS, /headline: a\.refHeadline, verdict: decision, claimId: a\.claimId,/);
   assert.match(JS, /headline: resp\.ref_headline,/);
+});
+
+test("bug 8 Nov: every turn re-enables Ask in finally, on every path; no flow sets busy itself", () => {
+  const i = JS.indexOf("async function busyTurn(");
+  const src = JS.slice(i, JS.indexOf("\n}\n", i));
+  assert.match(src, /if \(state\.busy\) return;\s*state\.busy = true;\s*setBusy\(true\);\s*try \{\s*await fn\(\);/);
+  assert.match(src, /\} finally \{\s*state\.busy = false;\s*state\.exchangeRunning = false;[\s\S]*setBusy\(false\);/);
+  // the only places that set busy are busyTurn (and setBusy's own definition)
+  assert.equal([...JS.matchAll(/state\.busy = /g)].length, 2);
+  assert.equal([...JS.matchAll(/setBusy\((true|false)\)/g)].length, 2);
+  assert.match(JS, /const ask = \(question\) => \{[^}]*return busyTurn\("question", \(\) => askTurn\(question\)\);/);
+  for (const [entry, name] of [["askMarket", "market card"], ["askIdea", "idea"], ["askScenario", "scenario card"],
+    ["runScenario", "what-if"], ["runEstimate", "what-if estimate"], ["runTamper", "tamper"], ["runRestore", "restore"]]) {
+    assert.match(JS, new RegExp(`const ${entry} = [^\\n]*busyTurn\\("${name}"`), entry);
+  }
+  // the market card's turn, and the question's turn, no longer clear busy by hand on one path only
+  assert.doesNotMatch(fnBody("marketTurn"), /busy/);
+  assert.doesNotMatch(fnBody("askTurn"), /state\.busy|setBusy/);
+});
+
+test("a question with no registered claim: Heater's bubble with the server's message, else the fallback", async () => {
+  const { UNMAPPED_FALLBACK, isUnmapped, unmappedLine } = await import("../web/heater/heater-model.js");
+  assert.equal(UNMAPPED_FALLBACK, "I don't call games. Ask me about the hot hand, home advantage, rest, or pick a game from Tonight's games.");
+  for (const c of ["NONE", "", "  ", null, undefined, 3]) assert.equal(isUnmapped(c), true, String(c));
+  for (const c of ["HH-K3", "GP-REST", "CONF-HA"]) assert.equal(isUnmapped(c), false, c);
+  assert.equal(unmappedLine({ message: " Server says no. ", heater_text: "other" }), "Server says no.");
+  assert.equal(unmappedLine({ heater_text: "Max's no-test line." }), "Max's no-test line.");
+  for (const b of [null, undefined, {}, { message: "" }, { error: "turn failed: X" }]) assert.equal(unmappedLine(b), UNMAPPED_FALLBACK);
+  // wiring: decided in answer(), drawn before the Frost exchange and the Ref, with no Ref card or stamp
+  assert.match(JS, /unmapped: !forced && !entry && !apiOnly && isUnmapped\(claimId\),\s*unmappedText: unmappedLine\(api \|\| errorBody\),/);
+  const src = fnBody("askTurn");
+  assert.ok(src.indexOf("if (a.unmapped) {") > 0 && src.indexOf("if (a.unmapped) {") < src.indexOf("if (a.exchange) {"));
+  assert.match(src, /if \(a\.unmapped\) \{[\s\S]*?return showHeaterLine\(a\.unmappedText\);\s*\}/);
+  const show = fnBody("showHeaterLine");
+  assert.match(show, /ui\.ref\.hidden = true;\s*ui\.stamp\.hidden = true;/);
+  // a 200 reply without a claim is unmapped (not keyword-guessed); an error body's message is kept
+  assert.match(JS, /if \(typeof d\.claim_id !== "string"\) return \{ \.\.\.d, claim_id: "NONE" \};/);
+  assert.match(JS, /e\.body = await r\.json\(\)\.catch\(\(\) => null\);/);
 });

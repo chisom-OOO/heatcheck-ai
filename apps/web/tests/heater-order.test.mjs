@@ -146,24 +146,26 @@ function order(src) {
 }
 
 test("demo.js, every Ref flow: Heater's opener, then the Ref, then the stamp, then the reaction", () => {
-  for (const name of ["ask", "askIdea", "askScenario", "askMarket"]) {
+  // each flow's turn (busyTurn wraps it: ask -> askTurn, askIdea -> ideaTurn, askScenario ->
+  // scenarioCardTurn, askMarket -> marketTurn)
+  for (const name of ["askTurn", "ideaTurn", "scenarioCardTurn", "marketTurn"]) {
     const o = order(fnSource(name));
     assert.ok(o.firstHeater >= 0 && o.firstHeater < o.ref && o.ref < o.stamp, `${name}: opener < Ref < stamp`);
     for (const [i, arg] of o.heaterAfter) assert.ok(i > o.stamp, `${name}: Heater's ${arg} is said only after the stamp`);
   }
-  const ask = fnSource("ask");
+  const ask = fnSource("askTurn");
   assert.equal(order(ask).firstHeaterArg, "a.take");
   assert.deepEqual(order(ask).heaterAfter.map(([, a]) => a), ["react"]);
   assert.ok(/const react = a\.lastWord \|\| /.test(ask), "Max's reaction is the last word, else reactFor");
   const answer = fnSource("answer");
   assert.ok(/dialogueLines\(forced \? null : api, \(\) => takeFor\(claimId, state\.personality, state\.turn\)\)/.test(answer));
   assert.ok(!/take = [^\n]*heater_text/.test(answer), "the API's text is used only through dialogueLines");
-  const market = fnSource("askMarket");
+  const market = fnSource("marketTurn");
   assert.equal(order(market).firstHeaterArg, "take");
   assert.ok(/const take = split\.first \|\| MARKET_OPENER;/.test(market));
   assert.ok(/const reaction = marketReaction\(split, resp\);/.test(market));
   assert.deepEqual(order(market).heaterAfter.map(([, a]) => a), ["reaction"]);
-  for (const name of ["ask", "askMarket"]) {
+  for (const name of ["askTurn", "marketTurn"]) {
     const src = fnSource(name);
     assert.ok(src.indexOf("ui.react.hidden = false") > order(src).stamp, `${name}: reaction shown after the stamp`);
   }

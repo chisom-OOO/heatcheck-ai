@@ -238,10 +238,11 @@ test("demo.js: the home view is drawn before any network wait; the board loads o
 });
 
 test("demo.js: Ask re-investigates with ASK_MESSAGE before Heater speaks, redraws the card, falls back to the board answer", () => {
-  const src = fnSource("askMarket");
+  const src = fnSource("marketTurn");   // askMarket = busyTurn around marketTurn
   const call = src.indexOf("investigateOne(g, ASK_MESSAGE)");
   assert.ok(call > 0 && call < src.indexOf('"heater"'), "the model's line is fetched before Heater's first line");
   assert.ok(/if \(asked\.resp\) \{\s*g\.resp = asked\.resp;\s*state\.boardView\?\.update\(g\);/.test(src), "card and Ref agree");
   assert.ok(/const resp = g\.resp;/.test(src) && src.indexOf("const resp = g.resp;") > call, "a failed call keeps the board's answer");
-  assert.ok(/if \(!g\.resp \|\| state\.busy\) return;/.test(src), "a pending card cannot be asked about");
+  assert.ok(/const askMarket = \(g\) => \(g\?\.resp \? busyTurn\("market card", \(\) => marketTurn\(g\)\) : undefined\);/.test(DEMO),
+    "a pending card cannot be asked about; busyTurn refuses while another turn runs");
 });
