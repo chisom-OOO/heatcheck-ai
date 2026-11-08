@@ -120,7 +120,9 @@ test("the sample response maps to take, three questions with chips, Frost's and 
 test("sample mode only with ?frost=sample, and the page always labels it", () => {
   assert.match(JS, /const FROST_SAMPLE = params\.get\("frost"\) === "sample" \?/);
   assert.match(JS, /return \{ \.\.\.\(await r\.json\(\)\), is_sample: true \};/);
-  assert.match(JS, /ui\.sampleFlag\.hidden = !a\.sample;/);
+  assert.match(JS, /ui\.sampleFlag\.hidden = !show\.sample;/);
+  assert.match(JS, /sample: a\.sample,/);
+  assert.ok(!/"47\.27/.test(readFileSync(join(WEB, "frost", "fixtures", "sample-dialogue.json"), "utf8")), "no number that is not in the record");
   assert.match(HTML, /id="sample-flag" hidden>SAMPLE RESPONSE[^<]*not a live answer</);
 });
 
@@ -262,15 +264,36 @@ test("runExchange handles every step kind, in the sequence's order, and Frost sl
   assert.match(JS, /const CHIP_PAUSE_MS = 1200;/);
   assert.ok(at('f.setState("unconvinced")') > at('st.kind === "ruling"'));
   assert.ok(at("state.exchangeRunning = false;") > at('st.kind === "stamp"'), "Space stops working once the stamp lands");
-  assert.ok(at("f.setState(frostEndState(decision))") > at('st.kind === "stamp"'));
+  assert.ok(at("f.setState(show.frostEnd)") > at('st.kind === "stamp"'));
   assert.ok(at('f.setState("idle");\n    h.setState("idle");') > at('st.kind === "reaction"'));
 });
 
-test("a chip is its own item on Frost's side, with no voice; its source is only the tooltip", () => {
+test("rehearsal fix 2: the thread follows each line, chips fold at the ruling, and the Ref card and stamp are scrolled into view", () => {
+  const src = fnBody("runExchange");
+  const at = (s) => { const i = src.indexOf(s); assert.ok(i >= 0, s); return i; };
+  assert.ok(at('keepInView(convoBubble("frost", st.text))') > at('st.kind === "question"'));
+  assert.ok(at("keepInView(convoChip(st.chip))") > at('st.kind === "chip"'));
+  const ruling = at('st.kind === "ruling"');
+  const stamp = at('st.kind === "stamp"');
+  const reaction = at('st.kind === "reaction"');
+  assert.ok(at('ui.convo.classList.add("settled")') > ruling);
+  const views = [...src.matchAll(/keepInView\(ui\.ref, "end"\)/g)].map((m) => m.index);
+  assert.ok(views.some((i) => i > ruling && i < stamp), "when the card lands");
+  assert.ok(views.some((i) => i > stamp && i < reaction), "when the stamp lands");
+  assert.ok(views.some((i) => i > reaction), "after each reaction (it lands above the card)");
+  assert.match(JS, /el\?\.scrollIntoView\?\.\(\{ block, behavior: reduce \? "auto" : "smooth" \}\)/);
+  assert.match(CSS, /body\[data-cast="frost"\] \.ref \{ scroll-margin-bottom: calc\(var\(--ru-h\) \+ 64px\);/, "clear of the fixed footer");
+  assert.match(CSS, /body\[data-cast="frost"\] \.ref\.slammed \{ margin-bottom: 56px; \}/, "room under the card for the hanging stamp");
+  assert.match(CSS, /\.convo\.settled \.cv-chip \{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis;/);
+  assert.match(JS, /ui\.convo\.classList\.remove\("settled"\);/, "reset unfolds them");
+});
+
+test("a chip is its own item on Frost's side, with no voice; the tooltip holds its full text and source", () => {
   const i = JS.indexOf("function convoChip(");
   const src = JS.slice(i, JS.indexOf("\n}\n", i));
   assert.match(src, /li\.className = `cv-chip \$\{chip\.kind\}`/);
-  assert.match(src, /li\.title = `Source: \$\{chip\.source\}`/);
+  assert.match(src, /li\.title = chip\.source \? `\$\{chip\.text\} \(source: \$\{chip\.source\}\)` : chip\.text;/);
+  assert.match(src, /li\.tabIndex = 0;/);
   assert.ok(!/speak/.test(src));
   assert.match(CSS, /\.cv-chip \{\s*align-self: flex-end; max-width: 80%;/);
 });
@@ -278,7 +301,24 @@ test("a chip is its own item on Frost's side, with no voice; its source is only 
 test("ask() runs the Frost exchange only when the answer has one; otherwise the Heater-only flow is unchanged", () => {
   const src = fnBody("ask");
   assert.ok(src.indexOf("if (a.exchange) {") < src.indexOf("// 1. Heater's hot take"));
-  assert.match(src, /if \(a\.exchange\) \{\s*await runExchange\(a, turn\);[\s\S]*?return;\s*\}/);
+  assert.match(src, /if \(a\.exchange\) \{[\s\S]*?await runExchange\(\{ \.\.\.a\.exchange, heaterReaction \}, \{[\s\S]*?frostEnd: frostEndState\(decision\),[\s\S]*?return;\s*\}/);
+});
+
+test("rehearsal fix 3: a market card with Frost's challenges runs the same sequence; without them, the old card flow", () => {
+  const src = fnBody("askMarket");
+  const at = (s) => { const i = src.indexOf(s); assert.ok(i >= 0, s); return i; };
+  assert.ok(at("const exchange = exchangeFromApi(resp, { take });") < at("ui.take.textContent = take;"));
+  assert.match(src, /if \(exchange\) \{\s*await runExchange\(\{ \.\.\.exchange, heaterReaction: marketReaction\(split, resp\) \}, \{/);
+  for (const s of ["refLine: () => marketRefPlain(resp)", "stamp: marketStamp(resp)", "heaterEnd: marketEndState(resp)",
+    "frostEnd: frostEndState(resp.verdict)", "evidence: () => marketDetails(resp)"]) assert.ok(at(s) < at("ui.take.textContent = take;"), s);
+  assert.ok(at("return;") < at("ui.take.textContent = take;"), "the old flow does not run after the exchange");
+  // Max's /api/investigate answer shape (docs/DIALOGUE_API.md): the same list and reaction as the dialogue
+  const card = { frost: [{ check: "model_bias", question: "Q?", chip: "The calibration note says so.", source: "calibration" }],
+    frost_reaction: "Worth a look. Not proof." };
+  const ex = exchangeFromApi(card, { take: "Bulls at 36.4%." });
+  assert.deepEqual(exchangeSteps({ ...ex, heaterReaction: "Fair call." }).map((s) => s.kind),
+    ["take", "question", "chip", "ruling", "stamp", "reaction", "reaction"]);
+  assert.equal(frostEndState("Worth investigating · Edge unverified"), "unconvinced");
 });
 
 test("bubbles carry no name tag: one text paragraph, side and colour only", () => {
@@ -303,7 +343,12 @@ test("layout: Heater left, conversation middle, Frost right; small portraits on 
   assert.match(CSS, /grid-template-areas: "hero frost" "talk talk" "ask ask";/);
   assert.match(CSS, /\.cv-heater::before \{ left: -24px;/, "Heater's tail points left");
   assert.match(CSS, /\.cv-frost::before \{ right: -24px;/, "Frost's tail points right");
-  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(420px, 760px\) minmax\(0, 1fr\);/);
+  // rehearsal fix 1: the middle column keeps at least 560 px; side columns stretch, so a figure never
+  // spills over the conversation; at laptop widths both characters drop to about 60% height
+  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(560px, 760px\) minmax\(0, 1fr\);/);
+  assert.match(CSS, /\.frost-side \{ grid-area: frost; justify-self: stretch;[^}]*overflow: hidden;/);
+  assert.match(CSS, /body\[data-cast="frost"\] \.hero \{ justify-self: stretch;[^}]*overflow: hidden;/);
+  assert.match(CSS, /@media \(min-width: 901px\) and \(max-width: 1680px\) \{\s*body\[data-cast="frost"\] \.hero \.h-root, body\[data-cast="frost"\] \.f-root \{\s*height: min\(calc\(\(100vh - 230px\) \* \.6\), 432px\);/);
   assert.match(CSS, /@media \(max-width: 900px\) \{\s*\/\* small portraits/);
   assert.match(CSS, /\.cv-heater \{[^}]*border: 3px solid #FF7A1A/);
   assert.match(CSS, /\.cv-frost \{[^}]*border: 2px solid var\(--ice\)/);
