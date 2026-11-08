@@ -274,6 +274,8 @@ def test_route_recorded_mode_end_to_end(tmp_path):
     code, out = run_investigation(req, fc, cfg)
     assert code == 200 and out["verdict"] == VERDICT_CANT  # stored mapping is PROPOSED
     assert out["as_of_utc"] == POLY_RECEIVED and "RECORDED" in out["data_note"]
+    # The Ref line itself says RECORDED with the quote time, not only the evidence note.
+    assert out["ref_text"].endswith(f"RECORDED: price received {POLY_RECEIVED[:19]}Z, not live.")
     assert cfg.ledger.get(out["evidence_id"])["identity"]["game"]["game_id"] == GAME
     code, out = run_investigation({**req, "game_id": "nba:0022600999"}, fc, cfg)
     assert code == 404

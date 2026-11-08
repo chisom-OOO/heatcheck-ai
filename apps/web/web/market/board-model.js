@@ -96,6 +96,7 @@ export function cardView(row, { resp = null, error = null, forecast = null, isSa
   const q = resp?.quote || null;
   const reasons = resp ? failedReasons(resp) : [error || "No comparison was run"];
   const verdict = resp?.verdict === VERDICT_WORTH ? VERDICT_WORTH : VERDICT_CANT;
+  const recorded = !sample && resp?.mode === "RECORDED";
   return {
     title: `${row.away_team} at ${home}`,
     tip: `Tip ${fmtUtc(row.tip_utc)}`,
@@ -108,11 +109,15 @@ export function cardView(row, { resp = null, error = null, forecast = null, isSa
         : "No price",
     diff: resp ? diffText(resp) : sample ? "SAMPLE" : VERDICT_CANT,
     cutoff: fmtUtc(resp?.forecast?.data_cutoff_utc || forecast?.data_cutoff_utc),
-    received: q ? fmtUtc(q.received_utc, { seconds: true }) : "no price received",
+    recorded,
+    received: q ? fmtUtc(q.received_utc, { seconds: true }) + (recorded ? " (RECORDED, not live)" : "")
+      : "no price received",
     inputs: inputsPlain(resp?.forecast?.inputs_used || forecast?.inputs_used).join(", "),
     verdict,
     verdictKind: verdict === VERDICT_WORTH ? "worth" : "cant",
-    why: verdict === VERDICT_WORTH ? "Same game, team and outcome; the price is fresh. Nothing shows the model beats the market." : reasons.join("; "),
+    why: verdict === VERDICT_WORTH
+      ? `Same game, team and outcome; the price ${recorded ? "was fresh when recorded" : "is fresh"}. Nothing shows the model beats the market.`
+      : reasons.join("; "),
     dataNote: resp?.data_note || (sample ? "SAMPLE forecast: values are invented, not a real forecast." : ""),
     canAsk: Boolean(resp),
   };
@@ -120,12 +125,16 @@ export function cardView(row, { resp = null, error = null, forecast = null, isSa
 
 /** The Ref's plain words for an investigation: the verdict first, then why. */
 export function marketRefPlain(resp) {
+  const recorded = !resp?.is_sample && resp?.mode === "RECORDED";
+  const rec = recorded
+    ? ` RECORDED: price received ${resp?.quote ? fmtUtc(resp.quote.received_utc, { seconds: true }) : "unknown time"}, not live.`
+    : "";
   if (resp?.verdict === VERDICT_WORTH) {
-    return "Worth investigating, edge unverified. Same game, same team, same outcome, and the price is fresh. "
-      + "Nothing shows this model beats the market, so the gap is a question to look into, not a finding.";
+    return `Worth investigating, edge unverified. Same game, same team, same outcome, and the price ${recorded ? "was fresh when recorded" : "is fresh"}. `
+      + "Nothing shows this model beats the market, so the gap is a question to look into, not a finding." + rec;
   }
   const why = failedReasons(resp);
-  return `Can't compare: ${why.length ? why.join("; ") : "the comparison could not be run"}.`;
+  return `Can't compare: ${why.length ? why.join("; ") : "the comparison could not be run"}.${rec}`;
 }
 
 /** Stamp text and colour class: SAMPLE says so plainly. */

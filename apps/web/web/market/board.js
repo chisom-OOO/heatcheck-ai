@@ -102,6 +102,7 @@ export function renderBoard(root, board, { onAsk } = {}) {
     top.append(el("h3", "mcard-title", v.title), el("span", "mcard-tip", v.tip));
     card.append(top);
     if (v.sample) card.append(el("span", "mcard-sample", "SAMPLE"));
+    if (v.recorded) card.append(el("span", "mcard-sample mcard-recorded", "RECORDED"));
     const dl = el("dl", "mcard-grid");
     const row = (k, val, cls = "") => { dl.append(el("dt", "", k), el("dd", cls, val)); };
     row("Forecast", v.forecast);

@@ -452,6 +452,10 @@ def investigate(
 
     quote = card["quote"]
     row = card["forecast_row"]
+    if mode == "RECORDED" and not lf.is_sample:
+        # Say on screen that the price is recorded, with its time, not only in the evidence.
+        when = (quote["body"]["received_utc"][:19] + "Z") if quote is not None else "no price"
+        ref_text = f"{ref_text} RECORDED: price received {when}, not live."
     data_note = ("SAMPLE forecast: values are invented, not a real forecast." if lf.is_sample else
                  "RECORDED game: quote evaluated as of its capture time, not live."
                  if mode == "RECORDED" else "LIVE quote.")

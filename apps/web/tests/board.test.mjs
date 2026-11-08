@@ -139,6 +139,26 @@ test("a real (non-sample) comparison renders as Worth investigating with the gap
   assert.match(B.marketRefPlain(resp), /^Worth investigating, edge unverified\./);
 });
 
+test("a RECORDED comparison says RECORDED with the quote time on the card and in the Ref line", () => {
+  const live = { ...ex("investigate_test_forecast_pm").body, mode: "LIVE" };   // capture is RECORDED
+  const row = ex("live_forecast_sample").body.forecast.games.find((g) => g.game_id === live.game.game_id);
+  const lv = B.cardView(row, { resp: live });
+  assert.equal(lv.recorded, false);
+  assert.ok(!lv.received.includes("RECORDED") && !B.marketRefPlain(live).includes("RECORDED"));
+  const resp = { ...live, mode: "RECORDED" };
+  const v = B.cardView(row, { resp });
+  const when = B.fmtUtc(resp.quote.received_utc, { seconds: true });
+  assert.equal(v.recorded, true);
+  assert.equal(v.received, `${when} (RECORDED, not live)`);
+  assert.match(v.why, /was fresh when recorded/);
+  const ref = B.marketRefPlain(resp);
+  assert.match(ref, /^Worth investigating, edge unverified\./);
+  assert.ok(ref.endsWith(`RECORDED: price received ${when}, not live.`), ref);
+  assert.ok(!ref.includes("price is fresh"));
+  // SAMPLE wins over RECORDED: never dress invented values as a recording.
+  assert.equal(B.cardView(row, { resp: { ...resp, is_sample: true } }).recorded, false);
+});
+
 test("Kalshi bids-only, unknown game and a down API all say Can't compare plainly", async () => {
   const kx = ex("investigate_kalshi").body;
   const row = ex("live_forecast_sample").body.forecast.games[0];

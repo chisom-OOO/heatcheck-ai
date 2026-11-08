@@ -1,0 +1,1750 @@
+{
+  "format": "heatcheck-live-quotes/1",
+  "label": "READ-ONLY VENUE PRICES",
+  "forecast_input": {
+    "path": "data/live/forecasts.json",
+    "sha256": "cf0824723c4104469011e579740f0d84226628f41fbc4ead930b824c0915cd90",
+    "is_sample": false,
+    "source": {
+      "results": "balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie",
+      "fetched_utc": "2026-11-08T00:04:30Z",
+      "sha256": "bc04834a19aeb61f604890cf0efca5223934aade828a219ae5e3ea26fa422603",
+      "cross_check": "NOT_RUN"
+    },
+    "data_cutoff_utc": "2026-11-07T07:00:00Z"
+  },
+  "sample_warning": null,
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "outcome_captured": "home team wins (the forecast's p_home_win)",
+  "run_started_utc": "2026-11-08T00:19:42.809785Z",
+  "run_finished_utc": "2026-11-08T00:19:54.250822Z",
+  "counts": {
+    "MATCHED": 26,
+    "REJECTED": 2
+  },
+  "games": [
+    {
+      "game_id": "nba:0022600189",
+      "tip_utc": "2026-11-07T22:00:00Z",
+      "home_team_id": "nba-team:1610612754",
+      "away_team_id": "nba-team:1610612743",
+      "home": "IND",
+      "away": "DEN",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-den-ind-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-den-ind-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "687f4c96a4175e64d4815477016a5d975d360ccf4c6d0c65d01756ec1fb84fc3",
+            "fetch_start_utc": "2026-11-08T00:19:42.860596Z",
+            "received_utc": "2026-11-08T00:19:42.926922Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=100155597339514587735512788056351223587036241159790520590685103796616707991866",
+            "http_status": 200,
+            "payload_sha256": "0b3dd07103f01646bd276eede755362a8a7af08e706ff09c5998432b1fb1de2b",
+            "fetch_start_utc": "2026-11-08T00:19:42.948477Z",
+            "received_utc": "2026-11-08T00:19:43.019091Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "100155597339514587735512788056351223587036241159790520590685103796616707991866",
+          "label": "Pacers",
+          "team_id": "nba-team:1610612754",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.045",
+          "best_ask": "0.048",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:43.178Z",
+          "fetch_start_utc": "2026-11-08T00:19:42.948477Z",
+          "received_utc": "2026-11-08T00:19:43.019091Z",
+          "received_before_tip": false,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600189-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07DENIND-IND",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07DENIND",
+            "http_status": 200,
+            "payload_sha256": "12a34207e005599b8a2814814ad034de67303f249b2b8f3974caf5a1ee72e0fb",
+            "fetch_start_utc": "2026-11-08T00:19:43.035429Z",
+            "received_utc": "2026-11-08T00:19:43.209780Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND",
+            "http_status": 200,
+            "payload_sha256": "2da98dc36037e473e3b44cde202059a83d7317d67e018fb3719d15ce20c09928",
+            "fetch_start_utc": "2026-11-08T00:19:43.227127Z",
+            "received_utc": "2026-11-08T00:19:43.575554Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND/orderbook",
+            "http_status": 200,
+            "payload_sha256": "067d3d4eedc0a95b288c77ef3d4339bdee5d426063340ed7c464198b1565a6f4",
+            "fetch_start_utc": "2026-11-08T00:19:43.601061Z",
+            "received_utc": "2026-11-08T00:19:43.767801Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07DENIND-IND:yes",
+          "label": "YES (Indiana)",
+          "team_id": "nba-team:1610612754",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.0400",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:43.601061Z",
+          "received_utc": "2026-11-08T00:19:43.767801Z",
+          "received_before_tip": false,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600189-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600190",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612737",
+      "away_team_id": "nba-team:1610612751",
+      "home": "ATL",
+      "away": "BKN",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-bkn-atl-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "d60858666c38209c9a6b075bdf9e9f7c16b8fdea84b3136523dc8b4a0999cdf7",
+            "fetch_start_utc": "2026-11-08T00:19:43.786700Z",
+            "received_utc": "2026-11-08T00:19:43.873868Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=54981282061197287727673827028104030796914805657711098653861260722552109635113",
+            "http_status": 200,
+            "payload_sha256": "862f6e47ef842fa571012c6e2e50e3c372021e72cb62e82ddbbf0b71c840f0c2",
+            "fetch_start_utc": "2026-11-08T00:19:43.888023Z",
+            "received_utc": "2026-11-08T00:19:43.955372Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "54981282061197287727673827028104030796914805657711098653861260722552109635113",
+          "label": "Hawks",
+          "team_id": "nba-team:1610612737",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.69",
+          "best_ask": "0.7",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:41.975Z",
+          "fetch_start_utc": "2026-11-08T00:19:43.888023Z",
+          "received_utc": "2026-11-08T00:19:43.955372Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600190-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07BKNATL-ATL",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07BKNATL",
+            "http_status": 200,
+            "payload_sha256": "4f512be205ac824d9c078602491defd3ba6ab4e0e26b1a2793ddc7ef44942145",
+            "fetch_start_utc": "2026-11-08T00:19:43.970080Z",
+            "received_utc": "2026-11-08T00:19:44.340883Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL",
+            "http_status": 200,
+            "payload_sha256": "c1d32ac8e7dd9e3912c41f196a729c02fe703369f2739edbcff11dcb0ec10134",
+            "fetch_start_utc": "2026-11-08T00:19:44.357945Z",
+            "received_utc": "2026-11-08T00:19:44.580985Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL/orderbook",
+            "http_status": 200,
+            "payload_sha256": "b1e41f9d060c89ab192fb41f1770831d165c759d804da064850bac0c84c10424",
+            "fetch_start_utc": "2026-11-08T00:19:44.601098Z",
+            "received_utc": "2026-11-08T00:19:44.762423Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07BKNATL-ATL:yes",
+          "label": "YES (Atlanta)",
+          "team_id": "nba-team:1610612737",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.7000",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:44.601098Z",
+          "received_utc": "2026-11-08T00:19:44.762423Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600190-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600191",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612739",
+      "away_team_id": "nba-team:1610612752",
+      "home": "CLE",
+      "away": "NYK",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-nyk-cle-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-nyk-cle-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "784d5ca2ca12695c1c3851644de04b79b1a144b747d65573cb4a028eec47dcd1",
+            "fetch_start_utc": "2026-11-08T00:19:44.789137Z",
+            "received_utc": "2026-11-08T00:19:44.847882Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=60955229673760716456263204416898543673892689428977581401929964569716185748287",
+            "http_status": 200,
+            "payload_sha256": "d5a0b8b1dcf673d2335485f56331b3fed42939832027b9a1bc6323318764c0fa",
+            "fetch_start_utc": "2026-11-08T00:19:44.862698Z",
+            "received_utc": "2026-11-08T00:19:44.939476Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "60955229673760716456263204416898543673892689428977581401929964569716185748287",
+          "label": "Cavaliers",
+          "team_id": "nba-team:1610612739",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.36",
+          "best_ask": "0.37",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:44.634Z",
+          "fetch_start_utc": "2026-11-08T00:19:44.862698Z",
+          "received_utc": "2026-11-08T00:19:44.939476Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600191-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07NYKCLE-CLE",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07NYKCLE",
+            "http_status": 200,
+            "payload_sha256": "d04a5c97dc6a63e1f1e6786e75c4cf4599be377cd456f8b73a74ab1ef2f8e73b",
+            "fetch_start_utc": "2026-11-08T00:19:44.952129Z",
+            "received_utc": "2026-11-08T00:19:45.116297Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07NYKCLE-CLE",
+            "http_status": 200,
+            "payload_sha256": "5408dbcddfd8c9f785611175ba943f2ab8787960e99530bf9efb57e565c808e2",
+            "fetch_start_utc": "2026-11-08T00:19:45.128831Z",
+            "received_utc": "2026-11-08T00:19:45.287037Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07NYKCLE-CLE/orderbook",
+            "http_status": 200,
+            "payload_sha256": "23f49acc7f8c05fe893668038fc9571a0160dc58ec59a9f145b49190803ac4c6",
+            "fetch_start_utc": "2026-11-08T00:19:45.307292Z",
+            "received_utc": "2026-11-08T00:19:45.470952Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07NYKCLE-CLE:yes",
+          "label": "YES (Cleveland)",
+          "team_id": "nba-team:1610612739",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.3500",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:45.307292Z",
+          "received_utc": "2026-11-08T00:19:45.470952Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600191-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600192",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612760",
+      "away_team_id": "nba-team:1610612764",
+      "home": "OKC",
+      "away": "WAS",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-was-okc-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-was-okc-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "e606fe8b236cf93e4c7640a937e5d92ddda004ba824e48eab39693c312c07400",
+            "fetch_start_utc": "2026-11-08T00:19:45.535625Z",
+            "received_utc": "2026-11-08T00:19:45.589092Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=66537882599737940156471066272898803866527274084473053049426291500098109418778",
+            "http_status": 200,
+            "payload_sha256": "1709cbfad6b0490689cfc198ced81edbf583d1d314b5d456c0658cda7461e71f",
+            "fetch_start_utc": "2026-11-08T00:19:45.617188Z",
+            "received_utc": "2026-11-08T00:19:45.684744Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "66537882599737940156471066272898803866527274084473053049426291500098109418778",
+          "label": "Thunder",
+          "team_id": "nba-team:1610612760",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.82",
+          "best_ask": "0.83",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:42.856Z",
+          "fetch_start_utc": "2026-11-08T00:19:45.617188Z",
+          "received_utc": "2026-11-08T00:19:45.684744Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600192-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07WASOKC-OKC",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07WASOKC",
+            "http_status": 200,
+            "payload_sha256": "7b913a5cc1f4426a648e17fa5091641a464ecdd69db8fa5d786f747fae913a6a",
+            "fetch_start_utc": "2026-11-08T00:19:45.697308Z",
+            "received_utc": "2026-11-08T00:19:45.864851Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07WASOKC-OKC",
+            "http_status": 200,
+            "payload_sha256": "a05e9b84f8ab732373941f06c2fe05aa76891351024aa6962906d07ce1344018",
+            "fetch_start_utc": "2026-11-08T00:19:45.876942Z",
+            "received_utc": "2026-11-08T00:19:46.225175Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07WASOKC-OKC/orderbook",
+            "http_status": 200,
+            "payload_sha256": "f8033086fdb6744fe05e78d3e6fd8d87f16f64cf11ea86601c76fd4032fc557f",
+            "fetch_start_utc": "2026-11-08T00:19:46.244194Z",
+            "received_utc": "2026-11-08T00:19:46.417277Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07WASOKC-OKC:yes",
+          "label": "YES (Oklahoma City)",
+          "team_id": "nba-team:1610612760",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.8300",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:46.244194Z",
+          "received_utc": "2026-11-08T00:19:46.417277Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600192-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600193",
+      "tip_utc": "2026-11-08T01:30:00Z",
+      "home_team_id": "nba-team:1610612744",
+      "away_team_id": "nba-team:1610612753",
+      "home": "GSW",
+      "away": "ORL",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-orl-gsw-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-orl-gsw-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "4c4129f822b9853214fc410b99ded428304f1be68d49cb1cf38f73f409508745",
+            "fetch_start_utc": "2026-11-08T00:19:46.449301Z",
+            "received_utc": "2026-11-08T00:19:46.504177Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=23904303204222395938248616518334978671748463657071577968878478247188605665854",
+            "http_status": 200,
+            "payload_sha256": "fb859a881f84aac2597f76a1f1b7be73230eee59c4b869f221a79dcc780be66d",
+            "fetch_start_utc": "2026-11-08T00:19:46.522644Z",
+            "received_utc": "2026-11-08T00:19:46.603490Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "23904303204222395938248616518334978671748463657071577968878478247188605665854",
+          "label": "Warriors",
+          "team_id": "nba-team:1610612744",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.72",
+          "best_ask": "0.73",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:45.937Z",
+          "fetch_start_utc": "2026-11-08T00:19:46.522644Z",
+          "received_utc": "2026-11-08T00:19:46.603490Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600193-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07ORLGSW-GSW",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07ORLGSW",
+            "http_status": 200,
+            "payload_sha256": "4cc5760e36a5c3a94471acb4686fd4810c398110fdc810789eaefcc49ed9ca76",
+            "fetch_start_utc": "2026-11-08T00:19:46.620642Z",
+            "received_utc": "2026-11-08T00:19:46.806572Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW",
+            "http_status": 200,
+            "payload_sha256": "b155df9caf8e8e92b38ea2f6fb07a71a0bad21638b4d12fe105c040272143e3f",
+            "fetch_start_utc": "2026-11-08T00:19:46.820302Z",
+            "received_utc": "2026-11-08T00:19:47.169251Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW/orderbook",
+            "http_status": 200,
+            "payload_sha256": "c64fb1945e17dbba48fdfd08b902c6fed331af4d1e14d28b283a9b0f00dfda7f",
+            "fetch_start_utc": "2026-11-08T00:19:47.186653Z",
+            "received_utc": "2026-11-08T00:19:47.341842Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07ORLGSW-GSW:yes",
+          "label": "YES (Golden State)",
+          "team_id": "nba-team:1610612744",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.7200",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:47.186653Z",
+          "received_utc": "2026-11-08T00:19:47.341842Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600193-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600194",
+      "tip_utc": "2026-11-08T02:00:00Z",
+      "home_team_id": "nba-team:1610612756",
+      "away_team_id": "nba-team:1610612745",
+      "home": "PHX",
+      "away": "HOU",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-hou-phx-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-hou-phx-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "02753f1fbe9e15bbaab3fa04c9e3843a2277b3c69b9b1afd3e212a0e9ba696f1",
+            "fetch_start_utc": "2026-11-08T00:19:47.362788Z",
+            "received_utc": "2026-11-08T00:19:47.415307Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=10104737213854710263895946005185957401288376283963812623329700694279202258427",
+            "http_status": 200,
+            "payload_sha256": "f175a4d9fbe8b6f6c01b7f15c0c13e26ab75a47994d286699c4bbd6a3f884a13",
+            "fetch_start_utc": "2026-11-08T00:19:47.429227Z",
+            "received_utc": "2026-11-08T00:19:47.492444Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "10104737213854710263895946005185957401288376283963812623329700694279202258427",
+          "label": "Suns",
+          "team_id": "nba-team:1610612756",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.29",
+          "best_ask": "0.3",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:41.746Z",
+          "fetch_start_utc": "2026-11-08T00:19:47.429227Z",
+          "received_utc": "2026-11-08T00:19:47.492444Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600194-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07HOUPHX-PHX",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07HOUPHX",
+            "http_status": 200,
+            "payload_sha256": "fada92056731d89d862ed733d50017d31dc74d7bc8485c98685e5159fe34ce5e",
+            "fetch_start_utc": "2026-11-08T00:19:47.506221Z",
+            "received_utc": "2026-11-08T00:19:47.656738Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX",
+            "http_status": 200,
+            "payload_sha256": "6e7e497a480d8d30eecdda43f72ed7c0118182f7e82c4cb17bcc2fe0ec47da3d",
+            "fetch_start_utc": "2026-11-08T00:19:47.669225Z",
+            "received_utc": "2026-11-08T00:19:48.029540Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX/orderbook",
+            "http_status": 200,
+            "payload_sha256": "4c2f5903964344b625487403c04c0c767ccc770f116a4c965b2713223f779883",
+            "fetch_start_utc": "2026-11-08T00:19:48.042678Z",
+            "received_utc": "2026-11-08T00:19:48.200350Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07HOUPHX-PHX:yes",
+          "label": "YES (Phoenix)",
+          "team_id": "nba-team:1610612756",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.2900",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:48.042678Z",
+          "received_utc": "2026-11-08T00:19:48.200350Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600194-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600195",
+      "tip_utc": "2026-11-08T03:00:00Z",
+      "home_team_id": "nba-team:1610612757",
+      "away_team_id": "nba-team:1610612759",
+      "home": "POR",
+      "away": "SAS",
+      "us_eastern_date": "2026-11-07",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-sas-por-2026-11-07",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-sas-por-2026-11-07",
+            "http_status": 200,
+            "payload_sha256": "4153ce6932115461a4fc2a5916d20abda760f1cde902816c5d37c245419de4bd",
+            "fetch_start_utc": "2026-11-08T00:19:48.223489Z",
+            "received_utc": "2026-11-08T00:19:48.287062Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=100938068625435351729413355008380181702901748373348600743777690605897615529768",
+            "http_status": 200,
+            "payload_sha256": "9b79d4cc1b4d07fcc7666960d4dc3833a70520b11095fa3c64c8060f21b7c4b8",
+            "fetch_start_utc": "2026-11-08T00:19:48.306785Z",
+            "received_utc": "2026-11-08T00:19:48.385459Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "100938068625435351729413355008380181702901748373348600743777690605897615529768",
+          "label": "Trail Blazers",
+          "team_id": "nba-team:1610612757",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.34",
+          "best_ask": "0.35",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:48.183Z",
+          "fetch_start_utc": "2026-11-08T00:19:48.306785Z",
+          "received_utc": "2026-11-08T00:19:48.385459Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600195-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV07SASPOR-POR",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07SASPOR",
+            "http_status": 200,
+            "payload_sha256": "fcdce35a916c3a1c3c6a9b8a8b67116efe39628b007763a9495e3d515399b253",
+            "fetch_start_utc": "2026-11-08T00:19:48.402818Z",
+            "received_utc": "2026-11-08T00:19:48.565861Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07SASPOR-POR",
+            "http_status": 200,
+            "payload_sha256": "31598d5adcda8c21567c9854540265771d0d1874d8da78f921126f66c9165f35",
+            "fetch_start_utc": "2026-11-08T00:19:48.580051Z",
+            "received_utc": "2026-11-08T00:19:48.943836Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07SASPOR-POR/orderbook",
+            "http_status": 200,
+            "payload_sha256": "c6080d856d1d1d37cb5afb6643f8e766b4d371ac3cc0b9980aa5175416171718",
+            "fetch_start_utc": "2026-11-08T00:19:48.972640Z",
+            "received_utc": "2026-11-08T00:19:49.121187Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV07SASPOR-POR:yes",
+          "label": "YES (Portland)",
+          "team_id": "nba-team:1610612757",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.3400",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:48.972640Z",
+          "received_utc": "2026-11-08T00:19:49.121187Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600195-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600196",
+      "tip_utc": "2026-11-08T20:30:00Z",
+      "home_team_id": "nba-team:1610612741",
+      "away_team_id": "nba-team:1610612755",
+      "home": "CHI",
+      "away": "PHI",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-phi-chi-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-phi-chi-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "fc582c71afc41357622024505c51ae0bf5f4447b634054dd732d69c1be03f0af",
+            "fetch_start_utc": "2026-11-08T00:19:49.143259Z",
+            "received_utc": "2026-11-08T00:19:49.189193Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=79219126438270644699549814421343284924243205220675626625824147664744912880230",
+            "http_status": 200,
+            "payload_sha256": "07174f1ef24c1ff6c47e21d6ab7a49beb296b4afc77d3f1445239ee4195ffdd1",
+            "fetch_start_utc": "2026-11-08T00:19:49.210291Z",
+            "received_utc": "2026-11-08T00:19:49.268281Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "79219126438270644699549814421343284924243205220675626625824147664744912880230",
+          "label": "Bulls",
+          "team_id": "nba-team:1610612741",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.23",
+          "best_ask": "0.24",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:41.092Z",
+          "fetch_start_utc": "2026-11-08T00:19:49.210291Z",
+          "received_utc": "2026-11-08T00:19:49.268281Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600196-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08PHICHI-CHI",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08PHICHI",
+            "http_status": 200,
+            "payload_sha256": "0d24578d224b0e1cdfb28435cf2883269aad740909c28f7c8796064a6c3f2676",
+            "fetch_start_utc": "2026-11-08T00:19:49.281753Z",
+            "received_utc": "2026-11-08T00:19:49.437507Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08PHICHI-CHI",
+            "http_status": 200,
+            "payload_sha256": "f1725edbaae421727e42dbea46fdbd18efc10044a68a93c544657a1e3a5e39af",
+            "fetch_start_utc": "2026-11-08T00:19:49.451005Z",
+            "received_utc": "2026-11-08T00:19:49.803456Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08PHICHI-CHI/orderbook",
+            "http_status": 200,
+            "payload_sha256": "2e2bb502c12cb6ae60d1e13a2faf59c34a2bf6a575be2365e264e1c7b841a56b",
+            "fetch_start_utc": "2026-11-08T00:19:49.818226Z",
+            "received_utc": "2026-11-08T00:19:49.981798Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV08PHICHI-CHI:yes",
+          "label": "YES (Chicago)",
+          "team_id": "nba-team:1610612741",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.2300",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:49.818226Z",
+          "received_utc": "2026-11-08T00:19:49.981798Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600196-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600197",
+      "tip_utc": "2026-11-08T23:00:00Z",
+      "home_team_id": "nba-team:1610612765",
+      "away_team_id": "nba-team:1610612747",
+      "home": "DET",
+      "away": "LAL",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-lal-det-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-lal-det-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "d156f95c1020586b75f88371dc29733c9a2a7747e144df109f240c57279f50d8",
+            "fetch_start_utc": "2026-11-08T00:19:50.003291Z",
+            "received_utc": "2026-11-08T00:19:50.048527Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=10613661107621121828933104557806818816672144707223843230641983491677207763410",
+            "http_status": 200,
+            "payload_sha256": "ceb3639f2f7a7b99faeb37a1694b90768fab99601d4c424703ad54e33a80aeef",
+            "fetch_start_utc": "2026-11-08T00:19:50.067266Z",
+            "received_utc": "2026-11-08T00:19:50.133415Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "10613661107621121828933104557806818816672144707223843230641983491677207763410",
+          "label": "Pistons",
+          "team_id": "nba-team:1610612765",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.61",
+          "best_ask": "0.62",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:44.635Z",
+          "fetch_start_utc": "2026-11-08T00:19:50.067266Z",
+          "received_utc": "2026-11-08T00:19:50.133415Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600197-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08LALDET-DET",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08LALDET",
+            "http_status": 200,
+            "payload_sha256": "3a5ad7bae28b571a5fe6447eda6f8aa33f656df662e0e392f6c016fbfc0403f5",
+            "fetch_start_utc": "2026-11-08T00:19:50.147207Z",
+            "received_utc": "2026-11-08T00:19:50.310967Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08LALDET-DET",
+            "http_status": 200,
+            "payload_sha256": "5c573441952066bf7d4e90d616810975ec620d0d046d302e0b2106688e49517d",
+            "fetch_start_utc": "2026-11-08T00:19:50.322722Z",
+            "received_utc": "2026-11-08T00:19:50.687634Z"
+          },
+          "status": "REJECTED",
+          "reason": "event title 'Los Angeles L vs Detroit' does not name exactly LAL and DET",
+          "team_id": "nba-team:1610612765",
+          "outcome": "TEAM_WINS (home team)"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600198",
+      "tip_utc": "2026-11-09T00:00:00Z",
+      "home_team_id": "nba-team:1610612750",
+      "away_team_id": "nba-team:1610612762",
+      "home": "MIN",
+      "away": "UTA",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-uta-min-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-uta-min-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "88f3e76ab397c569a1d805631dd185d347f408f57678e5e172a773aca73f9c90",
+            "fetch_start_utc": "2026-11-08T00:19:50.700189Z",
+            "received_utc": "2026-11-08T00:19:50.745003Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=102476170213254823050449357051989668944786874963196769218823861625642732888208",
+            "http_status": 200,
+            "payload_sha256": "d6dd61939e15dd3bfe7d99ddb8038c4d35e0af3f1e82fcd3332d798484dbcebe",
+            "fetch_start_utc": "2026-11-08T00:19:50.759426Z",
+            "received_utc": "2026-11-08T00:19:50.829528Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "102476170213254823050449357051989668944786874963196769218823861625642732888208",
+          "label": "Timberwolves",
+          "team_id": "nba-team:1610612750",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.82",
+          "best_ask": "0.83",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:48.566Z",
+          "fetch_start_utc": "2026-11-08T00:19:50.759426Z",
+          "received_utc": "2026-11-08T00:19:50.829528Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600198-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08UTAMIN-MIN",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08UTAMIN",
+            "http_status": 200,
+            "payload_sha256": "b72654522e422e7da97b5729145733107a9043f024bd94f7db24c0e413dabc3a",
+            "fetch_start_utc": "2026-11-08T00:19:50.842990Z",
+            "received_utc": "2026-11-08T00:19:51.193915Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08UTAMIN-MIN",
+            "http_status": 200,
+            "payload_sha256": "50bfcfc01bc601cfa96276fc63994fc5f37cdf37092ecc21474bb666982f7530",
+            "fetch_start_utc": "2026-11-08T00:19:51.209870Z",
+            "received_utc": "2026-11-08T00:19:51.360700Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08UTAMIN-MIN/orderbook",
+            "http_status": 200,
+            "payload_sha256": "57f6746d0c245b669e3cfaa7aeb86c70440a1c2b1c129d38ee52612d30edd4b5",
+            "fetch_start_utc": "2026-11-08T00:19:51.376358Z",
+            "received_utc": "2026-11-08T00:19:51.549212Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV08UTAMIN-MIN:yes",
+          "label": "YES (Minnesota)",
+          "team_id": "nba-team:1610612750",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.8100",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:51.376358Z",
+          "received_utc": "2026-11-08T00:19:51.549212Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600198-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600199",
+      "tip_utc": "2026-11-09T00:30:00Z",
+      "home_team_id": "nba-team:1610612742",
+      "away_team_id": "nba-team:1610612751",
+      "home": "DAL",
+      "away": "BKN",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-bkn-dal-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bkn-dal-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "d80b57597bc78aca169c376f9b4e5843258b04f65cf404a1d1321236bd972b45",
+            "fetch_start_utc": "2026-11-08T00:19:51.590078Z",
+            "received_utc": "2026-11-08T00:19:51.655733Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=42521112702484642815547016292397625023018421180899414482624435911288134229935",
+            "http_status": 200,
+            "payload_sha256": "125580bd6c77bf2905f97d2d38a0c7bfc7e36adbd2dbcd4f1471f6c00a210302",
+            "fetch_start_utc": "2026-11-08T00:19:51.671071Z",
+            "received_utc": "2026-11-08T00:19:51.738407Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "42521112702484642815547016292397625023018421180899414482624435911288134229935",
+          "label": "Mavericks",
+          "team_id": "nba-team:1610612742",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.74",
+          "best_ask": "0.75",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:48.912Z",
+          "fetch_start_utc": "2026-11-08T00:19:51.671071Z",
+          "received_utc": "2026-11-08T00:19:51.738407Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600199-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08BKNDAL-DAL",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08BKNDAL",
+            "http_status": 200,
+            "payload_sha256": "e8713e6cedefeec92562e592dd13bcf8490314a8ed9fc869cea7658bc667760f",
+            "fetch_start_utc": "2026-11-08T00:19:51.750955Z",
+            "received_utc": "2026-11-08T00:19:51.921486Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BKNDAL-DAL",
+            "http_status": 200,
+            "payload_sha256": "176d4e696ab270ca047234e1603a6aa43e9627f0937f31120f38db3e1bad33d6",
+            "fetch_start_utc": "2026-11-08T00:19:51.934819Z",
+            "received_utc": "2026-11-08T00:19:52.090034Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BKNDAL-DAL/orderbook",
+            "http_status": 200,
+            "payload_sha256": "1952aafbffca3c619de242171fd1d82116b77f1c881650fb8005033085d00f3b",
+            "fetch_start_utc": "2026-11-08T00:19:52.107123Z",
+            "received_utc": "2026-11-08T00:19:52.271910Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV08BKNDAL-DAL:yes",
+          "label": "YES (Dallas)",
+          "team_id": "nba-team:1610612742",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.7400",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:52.107123Z",
+          "received_utc": "2026-11-08T00:19:52.271910Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600199-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600200",
+      "tip_utc": "2026-11-09T01:00:00Z",
+      "home_team_id": "nba-team:1610612749",
+      "away_team_id": "nba-team:1610612738",
+      "home": "MIL",
+      "away": "BOS",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-bos-mil-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bos-mil-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "87c3886015b7dc84d8d0f189d501c9f37c3cf8430dfa22e5fdb6050d10b58ed9",
+            "fetch_start_utc": "2026-11-08T00:19:52.305319Z",
+            "received_utc": "2026-11-08T00:19:52.347971Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=64168382624750108408723147956653598224491055997369521642332976513006048573067",
+            "http_status": 200,
+            "payload_sha256": "f616852d86a3908a9ca100c1abc2c726d680c547da578fb75eeccf3f15564777",
+            "fetch_start_utc": "2026-11-08T00:19:52.364718Z",
+            "received_utc": "2026-11-08T00:19:52.430739Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "64168382624750108408723147956653598224491055997369521642332976513006048573067",
+          "label": "Bucks",
+          "team_id": "nba-team:1610612749",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.15",
+          "best_ask": "0.16",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:51.516Z",
+          "fetch_start_utc": "2026-11-08T00:19:52.364718Z",
+          "received_utc": "2026-11-08T00:19:52.430739Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600200-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08BOSMIL-MIL",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08BOSMIL",
+            "http_status": 200,
+            "payload_sha256": "0217b8d84465df23bc3346dc60fdeaaf51813a8583e8b592c36714e1e3d74105",
+            "fetch_start_utc": "2026-11-08T00:19:52.447759Z",
+            "received_utc": "2026-11-08T00:19:52.601105Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BOSMIL-MIL",
+            "http_status": 200,
+            "payload_sha256": "2ba26d1b95ebf3026b2186bb4f960244bb561975f315939d5a64aea69155f0b6",
+            "fetch_start_utc": "2026-11-08T00:19:52.632587Z",
+            "received_utc": "2026-11-08T00:19:52.791260Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BOSMIL-MIL/orderbook",
+            "http_status": 200,
+            "payload_sha256": "abc10962302354af62e17165f7088cc4c848773af269952ec12b1360f274c4a8",
+            "fetch_start_utc": "2026-11-08T00:19:52.804872Z",
+            "received_utc": "2026-11-08T00:19:52.967178Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV08BOSMIL-MIL:yes",
+          "label": "YES (Milwaukee)",
+          "team_id": "nba-team:1610612749",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.1400",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:52.804872Z",
+          "received_utc": "2026-11-08T00:19:52.967178Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600200-kx-0019"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600201",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612746",
+      "away_team_id": "nba-team:1610612740",
+      "home": "LAC",
+      "away": "NOP",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-nop-lac-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-nop-lac-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "3c4b22ba8a7e13c9367e71a421e4314488526bfb7b18197290ae31c95862f6ee",
+            "fetch_start_utc": "2026-11-08T00:19:52.988130Z",
+            "received_utc": "2026-11-08T00:19:53.046244Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=41306967234141383372770962094057121123484172315179176992771975764321467895769",
+            "http_status": 200,
+            "payload_sha256": "1fad726fb19af90c668a425f8902ee9fee02530feb8af2e5f57b3efecfdafcef",
+            "fetch_start_utc": "2026-11-08T00:19:53.063708Z",
+            "received_utc": "2026-11-08T00:19:53.139022Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "41306967234141383372770962094057121123484172315179176992771975764321467895769",
+          "label": "Clippers",
+          "team_id": "nba-team:1610612746",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.5",
+          "best_ask": "0.51",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:42.331Z",
+          "fetch_start_utc": "2026-11-08T00:19:53.063708Z",
+          "received_utc": "2026-11-08T00:19:53.139022Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600201-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08NOPLAC-LAC",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08NOPLAC",
+            "http_status": 200,
+            "payload_sha256": "72350bafc285b4336984f682b335d851d4c8bb16559587825038bc4d281f65d6",
+            "fetch_start_utc": "2026-11-08T00:19:53.152488Z",
+            "received_utc": "2026-11-08T00:19:53.325783Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08NOPLAC-LAC",
+            "http_status": 200,
+            "payload_sha256": "1273df8b0625dd798385afe81207c28752b1ce67b79b969d83271ea56de54378",
+            "fetch_start_utc": "2026-11-08T00:19:53.340509Z",
+            "received_utc": "2026-11-08T00:19:53.506690Z"
+          },
+          "status": "REJECTED",
+          "reason": "event title 'New Orleans vs Los Angeles C' does not name exactly NOP and LAC",
+          "team_id": "nba-team:1610612746",
+          "outcome": "TEAM_WINS (home team)"
+        }
+      ]
+    },
+    {
+      "game_id": "nba:0022600202",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612758",
+      "away_team_id": "nba-team:1610612748",
+      "home": "SAC",
+      "away": "MIA",
+      "us_eastern_date": "2026-11-08",
+      "venues": [
+        {
+          "venue": "POLYMARKET",
+          "slug": "nba-mia-sac-2026-11-08",
+          "market_get": {
+            "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-mia-sac-2026-11-08",
+            "http_status": 200,
+            "payload_sha256": "4205452b933569de3c78d0e41bf40b59a21caa7e18ec82543fb36182426c0c09",
+            "fetch_start_utc": "2026-11-08T00:19:53.519936Z",
+            "received_utc": "2026-11-08T00:19:53.564233Z"
+          },
+          "book_get": {
+            "source": "GET https://clob.polymarket.com/book?token_id=53652498158446714941925265740412275504340537400605157586692469832587868568174",
+            "http_status": 200,
+            "payload_sha256": "23bafabedb4bf1cfc9aa8585ac88899e2de2bb886fe2a6cde34d127bb27aab90",
+            "fetch_start_utc": "2026-11-08T00:19:53.579992Z",
+            "received_utc": "2026-11-08T00:19:53.703591Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "53652498158446714941925265740412275504340537400605157586692469832587868568174",
+          "label": "Kings",
+          "team_id": "nba-team:1610612758",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": null,
+          "best_bid": "0.22",
+          "best_ask": "0.23",
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": "2026-11-08T00:19:47.683Z",
+          "fetch_start_utc": "2026-11-08T00:19:53.579992Z",
+          "received_utc": "2026-11-08T00:19:53.703591Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "INCLUDES_OVERTIME",
+          "bundle": "0022600202-pm-0019"
+        },
+        {
+          "venue": "KALSHI",
+          "ticker": "KXNBAGAME-26NOV08MIASAC-SAC",
+          "event_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08MIASAC",
+            "http_status": 200,
+            "payload_sha256": "51d8824c63188346fd55c06dcb573505db06ad381a3b1674c068ccd9054b5a96",
+            "fetch_start_utc": "2026-11-08T00:19:53.718203Z",
+            "received_utc": "2026-11-08T00:19:53.885151Z"
+          },
+          "market_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08MIASAC-SAC",
+            "http_status": 200,
+            "payload_sha256": "cde74d6faf623fa80c730af06eb7bfff9b4ff3aea2994fa2b8556a14e54ca13c",
+            "fetch_start_utc": "2026-11-08T00:19:53.897697Z",
+            "received_utc": "2026-11-08T00:19:54.055176Z"
+          },
+          "book_get": {
+            "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08MIASAC-SAC/orderbook",
+            "http_status": 200,
+            "payload_sha256": "68be0c48fa3f90916bf855a5cc86c2fab4a5e015e5c4893e674dc1402ff5f914",
+            "fetch_start_utc": "2026-11-08T00:19:54.068891Z",
+            "received_utc": "2026-11-08T00:19:54.249326Z"
+          },
+          "status": "MATCHED",
+          "contract_id": "KXNBAGAME-26NOV08MIASAC-SAC:yes",
+          "label": "YES (Sacramento)",
+          "team_id": "nba-team:1610612758",
+          "outcome": "TEAM_WINS (home team)",
+          "quote_status": "OK",
+          "quote_status_reason": "Kalshi reports bids only; no ask is stored. The complement of the other contract's bids stays in the raw payload for Research's normaliser.",
+          "best_bid": "0.2300",
+          "best_ask": null,
+          "levels_derivation": [
+            "DIRECT"
+          ],
+          "provider_time_utc": null,
+          "fetch_start_utc": "2026-11-08T00:19:54.068891Z",
+          "received_utc": "2026-11-08T00:19:54.249326Z",
+          "received_before_tip": true,
+          "mapping_status": "PROPOSED",
+          "overtime_convention": "UNKNOWN",
+          "bundle": "0022600202-kx-0019"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-den-ind-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "687f4c96a4175e64d4815477016a5d975d360ccf4c6d0c65d01756ec1fb84fc3",
+      "fetch_start_utc": "2026-11-08T00:19:42.860596Z",
+      "received_utc": "2026-11-08T00:19:42.926922Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=100155597339514587735512788056351223587036241159790520590685103796616707991866",
+      "http_status": 200,
+      "payload_sha256": "0b3dd07103f01646bd276eede755362a8a7af08e706ff09c5998432b1fb1de2b",
+      "fetch_start_utc": "2026-11-08T00:19:42.948477Z",
+      "received_utc": "2026-11-08T00:19:43.019091Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07DENIND",
+      "http_status": 200,
+      "payload_sha256": "12a34207e005599b8a2814814ad034de67303f249b2b8f3974caf5a1ee72e0fb",
+      "fetch_start_utc": "2026-11-08T00:19:43.035429Z",
+      "received_utc": "2026-11-08T00:19:43.209780Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND",
+      "http_status": 200,
+      "payload_sha256": "2da98dc36037e473e3b44cde202059a83d7317d67e018fb3719d15ce20c09928",
+      "fetch_start_utc": "2026-11-08T00:19:43.227127Z",
+      "received_utc": "2026-11-08T00:19:43.575554Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND/orderbook",
+      "http_status": 200,
+      "payload_sha256": "067d3d4eedc0a95b288c77ef3d4339bdee5d426063340ed7c464198b1565a6f4",
+      "fetch_start_utc": "2026-11-08T00:19:43.601061Z",
+      "received_utc": "2026-11-08T00:19:43.767801Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bkn-atl-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "d60858666c38209c9a6b075bdf9e9f7c16b8fdea84b3136523dc8b4a0999cdf7",
+      "fetch_start_utc": "2026-11-08T00:19:43.786700Z",
+      "received_utc": "2026-11-08T00:19:43.873868Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=54981282061197287727673827028104030796914805657711098653861260722552109635113",
+      "http_status": 200,
+      "payload_sha256": "862f6e47ef842fa571012c6e2e50e3c372021e72cb62e82ddbbf0b71c840f0c2",
+      "fetch_start_utc": "2026-11-08T00:19:43.888023Z",
+      "received_utc": "2026-11-08T00:19:43.955372Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07BKNATL",
+      "http_status": 200,
+      "payload_sha256": "4f512be205ac824d9c078602491defd3ba6ab4e0e26b1a2793ddc7ef44942145",
+      "fetch_start_utc": "2026-11-08T00:19:43.970080Z",
+      "received_utc": "2026-11-08T00:19:44.340883Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL",
+      "http_status": 200,
+      "payload_sha256": "c1d32ac8e7dd9e3912c41f196a729c02fe703369f2739edbcff11dcb0ec10134",
+      "fetch_start_utc": "2026-11-08T00:19:44.357945Z",
+      "received_utc": "2026-11-08T00:19:44.580985Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07BKNATL-ATL/orderbook",
+      "http_status": 200,
+      "payload_sha256": "b1e41f9d060c89ab192fb41f1770831d165c759d804da064850bac0c84c10424",
+      "fetch_start_utc": "2026-11-08T00:19:44.601098Z",
+      "received_utc": "2026-11-08T00:19:44.762423Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-nyk-cle-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "784d5ca2ca12695c1c3851644de04b79b1a144b747d65573cb4a028eec47dcd1",
+      "fetch_start_utc": "2026-11-08T00:19:44.789137Z",
+      "received_utc": "2026-11-08T00:19:44.847882Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=60955229673760716456263204416898543673892689428977581401929964569716185748287",
+      "http_status": 200,
+      "payload_sha256": "d5a0b8b1dcf673d2335485f56331b3fed42939832027b9a1bc6323318764c0fa",
+      "fetch_start_utc": "2026-11-08T00:19:44.862698Z",
+      "received_utc": "2026-11-08T00:19:44.939476Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07NYKCLE",
+      "http_status": 200,
+      "payload_sha256": "d04a5c97dc6a63e1f1e6786e75c4cf4599be377cd456f8b73a74ab1ef2f8e73b",
+      "fetch_start_utc": "2026-11-08T00:19:44.952129Z",
+      "received_utc": "2026-11-08T00:19:45.116297Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07NYKCLE-CLE",
+      "http_status": 200,
+      "payload_sha256": "5408dbcddfd8c9f785611175ba943f2ab8787960e99530bf9efb57e565c808e2",
+      "fetch_start_utc": "2026-11-08T00:19:45.128831Z",
+      "received_utc": "2026-11-08T00:19:45.287037Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07NYKCLE-CLE/orderbook",
+      "http_status": 200,
+      "payload_sha256": "23f49acc7f8c05fe893668038fc9571a0160dc58ec59a9f145b49190803ac4c6",
+      "fetch_start_utc": "2026-11-08T00:19:45.307292Z",
+      "received_utc": "2026-11-08T00:19:45.470952Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-was-okc-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "e606fe8b236cf93e4c7640a937e5d92ddda004ba824e48eab39693c312c07400",
+      "fetch_start_utc": "2026-11-08T00:19:45.535625Z",
+      "received_utc": "2026-11-08T00:19:45.589092Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=66537882599737940156471066272898803866527274084473053049426291500098109418778",
+      "http_status": 200,
+      "payload_sha256": "1709cbfad6b0490689cfc198ced81edbf583d1d314b5d456c0658cda7461e71f",
+      "fetch_start_utc": "2026-11-08T00:19:45.617188Z",
+      "received_utc": "2026-11-08T00:19:45.684744Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07WASOKC",
+      "http_status": 200,
+      "payload_sha256": "7b913a5cc1f4426a648e17fa5091641a464ecdd69db8fa5d786f747fae913a6a",
+      "fetch_start_utc": "2026-11-08T00:19:45.697308Z",
+      "received_utc": "2026-11-08T00:19:45.864851Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07WASOKC-OKC",
+      "http_status": 200,
+      "payload_sha256": "a05e9b84f8ab732373941f06c2fe05aa76891351024aa6962906d07ce1344018",
+      "fetch_start_utc": "2026-11-08T00:19:45.876942Z",
+      "received_utc": "2026-11-08T00:19:46.225175Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07WASOKC-OKC/orderbook",
+      "http_status": 200,
+      "payload_sha256": "f8033086fdb6744fe05e78d3e6fd8d87f16f64cf11ea86601c76fd4032fc557f",
+      "fetch_start_utc": "2026-11-08T00:19:46.244194Z",
+      "received_utc": "2026-11-08T00:19:46.417277Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-orl-gsw-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "4c4129f822b9853214fc410b99ded428304f1be68d49cb1cf38f73f409508745",
+      "fetch_start_utc": "2026-11-08T00:19:46.449301Z",
+      "received_utc": "2026-11-08T00:19:46.504177Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=23904303204222395938248616518334978671748463657071577968878478247188605665854",
+      "http_status": 200,
+      "payload_sha256": "fb859a881f84aac2597f76a1f1b7be73230eee59c4b869f221a79dcc780be66d",
+      "fetch_start_utc": "2026-11-08T00:19:46.522644Z",
+      "received_utc": "2026-11-08T00:19:46.603490Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07ORLGSW",
+      "http_status": 200,
+      "payload_sha256": "4cc5760e36a5c3a94471acb4686fd4810c398110fdc810789eaefcc49ed9ca76",
+      "fetch_start_utc": "2026-11-08T00:19:46.620642Z",
+      "received_utc": "2026-11-08T00:19:46.806572Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW",
+      "http_status": 200,
+      "payload_sha256": "b155df9caf8e8e92b38ea2f6fb07a71a0bad21638b4d12fe105c040272143e3f",
+      "fetch_start_utc": "2026-11-08T00:19:46.820302Z",
+      "received_utc": "2026-11-08T00:19:47.169251Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07ORLGSW-GSW/orderbook",
+      "http_status": 200,
+      "payload_sha256": "c64fb1945e17dbba48fdfd08b902c6fed331af4d1e14d28b283a9b0f00dfda7f",
+      "fetch_start_utc": "2026-11-08T00:19:47.186653Z",
+      "received_utc": "2026-11-08T00:19:47.341842Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-hou-phx-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "02753f1fbe9e15bbaab3fa04c9e3843a2277b3c69b9b1afd3e212a0e9ba696f1",
+      "fetch_start_utc": "2026-11-08T00:19:47.362788Z",
+      "received_utc": "2026-11-08T00:19:47.415307Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=10104737213854710263895946005185957401288376283963812623329700694279202258427",
+      "http_status": 200,
+      "payload_sha256": "f175a4d9fbe8b6f6c01b7f15c0c13e26ab75a47994d286699c4bbd6a3f884a13",
+      "fetch_start_utc": "2026-11-08T00:19:47.429227Z",
+      "received_utc": "2026-11-08T00:19:47.492444Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07HOUPHX",
+      "http_status": 200,
+      "payload_sha256": "fada92056731d89d862ed733d50017d31dc74d7bc8485c98685e5159fe34ce5e",
+      "fetch_start_utc": "2026-11-08T00:19:47.506221Z",
+      "received_utc": "2026-11-08T00:19:47.656738Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX",
+      "http_status": 200,
+      "payload_sha256": "6e7e497a480d8d30eecdda43f72ed7c0118182f7e82c4cb17bcc2fe0ec47da3d",
+      "fetch_start_utc": "2026-11-08T00:19:47.669225Z",
+      "received_utc": "2026-11-08T00:19:48.029540Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07HOUPHX-PHX/orderbook",
+      "http_status": 200,
+      "payload_sha256": "4c2f5903964344b625487403c04c0c767ccc770f116a4c965b2713223f779883",
+      "fetch_start_utc": "2026-11-08T00:19:48.042678Z",
+      "received_utc": "2026-11-08T00:19:48.200350Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-sas-por-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "4153ce6932115461a4fc2a5916d20abda760f1cde902816c5d37c245419de4bd",
+      "fetch_start_utc": "2026-11-08T00:19:48.223489Z",
+      "received_utc": "2026-11-08T00:19:48.287062Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=100938068625435351729413355008380181702901748373348600743777690605897615529768",
+      "http_status": 200,
+      "payload_sha256": "9b79d4cc1b4d07fcc7666960d4dc3833a70520b11095fa3c64c8060f21b7c4b8",
+      "fetch_start_utc": "2026-11-08T00:19:48.306785Z",
+      "received_utc": "2026-11-08T00:19:48.385459Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV07SASPOR",
+      "http_status": 200,
+      "payload_sha256": "fcdce35a916c3a1c3c6a9b8a8b67116efe39628b007763a9495e3d515399b253",
+      "fetch_start_utc": "2026-11-08T00:19:48.402818Z",
+      "received_utc": "2026-11-08T00:19:48.565861Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07SASPOR-POR",
+      "http_status": 200,
+      "payload_sha256": "31598d5adcda8c21567c9854540265771d0d1874d8da78f921126f66c9165f35",
+      "fetch_start_utc": "2026-11-08T00:19:48.580051Z",
+      "received_utc": "2026-11-08T00:19:48.943836Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07SASPOR-POR/orderbook",
+      "http_status": 200,
+      "payload_sha256": "c6080d856d1d1d37cb5afb6643f8e766b4d371ac3cc0b9980aa5175416171718",
+      "fetch_start_utc": "2026-11-08T00:19:48.972640Z",
+      "received_utc": "2026-11-08T00:19:49.121187Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-phi-chi-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "fc582c71afc41357622024505c51ae0bf5f4447b634054dd732d69c1be03f0af",
+      "fetch_start_utc": "2026-11-08T00:19:49.143259Z",
+      "received_utc": "2026-11-08T00:19:49.189193Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=79219126438270644699549814421343284924243205220675626625824147664744912880230",
+      "http_status": 200,
+      "payload_sha256": "07174f1ef24c1ff6c47e21d6ab7a49beb296b4afc77d3f1445239ee4195ffdd1",
+      "fetch_start_utc": "2026-11-08T00:19:49.210291Z",
+      "received_utc": "2026-11-08T00:19:49.268281Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08PHICHI",
+      "http_status": 200,
+      "payload_sha256": "0d24578d224b0e1cdfb28435cf2883269aad740909c28f7c8796064a6c3f2676",
+      "fetch_start_utc": "2026-11-08T00:19:49.281753Z",
+      "received_utc": "2026-11-08T00:19:49.437507Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08PHICHI-CHI",
+      "http_status": 200,
+      "payload_sha256": "f1725edbaae421727e42dbea46fdbd18efc10044a68a93c544657a1e3a5e39af",
+      "fetch_start_utc": "2026-11-08T00:19:49.451005Z",
+      "received_utc": "2026-11-08T00:19:49.803456Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08PHICHI-CHI/orderbook",
+      "http_status": 200,
+      "payload_sha256": "2e2bb502c12cb6ae60d1e13a2faf59c34a2bf6a575be2365e264e1c7b841a56b",
+      "fetch_start_utc": "2026-11-08T00:19:49.818226Z",
+      "received_utc": "2026-11-08T00:19:49.981798Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-lal-det-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "d156f95c1020586b75f88371dc29733c9a2a7747e144df109f240c57279f50d8",
+      "fetch_start_utc": "2026-11-08T00:19:50.003291Z",
+      "received_utc": "2026-11-08T00:19:50.048527Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=10613661107621121828933104557806818816672144707223843230641983491677207763410",
+      "http_status": 200,
+      "payload_sha256": "ceb3639f2f7a7b99faeb37a1694b90768fab99601d4c424703ad54e33a80aeef",
+      "fetch_start_utc": "2026-11-08T00:19:50.067266Z",
+      "received_utc": "2026-11-08T00:19:50.133415Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08LALDET",
+      "http_status": 200,
+      "payload_sha256": "3a5ad7bae28b571a5fe6447eda6f8aa33f656df662e0e392f6c016fbfc0403f5",
+      "fetch_start_utc": "2026-11-08T00:19:50.147207Z",
+      "received_utc": "2026-11-08T00:19:50.310967Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08LALDET-DET",
+      "http_status": 200,
+      "payload_sha256": "5c573441952066bf7d4e90d616810975ec620d0d046d302e0b2106688e49517d",
+      "fetch_start_utc": "2026-11-08T00:19:50.322722Z",
+      "received_utc": "2026-11-08T00:19:50.687634Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-uta-min-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "88f3e76ab397c569a1d805631dd185d347f408f57678e5e172a773aca73f9c90",
+      "fetch_start_utc": "2026-11-08T00:19:50.700189Z",
+      "received_utc": "2026-11-08T00:19:50.745003Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=102476170213254823050449357051989668944786874963196769218823861625642732888208",
+      "http_status": 200,
+      "payload_sha256": "d6dd61939e15dd3bfe7d99ddb8038c4d35e0af3f1e82fcd3332d798484dbcebe",
+      "fetch_start_utc": "2026-11-08T00:19:50.759426Z",
+      "received_utc": "2026-11-08T00:19:50.829528Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08UTAMIN",
+      "http_status": 200,
+      "payload_sha256": "b72654522e422e7da97b5729145733107a9043f024bd94f7db24c0e413dabc3a",
+      "fetch_start_utc": "2026-11-08T00:19:50.842990Z",
+      "received_utc": "2026-11-08T00:19:51.193915Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08UTAMIN-MIN",
+      "http_status": 200,
+      "payload_sha256": "50bfcfc01bc601cfa96276fc63994fc5f37cdf37092ecc21474bb666982f7530",
+      "fetch_start_utc": "2026-11-08T00:19:51.209870Z",
+      "received_utc": "2026-11-08T00:19:51.360700Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08UTAMIN-MIN/orderbook",
+      "http_status": 200,
+      "payload_sha256": "57f6746d0c245b669e3cfaa7aeb86c70440a1c2b1c129d38ee52612d30edd4b5",
+      "fetch_start_utc": "2026-11-08T00:19:51.376358Z",
+      "received_utc": "2026-11-08T00:19:51.549212Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bkn-dal-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "d80b57597bc78aca169c376f9b4e5843258b04f65cf404a1d1321236bd972b45",
+      "fetch_start_utc": "2026-11-08T00:19:51.590078Z",
+      "received_utc": "2026-11-08T00:19:51.655733Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=42521112702484642815547016292397625023018421180899414482624435911288134229935",
+      "http_status": 200,
+      "payload_sha256": "125580bd6c77bf2905f97d2d38a0c7bfc7e36adbd2dbcd4f1471f6c00a210302",
+      "fetch_start_utc": "2026-11-08T00:19:51.671071Z",
+      "received_utc": "2026-11-08T00:19:51.738407Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08BKNDAL",
+      "http_status": 200,
+      "payload_sha256": "e8713e6cedefeec92562e592dd13bcf8490314a8ed9fc869cea7658bc667760f",
+      "fetch_start_utc": "2026-11-08T00:19:51.750955Z",
+      "received_utc": "2026-11-08T00:19:51.921486Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BKNDAL-DAL",
+      "http_status": 200,
+      "payload_sha256": "176d4e696ab270ca047234e1603a6aa43e9627f0937f31120f38db3e1bad33d6",
+      "fetch_start_utc": "2026-11-08T00:19:51.934819Z",
+      "received_utc": "2026-11-08T00:19:52.090034Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BKNDAL-DAL/orderbook",
+      "http_status": 200,
+      "payload_sha256": "1952aafbffca3c619de242171fd1d82116b77f1c881650fb8005033085d00f3b",
+      "fetch_start_utc": "2026-11-08T00:19:52.107123Z",
+      "received_utc": "2026-11-08T00:19:52.271910Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-bos-mil-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "87c3886015b7dc84d8d0f189d501c9f37c3cf8430dfa22e5fdb6050d10b58ed9",
+      "fetch_start_utc": "2026-11-08T00:19:52.305319Z",
+      "received_utc": "2026-11-08T00:19:52.347971Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=64168382624750108408723147956653598224491055997369521642332976513006048573067",
+      "http_status": 200,
+      "payload_sha256": "f616852d86a3908a9ca100c1abc2c726d680c547da578fb75eeccf3f15564777",
+      "fetch_start_utc": "2026-11-08T00:19:52.364718Z",
+      "received_utc": "2026-11-08T00:19:52.430739Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08BOSMIL",
+      "http_status": 200,
+      "payload_sha256": "0217b8d84465df23bc3346dc60fdeaaf51813a8583e8b592c36714e1e3d74105",
+      "fetch_start_utc": "2026-11-08T00:19:52.447759Z",
+      "received_utc": "2026-11-08T00:19:52.601105Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BOSMIL-MIL",
+      "http_status": 200,
+      "payload_sha256": "2ba26d1b95ebf3026b2186bb4f960244bb561975f315939d5a64aea69155f0b6",
+      "fetch_start_utc": "2026-11-08T00:19:52.632587Z",
+      "received_utc": "2026-11-08T00:19:52.791260Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08BOSMIL-MIL/orderbook",
+      "http_status": 200,
+      "payload_sha256": "abc10962302354af62e17165f7088cc4c848773af269952ec12b1360f274c4a8",
+      "fetch_start_utc": "2026-11-08T00:19:52.804872Z",
+      "received_utc": "2026-11-08T00:19:52.967178Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-nop-lac-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "3c4b22ba8a7e13c9367e71a421e4314488526bfb7b18197290ae31c95862f6ee",
+      "fetch_start_utc": "2026-11-08T00:19:52.988130Z",
+      "received_utc": "2026-11-08T00:19:53.046244Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=41306967234141383372770962094057121123484172315179176992771975764321467895769",
+      "http_status": 200,
+      "payload_sha256": "1fad726fb19af90c668a425f8902ee9fee02530feb8af2e5f57b3efecfdafcef",
+      "fetch_start_utc": "2026-11-08T00:19:53.063708Z",
+      "received_utc": "2026-11-08T00:19:53.139022Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08NOPLAC",
+      "http_status": 200,
+      "payload_sha256": "72350bafc285b4336984f682b335d851d4c8bb16559587825038bc4d281f65d6",
+      "fetch_start_utc": "2026-11-08T00:19:53.152488Z",
+      "received_utc": "2026-11-08T00:19:53.325783Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08NOPLAC-LAC",
+      "http_status": 200,
+      "payload_sha256": "1273df8b0625dd798385afe81207c28752b1ce67b79b969d83271ea56de54378",
+      "fetch_start_utc": "2026-11-08T00:19:53.340509Z",
+      "received_utc": "2026-11-08T00:19:53.506690Z"
+    },
+    {
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-mia-sac-2026-11-08",
+      "http_status": 200,
+      "payload_sha256": "4205452b933569de3c78d0e41bf40b59a21caa7e18ec82543fb36182426c0c09",
+      "fetch_start_utc": "2026-11-08T00:19:53.519936Z",
+      "received_utc": "2026-11-08T00:19:53.564233Z"
+    },
+    {
+      "source": "GET https://clob.polymarket.com/book?token_id=53652498158446714941925265740412275504340537400605157586692469832587868568174",
+      "http_status": 200,
+      "payload_sha256": "23bafabedb4bf1cfc9aa8585ac88899e2de2bb886fe2a6cde34d127bb27aab90",
+      "fetch_start_utc": "2026-11-08T00:19:53.579992Z",
+      "received_utc": "2026-11-08T00:19:53.703591Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/events/KXNBAGAME-26NOV08MIASAC",
+      "http_status": 200,
+      "payload_sha256": "51d8824c63188346fd55c06dcb573505db06ad381a3b1674c068ccd9054b5a96",
+      "fetch_start_utc": "2026-11-08T00:19:53.718203Z",
+      "received_utc": "2026-11-08T00:19:53.885151Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08MIASAC-SAC",
+      "http_status": 200,
+      "payload_sha256": "cde74d6faf623fa80c730af06eb7bfff9b4ff3aea2994fa2b8556a14e54ca13c",
+      "fetch_start_utc": "2026-11-08T00:19:53.897697Z",
+      "received_utc": "2026-11-08T00:19:54.055176Z"
+    },
+    {
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV08MIASAC-SAC/orderbook",
+      "http_status": 200,
+      "payload_sha256": "68be0c48fa3f90916bf855a5cc86c2fab4a5e015e5c4893e674dc1402ff5f914",
+      "fetch_start_utc": "2026-11-08T00:19:54.068891Z",
+      "received_utc": "2026-11-08T00:19:54.249326Z"
+    }
+  ]
+}

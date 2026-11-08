@@ -165,6 +165,7 @@ body[data-view="board"] .talk { max-width: 980px; align-self: start; }
   position: absolute; top: 12px; right: 12px; font: 900 .8rem/1 var(--cond); letter-spacing: .1em;
   color: #1E0E00; background: var(--heat-hot); border-radius: 4px; padding: 5px 7px;
 }
+.mcard:has(.mcard-recorded) .mcard-top { padding-right: 104px; }
 .mcard-grid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 12px; margin: 0; font-size: .9rem; }
 .mcard-grid dt { color: var(--muted); }
 .mcard-grid dd { margin: 0; overflow-wrap: anywhere; }

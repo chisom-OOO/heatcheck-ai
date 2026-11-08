@@ -122,7 +122,10 @@ def test_apply_swaps_in_verified_record_only_when_bound():
 def test_committed_verification_documents_bind_current_bundles():
     vdir = ROOT / "data" / "max" / "mapping_verifications"
     docs = sorted(vdir.glob("*.json"))
-    assert len(docs) == 7
+    # The first 7 (E-001 recorded + 22:29Z capture) stay; later live captures add more. Every one is checked.
+    names = {f.stem for f in docs}
+    assert {"e001-recorded-0022600189", *(f"0022600{n}-pm-2229" for n in range(190, 196))} <= names
+    assert len(docs) >= 7
     for f in docs:
         d = json.loads(f.read_text(encoding="utf-8"))
         manifest, recs = load_bundle(ROOT / d["bundle_dir"])
