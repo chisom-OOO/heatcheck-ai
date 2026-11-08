@@ -43,9 +43,8 @@ It does not look for betting edges; market comparisons are descriptive only.
    and attack results. Edited, deleted or reordered lines are detected on read.
 
 **Heater and the Ref.**
-- **Heater** is an AI-generated, original pundit character who improvises hot takes through a language model.
-  - He is instructed never to state numbers, contradict the Ref, or imitate a real commentator.
-  - A guard refuses any number not in the evidence record; on a failure he falls back to a fixed line.
+- **Heater** is an AI-generated, original pundit who improvises hot takes through a language model. He may not
+  state numbers, contradict the Ref or imitate a real commentator; a number guard enforces this.
 - **The Ref** never improvises. No model is called. Its verdict and explanation are templates filled only from
   the ledger entry (`reports/max/2026-11-07-2059-deterministic-ref-recorded-finals.md`).
 
@@ -113,9 +112,8 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
 
 - **Development games** (165,710 field-goal attempts): P(make after 3 makes) 0.4827 vs 0.4777 after 3 misses;
   shuffling alone produces +0.0190, more than the observed +0.0050 (p = 0.996, not rejected).
-- **Simulated leagues with known truth** (`evidence/harness_report.json`): false-positive rate 0.043 at
-  α = 0.05, and power 0.87 (strong effect) or 0.31 (weak). Within-game form drift with no streak triggers it
-  38% of the time, so a rejection shows association, not cause.
+- **Simulated leagues with known truth:** false-positive rate 0.043 at α = 0.05; power 0.87 (strong) or 0.31
+  (weak); form drift with no streak triggers it 38% of the time, so a rejection shows association only.
 
 ## 5. The sealed 2024–25 confirmatory test
 
@@ -162,8 +160,8 @@ Source: `final_result.json` on `review/confirmatory-run@5f0a432`, copied exactly
 
 ## 6. The market board (descriptive, read-only)
 
-The market board sets HeatCheck's descriptive Elo forecast beside the Polymarket price for tonight's and
-Sunday's games. It flags gaps worth a human look; it does not claim an edge.
+The market board sets the descriptive Elo forecast beside the Polymarket price. It flags gaps worth a human
+look; it claims no edge.
 
 **The forecast** (`data/live/forecasts.json`, `research/live-forecast@e03629d`):
 - **Model:** the registered B1 Elo, the same code as the 2023–24 final run (K 20, home court 100, fixed
@@ -175,7 +173,6 @@ Sunday's games. It flags gaps worth a human look; it does not claim an edge.
   court) come from NBA.com and its 2026–27 schedule PDF; every game matches balldontlie on teams and tip
   time.
 - **Backtest on 2024–25:** log loss 0.6290 and Brier 0.2196 over 1,230 games.
-- **Not used:** injuries, lineups, trades or prices. Not a registered claim.
 
 **Market data and verdicts** (Max `57e07fd`; Experience's read-only adapters):
 - Polymarket mappings are VERIFIED against the stored rules text (16 checks each: teams, tip, overtime,
@@ -188,17 +185,19 @@ Sunday's games. It flags gaps worth a human look; it does not claim an edge.
 
   It never says "bet" or "edge found".
 - Heater may cite only the forecast's inputs; injuries and the like only as questions.
-- Each investigation is recorded with timestamps, so it can be scored after the game.
 
-**Example, live before tip:**
-- Cleveland: model 0.662, Polymarket bid/ask 0.36/0.37.
-- Oklahoma City: model 0.936, Polymarket 0.82/0.83.
+**Live example:** Cleveland, model 0.662 vs Polymarket 0.36/0.37; Oklahoma City, 0.936 vs 0.82/0.83.
 
 Research checked Polymarket's raw payload: the Cleveland contract really is the Cavaliers' token.
 
 **Read the gaps plainly:**
 - A large forecast-vs-market gap most likely reflects what Elo does not know: injuries, lineups, trades and
   this season's changes.
+- **Elo's home edge is too large.** On 2025–26 it predicted 62.4% home wins against 55.5% actual, a
+  6.9-point bias (95% +4.5 to +9.3), with every 10% bin over-predicting the home team. That matches a
+  home-court value of about 42 Elo points rather than the frozen 100, and it explains much of Max's
+  12-of-13 home-side gaps (`reports/research/2026-11-08-0240-elo-calibration-check.md`). It is not corrected
+  before the deadline: any change needs its own pre-registered test on unseen games.
 - **No evidence shows this model beats the market.** No such evaluation has been run.
 
 **What-if scenarios (ESTIMATE, not claims;** `research/scenario-effects`**).**
@@ -227,12 +226,8 @@ Grammar: `docs/IDEA_GRAMMAR.md`; runner and results: `research/idea-family` (rep
 `reports/research/2026-11-07-2234-idea-family.md`).
 
 **How it works.**
-- Heater's proposer (Max, `heatcheck/agents/idea_proposer.py`) turns a fan's message into hypotheses from two
-  templates:
-  - home-win rate split by one game feature;
-  - make rate after a shot condition.
-
-  Parameters are enumerated values only. Invalid output is refused, never repaired.
+- Heater's proposer turns a fan's message into hypotheses from two templates (home-win rate split by a game
+  feature; make rate after a shot condition), with enumerated values only. Invalid output is refused.
 - Research's runner **registers every idea before computing**, runs fixed permutation tests, and applies
   **Holm across every idea in the family**.
 - A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`; only development games are read.
