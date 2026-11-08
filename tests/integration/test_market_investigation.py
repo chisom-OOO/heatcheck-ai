@@ -100,8 +100,9 @@ def test_matched_fresh_card_is_worth_investigating(bundle):
     # Hand-derived: best bid = max BID = 0.26, best ask = min ASK = 0.27; IND is home, p 0.4 > ask.
     assert out["quote"]["best_bid"] == "0.26" and out["quote"]["best_ask"] == "0.27"
     assert out["flag"] == "FORECAST_ABOVE_ASK" and out["forecast"]["p_team_win"] == "0.4"
-    assert "40.0%" in out["heater_text"] and "27.0%" in out["heater_text"]
-    for banned in (r"bet", r"edge found"):
+    # plain-English template (user, 8 Nov): whole percent, the market as "bid to ask"
+    assert "about 40%" in out["heater_text"] and "nearer 26 to 27" in out["heater_text"]
+    for banned in (r"\bbet\b", r"\bedge found\b"):
         assert not re.search(banned, out["ref_text"] + " " + out["heater_text"], re.IGNORECASE)
     skill = checks(out)["MARKET_SKILL_EVIDENCE"]["detail"]
     assert "no evaluation shows this model beats the market" in skill
@@ -473,3 +474,48 @@ def test_market_card_has_three_anchored_frost_challenges(bundle):
     assert good[2]["chip"] == ("The model uses only Elo rating (home), Elo rating (away) and home court. "
                                "It does not see lineups, injuries, rest, recent form or matchups.")
     assert "_" not in good[1]["chip"] + good[2]["chip"] and "nba-team" not in good[1]["chip"]
+
+
+
+# ------------------------------------------------------------------ plain-English walk-through (user, 8 Nov)
+
+BULLS_EXAMPLE = ("My numbers give the Bulls about 36% here, while the market has them nearer 21 to 22. "
+                 "That gap is mostly the ratings: Bulls around 1380 against 1577, with home court helping "
+                 "a little. Before I'd read anything into it I'd want to check injuries, rest and tonight's lineups.")
+BULLS_FACTS = {"p_team_win": "0.363546", "p_team_win_pct": "36.4%", "best_bid": "0.21", "best_bid_pct": "21.0%",
+               "best_ask": "0.22", "best_ask_pct": "22.0%", "elo_home": 1380.057, "elo_away": 1576.6,
+               "team": "Chicago Bulls", "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"]}
+
+
+def test_user_example_passes_the_relaxed_guard():
+    from heatcheck.agents.market_investigation import heater_guard
+    assert heater_guard(BULLS_EXAMPLE, BULLS_FACTS["inputs_used"], BULLS_FACTS) == []
+
+
+def test_relaxed_guard_still_refuses_numbers_and_field_names_not_on_the_card():
+    from heatcheck.agents.market_investigation import heater_guard
+    ins = BULLS_FACTS["inputs_used"]
+    assert heater_guard("My numbers give the Bulls about 41% here.", ins, BULLS_FACTS)          # not a rounding
+    assert heater_guard("The Bulls sit at 1400 against 1577.", ins, BULLS_FACTS)               # not a rounding
+    assert heater_guard('The "best_bid" is 21%.', ins, BULLS_FACTS)                            # field name
+    assert heater_guard("The Bulls are tired from travel.", ins, BULLS_FACTS)                  # rest stated as a reason
+    assert heater_guard("That gap is value worth a bet.", ins, BULLS_FACTS)                    # betting wording
+
+
+def test_walk_through_never_shows_a_raw_probability_or_field_name(bundle):
+    sha, recs = bundle
+    out, _ = run(verified(recs), sha)
+    text = out["heater_text"]
+    p = out["forecast"]["p_team_win"]
+    assert f'"{p}"' not in text and '"0.363546"' not in text
+    assert not re.search(r"\b0\.\d+", text)                  # no decimal fraction
+    assert not re.search(r"\b[a-z]+(?:_[a-z0-9]+)+\b", text)   # no snake_case field name
+    assert len(re.findall(r"[.!?](?:\s|$)", text)) <= 3
+
+
+def test_check_framing_is_not_a_ref_mention_but_other_check_wording_is():
+    from heatcheck.agents.dialogue import take_mentions_ref
+    from heatcheck.agents.market_investigation import CHECK_FRAME
+    ok = "Before I'd read anything into it I'd want to check injuries, rest and tonight's lineups."
+    assert take_mentions_ref(CHECK_FRAME.sub("I'd want to see", ok)) == []
+    assert take_mentions_ref(CHECK_FRAME.sub("I'd want to see", "The checks all passed, so it's real."))

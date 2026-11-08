@@ -4,9 +4,9 @@
 
 # HeatCheck
 
-An AI researcher for NBA data that proposes its own ideas,<br/>
-locks them in before looking, tests them against fresh data<br/>
-and tells you which ones are real and which ones were luck.
+Heater proposes the idea. Frost attacks it. The Ref rules,<br/>
+by tests registered before the sealed data was opened,<br/>
+and writes the verdict where nobody can edit it.
 
 ![Brief](https://img.shields.io/badge/brief-Brevan_Howard-1E1B2E)
 ![Model](https://img.shields.io/badge/model-Meta_muse--spark--1.3-0866FF)

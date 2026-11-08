@@ -27,7 +27,7 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
-from decimal import ROUND_HALF_EVEN, Decimal
+from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
 from typing import Any
 
 from heatcheck.agents.dialogue import betting_words, number_violations, take_mentions_ref
@@ -104,12 +104,17 @@ HEATER_REACTION = {
 HEATER_SYSTEM = (
     "You speak BEFORE the Ref and do not know the verdict: never mention the Ref, a verdict, a "
     "check or whether the comparison is valid. "
-    "You are the Heater, a friendly NBA explainer. In two to four short sentences, explain the "
-    "flag on this game card: where the model's forecast sits against the market's quoted bid and "
-    "ask. Cite only the model inputs listed in inputs_used and the card's own numbers, copied "
-    "exactly. Any other factor (rest, back-to-backs, injuries, lineups, form, matchups) must be "
-    "asked as a question to investigate, never stated as a reason. Never suggest betting, never "
-    "say an edge was found, never say the model beats the market: no evidence shows that.")
+    "You are the Heater, a friendly NBA explainer, walking a fan through this game card. "
+    "Speak in plain English. Never say a field name or anything in quotes. Never say a probability "
+    "or a price as a decimal fraction: say \"36%\", not \"0.363546\". Round probabilities and "
+    "prices to whole percent, and Elo ratings to the nearest whole number. Never give the same "
+    "number in two forms. "
+    "At most three sentences: (a) my number against the market's number for the named team; "
+    "(b) where my number comes from, in one clause: the ratings gap and home court, which are the "
+    "only model inputs; (c) what I would want to check before reading anything into the gap, named "
+    "casually (injuries, rest, lineups), framed as a plain statement \"I'd want to check ...\" ending with a full stop, never "
+    "stated as a reason. No betting language, never the words edge or value, never say the model "
+    "beats the market: no evidence shows that.")
 
 
 class InvestigationInputError(ValueError):
@@ -153,9 +158,40 @@ def missing_factors(inputs_used: list[str]) -> list[str]:
     return [f for f in FACTORS if f not in covered_factors(inputs_used) and f != "market_flow"]
 
 
+# A sentence that names a factor as something to check is not stating it as a reason (user, 8 Nov).
+CHECK_FRAME = re.compile(r"\b(?:I'?d|I would|we'?d|we would)\s+(?:want|need|like)\s+to\s+"
+                         r"(?:check|look (?:at|into)|know about|ask about)\b", re.IGNORECASE)
+FIELD_NAME = re.compile(r"\b[a-z]+(?:_[a-z0-9]+)+\b")   # snake_case record keys, e.g. best_bid
+PROBABILITY_KEYS = ("p_team_win", "best_bid", "best_ask")
+
+
+def rounded_facts(facts: dict) -> dict:
+    """The card's numbers plus their rounded spoken forms (user, 8 Nov): each recorded value rounded
+    to 0, 1 or 2 decimal places, and each probability or price x100 rounded to 0 or 1 decimal places
+    (with or without %). Nothing else is added. Used only by this walk-through's guard."""
+    out = dict(facts)
+    extra = []
+    for k in PROBABILITY_KEYS + ("elo_home", "elo_away"):
+        v = facts.get(k)
+        if v is None or isinstance(v, bool):
+            continue
+        d = _d(v)
+        for mode in (ROUND_HALF_EVEN, ROUND_HALF_UP):
+            for q in ("1", "0.1", "0.01"):
+                extra.append(str(d.quantize(Decimal(q), mode)))
+            if k in PROBABILITY_KEYS:
+                for q in ("1", "0.1"):
+                    pct = (d * 100).quantize(Decimal(q), mode)
+                    extra += [str(pct), f"{pct}%"]
+    out["_rounded_forms"] = sorted(set(extra))
+    return out
+
+
 def heater_guard(text: str, inputs_used: list[str], facts: dict) -> list[str]:
     """Problems with Heater text; empty means it may be shown. Deterministic and pure."""
-    problems = [f"number {n} is not on the card" for n in number_violations(text, facts)]
+    problems = [f"number {n} is not on the card" for n in number_violations(text, rounded_facts(facts))]
+    for m in FIELD_NAME.finditer(text):
+        problems.append(f"field name {m.group(0)!r}")
     for m in BANNED.finditer(text):
         problems.append(f"betting or over-claim wording {m.group(0)!r}")
     for w in betting_words(text):
@@ -163,7 +199,7 @@ def heater_guard(text: str, inputs_used: list[str], facts: dict) -> list[str]:
             problems.append(f"betting wording {w!r}")
     covered = covered_factors(inputs_used)
     for s in _sentences(text):
-        if s.rstrip().endswith("?"):
+        if s.rstrip().endswith("?") or CHECK_FRAME.search(s):
             continue
         for factor, (pat, _frags) in FACTORS.items():
             if factor in covered:
@@ -383,20 +419,32 @@ def card_facts(card: dict, inputs_used: list[str]) -> dict:
     return facts
 
 
+def _whole_pct(p) -> str:
+    return str((_d(p) * 100).quantize(Decimal("1"), ROUND_HALF_EVEN))
+
+
 def heater_template(card: dict, flag: str, inputs_used: list[str]) -> str:
-    p = _pct(card["p_team_win"])
+    """Plain-English walk-through (user, 8 Nov): my number vs the market's, where mine comes from,
+    what I'd check. Whole percent, whole Elo; no field names, no decimal probabilities."""
     team = card["team_name"]
-    ins = ", ".join(inputs_used)
+    row = card["forecast_row"]
+    p = _whole_pct(card["p_team_win"])
+    team_is_home = card["team_id"] == row["home_team_id"]
+    elo_team, elo_opp = (row["elo_home"], row["elo_away"]) if team_is_home else (row["elo_away"], row["elo_home"])
+    elo_team, elo_opp = (str(_d(x).quantize(Decimal("1"), ROUND_HALF_EVEN)) for x in (elo_team, elo_opp))
     if flag == "NO_TWO_SIDED_QUOTE":
-        where = "There is no market quote with both a bid and an ask to set it against."
+        first = f"My numbers give the {team} about {p}% here, but the market has no price with both a bid and an ask to set it against."
     else:
-        bid, ask = _pct(card["best_bid"]), _pct(card["best_ask"])
-        where = {"FORECAST_ABOVE_ASK": f"That is above the market's ask of {ask}.",
-                 "FORECAST_BELOW_BID": f"That is below the market's bid of {bid}.",
-                 "FORECAST_INSIDE_SPREAD": f"That sits inside the market's spread, bid {bid} to ask {ask}."}[flag]
-    return (f"The model has {team} at {p} to win. {where} It only uses {ins}. "
-            "Could rest, injuries or lineup news explain the gap? Those are questions to "
-            "investigate, because the model can't see them.")
+        bid, ask = _whole_pct(card["best_bid"]), _whole_pct(card["best_ask"])
+        market = f"{bid}" if bid == ask else f"{bid} to {ask}"
+        first = (f"My numbers give the {team} about {p}% here, while the market has them nearer {market}."
+                 if flag != "FORECAST_INSIDE_SPREAD" else
+                 f"My numbers give the {team} about {p}% here, inside the market's {market}.")
+    home_bit = "with home court helping a little" if team_is_home else "with home court on the other side"
+    lead = "That gap is mostly the ratings" if flag in ("FORECAST_ABOVE_ASK", "FORECAST_BELOW_BID") else "My number comes from the ratings"
+    second = f"{lead}: the {team} around {elo_team} against {elo_opp}, {home_bit}."
+    third = "Before I'd read anything into it I'd want to check injuries, rest and tonight's lineups."
+    return f"{first} {second} {third}"
 
 
 def thesis_summary(message: str, thesis_entry: dict | None) -> dict | None:
@@ -524,7 +572,10 @@ def investigate(
             except Exception as e:  # provider failure never invents text
                 heater_source = f"TEMPLATE (fallback: {type(e).__name__})"
             else:
-                bad = heater_guard(text, inputs, facts) + [f"ref:{w}" for w in take_mentions_ref(text)]
+                # "I'd want to check injuries ..." is the walk-through's own framing (user, 8 Nov), not a
+                # mention of the Ref's checks; any other "check", "verdict" or Ref wording still fails.
+                ref_hits = take_mentions_ref(CHECK_FRAME.sub("I'd want to see", text))
+                bad = heater_guard(text, inputs, facts) + [f"ref:{w}" for w in ref_hits]
                 if bad or not text:
                     heater_source = f"TEMPLATE (guard rejected: {bad[:4] or ['empty']})"
                 else:
