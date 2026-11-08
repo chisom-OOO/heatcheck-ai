@@ -4,7 +4,7 @@
 
 import {
   STATES, TIMING, VOICE, CHECKING_CHIP, PLACEHOLDER_LINES, cardModel, fallbackSpeechMs, isEmphasis,
-  linesTable, pickVoices, poseFile, wordAt,
+  linesTable, pickVoices, poseFile, speechGuardMs, wordAt,
 } from "./heater-model.js";
 
 export { STATES } from "./heater-model.js";
@@ -100,7 +100,8 @@ export class Heater extends EventTarget {
   /** ±3 px shake on an emphasised (CAPS) word. */
   _shake() { this._pulse("shake", 240); }
 
-  /** Speak text as "heater" or "ref". Resolves when speech ends. The bounce and the CAPS
+  /** Speak text as "heater" or "ref". Resolves when speech ends, or after speechGuardMs when
+   *  the browser never reports an end (the voice, if any, keeps playing). The bounce and the CAPS
    *  shake follow speechSynthesis boundary events; a timer stands in when they never arrive. */
   speak(text, who = "heater", { voiceOn = true } = {}) {
     const isHeater = who === "heater";
@@ -109,7 +110,12 @@ export class Heater extends EventTarget {
     return new Promise((resolve) => {
       let boundaries = 0;
       let beat = null;
+      let guard = null;
+      let finished = false;
       const done = () => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(guard);
         clearInterval(beat);
         this.root.classList.remove("bounce");
         this.speaking = null;
@@ -142,6 +148,7 @@ export class Heater extends EventTarget {
       u.onerror = done;
       this.speaking = u;
       synth.cancel();
+      guard = setTimeout(done, speechGuardMs(text, settings.rate));
       synth.speak(u);
     });
   }
