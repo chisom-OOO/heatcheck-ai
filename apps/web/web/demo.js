@@ -24,6 +24,7 @@ import {
   ESTIMATE_URL, SCENARIO_URL, confirmBody, whatifStamp, postJson, renderEstimate, renderInterpretation, routeMessage,
 } from "./whatif/whatif.js";
 import { MIC, createVoice } from "./voice.js";
+import { firstAskThisSession, loadResponsibleUse } from "./responsible.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
@@ -37,10 +38,10 @@ const ui = {
   bubble: $("bubble"), take: $("take"), react: $("react"), ref: $("ref"), refTitle: $("ref-title"),
   refText: $("ref-text"), stamp: $("stamp"), evidence: $("evidence"), evidenceBody: $("evidence-body"),
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
-  scenario: $("scenario"),
+  scenario: $("scenario"), ruNotice: $("ru-notice"),
 };
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
-  ledger: null, turn: 0, busy: false, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
+  ledger: null, turn: 0, busy: false, responsible: null, ruMemo: { shown: false }, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
 
 function log(msg) {
   state.log.push(`${new Date().toISOString().slice(11, 19)} ${msg}`);
@@ -150,6 +151,7 @@ function reset() {
   ui.evidence.hidden = true;
   ui.evidence.open = false;
   ui.scenario.hidden = true;
+  ui.ruNotice.hidden = true;
 }
 
 function restartAnim(el) {
@@ -415,6 +417,7 @@ const boardHandlers = () => ({
   onScenario: (g, s, data) => askScenario(g, s, data),
   // "Your own scenario" on a card: Max's free-text what-if flow, pinned to that card's game.
   onOwnScenario: (g, text) => { if (!state.busy) runScenario(text, g.row.game_id); },
+  responsibleText: state.responsible?.full || "",
 });
 
 async function openBoard() {
@@ -678,6 +681,12 @@ async function askMarket(g) {
   reset();
   voice.stopSpeaking();
   const h = state.heater;
+  // Responsible use: the full notice once per session, the first time a market card is asked about.
+  if (state.responsible && firstAskThisSession(globalThis.sessionStorage, state.ruMemo)) {
+    ui.ruNotice.textContent = state.responsible.full;
+    ui.ruNotice.hidden = false;
+    log("responsible-use notice shown (first market Ask this session)");
+  }
   h.setState("listening");
   await sleep(350);
   h.setState("thinking");
@@ -842,6 +851,8 @@ async function main() {
   });
   state.ledgerLoad.catch(() => { /* reported by the first question that needs it */ });
   state.heater = await mount($("heater"), { state: "idle", hold: true });
+  state.responsible = await loadResponsibleUse();
+  if (!state.responsible) log("responsible_use.json not loaded: footer only");
   const p = await loadPersonality();
   if (p) { state.personality = p; state.personalitySource = "heater_personality.json"; }
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });

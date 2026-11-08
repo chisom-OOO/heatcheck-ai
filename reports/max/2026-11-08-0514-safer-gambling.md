@@ -30,12 +30,23 @@ is treated as close to gambling and says so plainly.
 | `apps/web/web/responsible_use.json` | short + full | Max (this change) |
 | `README.md`, section "Responsible use" | full, verbatim, plus a read-only line | Max |
 | `docs/SUBMISSION.md`, section "11. Responsible use" | full, verbatim, plus a read-only line | Max |
-| Page footer, board header, first-ask panel | read from the JSON | **Experience** (not yet done; Max did not edit page files) |
+| Page footer (`demo.html` `#ru-footer`, fixed, every view) | short; static HTML so it shows even if scripts fail; a test checks it equals the JSON | **Max edited Experience's page file** (update, 06:15 UTC) |
+| "Tonight's games" board header (`market/board.js`, `.board-ru`) | full, under "Descriptive only, never a betting tip." | **Max** |
+| Market Ask, once per session (`demo.js` `askMarket`, `#ru-notice` in `demo.html`) | full, the first time a market card is asked about (sessionStorage; once per page if storage is blocked) | **Max** |
 
 The read-only line in both docs: "Read-only by design: HeatCheck holds no venue keys or accounts and
 has no order path; the independent gate review's order-capability scan (`place_order`, `/orders`,
 POST in market code) found none (`reports/review/2026-11-08-0310-gate-review.md`). Kalshi quotes
 stay unverified (only Polymarket mappings are verified)."
+
+**Update 06:15 UTC.** The first version left the page to Experience, following the earlier task text.
+The fuller task says either side may edit the page, as long as the report says so. Max edited
+`demo.html`, `demo.css`, `demo.js` and `market/board.js`, and added `responsible.js`. Experience:
+please don't change these hunks at the same time; merge from `max/integrate-r001-e001`. The footer
+is small and muted, and the notices use muted text with a thin left border, not an ad style.
+Screenshots of the home and board views at 1440×900 were checked; the footer no longer overlaps
+the chips. The first-Ask notice was checked by unit test only, not seen in a browser: tonight's
+recorded board had no priced card in the first screen.
 
 ## 3. Helpline check
 
@@ -138,5 +149,10 @@ board mapping (`data/experience/quotes/**/board.mappings.json`) contains a link 
   "value bet", "can't lose" or "lock it in" falls back to the template.
 - **`tests/integration/test_dialogue.py`:** a model take with betting wording falls back to the
   template; "better … between … LOCKDOWN" is kept.
+- **`apps/web/tests/responsible.test.mjs`:** the footer equals the JSON short text and sits
+  outside every view; the CSS keeps it fixed; the JSON loader returns null on any failure; the Ask
+  notice shows once per session and once per page when storage is blocked.
+- **`apps/web/tests/board.test.mjs`** (one test added): the board header shows the full text next
+  to "never a betting tip", and nothing when the text didn't load.
 - **`apps/web/tests/safer_gambling.test.mjs`:** the same word list in JS; the personality file is
   clean; responsible_use.json has short and full; the PLACEHOLDER_LINES `todo` described above.

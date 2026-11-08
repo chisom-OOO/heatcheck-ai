@@ -158,7 +158,7 @@ function fillCard(card, g, board, { onAsk }, slot) {
  *  ``onOwnScenario(game, text)`` takes the card's "Your own scenario" box into the free-text flow;
  *  ``onRetry()`` adds a "Try again" button when the board could not load.
  *  Returns {update(game)}: redraws that game's card in place once its comparison has answered. */
-export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loadScenarios, onRetry } = {}) {
+export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loadScenarios, onRetry, responsibleText } = {}) {
   root.replaceChildren();
   const none = { update: () => false };
   const head = el("header", "board-head");
@@ -176,6 +176,8 @@ export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loa
   }
   if (board.isSample) head.append(el("p", "board-sample", "SAMPLE forecast: the forecast values are invented, not a real forecast."));
   head.append(el("p", "board-note", "Forecast vs. the market's quoted bid and ask. Descriptive only, never a betting tip."));
+  // Responsible use (responsible_use.json "full"; Max, 8 Nov 2026)
+  if (responsibleText) head.append(el("p", "board-ru", responsibleText));
   root.append(head);
   if (!board.games.length) {
     root.append(el("p", "board-note", "The forecast file lists no games."));

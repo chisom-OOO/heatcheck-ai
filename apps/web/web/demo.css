@@ -365,3 +365,22 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
 .mcard-verdict.pending { font-style: italic; }
 .board-error { color: var(--heat); }
 .board-retry { margin-top: 8px; }
+
+/* ------------------------------------------------------------------ responsible use (Max, 8 Nov 2026)
+   Calm, small, always visible; not styled like an ad. Text: responsible_use.json. */
+:root { --ru-h: 30px; }
+.stage { box-sizing: border-box; min-height: calc(100vh - var(--ru-h)); min-height: calc(100dvh - var(--ru-h)); }
+.board { max-height: calc(100vh - 230px - var(--ru-h)); max-height: calc(100dvh - 230px - var(--ru-h)); }
+.ru-footer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; min-height: var(--ru-h); box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; padding: 6px 16px;
+  font-size: .78rem; line-height: 1.35; color: var(--muted); text-align: center;
+  background: rgba(18, 18, 26, .94); border-top: 1px solid #262433;
+}
+body { padding-bottom: var(--ru-h); }
+.board-ru { margin: 2px 0 0; color: var(--muted); font-size: .84rem; line-height: 1.45; max-width: 75ch; }
+.ru-notice {
+  margin: 0 0 4px; padding: 10px 14px; border-left: 3px solid #3A3752; border-radius: 6px;
+  background: #17161F; color: var(--muted); font-size: .86rem; line-height: 1.45;
+}
+@media (max-width: 860px) { :root { --ru-h: 44px; } .ru-footer { font-size: .72rem; } }
