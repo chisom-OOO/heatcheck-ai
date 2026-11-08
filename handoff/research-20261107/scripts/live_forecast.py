@@ -210,7 +210,7 @@ def _bdl_games(raw_files: list[Path]) -> pd.DataFrame:
 def forecast_bdl(out: Path, raw_dir: Path, gamelist: Path, dest: Path, fetched_utc: str, provenance: str):
     """Full forecast from Max's raw balldontlie /v1/games pages (2026-27 results to date) + hand-copied game list.
     Elo update uses completed regular-season 2026-27 games on US/Eastern dates strictly before 2026-11-07 (D5)."""
-    files = sorted(raw_dir.glob("*.json"))
+    files = sorted(raw_dir.glob("[0-9][0-9]-*.json"))   # numbered raw pages only (manifest.json excluded)
     if not files:
         raise SystemExit(f"REFUSED: no raw JSON files in {raw_dir}")
     per_file = [{"file": f.name, "sha256": sha256_file(f)} for f in files]

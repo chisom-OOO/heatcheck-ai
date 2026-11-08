@@ -1,17 +1,17 @@
 {
   "format": "heatcheck-live-forecast/1",
   "label": "DESCRIPTIVE FORECAST",
-  "model": "FALLBACK: B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, between-season carry 0.75*r+0.25*1505. Ratings are the 2025-26 end ratings carried once into 2026-27; NO 2026-27 results were used (cdn.nba.com refused every machine tried). Game list hand-copied from NBA.com, not fetched. All seven games assumed not at a neutral site.",
+  "model": "B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, between-season carry 0.75*r+0.25*1505; ratings rolled 2022-23 to 2025-26 from shufinskiy/nba_data@46488f0f, then 2026-27 results to date from balldontlie. Game list hand-copied from NBA.com. Neutral sites not flagged for 2025-26/2026-27.",
   "inputs_used": [
     "elo_rating_home",
     "elo_rating_away",
     "home_court"
   ],
-  "data_cutoff_utc": "2026-04-13T03:05:51Z",
+  "data_cutoff_utc": "2026-11-07T07:00:00Z",
   "source": {
-    "results": "shufinskiy/nba_data@46488f0f datasets/cdnnba_2025.tar.xz (2025-26 regular-season results; earlier seasons from the same repository). No 2026-27 results. Game list hand-copied from the NBA.com schedule page (data/live/raw/gamelist_handcopied_20261107.json)",
-    "fetched_utc": "2026-11-07T22:53:11Z",
-    "sha256": "a5d1bed30778430816b755676649cb2e3690ea62df5d96f4d9d6e9a8b8839339",
+    "results": "balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26",
+    "fetched_utc": "2026-11-08T00:04:30Z",
+    "sha256": "bc04834a19aeb61f604890cf0efca5223934aade828a219ae5e3ea26fa422603",
     "cross_check": "NOT_RUN"
   },
   "backtest_2024_25": {
@@ -27,9 +27,9 @@
       "away_team_id": "nba-team:1610612743",
       "home_team": "Indiana Pacers",
       "away_team": "Denver Nuggets",
-      "p_home_win": 0.308168,
-      "elo_home": 1375.363,
-      "elo_away": 1615.848
+      "p_home_win": 0.304183,
+      "elo_home": 1361.155,
+      "elo_away": 1604.899
     },
     {
       "game_id": "nba:0022600190",
@@ -38,9 +38,9 @@
       "away_team_id": "nba-team:1610612751",
       "home_team": "Atlanta Hawks",
       "away_team": "Brooklyn Nets",
-      "p_home_win": 0.858953,
-      "elo_home": 1553.404,
-      "elo_away": 1339.562
+      "p_home_win": 0.864459,
+      "elo_home": 1559.153,
+      "elo_away": 1337.284
     },
     {
       "game_id": "nba:0022600191",
@@ -49,9 +49,9 @@
       "away_team_id": "nba-team:1610612752",
       "home_team": "Cleveland Cavaliers",
       "away_team": "New York Knicks",
-      "p_home_win": 0.645118,
-      "elo_home": 1600.835,
-      "elo_away": 1597.014
+      "p_home_win": 0.661772,
+      "elo_home": 1593.641,
+      "elo_away": 1577.041
     },
     {
       "game_id": "nba:0022600192",
@@ -60,9 +60,9 @@
       "away_team_id": "nba-team:1610612764",
       "home_team": "Oklahoma City Thunder",
       "away_team": "Washington Wizards",
-      "p_home_win": 0.941147,
-      "elo_home": 1684.033,
-      "elo_away": 1302.476
+      "p_home_win": 0.936056,
+      "elo_home": 1703.838,
+      "elo_away": 1337.636
     },
     {
       "game_id": "nba:0022600193",
@@ -71,9 +71,9 @@
       "away_team_id": "nba-team:1610612753",
       "home_team": "Golden State Warriors",
       "away_team": "Orlando Magic",
-      "p_home_win": 0.527575,
-      "elo_home": 1454.47,
-      "elo_away": 1535.289
+      "p_home_win": 0.640267,
+      "elo_home": 1497.839,
+      "elo_away": 1497.687
     },
     {
       "game_id": "nba:0022600194",
@@ -82,9 +82,9 @@
       "away_team_id": "nba-team:1610612745",
       "home_team": "Phoenix Suns",
       "away_team": "Houston Rockets",
-      "p_home_win": 0.563347,
-      "elo_home": 1520.436,
-      "elo_away": 1576.18
+      "p_home_win": 0.475292,
+      "elo_home": 1493.803,
+      "elo_away": 1610.986
     },
     {
       "game_id": "nba:0022600195",
@@ -93,9 +93,9 @@
       "away_team_id": "nba-team:1610612759",
       "home_team": "Portland Trail Blazers",
       "away_team": "San Antonio Spurs",
-      "p_home_win": 0.443906,
-      "elo_home": 1521.945,
-      "elo_away": 1661.087
+      "p_home_win": 0.501433,
+      "elo_home": 1562.963,
+      "elo_away": 1661.968
     }
   ]
 }
