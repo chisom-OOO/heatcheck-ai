@@ -204,7 +204,6 @@ Research checked Polymarket's raw payload: the Cleveland contract really is the 
 
 **What-if scenarios (ESTIMATE, not claims;** `research/scenario-effects`**).**
 
-Each game card answers "what if…?" from past data.
 - **Player absence:**
   - Estimated from 2023–24 to 2025–26 as the team's result minus the Elo expectation, with and without the
     player.
@@ -217,12 +216,11 @@ Each game card answers "what if…?" from past data.
   - Players with a risk flag (small n, team change, garbage-time appearances) are not shown.
 - **Schedule:** back-to-back −0.053 (95% −0.079 to −0.028) and 3-in-4 −0.029. Both are shown as
   **unproven**, because the registered rest test was INSUFFICIENT_EVIDENCE.
-- **Combination:** effects combine on the log-odds scale, assuming independence. Overlapping rest changes are
-  refused as double counting.
+- **Combination:** on the log-odds scale, assuming independence; overlapping rest changes are refused.
 - **Example:** Cleveland without J. Allen is −0.062 (raw −0.172). With New York also on a back-to-back,
   Cleveland's 0.662 becomes **0.649** (95% 0.513–0.764).
-- **Limits:** absences mix rest and injury; rosters are not verified for 2026–27; and the single pooled prior
-  likely **pulls stars' effects toward zero too much**.
+- **Limits:** absences mix rest and injury; 2026–27 rosters are unverified; one pooled prior likely **pulls
+  stars' effects toward zero too much**.
 
 ## 7. The idea board: HeatCheck testing its own ideas
 
@@ -238,15 +236,16 @@ Grammar: `docs/IDEA_GRAMMAR.md`; runner and results: `research/idea-family` (rep
   Parameters are enumerated values only. Invalid output is refused, never repaired.
 - Research's runner **registers every idea before computing**, runs fixed permutation tests, and applies
   **Holm across every idea in the family**.
-- A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`. Only 2023–24 development games are read.
+- A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`; only development games are read.
 
 **Results so far.**
-- **Heater-proposed, keyword rules** ("Does rest matter?", Max `e1c2dc3`, not model-proposed): two ideas,
-  both NOT_A_CANDIDATE.
-  - When the away team is more rested, the home team wins 0.490 vs 0.570: raw p 0.030, Holm 0.060.
-  - This is consistent with the registered rest verdict.
-- **Heater-proposed, model:** [PLACEHOLDER — pending Max's request file; it will be run unchanged and
-  labelled model-proposed].
+- **Heater-proposed, keyword fallback** (same question, Max `e1c2dc3`): two ideas, both NOT_A_CANDIDATE
+  (away team more rested: raw p 0.030, Holm 0.060).
+- **Heater-proposed, model** (one `muse-spark-1.3` call, Max `c15abf7`; Research checked the raw model text
+  matches the request): five rest ideas, all **NOT_A_CANDIDATE**.
+  - The strongest, away team more rested, had p 0.043 and Holm 0.215.
+  - Two of the five ideas were the same condition under different names; the grammar does not yet catch that.
+  - Both Heater families agree with the registered rest verdict: not shown.
 
 The families below were written by Research to exercise the machine.
 - **Development data, 12 ideas:**
