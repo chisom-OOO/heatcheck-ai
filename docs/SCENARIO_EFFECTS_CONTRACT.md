@@ -85,3 +85,18 @@ confirmed change to `estimate` the same way.
   - Hypothetical market price.
   - User adjustments: "Your assumption, not modelled".
   - PLAYER_OUT and REST: your `estimate`.
+
+## Stamp rule (8 Nov 2026, user's instruction; one rule for the API and the page)
+
+| What the shown number depends on | Stamp |
+|---|---|
+| Data only: Research's estimates (preset `GET /api/scenario`, or typed player-out / rest) or the forecast's Elo model (neutral site, home/away swap) | **ESTIMATE** |
+| Any number the user supplied: their own adjustment ("assume it costs Boston 5%") or a hypothetical market price, alone or combined with data | **YOUR ASSUMPTION** |
+| A SAMPLE forecast | **SAMPLE** |
+| Nothing could be quantified | **NO NUMBER** |
+
+`POST /api/scenario/estimate` returns it as `stamp` (`heatcheck.agents.scenario.stamp_for`); preset
+scenarios carry `label: "ESTIMATE"`. The page never decides the stamp: `whatifStamp(est)` in
+`apps/web/web/whatif/whatif.js` shows the server's value (unknown values show NO NUMBER). The Ref
+line keeps the verdict "HYPOTHETICAL · Edge unverified". Tests: `tests/integration/test_scenario.py`
+(`test_stamp_rule_…`), `apps/web/tests/whatif.test.mjs` (fixture generated from the server code).

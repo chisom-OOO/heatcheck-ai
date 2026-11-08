@@ -19,7 +19,7 @@ import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } 
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
 import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
 import {
-  ESTIMATE_URL, SCENARIO_URL, confirmBody, postJson, renderEstimate, renderInterpretation, routeMessage,
+  ESTIMATE_URL, SCENARIO_URL, confirmBody, whatifStamp, postJson, renderEstimate, renderInterpretation, routeMessage,
 } from "./whatif/whatif.js";
 import { createVoice } from "./voice.js";
 
@@ -503,7 +503,7 @@ function whatifDetails(est) {
     const dd = document.createElement("dd"); dd.textContent = v;
     dl.append(dt, dd);
   };
-  row("Label", "HYPOTHETICAL: a what-if, not a forecast");
+  row("Label", `${whatifStamp(est).text}: a what-if, not a forecast`);
   row("Verdict", est.verdict);
   row("Computed at", fmtUtc(est.as_of_utc, { seconds: true }));
   for (const c of est.challenger_checks || []) row(c.check_id, `${c.status}: ${c.detail}`);
@@ -595,8 +595,9 @@ async function runEstimate(it) {
   ui.refText.textContent = est.ref_text;
   document.body.dataset.phase = "ref";
   await h.speak(est.ref_text, "ref", { voiceOn: state.voiceOn });
-  ui.stamp.className = "stamp insufficient";
-  ui.stamp.textContent = "HYPOTHETICAL";
+  const wst = whatifStamp(est);  // the server's stamp: ESTIMATE / YOUR ASSUMPTION / SAMPLE / NO NUMBER
+  ui.stamp.className = `stamp ${wst.kind}`;
+  ui.stamp.textContent = wst.text;
   ui.stamp.hidden = false;
   restartAnim(ui.stamp);
   ui.ref.classList.add("slammed");

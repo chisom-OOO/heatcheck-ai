@@ -41,7 +41,7 @@ test("confirmation echoes exactly what the server showed", () => {
 
 test("neutral floor: baseline vs scenario side by side, HYPOTHETICAL, model recalculated", () => {
   const v = S.scenarioView(C.neutral.estimate);
-  assert.equal(v.badge, "HYPOTHETICAL");
+  assert.equal(v.badge, "ESTIMATE");   // Elo model recalculation: the number comes from data
   assert.equal(v.baseline, "73.3%");   // Boston at Milwaukee: no home court for Milwaukee
   assert.equal(v.scenario, "83.0%");
   assert.equal(v.effects[0].label, "MODEL RECALCULATED");
@@ -80,7 +80,7 @@ test("a hypothetical price leaves the forecast unchanged and says so", () => {
 });
 
 test("a SAMPLE estimate never shows a number", () => {
-  const est = { ...C.neutral.estimate, is_sample: true, baseline: null, scenario: null };
+  const est = { ...C.neutral.estimate, is_sample: true, baseline: null, scenario: null, stamp: "SAMPLE" };
   const v = S.scenarioView(est);
   assert.equal(v.badge, "SAMPLE");
   assert.equal(v.baseline, "SAMPLE: not shown");
@@ -94,4 +94,23 @@ test("no view text calls anything an edge found or a bet", () => {
     assert.ok(!/\bbet\b|edge found|guarantee/i.test(all), all);
     assert.ok(c.estimate.ref_text.startsWith("HYPOTHETICAL · Edge unverified"));
   }
+});
+
+test("stamp: the page shows the server's stamp (ESTIMATE from data, YOUR ASSUMPTION from the user's number)", () => {
+  const want = { neutral: "ESTIMATE", player_out: "ESTIMATE", assume_pp: "YOUR ASSUMPTION", price: "YOUR ASSUMPTION",
+    points: "NO NUMBER", no_data: "NO NUMBER" };
+  for (const [k, text] of Object.entries(want)) {
+    assert.equal(C[k].estimate.stamp, text, k);            // the API (fixture generated from Max's server code)
+    assert.equal(S.whatifStamp(C[k].estimate).text, text, k);  // the page
+    assert.equal(S.scenarioView(C[k].estimate).badge, text, k);
+  }
+  assert.equal(S.whatifStamp({ stamp: "EDGE FOUND" }).text, "NO NUMBER");  // unknown stamps are never shown
+  assert.equal(S.whatifStamp({}).text, "NO NUMBER");
+});
+
+test("demo.js stamps a what-if with whatifStamp, not a fixed word", async () => {
+  const { readFileSync: rf } = await import("node:fs");
+  const src = rf(new URL("../web/demo.js", import.meta.url), "utf8");
+  assert.ok(src.includes("whatifStamp(est)"));
+  assert.ok(!src.includes('ui.stamp.textContent = "HYPOTHETICAL"'));
 });

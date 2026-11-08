@@ -321,9 +321,22 @@ def _canon(obj: Any) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()
 
 
+def _json_numbers(obj: Any) -> Any:
+    """Whole-number floats as ints, as a browser's JSON writes them (-5.0 -> -5), so the id survives
+    the round trip through the page. Other values are unchanged."""
+    if isinstance(obj, float) and obj.is_integer():
+        return int(obj)
+    if isinstance(obj, dict):
+        return {k: _json_numbers(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_numbers(v) for v in obj]
+    return obj
+
+
 def interpretation_id(game_id: str, forecast_sha256: str, changes: list[dict], focus_team: str) -> str:
-    return hashlib.sha256(_canon({"format": FORMAT, "game_id": game_id, "forecast_sha256": forecast_sha256,
-                                  "changes": changes, "focus_team": focus_team})).hexdigest()
+    return hashlib.sha256(_canon(_json_numbers({"format": FORMAT, "game_id": game_id,
+                                                "forecast_sha256": forecast_sha256, "changes": changes,
+                                                "focus_team": focus_team}))).hexdigest()
 
 
 def parse_scenario(message: str, row: dict, forecast_sha256: str) -> dict:
@@ -689,7 +702,24 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
         "effects": [e.as_dict() for e in effects], "challenger_checks": [c.as_dict() for c in checks],
         "verdict": VERDICT, "ref_text": ref.strip(), "sample_note": sample_note,
         "provider": provider.identity,
+        "stamp": stamp_for([e.as_dict() for e in effects], scen, is_sample),
     }
+
+
+USER_SUPPLIED = ("YOUR_ASSUMPTION", "HYPOTHETICAL_PRICE")
+
+
+def stamp_for(effects: list[dict], scenario: dict | None, is_sample: bool) -> str:
+    """The page's stamp for a what-if (one rule for the API and the page):
+    YOUR ASSUMPTION when any number shown depends on a number the user supplied (their own
+    adjustment or a hypothetical market price); ESTIMATE when the number comes from data (Research's
+    estimates or the forecast's Elo model, preset or typed); SAMPLE for a sample forecast;
+    NO NUMBER when nothing could be quantified."""
+    if is_sample:
+        return "SAMPLE"
+    if any(e["type"] in USER_SUPPLIED and e["included"] for e in effects):
+        return "YOUR ASSUMPTION"
+    return "ESTIMATE" if scenario is not None else "NO NUMBER"
 
 
 def scenario_identity(est: dict, changes: list[dict], interp_id: str, forecast_sha256: str,
