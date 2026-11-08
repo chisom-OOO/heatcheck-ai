@@ -37,7 +37,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Protocol
 
-FORMAT = "heatcheck-scenario/1"
+FORMAT = "heatcheck-whatif/1"           # Max's free-text what-if (POST /api/scenario[/estimate])
+MENU_FORMAT = "heatcheck-scenario/1"    # Experience's per-game scenario list (GET /api/scenario), adopted
 PROTOCOL_VERSION = "scenario-1"
 LANE = "SCENARIO"
 VERDICT = "HYPOTHETICAL · Edge unverified"
@@ -402,6 +403,11 @@ class EffectsProvider(Protocol):
 
     def points_to_elo(self) -> float | None: ...
 
+    def menu(self, ctx: dict) -> list[dict] | None:
+        """The changes worth showing for this game (e.g. the away team on a back-to-back), as
+        PLAYER_OUT/REST change dicts with a "text" sentence; None when not available."""
+        ...
+
 
 class ResearchStub:
     identity = {"name": "research-scenario-effects", "version": "STUB",
@@ -414,6 +420,11 @@ class ResearchStub:
     def points_to_elo(self) -> float | None:
         return None
 
+    def menu(self, ctx: dict) -> list[dict] | None:
+        return None
+
+
+NOT_MERGED = "Research's scenario functions (research/scenario-effects) are not merged yet"
 
 NEEDS = {
     "PLAYER_OUT": "player-level on/off data for the players involved and a lineup-aware model tested on past games",
@@ -682,3 +693,88 @@ def scenario_identity(est: dict, changes: list[dict], interp_id: str, forecast_s
             "effects": est["effects"], "challenger_checks": est["challenger_checks"],
             "provider": est["provider"], "referee": REF_IDENTITY, "verdict": est["verdict"],
             "label": "HYPOTHETICAL", "outcome": None}
+
+
+# ------------------------------------------------------------------ GET /api/scenario (heatcheck-scenario/1)
+
+def _prob_str(p: float) -> str:
+    return f"{p:.6f}"
+
+
+def scenario_menu(row: dict, forecast_doc: dict, is_sample: bool, forecast_sha256: str, as_of_utc: str,
+                  provider: EffectsProvider, team: str | None = None) -> dict:
+    """Experience's heatcheck-scenario/1 answer for one game card (apps/web/HANDOFF.md).
+
+    Only Research's estimates appear in ``scenarios``, each labelled ESTIMATE with p_team_win, range
+    (low, high, level), n, n_unit and at least one caveat, converted with the forecast's own Elo
+    formula. Extra lists the page may ignore: ``failed_tests`` (estimates whose own test FAILED,
+    never shown as plain estimates) and ``not_quantified`` (no number, with the reason).
+    """
+    home = row["home_team"]
+    team = team or home
+    if team not in (home, row["away_team"]):
+        raise ValueError("team must be one of the game's teams")
+    sign = 1.0 if team == home else -1.0
+    p_home = float(row["p_home_win"])
+    base = {"format": MENU_FORMAT, "game_id": row["game_id"], "team": team, "is_sample": is_sample,
+            "baseline": {"p_team_win": _prob_str(p_home if sign > 0 else 1.0 - p_home),
+                         "forecast_id": f"live-forecast:{forecast_sha256}"},
+            "source": f"{provider.identity.get('name')} {provider.identity.get('version')}; probabilities via "
+                      "the live forecast's Elo formula",
+            "as_of_utc": as_of_utc, "scenarios": [], "failed_tests": [], "not_quantified": [],
+            "verdict": VERDICT}
+    if is_sample:
+        return {**base, "status": "UNAVAILABLE", "reason": "the forecast is a SAMPLE with made-up numbers"}
+    h0 = home_court_in_forecast(row)
+    if h0 is None:
+        return {**base, "status": "UNAVAILABLE",
+                "reason": "the forecast row does not reproduce from its own Elo ratings"}
+    ctx = {"game": row, "home_court_elo": h0, "as_of_utc": as_of_utc}
+    changes = provider.menu(ctx)
+    if changes is None:
+        return {**base, "status": "UNAVAILABLE", "reason": NOT_MERGED}
+    d0 = row["elo_home"] - row["elo_away"] + h0
+    as_of = _parse_utc(as_of_utc)
+    for c in changes:
+        text = str(c.get("text") or "").strip()
+        sid = hashlib.sha256(_canon({"game_id": row["game_id"], "change": c})).hexdigest()[:16]
+        r = provider.estimate(c, ctx)
+        if r.get("status") != "ESTIMATE":
+            base["not_quantified"].append({"scenario_id": sid, "text": text, "reason": r.get("reason") or
+                                           ("no data" if r.get("status") == "NO_DATA" else "not available")})
+            continue
+        caveats = [x for x in (r.get("caveats") or []) if isinstance(x, str) and x.strip()]
+        n, level = r.get("n"), r.get("level")
+        problems = []
+        if not caveats:
+            problems.append("Research gave no caveats")
+        if not isinstance(n, int) or n < 1:
+            problems.append("Research gave no sample size")
+        if not isinstance(level, (int, float)) or not 0 < level < 1:
+            problems.append("Research gave no interval level")
+        if problems:
+            base["not_quantified"].append({"scenario_id": sid, "text": text, "reason": "; ".join(problems)})
+            continue
+        tsign = 1.0 if (c.get("team") or team) == home else -1.0
+        mid = d0 + float(r["elo_shift"]) * tsign
+        lo_hi = sorted(d0 + float(x) * tsign for x in r["elo_shift_range"])
+        pm, pl, ph = p_from_elo(mid), p_from_elo(lo_hi[0]), p_from_elo(lo_hi[1])
+        if sign < 0:
+            pm, pl, ph = 1 - pm, 1 - ph, 1 - pl
+        pl, ph = min(pl, pm), max(ph, pm)
+        item = {"scenario_id": sid, "text": text, "label": "ESTIMATE", "p_team_win": _prob_str(pm),
+                "range": {"low": _prob_str(pl), "high": _prob_str(ph), "level": f"{float(level):.2f}"},
+                "n": n, "n_unit": r.get("n_unit") or "games", "caveats": caveats,
+                "method": r.get("method") or "", "verdict": r.get("verdict") or "NOT_TESTED",
+                "change": c}
+        dt = r.get("data_through_utc")
+        if n < MIN_N:
+            item["caveats"] = caveats + [f"small sample: {n} {item['n_unit']} (under {MIN_N})"]
+        if dt and as_of - _parse_utc(dt) > ESTIMATE_MAX_AGE:
+            item["caveats"] = item["caveats"] + [f"stale: uses data through {dt}"]
+        (base["failed_tests"] if item["verdict"] == "FAILED" else base["scenarios"]).append(item)
+    status = "OK" if base["scenarios"] else "UNAVAILABLE"
+    out = {**base, "status": status}
+    if status != "OK":
+        out["reason"] = "Research's functions returned no estimate for this game"
+    return out

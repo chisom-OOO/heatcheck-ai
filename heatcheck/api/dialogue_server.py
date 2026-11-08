@@ -45,6 +45,7 @@ from heatcheck.agents.scenario import (
     pick_game,
     route,
     scenario_identity,
+    scenario_menu,
 )
 from heatcheck.api.display_titles import DISPLAY_TITLES
 from heatcheck.contracts.bundle import BundleError, load_bundle
@@ -298,6 +299,29 @@ def run_scenario_estimate(req: dict, live_forecast: Path | None, cfg: ScenarioCo
     return 200, est
 
 
+def run_scenario_menu(query: str, live_forecast: Path | None, cfg: ScenarioConfig | None) -> tuple[int, dict]:
+    """GET /api/scenario?game_id=...[&team=...]: Experience's heatcheck-scenario/1."""
+    from urllib.parse import parse_qs
+    q = parse_qs(query, max_num_fields=4)
+    gid = (q.get("game_id") or [""])[0]
+    team = (q.get("team") or [None])[0]
+    if not gid or len(gid) > 40:
+        return 400, {"error": "game_id is required"}
+    fc = live_forecast_payload(live_forecast)
+    if fc["status"] != "OK":
+        return 200, {"format": "heatcheck-scenario/1", "status": "UNAVAILABLE", "game_id": gid,
+                     "reason": f"forecast {fc['status']}: {fc['reason']}"}
+    row = next((g for g in fc["forecast"]["games"] if g["game_id"] == gid), None)
+    if row is None:
+        return 404, {"error": f"{gid} is not in the live forecast"}
+    provider = (cfg.provider if cfg else None) or ResearchStub()
+    try:
+        return 200, scenario_menu(row, fc["forecast"], fc["is_sample"], fc["file_sha256"],
+                                  ((cfg.clock if cfg else None) or _now)(), provider, team)
+    except ValueError as e:
+        return 400, {"error": str(e)}
+
+
 ESTIMATE_KEYS = {"game_id", "changes", "focus_team", "interpretation_id", "confirmed"}
 SCENARIO_PATHS = ("/api/route", "/api/scenario", "/api/scenario/estimate")
 
@@ -332,6 +356,11 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
                 return self._send(200, {"display_titles": DISPLAY_TITLES})
             if self.path == "/api/live-forecast":
                 return self._send(200, live_forecast_payload(live_forecast))
+            if self.path.split("?", 1)[0] == "/api/scenario":
+                try:
+                    return self._send(*run_scenario_menu(self.path.partition("?")[2], live_forecast, scenario))
+                except Exception as e:  # never invent an estimate
+                    return self._send(500, {"error": f"scenario failed: {type(e).__name__}"})
             if self.path not in ("/", "/index.html"):
                 return self._send(404, {"error": "not found"})
             body = CONSOLE.read_bytes()

@@ -319,3 +319,85 @@ def test_http_route_parse_confirm_estimate_and_ledger(server):
     assert r["status"] == "NEEDS_GAME"
     assert post(base, "/api/route", {"message": ""})[0] == 400
     assert post(base, "/api/scenario/estimate", {"game_id": "x"})[0] == 400
+
+
+# ------------------------------------------------------------------ GET /api/scenario (Experience's heatcheck-scenario/1)
+
+from heatcheck.agents.scenario import MENU_FORMAT, NOT_MERGED, scenario_menu  # noqa: E402
+
+PROB = re.compile(r"^(0(\.\d+)?|1(\.0+)?)$")
+
+
+class MenuDouble(FakeResearch):
+    """TEST DOUBLE with a menu; numbers made up, never served."""
+
+    def __init__(self, items, **by_kind):
+        super().__init__(**by_kind)
+        self.items = items
+
+    def menu(self, ctx):
+        return self.items
+
+
+def experience_rules(body, card_team, card_p):
+    """Python mirror of apps/web/web/market/scenario-model.js readScenarios/scenarioProblem."""
+    assert body["format"] == MENU_FORMAT and body["status"] == "OK"
+    assert body["team"] == card_team and float(body["baseline"]["p_team_win"]) == card_p
+    assert isinstance(body["is_sample"], bool)
+    for s in body["scenarios"]:
+        assert s["label"] == "ESTIMATE" and s["scenario_id"] and s["text"].strip()
+        r = s["range"]
+        assert all(PROB.match(x) for x in (s["p_team_win"], r["low"], r["high"], r["level"]))
+        assert float(r["low"]) <= float(s["p_team_win"]) <= float(r["high"]) and 0 < float(r["level"]) < 1
+        assert isinstance(s["n"], int) and s["n"] >= 1 and s["n_unit"] and s["caveats"]
+
+
+def test_menu_with_the_stub_is_unavailable_and_says_why():
+    m = scenario_menu(G["191"], DOC, False, SHA, NOW, ResearchStub())
+    assert m["format"] == MENU_FORMAT and m["status"] == "UNAVAILABLE" and m["reason"] == NOT_MERGED
+    assert m["scenarios"] == [] and m["baseline"]["p_team_win"] == f"{G['191']['p_home_win']:.6f}"
+    s = scenario_menu(G["191"], DOC, True, SHA, NOW, ResearchStub())
+    assert s["status"] == "UNAVAILABLE" and "SAMPLE" in s["reason"]
+
+
+def test_menu_meets_experiences_rules_and_routes_failed_and_missing():
+    b2b = {"kind": "REST", "team": "New York Knicks", "detail": "back-to-back", "text": "The Knicks are on a back-to-back"}
+    hurt = {"kind": "PLAYER_OUT", "team": "Cleveland Cavaliers", "player": "X", "text": "X is out"}
+    est = {"status": "ESTIMATE", "elo_shift": -30.0, "elo_shift_range": [-55.0, -5.0], "n": 1224, "level": 0.9,
+           "verdict": "INSUFFICIENT_EVIDENCE", "caveats": ["test double"]}
+
+    class P(MenuDouble):
+        def estimate(self, change, ctx):
+            if change["kind"] == "PLAYER_OUT":
+                return {**est, "verdict": "FAILED"}
+            return est
+    cle = G["191"]
+    m = scenario_menu(cle, DOC, False, SHA, NOW, P([b2b, hurt]))
+    experience_rules(m, "Cleveland Cavaliers", cle["p_home_win"])
+    assert len(m["scenarios"]) == 1 and len(m["failed_tests"]) == 1
+    d = cle["elo_home"] - cle["elo_away"] + 100
+    s = m["scenarios"][0]
+    assert s["p_team_win"] == f"{p_from_elo(d + 30):.6f}"           # the Knicks get worse: Cleveland up
+    assert s["range"] == {"low": f"{p_from_elo(d + 5):.6f}", "high": f"{p_from_elo(d + 55):.6f}", "level": "0.90"}
+    # same scenario from the Knicks' side
+    k = scenario_menu(cle, DOC, False, SHA, NOW, P([b2b]), team="New York Knicks")
+    experience_rules(k, "New York Knicks", round(1 - cle["p_home_win"], 6))
+    assert k["scenarios"][0]["p_team_win"] == f"{1 - p_from_elo(d + 30):.6f}"
+    # no caveats / no level / no data never become an ESTIMATE
+    bad = scenario_menu(cle, DOC, False, SHA, NOW, MenuDouble([b2b], REST={**est, "caveats": [], "level": None}))
+    assert bad["status"] == "UNAVAILABLE" and "no caveats" in bad["not_quantified"][0]["reason"]
+    nod = scenario_menu(cle, DOC, False, SHA, NOW, MenuDouble([b2b], REST={"status": "NO_DATA", "reason": "none"}))
+    assert nod["not_quantified"][0]["reason"] == "none"
+
+
+def test_http_get_scenario(server):
+    base, _ledger, _fc = server
+    with urllib.request.urlopen(base + "/api/scenario?game_id=nba:0022600191", timeout=10) as r:
+        body = json.loads(r.read())
+    assert body["format"] == MENU_FORMAT and body["status"] == "UNAVAILABLE" and body["reason"] == NOT_MERGED
+    for q, code in (("", 400), ("?game_id=nba:0000000000", 404), ("?game_id=nba:0022600191&team=Boston+Celtics", 400)):
+        try:
+            urllib.request.urlopen(base + "/api/scenario" + q, timeout=10)
+            raise AssertionError("expected an error")
+        except urllib.error.HTTPError as e:
+            assert e.code == code
