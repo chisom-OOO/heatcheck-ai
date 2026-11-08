@@ -11,9 +11,9 @@
 import { loadPersonality, mount } from "./heater/heater.js";
 import {
   CLAIM_TITLES, DEFAULT_PERSONALITY, NEVER_SEEN, TIMING, fmtP, latestFor, parseJsonl, reactFor,
-  refPlain, routeQuestion, stampFor, stateForDecision, takeFor,
+  refPlain, routeQuestion, splitTake, stampFor, stateForDecision, takeFor,
 } from "./heater/heater-model.js";
-import { loadBoard, renderBoard } from "./market/board.js";
+import { investigateGames, loadForecast, renderBoard } from "./market/board.js";
 import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
 import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } from "./market/scenario-model.js";
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
@@ -77,8 +77,22 @@ async function askDialogue(question) {
   }
 }
 
-/** Decide the claim, Heater's line and the evidence entry for a question. */
+/** The evidence ledger, once its background load (started in main) has finished. */
+async function ledgerReady() {
+  return state.ledger || state.ledgerLoad;
+}
+
+/** Decide the claim, Heater's lines and the evidence entry for a question.
+ *  ``take`` (said before the Ref) never comes from text written with the verdict in hand: it is the
+ *  personality's line for the claim. Max's heater_text is written after the ruling (its fallbacks
+ *  say "The Ref says it SURVIVED…"), so it becomes ``lastWord``, said after the stamp. */
 async function answer(question) {
+  try {
+    await ledgerReady();
+  } catch (e) {
+    state.ledgerError = e.message;
+    state.ledger = { entries: [], verified: false, source: `not loaded (${e.message})` };
+  }
   let api = null;
   try {
     api = await askDialogue(question);
@@ -102,8 +116,10 @@ async function answer(question) {
     ? { verdict: api.verdict, refText: api.ref_text, lane: api.lane, evidenceId: api.evidence_record_id }
     : null;
   if (apiOnly) log(`record ${api.evidence_record_id} not in this page's ledger; using the API's verdict and Ref text`);
-  const take = (!forced && api?.heater_text) || takeFor(claimId, state.personality, state.turn);
-  return { claimId, entry, apiOnly, take, takeSource: !forced && api?.heater_text ? "dialogue API" : state.personalitySource };
+  const take = takeFor(claimId, state.personality, state.turn);
+  const lastWord = (!forced && api?.heater_text) || "";
+  return { claimId, entry, apiOnly, take, lastWord,
+    takeSource: `${state.personalitySource}${lastWord ? "; last word: dialogue API" : ""}` };
 }
 
 /** The Ref's words: plain text from the record; else the API's own text (with the sealed-season
@@ -115,6 +131,7 @@ function refLineFor(a) {
     return a.apiOnly.lane === "CONFIRMATORY" && !t.includes(NEVER_SEEN)
       ? `${t} It was ${NEVER_SEEN}.` : t;
   }
+  if (state.ledgerError) return `Can't rule: the evidence ledger did not load (${state.ledgerError}).`;
   return "No ruling yet. We haven't run a test for this one, so there's nothing to report.";
 }
 
@@ -259,8 +276,9 @@ async function ask(question) {
   }
   document.body.dataset.phase = "verdict";
 
-  // 5. Heater has the last word
-  const react = decision ? reactFor(decision, state.personality, turn) : "";
+  // 5. Heater has the last word, only now that the stamp is down: Max's verdict-aware line, else
+  // the personality's reaction to the ruling.
+  const react = a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "");
   await sleep(700);
   if (react) {
     ui.react.textContent = react;
@@ -385,20 +403,39 @@ async function askIdea(r, f) {
 
 // ------------------------------------------------------------------ market board
 
+// Lazy: nothing is fetched for the board until "Tonight's games" is opened. Opening it waits at most
+// BOARD_TIMEOUT_MS for the forecast (then every card is drawn, pending) or says why it failed with a
+// "Try again" button; the comparisons then fill the cards in one by one in the background.
+const boardHandlers = () => ({
+  onAsk: (g) => askMarket(g),
+  onScenario: (g, s, data) => askScenario(g, s, data),
+  // "Your own scenario" on a card: Max's free-text what-if flow, pinned to that card's game.
+  onOwnScenario: (g, text) => { if (!state.busy) runScenario(text, g.row.game_id); },
+});
+
 async function openBoard() {
   setView("board");
-  if (!state.board) {                       // investigate each game once per page view
-    ui.board.replaceChildren(Object.assign(document.createElement("p"), { className: "board-note", textContent: "Loading tonight's games…" }));
-    state.heater.setState("thinking");
-    state.board = await loadBoard({ log });
-    state.heater.setState("idle");
+  if (state.board) {                        // investigate each game once per page view
+    state.boardView = renderBoard(ui.board, state.board, boardHandlers());
+    return;
   }
-  renderBoard(ui.board, state.board, {
-    onAsk: (g) => askMarket(g),
-    onScenario: (g, s, data) => askScenario(g, s, data),
-    // "Your own scenario" on a card: Max's free-text what-if flow, pinned to that card's game.
-    onOwnScenario: (g, text) => { if (!state.busy) runScenario(text, g.row.game_id); },
-  });
+  if (!state.boardLoading) state.boardLoading = loadBoardView().finally(() => { state.boardLoading = null; });
+  await state.boardLoading;
+}
+
+async function loadBoardView() {
+  ui.board.replaceChildren(Object.assign(document.createElement("p"), { className: "board-note", textContent: "Loading tonight's games…" }));
+  if (!state.busy) state.heater?.setState("thinking");
+  const board = await loadForecast();
+  if (!state.busy) state.heater?.setState("idle");
+  log(`board: ${board.status}${board.reason ? ` (${board.reason})` : ""}, ${board.games.length} games`);
+  if (board.status !== "OK") {              // not kept: opening the board again retries
+    renderBoard(ui.board, board, { onRetry: () => openBoard() });
+    return;
+  }
+  state.board = board;
+  state.boardView = renderBoard(ui.board, board, boardHandlers());
+  investigateGames(board, { log, onCard: (g) => state.boardView?.update(g) });  // not awaited
 }
 
 function scenarioDetails(s, data) {
@@ -623,6 +660,8 @@ function marketDetails(resp) {
   return dl;
 }
 
+const MARKET_OPENER = "Let's put this card under the lights.";
+
 /** Heater explains one card; the Ref words Max's verdict; the stamp lands. */
 async function askMarket(g) {
   const resp = g.resp;
@@ -639,7 +678,10 @@ async function askMarket(g) {
   h.setState("thinking");
   await sleep(TIMING.thinkingMin);
   document.body.dataset.phase = "take";
-  const take = heaterPlain(resp.heater_text, resp.forecast?.inputs_used);
+  // Max's line is written knowing the verdict (his model is given refs_verdict; the home-bias line
+  // cites "the Ref's calibration note"): only its sentences that do not pre-empt the Ref come first.
+  const split = splitTake(heaterPlain(resp.heater_text, resp.forecast?.inputs_used));
+  const take = split.first || MARKET_OPENER;
   ui.take.textContent = take;
   ui.bubble.hidden = false;
   restartAnim(ui.bubble);
@@ -667,6 +709,13 @@ async function askMarket(g) {
   h.setState(marketEndState(resp), { restart: true });
   ui.evidenceBody.replaceChildren(marketDetails(resp));
   ui.evidence.hidden = false;
+  document.body.dataset.phase = "verdict";
+  if (split.later) {                       // the rest of Max's line, now that the stamp is down
+    await sleep(700);
+    ui.react.textContent = split.later;
+    ui.react.hidden = false;
+    await h.speak(split.later, "heater", { voiceOn: state.voiceOn });
+  }
   document.body.dataset.phase = "done";
   log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);
   state.busy = false;
@@ -749,17 +798,23 @@ function buildDebug() {
 
 // ------------------------------------------------------------------ start
 async function main() {
+  // The home view first: no network wait before it is drawn, and the board is fetched only when
+  // opened. The evidence ledger loads in the background; a question waits for it (ledgerReady).
+  setView("talk");
+  ui.boardBtn.addEventListener("click", () => toggleView("board", openBoard));
+  ui.ideasBtn.addEventListener("click", () => toggleView("ideas", openIdeas));
+  state.ledgerLoad = loadLedger().then((l) => {
+    state.ledger = l;
+    log(`ledger: ${l.entries.length} entries from ${l.source}`);
+    return l;
+  });
+  state.ledgerLoad.catch(() => { /* reported by the first question that needs it */ });
   state.heater = await mount($("heater"), { state: "idle", hold: true });
   const p = await loadPersonality();
   if (p) { state.personality = p; state.personalitySource = "heater_personality.json"; }
-  state.ledger = await loadLedger();
-  log(`ledger: ${state.ledger.entries.length} entries from ${state.ledger.source}`);
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });
   ui.chips.forEach((c) => c.addEventListener("click", () => { ui.q.value = c.textContent; ask(c.textContent); }));
-  ui.boardBtn.addEventListener("click", () => toggleView("board", openBoard));
-  ui.ideasBtn.addEventListener("click", () => toggleView("ideas", openIdeas));
-  setView("talk");
-  if (DEBUG) buildDebug();
+  if (DEBUG) ledgerReady().then(buildDebug, () => {});
   document.body.dataset.ready = "1";
   if (params.get("ask")) { ui.q.value = params.get("ask"); ask(params.get("ask")); }
   else if (params.get("board") === "1") openBoard();
