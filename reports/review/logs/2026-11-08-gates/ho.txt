@@ -1,0 +1,3 @@
+=========================== short test summary info ============================
+FAILED tests/test_confirmatory.py::test_real_2024_tampered_copy_is_refused_on_a_ledger_copy
+1 failed, 141 passed, 23 skipped in 62.46s (0:01:02)

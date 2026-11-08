@@ -1,0 +1,3 @@
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t3_verified_unknown_cancel_postpone_rejected - Deferred: docs/DECISIONS.md
+XFAIL tests/review/test_rv_validator_probes.py::test_rv_t4_verified_without_rules_hash_rejected - Deferred: docs/DECISIONS.md
+640 passed, 31 skipped, 16 xfailed in 140.54s (0:02:20)

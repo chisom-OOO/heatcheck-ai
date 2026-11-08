@@ -185,6 +185,7 @@ def read_family(d):
 
 
 def read_all(root=None):
+    explicit_root = root
     root = root or configured_dir()
     if not os.path.isdir(root):
         raise IdeasUnavailable("NOT_FOUND", "no idea-family results in this checkout "
@@ -198,11 +199,13 @@ def read_all(root=None):
             families.append(read_family(d))
         except (Refused, OSError) as e:
             refused.append({"name": name, "reason": str(e)})
-    proposals, p_refused = read_proposals()
+    # Heater's proposals belong to the served board, not to an explicit results directory (fixtures)
+    proposals, p_refused = read_proposals() if explicit_root is None else ([], [])
     refused += p_refused
     if not families and not refused and not proposals:
         raise IdeasUnavailable("NOT_FOUND", "the idea-family directory holds no results.json")
     families.sort(key=lambda f: (f["mode"] != "development", f["name"]))
     rel = os.path.relpath(root, REPO).replace(os.sep, "/")
     return {"format": FORMAT, "source": rel if not rel.startswith("..") else os.path.basename(root),
-            "families": families, "refused": refused, "proposals": proposals}
+            "families": families, "refused": refused,
+            **({"proposals": proposals} if explicit_root is None else {})}

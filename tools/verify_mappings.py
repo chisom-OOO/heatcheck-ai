@@ -57,7 +57,9 @@ def main(argv: list[str]) -> int:
             continue
         manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
         target = out / f"{manifest['bundle_id']}.json"
-        target.write_text(json.dumps({"bundle_dir": bundle.as_posix(), "verifications": docs},
+        loc = bundle.resolve()  # stored repo-relative so the record works on any machine (CI is Linux)
+        loc = loc.relative_to(ROOT).as_posix() if loc.is_relative_to(ROOT) else bundle.as_posix()
+        target.write_text(json.dumps({"bundle_dir": loc, "verifications": docs},
                                      indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
         for d in docs:
             failed = [c["check"] for c in d["checks"] if c["status"] != "PASS"]
