@@ -109,9 +109,7 @@ body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflo
 .stamp.not-supported { color: #FF5A5F; }
 .stamp.insufficient { color: #FFB627; }
 .stamp.blocked { color: #B9B6CC; }
-.stamp.untested { color: #8D8AA3; }
-.stamp.assumption { color: #B9A6FF; }  /* YOUR ASSUMPTION: the user's number, not the data's */
-@keyframes slam {
+.stamp.untested { color: #8D8AA3; }@keyframes slam {
   0%   { opacity: 0; transform: rotate(-16deg) scale(2.6); }
   45%  { opacity: 1; transform: rotate(-9deg) scale(.92); }
   58%  { transform: translateX(-5px) rotate(-10deg) scale(1.02); }

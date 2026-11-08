@@ -42,6 +42,15 @@ export const TYPE_LABEL = {
   FAILED_TEST: "FAILED OUR TEST",
 };
 
+/** The stamp is the server's (heatcheck.agents.scenario.stamp_for): ESTIMATE when the number comes from
+ *  data, YOUR ASSUMPTION when it depends on a number the user supplied, SAMPLE, or NO NUMBER. The page never
+ *  decides it; an answer without a known stamp shows NO NUMBER. */
+export const STAMPS = { ESTIMATE: "insufficient", "YOUR ASSUMPTION": "insufficient", SAMPLE: "blocked", "NO NUMBER": "blocked" };
+export function whatifStamp(est) {
+  const text = Object.hasOwn(STAMPS, est?.stamp) ? est.stamp : "NO NUMBER";
+  return { text, kind: STAMPS[text] };
+}
+
 /** Everything the result panel shows, as plain strings. No arithmetic here beyond formatting. */
 export function scenarioView(est) {
   const sample = Boolean(est.is_sample);
@@ -67,12 +76,12 @@ export function scenarioView(est) {
   const flags = (est.challenger_checks || []).filter((c) => c.status === "FLAG" || c.status === "FAIL")
     .map((c) => `${c.check_id}: ${c.detail}`);
   return {
-    badge: sample ? "SAMPLE" : "HYPOTHETICAL",
+    badge: whatifStamp(est).text,
     title: `${est.game} · what-if for ${est.focus_team}`,
     baselineLabel: `Baseline: ${est.focus_team} to win`,
     baseline: base,
     baselineNote: est.baseline ? `Live forecast, data to ${fmtUtc(est.baseline.data_cutoff_utc)}` : (est.sample_note || ""),
-    scenarioLabel: "Scenario (HYPOTHETICAL)",
+    scenarioLabel: `Scenario (${whatifStamp(est).text})`,
     scenario: scen,
     price: est.hypothetical_price != null ? `Hypothetical market price: ${pct(est.hypothetical_price)}` : "",
     effects,

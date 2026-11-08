@@ -33,9 +33,9 @@ def snapshot(root):
 
 
 class TestReader(unittest.TestCase):
-    """Research's families only. Since Max's 1941cdc, read_all(<explicit dir>) carries no
-    "proposals" (they belong to the served board); HEATCHECK_PROPOSALS is still pointed at an empty
-    directory so a served-board call here could not pick up Max's files. TestProposals covers them."""
+    """Research's families only: Heater's proposals (read_proposals, default the repo's
+    data/max/idea_requests) are pointed at an empty directory here so these tests do not change
+    whenever Max commits a new proposal. TestProposals covers that path."""
 
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
@@ -84,7 +84,6 @@ class TestReader(unittest.TestCase):
     def test_committed_api_capture_equals_the_reader_output(self):
         with open(API_CAPTURE, encoding="utf-8") as f:
             self.assertEqual(json.load(f), json.loads(json.dumps(ideas.read_all(FIX))))
-        self.assertNotIn("proposals", ideas.read_all(FIX))  # explicit directory: Research's results only
 
     def test_changed_registration_is_refused(self):
         self.edit("dev_example/registration.json", lambda b: b.replace(b'"B": 999', b'"B": 99'), raw=True)

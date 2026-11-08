@@ -42,7 +42,7 @@ Max's own baseline at this commit (author's runs, Windows, 8 Nov 02:20–02:40 U
 | `uv run --frozen pytest -q` (root `tests/`, what CI runs) | 642 passed, 29 skipped, 16 xfailed |
 | `uv run --frozen ruff check .` | clean |
 | HO: `python -m pytest -q --ignore=tests/test_custodian.py --ignore=tests/test_confirmatory.py --ignore=tests/test_guard_fixes.py` | 92 passed, 8 skipped (dataset not built) |
-| `apps/web`: `python -m unittest discover -s tests` | 104 OK |
+| `cd apps\web && uv run --frozen python -m unittest discover -s tests` (Max's standard checks from 8 Nov 02:45) | 104 OK (106 after experience/market-board@a90d7c4) |
 | `apps/web`: `node --test tests/*.test.mjs` | 71 pass |
 
 CI (`.github/workflows/checks.yml`) runs only the root `tests/` (`testpaths = ["tests"]`): the HO
