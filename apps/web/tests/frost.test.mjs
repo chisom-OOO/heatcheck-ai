@@ -10,7 +10,7 @@ import {
   frostPoseFile, isSkipKey, normalizeExchange, pickCastVoices, skippable,
 } from "../web/frost/frost-model.js";
 import { Frost } from "../web/frost/frost.js";
-import { VOICE, fallbackSpeechMs, pickVoices } from "../web/heater/heater-model.js";
+import { VOICE, dialogueLines, fallbackSpeechMs, pickVoices } from "../web/heater/heater-model.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WEB = join(HERE, "..", "web");
@@ -63,21 +63,65 @@ test("chips say the result in words; colour class is pass, fail or info", () => 
   assert.deepEqual(chipView({ label: "CI includes zero", status: "FAIL" }), { text: "CI includes zero", kind: "fail" });
   assert.deepEqual(chipView({ text: "n = 300 games" }), { text: "n = 300 games", kind: "info" });
   assert.equal(chipView({ text: "  " }), null);
+  assert.deepEqual(chipView("Couldn't find one.", "decision rule"), { text: "Couldn't find one.", kind: "info", source: "decision rule" });
+  assert.equal(chipView(""), null);
 });
 
-test("Frost's end pose: satisfied only by a claim that survived", () => {
+test("Frost's poses are the user's five files, 687x1024 like Heater's", () => {
+  assert.deepEqual([...FROST_STATES], ["idle", "challenging", "evidence", "unconvinced", "satisfied"]);
   assert.equal(frostEndState("SURVIVED_PROTOCOL"), "satisfied");
   for (const d of ["NOT_SUPPORTED", "INSUFFICIENT_EVIDENCE", "BLOCKED", null]) assert.equal(frostEndState(d), "unconvinced");
-  assert.equal(frostPoseFile("asking"), "poses/asking.webp");
+  assert.equal(frostPoseFile("challenging"), "poses/challenging.webp");
   assert.equal(frostPoseFile("nope"), "poses/idle.webp");
-  assert.ok(FROST_STATES.includes("listening"));
+  const size = (p) => { const b = readFileSync(p); assert.equal(b.toString("latin1", 8, 12), "WEBP", p); return webpSize(b); };
+  const heater = size(join(WEB, "heater", "poses", "idle.webp"));
+  for (const s of FROST_STATES) assert.deepEqual(size(join(WEB, "frost", frostPoseFile(s))), heater, s);
 });
 
-test("exchangeFromApi: no Frost block in the answer means the Heater-only flow", () => {
+/** Width and height from a WebP header (VP8, VP8L or VP8X). */
+function webpSize(b) {
+  const c = b.toString("latin1", 12, 16);
+  if (c === "VP8X") return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+  if (c === "VP8L") { const v = b.readUInt32LE(21); return [(v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1]; }
+  return [b.readUInt16LE(26) & 0x3FFF, b.readUInt16LE(28) & 0x3FFF];
+}
+
+test("exchangeFromApi: no Frost list in the answer means the Heater-only flow", () => {
   assert.equal(exchangeFromApi(null, { take: "x" }), null);
   assert.equal(exchangeFromApi({ heater_text: "x" }, { take: "x" }), null);
-  const ex = exchangeFromApi({ frost: { challenges: [{ question: "Q?", chip: { text: "ok", kind: "pass" } }], reaction: "Hm." } }, { take: "T" });
-  assert.deepEqual(ex, { take: "T", challenges: [{ question: "Q?", chip: { text: "ok", kind: "pass" } }], frostReaction: "Hm.", heaterReaction: "" });
+  assert.equal(exchangeFromApi({ frost: [] }, { take: "x" }), null);
+  assert.equal(exchangeFromApi({ frost: { challenges: [{ question: "Q?" }] } }, { take: "x" }), null, "only the sample's list shape");
+});
+
+// ---- the user's sample response (8 Nov), until Max's API returns frost
+const SAMPLE = JSON.parse(readFileSync(join(WEB, "frost", "fixtures", "sample-dialogue.json"), "utf8"));
+
+test("the sample response maps to take, three questions with chips, Frost's and Heater's reactions", () => {
+  const lines = dialogueLines(SAMPLE, () => "fallback");
+  assert.equal(lines.take, "Three straight makes? He's ON FIRE. Give him the ball!");
+  assert.equal(lines.takeFromApi, true);
+  assert.equal(lines.lastWord, "The data is WRONG. I watched the games!");
+  const ex = exchangeFromApi(SAMPLE, { take: lines.take });
+  assert.equal(ex.challenges.length, 3);
+  assert.deepEqual(ex.challenges.map((c) => c.question), SAMPLE.frost.map((c) => c.question));
+  assert.deepEqual(ex.challenges.map((c) => c.chip.text), SAMPLE.frost.map((c) => c.chip));
+  assert.deepEqual(ex.challenges.map((c) => c.chip.source), ["custodian seal", "result.p_holm", "decision rule"]);
+  assert.equal(ex.frostReaction, "Not shown. That's not the same as wrong, Heater.");
+  const steps = exchangeSteps({ ...ex, heaterReaction: lines.lastWord });
+  assert.deepEqual(steps.map((s) => `${s.who}:${s.kind}`), [
+    "heater:take", "frost:question", "frost:chip", "frost:question", "frost:chip", "frost:question", "frost:chip",
+    "ref:ruling", "ref:stamp", "frost:reaction", "heater:reaction",
+  ]);
+  assert.equal(frostEndState(SAMPLE.verdict), "unconvinced");
+  const shown = JSON.stringify(steps);
+  for (const c of SAMPLE.frost) assert.ok(!shown.includes(`"${c.check}"`), `check name ${c.check} is never shown`);
+});
+
+test("sample mode only with ?frost=sample, and the page always labels it", () => {
+  assert.match(JS, /const FROST_SAMPLE = params\.get\("frost"\) === "sample" \?/);
+  assert.match(JS, /return \{ \.\.\.\(await r\.json\(\)\), is_sample: true \};/);
+  assert.match(JS, /ui\.sampleFlag\.hidden = !a\.sample;/);
+  assert.match(HTML, /id="sample-flag" hidden>SAMPLE RESPONSE[^<]*not a live answer</);
 });
 
 // ---- Space skips to the stamp
@@ -105,7 +149,7 @@ test("three voices: Heater's, a British one for Frost, and a Ref voice that is n
     V("Microsoft Ryan Online", "en-GB"), V("Microsoft Davis Online", "en-US")];
   const { heater, frost, ref } = pickCastVoices(voices);
   assert.equal(heater.name, "Microsoft Guy Online");
-  assert.equal(frost.lang, "en-GB");
+  assert.equal(frost.name, "Microsoft Ryan Online", "the adviser's first choice for Frost");
   assert.notEqual(frost, heater);
   assert.notEqual(ref, frost);
   assert.notEqual(ref, heater);
@@ -119,8 +163,29 @@ test("when Frost takes the Ref's only British voice, the Ref moves to another vo
   assert.equal(ref.name, "Microsoft Davis Online");
   assert.notEqual(ref, heater);
   assert.deepEqual(pickCastVoices([]), { heater: null, frost: null, ref: null });
-  assert.deepEqual(FROST_VOICE, { lang: "en-GB", rate: 0.95, pitch: 1.0 });
-  assert.notDeepEqual({ rate: FROST_VOICE.rate, pitch: FROST_VOICE.pitch }, VOICE.ref, "the Ref keeps its own settings");
+  // the adviser's settings for Frost (0.95 / 0.9) equal the Ref's VOICE.ref, so only the voice itself
+  // keeps them apart; the Ref's settings are unchanged
+  assert.deepEqual(FROST_VOICE, { lang: "en-GB", rate: 0.95, pitch: 0.9 });
+  assert.deepEqual(VOICE.ref, { rate: 0.95, pitch: 0.9 });
+});
+
+test("Chrome: Frost takes Google UK English Male, which pickVoices gives the Ref, so the Ref moves to UK Female", () => {
+  const voices = [V("Google US English", "en-US"), V("Google UK English Female", "en-GB"), V("Google UK English Male", "en-GB")];
+  assert.equal(pickVoices(voices).ref.name, "Google UK English Male");
+  const { heater, frost, ref } = pickCastVoices(voices);
+  assert.equal(heater.name, "Google US English");
+  assert.equal(frost.name, "Google UK English Male");
+  assert.equal(ref.name, "Google UK English Female");
+});
+
+test("Edge listing en-GB first: Heater would match Ryan, so he moves to Guy and Frost gets Ryan", () => {
+  const voices = [V("Microsoft Libby Online (Natural)", "en-GB"), V("Microsoft Ryan Online (Natural)", "en-GB"),
+    V("Microsoft Sonia Online (Natural)", "en-GB"), V("Microsoft Guy Online (Natural)", "en-US")];
+  assert.equal(pickVoices(voices).heater.name, "Microsoft Ryan Online (Natural)", "the existing picker's choice");
+  const { heater, frost, ref } = pickCastVoices(voices);
+  assert.equal(heater.name, "Microsoft Guy Online (Natural)");
+  assert.equal(frost.name, "Microsoft Ryan Online (Natural)");
+  assert.equal(ref.name, "Microsoft Libby Online (Natural)");
 });
 
 // ---- Frost speaks in his own voice
@@ -187,10 +252,26 @@ test("runExchange handles every step kind, in the sequence's order, and Frost sl
   const at = (s) => { const i = src.indexOf(s); assert.ok(i >= 0, s); return i; };
   const order = ['st.kind === "take"', 'st.kind === "question"', 'st.kind === "chip"', 'st.kind === "ruling"', 'st.kind === "stamp"', 'st.kind === "reaction"'];
   order.reduce((prev, s) => { const i = at(s); assert.ok(i > prev, `${s} after the previous step`); return i; }, -1);
-  assert.ok(at("if (st.first) { f.enter();") < at('lastFrost = convoBubble("frost", st.text)'));
-  assert.ok(at("convoChip(lastFrost, st.chip)") > 0);
+  assert.ok(at("if (st.first) { f.enter();") < at('convoBubble("frost", st.text)'));
+  // poses: challenging while he asks (Heater listens), evidence with the chip, unconvinced into the
+  // Ref, his verdict pose at the stamp, then both idle at the end
+  assert.ok(at('f.setState("challenging")') < at('h.setState("listening")'));
+  assert.ok(at('f.setState("evidence")') < at("convoChip(st.chip)"));
+  assert.ok(at("sleep(CHIP_PAUSE_MS)") > at("convoChip(st.chip)"));
+  assert.match(JS, /const CHIP_PAUSE_MS = 1200;/);
+  assert.ok(at('f.setState("unconvinced")') > at('st.kind === "ruling"'));
   assert.ok(at("state.exchangeRunning = false;") > at('st.kind === "stamp"'), "Space stops working once the stamp lands");
   assert.ok(at("f.setState(frostEndState(decision))") > at('st.kind === "stamp"'));
+  assert.ok(at('f.setState("idle");\n    h.setState("idle");') > at('st.kind === "reaction"'));
+});
+
+test("a chip is its own item on Frost's side, with no voice; its source is only the tooltip", () => {
+  const i = JS.indexOf("function convoChip(");
+  const src = JS.slice(i, JS.indexOf("\n}\n", i));
+  assert.match(src, /li\.className = `cv-chip \$\{chip\.kind\}`/);
+  assert.match(src, /li\.title = `Source: \$\{chip\.source\}`/);
+  assert.ok(!/speak/.test(src));
+  assert.match(CSS, /\.cv-chip \{\s*align-self: flex-end; max-width: 80%;/);
 });
 
 test("ask() runs the Frost exchange only when the answer has one; otherwise the Heater-only flow is unchanged", () => {
@@ -221,8 +302,11 @@ test("layout: Heater left, conversation middle, Frost right; small portraits on 
   assert.match(CSS, /grid-template-areas: "hero frost" "talk talk" "ask ask";/);
   assert.match(CSS, /\.cv-heater::before \{ left: -24px;/, "Heater's tail points left");
   assert.match(CSS, /\.cv-frost::before \{ right: -24px;/, "Frost's tail points right");
-  assert.match(CSS, /\.cv-frost \{[^}]*border: 3px solid var\(--ice\)/);
-  assert.match(CSS, /\.f-root \{[^}]*transform: translateX\(110%\)/, "Frost waits off stage");
+  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(420px, 760px\) minmax\(0, 1fr\);/);
+  assert.match(CSS, /@media \(max-width: 900px\) \{\s*\/\* small portraits/);
+  assert.match(CSS, /\.cv-heater \{[^}]*border: 3px solid #FF7A1A/);
+  assert.match(CSS, /\.cv-frost \{[^}]*border: 2px solid var\(--ice\)/);
+  assert.match(CSS, /\.f-root \{[^}]*transform: translateX\(40px\); opacity: 0;/, "Frost waits to slide in");
   assert.match(CSS, /\.f-root\.entered \{ transform: none; opacity: 1; \}/);
   assert.match(CSS, /body\[data-cast="frost"\] \.ref \{ margin: 18px auto 0;/, "the Ref's card is centred");
 });

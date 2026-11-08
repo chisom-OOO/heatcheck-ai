@@ -41,7 +41,7 @@ const ui = {
   refText: $("ref-text"), stamp: $("stamp"), evidence: $("evidence"), evidenceBody: $("evidence-body"),
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"), ruNotice: $("ru-notice"),
-  convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"),
+  convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"), sampleFlag: $("sample-flag"),
 };
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
   ledger: null, turn: 0, busy: false, responsible: null, ruMemo: { shown: false }, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
@@ -68,7 +68,16 @@ async function loadLedger() {
     source: "fixture: byte copy of reports/max/logs/2026-11-07-loop/evidence_real_game.jsonl" };
 }
 
+// ?frost=sample: the dialogue answer is the user's sample response (8 Nov), for building Frost before
+// Max's API returns ``frost``. Always labelled SAMPLE on the page; never used without the parameter.
+const FROST_SAMPLE = params.get("frost") === "sample" ? new URL("./frost/fixtures/sample-dialogue.json", import.meta.url) : null;
+
 async function askDialogue(question) {
+  if (FROST_SAMPLE) {
+    const r = await fetch(FROST_SAMPLE);
+    if (!r.ok) throw new Error(`Frost sample: HTTP ${r.status}`);
+    return { ...(await r.json()), is_sample: true };
+  }
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 30000);  // Max's doc: client timeout of at least 30 s
   try {
@@ -128,7 +137,7 @@ async function answer(question) {
   const { take, takeFromApi, lastWord } = dialogueLines(forced ? null : api, () => takeFor(claimId, state.personality, state.turn));
   // Frost's questions and result chips come only from the server's answer; none: Heater-only flow.
   const exchange = forced ? null : exchangeFromApi(api, { take });
-  return { claimId, entry, apiOnly, take, lastWord, exchange,
+  return { claimId, entry, apiOnly, take, lastWord, exchange, sample: Boolean(api?.is_sample),
     takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
@@ -160,6 +169,7 @@ function reset() {
   ui.convo.replaceChildren();
   ui.convo.hidden = true;
   ui.skipHint.hidden = true;
+  ui.sampleFlag.hidden = true;
   setCast(false);
 }
 
@@ -185,11 +195,14 @@ function convoBubble(who, text, extra = "") {
   return li;
 }
 
-function convoChip(li, chip) {
-  const s = document.createElement("span");
-  s.className = `cv-chip ${chip.kind}`;
-  s.textContent = chip.text;
-  li?.append(s);
+/** A result chip under Frost's question, on his side. No voice. The source goes on the tooltip. */
+function convoChip(chip) {
+  const li = document.createElement("li");
+  li.className = `cv-chip ${chip.kind}`;
+  li.textContent = chip.text;
+  if (chip.source) li.title = `Source: ${chip.source}`;
+  ui.convo.append(li);
+  return li;
 }
 
 /** Space: draw everything up to the stamp at once and stop the voice that is talking. */
@@ -203,6 +216,8 @@ function skipToStamp() {
 
 /** Await a step unless Space was pressed (then at once). */
 const untilSkip = (p) => (state.skip ? Promise.resolve() : Promise.race([p, state.skipSignal]));
+/** Pause while a result chip shows (adviser: about 1.2 s, no voice). */
+const CHIP_PAUSE_MS = 1200;
 
 /** Heater's take, Frost's questions with their result chips, the Ref, the stamp, then Frost's and
  *  Heater's reactions. Nothing here decides: the questions, chips and verdict are the server's and
@@ -218,12 +233,12 @@ async function runExchange(a, turn) {
   f.leave();
   f.setState("idle");
   ui.convo.hidden = false;
+  ui.sampleFlag.hidden = !a.sample;
   state.skip = false;
   state.skipSignal = new Promise((res) => { state.skipNow = res; });
   state.exchangeRunning = true;
   ui.skipHint.hidden = false;
   log(`frost: ${a.exchange.challenges.length} question(s)`);
-  let lastFrost = null;
   try {
     for (const st of steps) {
       const fast = state.skip && skippable(st);
@@ -235,15 +250,16 @@ async function runExchange(a, turn) {
       } else if (st.kind === "question") {
         document.body.dataset.phase = "challenge";
         if (st.first) { f.enter(); if (!fast) await untilSkip(sleep(450)); }
-        f.setState("asking");
-        h.setState("thinking");
-        lastFrost = convoBubble("frost", st.text);
+        f.setState("challenging");
+        h.setState("listening");
+        convoBubble("frost", st.text);
         if (!fast) await untilSkip(f.speak(st.text, opts));
-        f.setState("listening");
       } else if (st.kind === "chip") {
-        convoChip(lastFrost, st.chip);
-        if (!fast) await untilSkip(sleep(600));
+        f.setState("evidence");
+        convoChip(st.chip);
+        if (!fast) await untilSkip(sleep(CHIP_PAUSE_MS));
       } else if (st.kind === "ruling") {
+        f.setState("unconvinced");
         document.body.dataset.phase = "check";
         ui.refTitle.textContent = CLAIM_TITLES[a.claimId] || a.claimId;
         ui.refText.textContent = "Checking the tape";
@@ -280,6 +296,8 @@ async function runExchange(a, turn) {
         else await h.speak(st.text, "heater", opts);
       }
     }
+    f.setState("idle");
+    h.setState("idle");
   } finally {
     state.exchangeRunning = false;
     state.skip = false;
@@ -463,7 +481,7 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; setCast(false); }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; setCast(false); }
 }
 
 function toggleView(view, open) {
