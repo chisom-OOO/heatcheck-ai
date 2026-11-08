@@ -1,0 +1,119 @@
+{
+ "bundle_dir": "data/experience/quotes/20261108T001759Z/0022600200-pm-0018",
+ "verifications": [
+  {
+   "bundle_records_sha256": "08acd4588fe618a2fd17b9819a78bfc8955b8d6033c5ce895cc4601e0301a208",
+   "checks": [
+    {
+     "check": "venue",
+     "detail": "market POLYMARKET:6428633 venue POLYMARKET",
+     "status": "PASS"
+    },
+    {
+     "check": "payload_bound",
+     "detail": "payload sha256 87c3886015b7dc84 is a source snapshot of the market record",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_text_hash",
+     "detail": "sha256(description) 8c045ed7fa4f27ef vs record 8c045ed7fa4f27ef",
+     "status": "PASS"
+    },
+    {
+     "check": "market_id",
+     "detail": "payload id 6428633",
+     "status": "PASS"
+    },
+    {
+     "check": "moneyline",
+     "detail": "sportsMarketType 'moneyline'",
+     "status": "PASS"
+    },
+    {
+     "check": "known_teams",
+     "detail": "home Bucks, away Celtics",
+     "status": "PASS"
+    },
+    {
+     "check": "game_id",
+     "detail": "mapping nba:0022600200 game nba:0022600200",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_template",
+     "detail": "rules text follows the exact winner template",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_teams",
+     "detail": "rules name 'Celtics' and 'Bucks'; game teams ['Bucks', 'Celtics']",
+     "status": "PASS"
+    },
+    {
+     "check": "rules_scheduled_time",
+     "detail": "rules 'Sunday, November 8, 2026 at 8:00 PM ET' vs tip 2026-11-09T01:00:00Z = 'Sunday, November 8, 2026 at 8:00 PM ET'",
+     "status": "PASS"
+    },
+    {
+     "check": "game_start_time",
+     "detail": "payload gameStartTime '2026-11-09 01:00:00+00' vs scheduled tip 2026-11-09T01:00:00Z",
+     "status": "PASS"
+    },
+    {
+     "check": "overtime_rule",
+     "detail": "rules state overtime counts: True; mapping says INCLUDES_OVERTIME",
+     "status": "PASS"
+    },
+    {
+     "check": "cancel_rule",
+     "detail": "cancellation/postponement sentence copied exactly",
+     "status": "PASS"
+    },
+    {
+     "check": "contract_is_team",
+     "detail": "contract 641683826247.. is outcome 'Bucks' (TEAM_WINS)",
+     "status": "PASS"
+    },
+    {
+     "check": "record_outcome_label",
+     "detail": "market record labels the contract 'Bucks'",
+     "status": "PASS"
+    },
+    {
+     "check": "active",
+     "detail": "active True, closed False",
+     "status": "PASS"
+    }
+   ],
+   "format": "heatcheck-mapping-verification/1",
+   "game_record_sha256": "cf47019f40e5643c50b2921424e165377cb1e17ebc2290986f65e68c6c1ab746",
+   "outcome": "VERIFIED",
+   "payload_sha256": "87c3886015b7dc84d8d0f189d501c9f37c3cf8430dfa22e5fdb6050d10b58ed9",
+   "proposed_mapping_record_sha256": "aaff6befad5a32795e01c15562ff0ffe2417e9e8b66f94e7fe462685ade522c8",
+   "record": {
+    "body": {
+     "cancel_postpone_convention": "RULES TEXT: If the game is canceled, does not start by Tuesday, November 10, 2026, 11:59 PM ET, or is abandoned with no official result by that time, this market will resolve 50-50.",
+     "contract_id": "64168382624750108408723147956653598224491055997369521642332976513006048573067",
+     "game_id": "nba:0022600200",
+     "mapping_id": "map:nba:0022600200:POLYMARKET:64168382624750108408723147956653598224491055997369521642332976513006048573067",
+     "mapping_provenance": "experience-adapters/1 keyword read of rules_text_sha256 8c045ed7fa4f27efcc5423257f909ec0a2d489124a8aa6e2e4f57c0241a68194 and outcome label 'Bucks'; verified by MAX heatcheck/contracts/mapping_verification.py v1 at 2026-11-08T00:18:13Z",
+     "outcome_direction": "TEAM_WINS",
+     "overtime_convention": "INCLUDES_OVERTIME",
+     "reason": "Max verified 16/16 checks against stored rules text sha256 8c045ed7fa4f27efcc5423257f909ec0a2d489124a8aa6e2e4f57c0241a68194 (heatcheck-mapping-verification/1).",
+     "status": "VERIFIED",
+     "team_id": "nba-team:1610612749",
+     "venue_market_record_id": "POLYMARKET:6428633"
+    },
+    "data_mode": "RECORDED_MARKET",
+    "format_version": "heatcheck-records/1",
+    "protocol_version": "heatcheck-nba/1",
+    "record_id": "map:nba:0022600200:POLYMARKET:64168382624750108408723147956653598224491055997369521642332976513006048573067",
+    "record_type": "VENUE_MAPPING"
+   },
+   "rules_text_sha256": "8c045ed7fa4f27efcc5423257f909ec0a2d489124a8aa6e2e4f57c0241a68194",
+   "venue_market_record_sha256": "b2fc31c6cca0fd3a76d5a434c38eef7813bf5c3b52b099ce38e26dedb13fef19",
+   "verified_utc": "2026-11-08T00:18:13Z",
+   "verifier": "MAX heatcheck/contracts/mapping_verification.py v1"
+  }
+ ]
+}

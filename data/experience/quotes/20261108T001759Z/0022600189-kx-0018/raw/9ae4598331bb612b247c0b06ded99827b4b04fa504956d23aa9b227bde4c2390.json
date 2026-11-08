@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600189",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600189"
+    },
+    "home_team_id": "nba-team:1610612754",
+    "away_team_id": "nba-team:1610612743",
+    "scheduled_tip_utc": "2026-11-07T22:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from the forecast file data/live/forecasts.json sha256 cf0824723c4104469011e579740f0d84226628f41fbc4ead930b824c0915cd90; source.results: balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie"
+  },
+  "captures": [
+    {
+      "venue": "KALSHI",
+      "kind": "MARKET",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND",
+      "http_status": 200,
+      "payload_sha256": "a44d275951d23a1d3601267b8af39b4ab576062849f46caad6832442afcb96a0",
+      "fetch_start_utc": "2026-11-08T00:18:00.110239Z",
+      "received_utc": "2026-11-08T00:18:00.278183Z"
+    },
+    {
+      "venue": "KALSHI",
+      "kind": "BOOK",
+      "source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXNBAGAME-26NOV07DENIND-IND/orderbook",
+      "http_status": 200,
+      "payload_sha256": "d21c3308e813186176113c363d3659c5b1f8b8da42ffcef619e75b194a279e74",
+      "fetch_start_utc": "2026-11-08T00:18:00.305071Z",
+      "received_utc": "2026-11-08T00:18:00.457700Z",
+      "market_payload_sha256": "a44d275951d23a1d3601267b8af39b4ab576062849f46caad6832442afcb96a0",
+      "target": {
+        "game_id": "nba:0022600189",
+        "team_id": "nba-team:1610612754",
+        "contract_id": "KXNBAGAME-26NOV07DENIND-IND:yes",
+        "expected_label": "YES (Indiana)"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600189 (DEN at IND, tip 2026-11-07T22:00:00Z), KALSHI contract KXNBAGAME-26NOV07DENIND-IND:yes labelled 'YES (Indiana)' = home team wins. Received 2026-11-08T00:18:00.278183Z (market) and 2026-11-08T00:18:00.457700Z (book), local clock. Game list: game_id, tip_utc and team ids from the forecast file data/live/forecasts.json sha256 cf0824723c4104469011e579740f0d84226628f41fbc4ead930b824c0915cd90; source.results: balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie. Mapping PROPOSED for Max to verify. "
+}
