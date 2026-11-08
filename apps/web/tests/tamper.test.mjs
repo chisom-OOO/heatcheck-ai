@@ -46,10 +46,10 @@ const byClass = (root, c) => root.all((e) => e.className.split(" ").includes(c))
 const byTag = (root, t) => root.all((e) => e.tagName === t.toUpperCase());
 
 // ---- visibility
-test("Max's endpoint landed before 08:45: the red button shows by default; ?tamper=0 hides it; ?tamper=mock is MOCK", () => {
+test("the button is hidden by default; ?tamper=1 shows it; ?tamper=mock is MOCK", () => {
   const P = (q) => new URLSearchParams(q);
-  assert.equal(TAMPER_DEFAULT_VISIBLE, true);
-  assert.equal(tamperMode(P("")), "live");
+  assert.equal(TAMPER_DEFAULT_VISIBLE, false);
+  assert.equal(tamperMode(P("")), "off");
   assert.equal(tamperMode(P("tamper=1")), "live");
   assert.equal(tamperMode(P("tamper=0")), "off");
   assert.equal(tamperMode(P("tamper=mock")), "mock");
