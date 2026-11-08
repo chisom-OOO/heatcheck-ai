@@ -91,11 +91,11 @@ sequenceDiagram
     participant S as Sealed 2024-25
     D->>P: Explore, then write test, null, threshold, sample size
     P->>P: Freeze and hash before any 2024-25 access
-    K->>S: Seal every game; record data hashes
+    K->>S: Seal every game and record data hashes
     Note over K,S: Any later run must match the sealed bytes exactly
     K->>S: Open once, with a named authoriser
     S-->>K: Results for all claims together, Holm-corrected
-    K->>K: Mark the season spent; reruns refused
+    K->>K: Mark the season spent, so reruns are refused
 ```
 
 - **No model decides anything.** The model maps your question to a registered claim, writes Heater's lines and proposes ideas in a fixed grammar. A guard rejects any number in Heater's text that isn't in the evidence record. The Ref's verdict and explanation are templates filled only from the ledger.
