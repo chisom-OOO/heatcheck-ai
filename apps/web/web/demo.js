@@ -15,6 +15,7 @@ import {
   isUnmapped, unmappedLine, UNMAPPED_FALLBACK,
 } from "./heater/heater-model.js";
 import { ASK_MESSAGE, investigateGames, investigateOne, loadForecast, renderBoard } from "./market/board.js";
+import { matchGame, namesAnyTeam } from "./market/game-match.js";
 import {
   failedReasons, fmtUtc, heaterPlain, marketEndState, marketReaction, marketRefPlain, marketStamp,
 } from "./market/board-model.js";
@@ -457,7 +458,51 @@ const ask = (question) => {
   return busyTurn("question", () => askTurn(question));
 };
 
+/** Tonight's games for matching a typed question: the board's list when it is loaded, else the
+ *  forecast alone (no comparisons; at most BOARD_TIMEOUT_MS), kept for the next question. */
+async function tonightGames() {
+  if (state.board?.status === "OK") return state.board;
+  if (state.tonight?.status === "OK") return state.tonight;
+  state.tonight = await loadForecast();
+  log(`tonight's games for matching: ${state.tonight.status}${state.tonight.reason ? ` (${state.tonight.reason})` : ""}, ${state.tonight.games.length} games`);
+  return state.tonight;
+}
+
+/** A question that names a team: the game's card exchange on the stage (exactly as the card's Ask),
+ *  or Heater asks which game. Returns false when no team is named (the claim path runs). */
+async function gameTurn(question) {
+  if (!namesAnyTeam(question)) {
+    // a team named only by a spelling in tonight's list (not the fixed 30) still counts
+    const loaded = state.board?.status === "OK" ? state.board : state.tonight?.status === "OK" ? state.tonight : null;
+    if (!loaded || matchGame(question, loaded.games.map((g) => g.row)).kind === "NONE") return false;
+  }
+  const board = await tonightGames();
+  if (board.status !== "OK") {
+    log(`game question, but tonight's games did not load (${board.reason})`);
+    setView("talk");
+    reset();
+    showAsked(question);
+    await showHeaterLine(`Which game? Tonight's games did not load (${board.reason}).`);
+    return true;
+  }
+  const m = matchGame(question, board.games.map((g) => g.row));
+  log(`game match: ${m.kind}${m.gameId ? ` ${m.gameId}` : ""}${m.teams ? ` (${m.teams.join(", ")})` : ""}`);
+  if (m.kind === "NONE") return false;
+  if (m.kind === "WHICH") {
+    setView("talk");
+    reset();
+    showAsked(question);
+    await showHeaterLine(m.text);
+    return true;
+  }
+  const g = board.games.find((x) => x.row.game_id === m.gameId);
+  await marketTurn(g, { asked: question });
+  return true;
+}
+
 async function askTurn(question) {
+  // A question about one of tonight's games runs that game's card on the stage (no board).
+  if (await gameTurn(question)) return;
   // Free text first goes to Max's router: tonight's markets, one game's card, or a what-if.
   // Anything else (and any router failure) continues to the dialogue below.
   const routed = await routeMessage(question);
@@ -1010,10 +1055,10 @@ const MARKET_OPENER = "Let's put this card under the lights.";
  *  with ASK_MESSAGE, so Max's server has the model voice it, and the card is redrawn from that answer
  *  so the card and the Ref say the same thing. If that call fails, the board's answer is used. */
 const askMarket = (g) => (g?.resp ? busyTurn("market card", () => marketTurn(g)) : undefined);
-async function marketTurn(g) {
+async function marketTurn(g, { asked: typed = "" } = {}) {
   setView("talk");
   reset();
-  showAsked(ASK_MESSAGE);   // what the card's Ask sends to Max's server
+  showAsked(typed || ASK_MESSAGE);   // the typed question, else what the card's Ask sends to Max's server
   voice.stopSpeaking();
   const h = state.heater;
   // Responsible use: the full notice once per session, the first time a market card is asked about.
@@ -1025,12 +1070,18 @@ async function marketTurn(g) {
   h.setState("listening");
   await sleep(350);
   h.setState("thinking");
-  const [asked] = await Promise.all([investigateOne(g, ASK_MESSAGE), sleep(TIMING.thinkingMin)]);
+  const [asked] = await Promise.all([
+    g.mapping ? investigateOne(g, ASK_MESSAGE) : Promise.resolve({ resp: null, error: g.error }),  // no price: nothing to compare
+    sleep(TIMING.thinkingMin)]);
   if (asked.resp) {
     g.resp = asked.resp;
     state.boardView?.update(g);
   }
   const resp = g.resp;
+  if (!resp) {                 // a typed game question whose comparison did not run: say why, no Ref
+    log(`market card ${g.row.game_id}: no answer (${asked.error || g.error})`);
+    return showHeaterLine(`${g.row.away_team} at ${g.row.home_team}: ${asked.error || g.error || "the comparison could not be run"}.`);
+  }
   log(`market card ${g.row.game_id}: ${resp.verdict}; Heater line ${asked.resp ? resp.heater_source || "?" : `from the board load (${asked.error})`}`);
   document.body.dataset.phase = "take";
   // Max's take is written before the verdict (his guard rejects Ref words); the page checks again and

@@ -22,6 +22,8 @@ import { tmpdir } from "node:os";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { whichGameLine } from "../../web/market/game-match.js";
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const APP = resolve(HERE, "..", "..");
 const WEB = join(APP, "web");
@@ -43,6 +45,7 @@ function mockFrost(body) {
 }
 /** MOCK: Max's documented "no registered test" answer (docs/DIALOGUE_API.md), for UNMAPPED_Q only. */
 const UNMAPPED_Q = "Who wins tonight?";
+let MOCK_76ERS = false;
 const NONE_ANSWER = { heater_text: "MOCK server message: no registered test for that one.", ref_text: "No registered test exists for this question, so nothing was run and there is no verdict.",
   evidence_record_id: null, verdict: null, claim_id: "NONE", claim_title: "No registered test", lane: null, evidence_source: null, sources: { ref: "TEMPLATE_NO_REGISTERED_TEST" } };
 function api(method, path, req) {
@@ -51,7 +54,14 @@ function api(method, path, req) {
   if (path === "/api/market-mappings") {
     return [200, { format: INDEX.format, mappings: INDEX.mappings.map((m) => Object.fromEntries(MAPPING_FIELDS.map((k) => [k, m[k]]))) }];
   }
-  if (path === "/api/live-forecast") { const e = live.find((x) => x.path === path); return [e.status, e.body]; }
+  if (path === "/api/live-forecast") {
+    const e = live.find((x) => x.path === path);
+    if (!MOCK_76ERS) return [e.status, e.body];
+    // MOCK for the main-screen game cases: the first captured game renamed to the user's example
+    const body = JSON.parse(JSON.stringify(e.body));
+    Object.assign(body.forecast.games[0], { away_team: "Philadelphia 76ers", home_team: "Chicago Bulls" });
+    return [e.status, body];
+  }
   if (path === "/api/investigate" && method === "POST") {
     const e = live.find((x) => x.path === path && x.status === 200 && x.request?.game_id === req?.game_id && x.request?.mapping_id === req?.mapping_id);
     if (!e) return [404, { error: "not in the captures" }];
@@ -320,6 +330,67 @@ async function unmappedCase(b, base, [w, h]) {
   return { case: name, pass: fails.length === 0, fails, final: s };
 }
 
+/** Main-screen routing (8 Nov): (a) a typed game question runs that game's card on the stage, no
+ *  board, Ask enabled afterwards; (b) the "Is the hot hand real?" chip straight after, no reload.
+ *  Then a question naming two of tonight's games gets Heater's "Which game?" line. */
+async function mainGameCase(b, base, [w, h]) {
+  const name = `maingame-${w}x${h}`;
+  const e = ev(b);
+  MOCK_76ERS = true;
+  try {
+    await b.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+    await b.send("Page.navigate", { url: `${base}/demo.html?voice=0` });
+    for (let i = 0; i < 100 && !(await e("document.body.dataset.ready === '1'")); i++) await sleep(100);
+    await sleep(500);
+    const fails = [];
+    const ok = (c, msg) => { if (!c) fails.push(msg); };
+    const STAGE = `({ ...${BUSY}, view: document.body.dataset.view, board: !document.getElementById("board").hidden,
+      ref: !document.getElementById("ref").hidden, stamp: !document.getElementById("stamp").hidden, stampText: document.getElementById("stamp").textContent,
+      cast: document.body.dataset.cast, frost: document.querySelectorAll("#convo .cv-frost").length, heater: document.querySelectorAll("#convo .cv-heater").length,
+      bubble: !document.getElementById("bubble").hidden, take: document.getElementById("take").textContent, headline: document.getElementById("ref-title").textContent })`;
+    // (a)
+    const qa = "any edge in 76ers vs Bulls tonight";
+    await e(`document.body.dataset.phase = ""; document.getElementById("q").value = ${JSON.stringify(qa)}; document.getElementById("go").click(), true`);
+    ok(await untilDone(e), "(a) game question reached done");
+    await sleep(1500);
+    const a = await e(STAGE);
+    ok(a.view === "talk" && !a.board, `(a) stayed on the stage (view ${a.view}, board shown ${a.board})`);
+    ok(a.asked === qa, `(a) the typed question is shown ("${a.asked}")`);
+    ok(a.ref && a.stamp, `(a) Ref card and stamp on the stage (${a.stampText})`);
+    ok(a.cast === "frost" && a.frost >= 1 && a.heater >= 1, `(a) Heater and Frost lines in the thread (heater ${a.heater}, frost ${a.frost})`);
+    ok(!a.go && a.chips.every((d) => !d), `(a) Ask ${a.go ? "disabled" : "enabled"} afterwards`);
+    const shotA = await b.send("Page.captureScreenshot", { format: "png" });
+    writeFileSync(join(OUT, `${name}-a.png`), Buffer.from(shotA.data, "base64"));
+    // (b)
+    await e(`document.body.dataset.phase = ""; [...document.querySelectorAll("#chips .chip")].find((c) => c.textContent === "Is the hot hand real?").click(), true`);
+    await sleep(300);
+    const bStart = await e(BUSY);
+    ok(bStart.asked === "Is the hot hand real?", `(b) chip question started ("${bStart.asked}")`);
+    ok(await untilDone(e), "(b) chip question reached done");
+    await sleep(500);
+    const bEnd = await e(STAGE);
+    ok(bEnd.ref && bEnd.stamp, `(b) the claim's Ref card and stamp (${bEnd.stampText})`);
+    ok(!bEnd.go, `(b) Ask ${bEnd.go ? "disabled" : "enabled"} afterwards`);
+    const shotB = await b.send("Page.captureScreenshot", { format: "png" });
+    writeFileSync(join(OUT, `${name}-b.png`), Buffer.from(shotB.data, "base64"));
+    // two of tonight's games: Heater asks which, built from the loaded list
+    await e(`document.body.dataset.phase = ""; document.getElementById("q").value = "Bulls or Knicks tonight?"; document.getElementById("go").click(), true`);
+    ok(await untilDone(e), "which-game question reached done");
+    await sleep(300);
+    const c = await e(STAGE);
+    const expect = whichGameLine((await (await fetch(`${base}/api/live-forecast`)).json()).forecast.games);
+    ok(c.view === "talk" && !c.board, "which-game: stayed on the stage");
+    ok(c.bubble && c.take === expect, `which-game: Heater says "${c.take}" (expected "${expect}")`);
+    ok(!c.ref && !c.stamp, "which-game: no Ref card or stamp");
+    ok(!c.go, `which-game: Ask ${c.go ? "disabled" : "enabled"} afterwards`);
+    const shotC = await b.send("Page.captureScreenshot", { format: "png" });
+    writeFileSync(join(OUT, `${name}-which.png`), Buffer.from(shotC.data, "base64"));
+    return { case: name, pass: fails.length === 0, fails, final: { a, bStart, bEnd, which: c } };
+  } finally {
+    MOCK_76ERS = false;
+  }
+}
+
 mkdirSync(OUT, { recursive: true });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = `http://127.0.0.1:${server.address().port}`;
@@ -333,8 +404,8 @@ try {
   await b.send("Network.enable");
   await b.send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
   const ONLY = process.env.LAYOUT_ONLY ? process.env.LAYOUT_ONLY.split(",") : null;
-  const CASES = { home: homeCase, followup: followupCase, unmapped: unmappedCase };
-  for (const vp of VIEWPORTS) for (const kind of ["home", "dialogue", "market", "followup", "unmapped"]) {
+  const CASES = { home: homeCase, followup: followupCase, unmapped: unmappedCase, maingame: mainGameCase };
+  for (const vp of VIEWPORTS) for (const kind of ["home", "dialogue", "market", "followup", "unmapped", "maingame"]) {
     if (ONLY && !ONLY.includes(kind)) continue;
     const r = CASES[kind] ? await CASES[kind](b, base, vp) : await runCase(b, base, vp, kind);
     results.push(r);

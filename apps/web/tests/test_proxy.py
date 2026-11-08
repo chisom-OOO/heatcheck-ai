@@ -206,6 +206,7 @@ class TestPageUsesRelativeUrls(unittest.TestCase):
     def test_no_absolute_api_url_in_page_code(self):
         files = ["demo.js", "demo.html", os.path.join("market", "board.js"), os.path.join("market", "board-model.js"),
                  os.path.join("market", "scenario.js"), os.path.join("market", "scenario-model.js"),
+                 os.path.join("market", "game-match.js"),
                  os.path.join("ideas", "idea-board.js"), os.path.join("ideas", "idea-model.js")]
         for name in files:
             with open(os.path.join(ROOT, "web", name), encoding="utf-8") as f:

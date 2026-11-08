@@ -392,7 +392,7 @@ test("the question as asked replaces the wordmark during an exchange; the wordma
   const resetFn = JS.slice(JS.indexOf("function reset() {"), JS.indexOf("\n}\n", JS.indexOf("function reset() {")));
   assert.match(resetFn, /showAsked\(""\);/, "each exchange starts from the wordmark");
   assert.match(JS, /reset\(\);\s*showAsked\(question\);\s*voice\.stopSpeaking\(\);\s*log\(`question: \$\{question\}`\);/, "typed, chip or voice question");
-  assert.match(JS, /reset\(\);\s*showAsked\(ASK_MESSAGE\);/, "a market card's Ask");
+  assert.match(JS, /reset\(\);\s*showAsked\(typed \|\| ASK_MESSAGE\);/, "a market card's Ask (or the typed game question)");
   assert.match(JS, /if \(view !== "talk"\) \{[^}]*showAsked\(""\);/, "board and idea views show the wordmark");
   assert.ok(HTML.indexOf('id="btn-board"') > HTML.indexOf('id="asked"'), "view buttons stay on the right of the top bar");
 });
