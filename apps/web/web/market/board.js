@@ -74,20 +74,30 @@ export async function loadForecast({ mappingsUrl = "/api/market-mappings", timeo
   return { status: "OK", isSample: fc.body.is_sample, forecast, games };
 }
 
+/** What "Ask Heater about this game" sends: a non-empty message is what makes Max's server have the
+ *  model voice the card (board load sends "" and gets his template, with no model call). */
+export const ASK_MESSAGE = "Walk me through this game";
+
+/** One POST /api/investigate for game ``g``. Returns {resp, error}; never throws. */
+export async function investigateOne(g, message = "", { timeoutMs = INVESTIGATE_TIMEOUT_MS } = {}) {
+  try {
+    const r = await getJson("/api/investigate", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ game_id: g.row.game_id, mapping_id: g.mapping.mapping_id, message }),
+    }, timeoutMs);
+    if (r.status === 200 && r.body?.verdict) return { resp: r.body, error: null };
+    return { resp: null, error: r.body?.error ? `The comparison could not be run (${r.body.error})` : `The comparison could not be run (HTTP ${r.status})` };
+  } catch (e) {
+    return { resp: null, error: `The comparison could not be run (${e.name === "AbortError" ? `no answer within ${secs(timeoutMs)}` : e.message})` };
+  }
+}
+
 /** Step 2: one comparison at a time, in card order; ``onCard(game)`` after each answer. Never throws. */
 export async function investigateGames(board, { log = () => {}, onCard = () => {}, timeoutMs = INVESTIGATE_TIMEOUT_MS } = {}) {
   for (const g of board.games || []) {
     if (!g.pending) continue;
-    try {
-      const r = await getJson("/api/investigate", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ game_id: g.row.game_id, mapping_id: g.mapping.mapping_id, message: "" }),
-      }, timeoutMs);
-      if (r.status === 200 && r.body?.verdict) { g.resp = r.body; g.error = null; }
-      else g.error = r.body?.error ? `The comparison could not be run (${r.body.error})` : `The comparison could not be run (HTTP ${r.status})`;
-    } catch (e) {
-      g.error = `The comparison could not be run (${e.name === "AbortError" ? `no answer within ${secs(timeoutMs)}` : e.message})`;
-    }
+    const { resp, error } = await investigateOne(g, "", { timeoutMs });
+    if (resp) { g.resp = resp; g.error = null; } else g.error = error;
     g.pending = false;
     log(`investigate ${g.row.game_id}: ${g.resp ? `${g.resp.verdict} (${g.resp.evidence_id?.slice(0, 8) || "no entry"})` : g.error}`);
     try { onCard(g); } catch { /* a drawing problem never stops the other cards */ }

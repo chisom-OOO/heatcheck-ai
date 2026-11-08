@@ -11,10 +11,12 @@
 import { loadPersonality, mount } from "./heater/heater.js";
 import {
   CLAIM_TITLES, DEFAULT_PERSONALITY, NEVER_SEEN, TIMING, fmtP, latestFor, parseJsonl, reactFor,
-  refPlain, routeQuestion, splitTake, stampFor, stateForDecision, takeFor,
+  dialogueLines, refPlain, routeQuestion, splitTake, stampFor, stateForDecision, takeFor,
 } from "./heater/heater-model.js";
-import { investigateGames, loadForecast, renderBoard } from "./market/board.js";
-import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
+import { ASK_MESSAGE, investigateGames, investigateOne, loadForecast, renderBoard } from "./market/board.js";
+import {
+  failedReasons, fmtUtc, heaterPlain, marketEndState, marketReaction, marketRefPlain, marketStamp,
+} from "./market/board-model.js";
 import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } from "./market/scenario-model.js";
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
 import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
@@ -83,9 +85,9 @@ async function ledgerReady() {
 }
 
 /** Decide the claim, Heater's lines and the evidence entry for a question.
- *  ``take`` (said before the Ref) never comes from text written with the verdict in hand: it is the
- *  personality's line for the claim. Max's heater_text is written after the ruling (its fallbacks
- *  say "The Ref says it SURVIVED…"), so it becomes ``lastWord``, said after the stamp. */
+ *  ``take`` is said before the Ref and never mentions the Ref or a verdict: Max's heater_text when it
+ *  passes preemptsRef, else the personality's line for the claim. ``lastWord`` is said after the
+ *  stamp: Max's heater_reaction (else a held-back take; else the page uses reactFor). */
 async function answer(question) {
   try {
     await ledgerReady();
@@ -116,10 +118,12 @@ async function answer(question) {
     ? { verdict: api.verdict, refText: api.ref_text, lane: api.lane, evidenceId: api.evidence_record_id }
     : null;
   if (apiOnly) log(`record ${api.evidence_record_id} not in this page's ledger; using the API's verdict and Ref text`);
-  const take = takeFor(claimId, state.personality, state.turn);
-  const lastWord = (!forced && api?.heater_text) || "";
+  // Since Max's 8 Nov fix, heater_text is the hot take only (written without the verdict, his guard
+  // rejects Ref words) and heater_reaction is the line for after the stamp. The page checks the take
+  // again: one that mentions the Ref or a verdict (an older server) is held back to after the stamp.
+  const { take, takeFromApi, lastWord } = dialogueLines(forced ? null : api, () => takeFor(claimId, state.personality, state.turn));
   return { claimId, entry, apiOnly, take, lastWord,
-    takeSource: `${state.personalitySource}${lastWord ? "; last word: dialogue API" : ""}` };
+    takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
 /** The Ref's words: plain text from the record; else the API's own text (with the sealed-season
@@ -662,24 +666,31 @@ function marketDetails(resp) {
 
 const MARKET_OPENER = "Let's put this card under the lights.";
 
-/** Heater explains one card; the Ref words Max's verdict; the stamp lands. */
+/** Heater explains one card; the Ref words Max's verdict; the stamp lands.
+ *  The card's board answer was made without the model (empty message). Asking sends the card again
+ *  with ASK_MESSAGE, so Max's server has the model voice it, and the card is redrawn from that answer
+ *  so the card and the Ref say the same thing. If that call fails, the board's answer is used. */
 async function askMarket(g) {
-  const resp = g.resp;
-  if (!resp || state.busy) return;
+  if (!g.resp || state.busy) return;
   state.busy = true;
   setBusy(true);
   setView("talk");
   reset();
   voice.stopSpeaking();
   const h = state.heater;
-  log(`market card ${g.row.game_id}: ${resp.verdict}`);
   h.setState("listening");
   await sleep(350);
   h.setState("thinking");
-  await sleep(TIMING.thinkingMin);
+  const [asked] = await Promise.all([investigateOne(g, ASK_MESSAGE), sleep(TIMING.thinkingMin)]);
+  if (asked.resp) {
+    g.resp = asked.resp;
+    state.boardView?.update(g);
+  }
+  const resp = g.resp;
+  log(`market card ${g.row.game_id}: ${resp.verdict}; Heater line ${asked.resp ? resp.heater_source || "?" : `from the board load (${asked.error})`}`);
   document.body.dataset.phase = "take";
-  // Max's line is written knowing the verdict (his model is given refs_verdict; the home-bias line
-  // cites "the Ref's calibration note"): only its sentences that do not pre-empt the Ref come first.
+  // Max's take is written before the verdict (his guard rejects Ref words); the page checks again and
+  // holds back any sentence that mentions the Ref or a verdict until after the stamp.
   const split = splitTake(heaterPlain(resp.heater_text, resp.forecast?.inputs_used));
   const take = split.first || MARKET_OPENER;
   ui.take.textContent = take;
@@ -710,11 +721,12 @@ async function askMarket(g) {
   ui.evidenceBody.replaceChildren(marketDetails(resp));
   ui.evidence.hidden = false;
   document.body.dataset.phase = "verdict";
-  if (split.later) {                       // the rest of Max's line, now that the stamp is down
+  const reaction = marketReaction(split, resp);
+  if (reaction) {                          // Heater's reaction, only now that the stamp is down
     await sleep(700);
-    ui.react.textContent = split.later;
+    ui.react.textContent = reaction;
     ui.react.hidden = false;
-    await h.speak(split.later, "heater", { voiceOn: state.voiceOn });
+    await h.speak(reaction, "heater", { voiceOn: state.voiceOn });
   }
   document.body.dataset.phase = "done";
   log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);

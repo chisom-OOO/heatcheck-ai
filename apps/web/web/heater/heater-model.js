@@ -341,6 +341,21 @@ export function splitTake(text) {
   };
 }
 
+/** Heater's two lines for a dialogue answer. ``take`` is said before the Ref: the API's heater_text
+ *  (since Max's 8 Nov fix, the hot take only) when it does not pre-empt the Ref, else ``fallbackTake()``.
+ *  ``lastWord`` is said after the stamp: the API's heater_reaction, else a take that was held back,
+ *  else "" (the page then uses reactFor). ``api`` is null offline or for a forced record. */
+export function dialogueLines(api, fallbackTake) {
+  const str = (x) => (typeof x === "string" ? x.trim() : "");
+  const apiTake = str(api?.heater_text);
+  const takeOk = Boolean(apiTake) && !preemptsRef(apiTake);
+  return {
+    take: takeOk ? apiTake : fallbackTake(),
+    takeFromApi: takeOk,
+    lastWord: str(api?.heater_reaction) || (apiTake && !takeOk ? apiTake : ""),
+  };
+}
+
 /** Heater's reaction to a verdict ("react": decision -> [lines]). */
 export function reactFor(decision, personality, turn = 0) {
   const r = personality?.react?.[decision];

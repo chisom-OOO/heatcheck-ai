@@ -168,6 +168,13 @@ export function marketRefPlain(resp) {
   return `Can't compare: ${why.length ? why.join("; ") : "the comparison could not be run"}.${rec}`;
 }
 
+/** What Heater says after the market stamp: any sentence of his take the page held back because it
+ *  mentioned the Ref or a verdict (``split.later``), then Max's ``heater_reaction`` (the verdict-aware
+ *  line, e.g. the home-bias note on a home-above-ask card). Empty when there is neither. */
+export function marketReaction(split, resp) {
+  return [split?.later, resp?.heater_reaction].filter((t) => typeof t === "string" && t.trim()).join(" ");
+}
+
 /** Stamp text and colour class: SAMPLE says so plainly. */
 export function marketStamp(resp) {
   if (resp?.is_sample) return { text: "SAMPLE", kind: "blocked" };

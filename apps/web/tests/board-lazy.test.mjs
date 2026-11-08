@@ -13,7 +13,9 @@ import { mock, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import * as B from "../web/market/board-model.js";
-import { BOARD_TIMEOUT_MS, investigateGames, loadBoard, loadForecast, renderBoard } from "../web/market/board.js";
+import {
+  ASK_MESSAGE, BOARD_TIMEOUT_MS, investigateGames, investigateOne, loadBoard, loadForecast, renderBoard,
+} from "../web/market/board.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REPO = join(ROOT, "..", "..");
@@ -185,6 +187,30 @@ test("a server that is down, and a card whose comparison never answers, both say
   assert.ok(board.games.slice(1).every((g) => g.resp?.verdict === B.VERDICT_CANT), "the other cards still answer");
 });
 
+test("board load sends an empty message (no model call); Ask sends ASK_MESSAGE so the model voices the card", async () => {
+  const bodies = [];
+  const m = mockFetch();
+  const spy = { f: (url, init = {}) => { if (url === "/api/investigate") bodies.push(JSON.parse(init.body)); return m.f(url, init); } };
+  const board = await withFetch(spy, () => loadBoard());
+  assert.equal(bodies.length, 6);
+  assert.ok(bodies.every((b) => b.message === ""), "board load: Max's template, no model call");
+  assert.equal(ASK_MESSAGE, "Walk me through this game");
+  bodies.length = 0;
+  const ask = mockFetch({ overrides: { "/api/investigate": (req) => ({ status: 200,
+    body: { ...CAP.exchanges.find((e) => e.name === "investigate_nba:0022600190_pm").body, heater_text: `model: ${req.message}`,
+      heater_reaction: "Fair enough: no comparison, no take on this game." } }) } });
+  const g = board.games[0];
+  const got = await withFetch({ f: (url, init) => { bodies.push(JSON.parse(init.body)); return ask.f(url, init); } },
+    () => investigateOne(g, ASK_MESSAGE));
+  assert.deepEqual(bodies, [{ game_id: g.row.game_id, mapping_id: g.mapping.mapping_id, message: ASK_MESSAGE }],
+    "exactly Max's request shape, with a non-empty message");
+  assert.equal(got.error, null);
+  assert.equal(got.resp.heater_text, "model: Walk me through this game");
+  const down = await withFetch(mockFetch({ overrides: { "/api/investigate": () => ({ status: 500, body: { error: "investigation failed: X" } }) } }),
+    () => investigateOne(g, ASK_MESSAGE));
+  assert.deepEqual(down, { resp: null, error: "The comparison could not be run (investigation failed: X)" });
+});
+
 /** The source of one top-level function in demo.js. */
 function fnSource(name) {
   const start = DEMO.search(new RegExp(`^(async )?function ${name}\\(`, "m"));
@@ -209,4 +235,13 @@ test("demo.js: the home view is drawn before any network wait; the board loads o
   const open = fnSource("openBoard");
   assert.ok(/if \(!state\.boardLoading\) state\.boardLoading = loadBoardView\(\)/.test(open), "opening twice never investigates twice");
   assert.ok(!/loadBoard\b/.test(DEMO.replace(/loadBoardView/g, "")), "demo.js no longer waits for the whole board");
+});
+
+test("demo.js: Ask re-investigates with ASK_MESSAGE before Heater speaks, redraws the card, falls back to the board answer", () => {
+  const src = fnSource("askMarket");
+  const call = src.indexOf("investigateOne(g, ASK_MESSAGE)");
+  assert.ok(call > 0 && call < src.indexOf('"heater"'), "the model's line is fetched before Heater's first line");
+  assert.ok(/if \(asked\.resp\) \{\s*g\.resp = asked\.resp;\s*state\.boardView\?\.update\(g\);/.test(src), "card and Ref agree");
+  assert.ok(/const resp = g\.resp;/.test(src) && src.indexOf("const resp = g.resp;") > call, "a failed call keeps the board's answer");
+  assert.ok(/if \(!g\.resp \|\| state\.busy\) return;/.test(src), "a pending card cannot be asked about");
 });
