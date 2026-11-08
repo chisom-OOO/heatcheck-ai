@@ -180,3 +180,32 @@ def test_scenario_answer_skips_ambiguous_and_stale_players():
     assert not [s for s in b["scenarios"] if "nba-player:3" in s["scenario_id"]]       # not seen in 2025-26
     ids = [s["scenario_id"] for s in a["scenarios"]]
     assert len(ids) == len(set(ids))
+
+
+def _eff(est, half, n=20, flags=()):
+    return {"key": f"k{est}{half}{n}", "n_games_missed": n, "flags": list(flags),
+            "effect_win_prob": {"estimate": est, "ci80": [est - half * 0.65, est + half * 0.65], "ci95": [est - half, est + half]},
+            "effect_log_odds": {"estimate": est / 0.24, "ci80": None, "ci95": [(est - half) / 0.24, (est + half) / 0.24],
+                                "pbar": 0.6, "method": "m"}}
+
+
+def test_eb_shrinkage_math_and_flags():
+    rng = np.random.default_rng(3)
+    true = rng.normal(0, 0.05, 400); se = 0.08
+    effs = [_eff(float(t + rng.normal(0, se)), se * SC.Z95) for t in true]
+    effs.append(_eff(-0.4, 0.4, n=3, flags=["small_n"]))
+    out, meta = SC.apply_eb_shrinkage(effs)
+    assert 0.03 < meta["tau"] < 0.07                                  # recovers the true spread (0.05)
+    b = meta["tau2"] / (meta["tau2"] + se ** 2)
+    e0 = out[0]["effect_win_prob"]
+    assert e0["estimate"] == pytest.approx(b * e0["raw_estimate"]) and e0["shrinkage_factor"] == pytest.approx(b)
+    assert e0["ci95"][1] - e0["ci95"][0] < out[0]["effect_win_prob"]["raw_ci95"][1] - out[0]["effect_win_prob"]["raw_ci95"][0]
+    assert out[0]["effect_log_odds"]["estimate"] == pytest.approx(e0["estimate"] / 0.24)
+    assert out[0]["shown_by_default"] and not out[-1]["shown_by_default"]
+    assert abs(out[-1]["effect_win_prob"]["estimate"]) < 0.4 * 0.5    # noisy small-n estimate pulled hard to 0
+
+
+def test_eb_shrinkage_floors_tau_at_zero():
+    effs = [_eff(0.01 * (i % 3 - 1), 0.3) for i in range(30)]        # spread far below the noise
+    out, meta = SC.apply_eb_shrinkage(effs)
+    assert meta["tau2"] == 0.0 and all(o["effect_win_prob"]["estimate"] == 0.0 for o in out)

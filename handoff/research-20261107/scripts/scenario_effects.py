@@ -95,6 +95,7 @@ def main(d23: Path, d24: Path, csv25: Path, out: Path, raw23: Path, raw24: Path)
         tri.update(dict(zip(g.home_team_id, g.home_tricode))); tri.update(dict(zip(g.away_team_id, g.away_tricode)))
 
     absence = SC.absence_effects(rows, app, names, tri, involvement={k: float(v) for k, v in involvement.items()})
+    absence, shrink = SC.apply_eb_shrinkage(absence)
     sched = SC.schedule_effects(rows)
     n_missed = np.array([a["n_games_missed"] for a in absence])
     coverage = {"player_team_keys": int(len(absence)), "with_ge_5_games_missed": int((n_missed >= 5).sum()),
@@ -115,7 +116,8 @@ def main(d23: Path, d24: Path, csv25: Path, out: Path, raw23: Path, raw24: Path)
               "bootstrap resamples whole games (B=2000).")
     common = {"label": "ESTIMATE", "not_a_claim": True, "method": method, "data_sources": sources,
               "created_utc": utc_now_iso()}
-    pa = {**common, "format": "heatcheck-scenario-absence/1", "coverage": coverage,
+    coverage["shown_by_default"] = int(sum(a["shown_by_default"] for a in absence))
+    pa = {**common, "format": "heatcheck-scenario-absence/1", "coverage": coverage, "shrinkage": shrink,
           "assumptions_and_flags": [
               "absences mix rest, injury, suspension, illness and coach decisions; the data cannot tell them apart",
               "small_n: fewer than 5 games missed; intervals are wide and unstable",
@@ -125,7 +127,9 @@ def main(d23: Path, d24: Path, csv25: Path, out: Path, raw23: Path, raw24: Path)
               "low_involvement_outcome_dependent_appearance: median play-by-play events per game below 8; such "
               "players often appear only when a game is decided (garbage time), so appearance depends on the "
               "outcome and the estimate is biased",
-              "no multiplicity adjustment: about 5% of intervals exclude 0 by chance alone across this many keys",
+              "estimate (default) is empirical-Bayes shrunk toward 0; raw_estimate and raw intervals are unshrunk; "
+              "shown_by_default is false for any risk flag or fewer than 5 games missed",
+              "raw intervals have no multiplicity adjustment: about 5% exclude 0 by chance alone across this many keys",
               "2025-26 neutral-site games are not flagged (home court applied)"],
           "effects": {a["key"]: a for a in absence}}
     se = {**common, "format": "heatcheck-scenario-schedule/1",

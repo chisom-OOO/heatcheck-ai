@@ -10,7 +10,7 @@
     "game_id": "nba:0022600189",
     "team": "Indiana Pacers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.197324",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -104,16 +104,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:203999:nba-team:1610612743",
       "text": "Denver Nuggets without N. Joki\u0107",
       "label": "ESTIMATE",
-      "p_team_win": "0.306",
+      "p_team_win": "0.234",
       "range": {
-       "low": "0.176",
-       "high": "0.476",
+       "low": "0.164",
+       "high": "0.323",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games N. Joki\u0107 missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -126,16 +127,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1631128:nba-team:1610612743",
       "text": "Denver Nuggets without C. Braun",
       "label": "ESTIMATE",
-      "p_team_win": "0.229",
+      "p_team_win": "0.211",
       "range": {
-       "low": "0.135",
-       "high": "0.361",
+       "low": "0.149",
+       "high": "0.290",
        "level": "0.90"
       },
       "n": 39,
       "n_unit": "games C. Braun missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -148,16 +150,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1631212:nba-team:1610612743",
       "text": "Denver Nuggets without P. Watson",
       "label": "ESTIMATE",
-      "p_team_win": "0.203",
+      "p_team_win": "0.200",
       "range": {
-       "low": "0.129",
-       "high": "0.304",
+       "low": "0.145",
+       "high": "0.270",
        "level": "0.90"
       },
       "n": 39,
       "n_unit": "games P. Watson missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -170,16 +173,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:204456:nba-team:1610612754",
       "text": "Indiana Pacers without T. McConnell",
       "label": "ESTIMATE",
-      "p_team_win": "0.150",
+      "p_team_win": "0.177",
       "range": {
-       "low": "0.084",
-       "high": "0.253",
+       "low": "0.125",
+       "high": "0.245",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games T. McConnell missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -192,16 +196,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1629614:nba-team:1610612754",
       "text": "Indiana Pacers without A. Nembhard",
       "label": "ESTIMATE",
-      "p_team_win": "0.090",
+      "p_team_win": "0.130",
       "range": {
-       "low": "0.057",
-       "high": "0.138",
+       "low": "0.095",
+       "high": "0.176",
        "level": "0.90"
       },
       "n": 49,
       "n_unit": "games A. Nembhard missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -214,16 +219,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1630167:nba-team:1610612754",
       "text": "Indiana Pacers without O. Toppin",
       "label": "ESTIMATE",
-      "p_team_win": "0.108",
+      "p_team_win": "0.140",
       "range": {
-       "low": "0.072",
-       "high": "0.159",
+       "low": "0.104",
+       "high": "0.186",
        "level": "0.90"
       },
       "n": 61,
       "n_unit": "games O. Toppin missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -240,7 +246,7 @@
     "game_id": "nba:0022600189",
     "team": "Denver Nuggets",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.802676",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -334,16 +340,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:204456:nba-team:1610612754",
       "text": "Indiana Pacers without T. McConnell",
       "label": "ESTIMATE",
-      "p_team_win": "0.850",
+      "p_team_win": "0.823",
       "range": {
-       "low": "0.747",
-       "high": "0.916",
+       "low": "0.755",
+       "high": "0.875",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games T. McConnell missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -356,16 +363,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1629614:nba-team:1610612754",
       "text": "Indiana Pacers without A. Nembhard",
       "label": "ESTIMATE",
-      "p_team_win": "0.910",
+      "p_team_win": "0.870",
       "range": {
-       "low": "0.862",
-       "high": "0.943",
+       "low": "0.824",
+       "high": "0.905",
        "level": "0.90"
       },
       "n": 49,
       "n_unit": "games A. Nembhard missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -378,16 +386,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1630167:nba-team:1610612754",
       "text": "Indiana Pacers without O. Toppin",
       "label": "ESTIMATE",
-      "p_team_win": "0.892",
+      "p_team_win": "0.860",
       "range": {
-       "low": "0.841",
-       "high": "0.928",
+       "low": "0.814",
+       "high": "0.896",
        "level": "0.90"
       },
       "n": 61,
       "n_unit": "games O. Toppin missed for Indiana Pacers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -400,16 +409,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:203999:nba-team:1610612743",
       "text": "Denver Nuggets without N. Joki\u0107",
       "label": "ESTIMATE",
-      "p_team_win": "0.694",
+      "p_team_win": "0.766",
       "range": {
-       "low": "0.524",
-       "high": "0.824",
+       "low": "0.677",
+       "high": "0.836",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games N. Joki\u0107 missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -422,16 +432,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1631128:nba-team:1610612743",
       "text": "Denver Nuggets without C. Braun",
       "label": "ESTIMATE",
-      "p_team_win": "0.771",
+      "p_team_win": "0.789",
       "range": {
-       "low": "0.639",
-       "high": "0.865",
+       "low": "0.710",
+       "high": "0.851",
        "level": "0.90"
       },
       "n": 39,
       "n_unit": "games C. Braun missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -444,16 +455,17 @@
       "scenario_id": "nba:0022600189:absent:nba-player:1631212:nba-team:1610612743",
       "text": "Denver Nuggets without P. Watson",
       "label": "ESTIMATE",
-      "p_team_win": "0.797",
+      "p_team_win": "0.800",
       "range": {
-       "low": "0.696",
-       "high": "0.871",
+       "low": "0.730",
+       "high": "0.855",
        "level": "0.90"
       },
       "n": 39,
       "n_unit": "games P. Watson missed for Denver Nuggets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -472,7 +484,7 @@
     "game_id": "nba:0022600190",
     "team": "Atlanta Hawks",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.864459",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -566,16 +578,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1629651:nba-team:1610612751",
       "text": "Brooklyn Nets without N. Claxton",
       "label": "ESTIMATE",
-      "p_team_win": "0.804",
+      "p_team_win": "0.838",
       "range": {
-       "low": "0.692",
-       "high": "0.882",
+       "low": "0.775",
+       "high": "0.887",
        "level": "0.90"
       },
       "n": 31,
       "n_unit": "games N. Claxton missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -588,16 +601,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630592:nba-team:1610612751",
       "text": "Brooklyn Nets without J. Wilson",
       "label": "ESTIMATE",
-      "p_team_win": "0.816",
+      "p_team_win": "0.838",
       "range": {
-       "low": "0.733",
-       "high": "0.877",
+       "low": "0.782",
+       "high": "0.881",
        "level": "0.90"
       },
       "n": 67,
       "n_unit": "games J. Wilson missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -610,16 +624,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630549:nba-team:1610612751",
       "text": "Brooklyn Nets without D. Sharpe",
       "label": "ESTIMATE",
-      "p_team_win": "0.895",
+      "p_team_win": "0.876",
       "range": {
-       "low": "0.802",
-       "high": "0.947",
+       "low": "0.819",
+       "high": "0.917",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games D. Sharpe missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -632,16 +647,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630168:nba-team:1610612737",
       "text": "Atlanta Hawks without O. Okongwu",
       "label": "ESTIMATE",
-      "p_team_win": "0.881",
+      "p_team_win": "0.871",
       "range": {
-       "low": "0.787",
-       "high": "0.937",
+       "low": "0.815",
+       "high": "0.911",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games O. Okongwu missed for Atlanta Hawks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -654,16 +670,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630552:nba-team:1610612737",
       "text": "Atlanta Hawks without J. Johnson",
       "label": "ESTIMATE",
-      "p_team_win": "0.829",
+      "p_team_win": "0.848",
       "range": {
-       "low": "0.741",
-       "high": "0.892",
+       "low": "0.793",
+       "high": "0.890",
        "level": "0.90"
       },
       "n": 40,
       "n_unit": "games J. Johnson missed for Atlanta Hawks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -676,16 +693,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630700:nba-team:1610612737",
       "text": "Atlanta Hawks without D. Daniels",
       "label": "ESTIMATE",
-      "p_team_win": "0.740",
+      "p_team_win": "0.836",
       "range": {
-       "low": "0.549",
-       "high": "0.870",
+       "low": "0.765",
+       "high": "0.889",
        "level": "0.90"
       },
       "n": 10,
       "n_unit": "games D. Daniels missed for Atlanta Hawks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -702,7 +720,7 @@
     "game_id": "nba:0022600190",
     "team": "Brooklyn Nets",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.135541",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -796,16 +814,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630168:nba-team:1610612737",
       "text": "Atlanta Hawks without O. Okongwu",
       "label": "ESTIMATE",
-      "p_team_win": "0.119",
+      "p_team_win": "0.129",
       "range": {
-       "low": "0.063",
-       "high": "0.213",
+       "low": "0.089",
+       "high": "0.185",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games O. Okongwu missed for Atlanta Hawks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -818,16 +837,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630552:nba-team:1610612737",
       "text": "Atlanta Hawks without J. Johnson",
       "label": "ESTIMATE",
-      "p_team_win": "0.171",
+      "p_team_win": "0.152",
       "range": {
-       "low": "0.108",
-       "high": "0.259",
+       "low": "0.110",
+       "high": "0.207",
        "level": "0.90"
       },
       "n": 40,
       "n_unit": "games J. Johnson missed for Atlanta Hawks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -840,16 +860,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630700:nba-team:1610612737",
       "text": "Atlanta Hawks without D. Daniels",
       "label": "ESTIMATE",
-      "p_team_win": "0.260",
+      "p_team_win": "0.164",
       "range": {
-       "low": "0.130",
-       "high": "0.451",
+       "low": "0.111",
+       "high": "0.235",
        "level": "0.90"
       },
       "n": 10,
       "n_unit": "games D. Daniels missed for Atlanta Hawks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -862,16 +883,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1629651:nba-team:1610612751",
       "text": "Brooklyn Nets without N. Claxton",
       "label": "ESTIMATE",
-      "p_team_win": "0.196",
+      "p_team_win": "0.162",
       "range": {
-       "low": "0.118",
-       "high": "0.308",
+       "low": "0.113",
+       "high": "0.225",
        "level": "0.90"
       },
       "n": 31,
       "n_unit": "games N. Claxton missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -884,16 +906,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630592:nba-team:1610612751",
       "text": "Brooklyn Nets without J. Wilson",
       "label": "ESTIMATE",
-      "p_team_win": "0.184",
+      "p_team_win": "0.162",
       "range": {
-       "low": "0.123",
-       "high": "0.267",
+       "low": "0.119",
+       "high": "0.218",
        "level": "0.90"
       },
       "n": 67,
       "n_unit": "games J. Wilson missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -906,16 +929,17 @@
       "scenario_id": "nba:0022600190:absent:nba-player:1630549:nba-team:1610612751",
       "text": "Brooklyn Nets without D. Sharpe",
       "label": "ESTIMATE",
-      "p_team_win": "0.105",
+      "p_team_win": "0.124",
       "range": {
-       "low": "0.053",
-       "high": "0.198",
+       "low": "0.083",
+       "high": "0.181",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games D. Sharpe missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -934,7 +958,7 @@
     "game_id": "nba:0022600191",
     "team": "Cleveland Cavaliers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.661772",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -1028,16 +1052,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628404:nba-team:1610612752",
       "text": "New York Knicks without J. Hart",
       "label": "ESTIMATE",
-      "p_team_win": "0.720",
+      "p_team_win": "0.684",
       "range": {
-       "low": "0.557",
-       "high": "0.840",
+       "low": "0.583",
+       "high": "0.770",
        "level": "0.90"
       },
       "n": 19,
       "n_unit": "games J. Hart missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1050,16 +1075,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628973:nba-team:1610612752",
       "text": "New York Knicks without J. Brunson",
       "label": "ESTIMATE",
-      "p_team_win": "0.810",
+      "p_team_win": "0.731",
       "range": {
-       "low": "0.691",
-       "high": "0.890",
+       "low": "0.642",
+       "high": "0.805",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games J. Brunson missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1072,16 +1098,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1630540:nba-team:1610612752",
       "text": "New York Knicks without M. McBride",
       "label": "ESTIMATE",
-      "p_team_win": "0.615",
+      "p_team_win": "0.632",
       "range": {
-       "low": "0.512",
-       "high": "0.709",
+       "low": "0.552",
+       "high": "0.706",
        "level": "0.90"
       },
       "n": 71,
       "n_unit": "games M. McBride missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1094,16 +1121,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628386:nba-team:1610612739",
       "text": "Cleveland Cavaliers without J. Allen",
       "label": "ESTIMATE",
-      "p_team_win": "0.480",
+      "p_team_win": "0.599",
       "range": {
-       "low": "0.299",
-       "high": "0.667",
+       "low": "0.485",
+       "high": "0.704",
        "level": "0.90"
       },
       "n": 24,
       "n_unit": "games J. Allen missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1116,16 +1144,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628378:nba-team:1610612739",
       "text": "Cleveland Cavaliers without D. Mitchell",
       "label": "ESTIMATE",
-      "p_team_win": "0.535",
+      "p_team_win": "0.604",
       "range": {
-       "low": "0.384",
-       "high": "0.680",
+       "low": "0.501",
+       "high": "0.699",
        "level": "0.90"
       },
       "n": 43,
       "n_unit": "games D. Mitchell missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1138,16 +1167,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1630596:nba-team:1610612739",
       "text": "Cleveland Cavaliers without E. Mobley",
       "label": "ESTIMATE",
-      "p_team_win": "0.633",
+      "p_team_win": "0.645",
       "range": {
-       "low": "0.513",
-       "high": "0.738",
+       "low": "0.556",
+       "high": "0.726",
        "level": "0.90"
       },
       "n": 58,
       "n_unit": "games E. Mobley missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1164,7 +1194,7 @@
     "game_id": "nba:0022600191",
     "team": "New York Knicks",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.338228",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -1258,16 +1288,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628386:nba-team:1610612739",
       "text": "Cleveland Cavaliers without J. Allen",
       "label": "ESTIMATE",
-      "p_team_win": "0.520",
+      "p_team_win": "0.401",
       "range": {
-       "low": "0.333",
-       "high": "0.701",
+       "low": "0.296",
+       "high": "0.515",
        "level": "0.90"
       },
       "n": 24,
       "n_unit": "games J. Allen missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1280,16 +1311,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628378:nba-team:1610612739",
       "text": "Cleveland Cavaliers without D. Mitchell",
       "label": "ESTIMATE",
-      "p_team_win": "0.465",
+      "p_team_win": "0.396",
       "range": {
-       "low": "0.320",
-       "high": "0.616",
+       "low": "0.301",
+       "high": "0.499",
        "level": "0.90"
       },
       "n": 43,
       "n_unit": "games D. Mitchell missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1302,16 +1334,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1630596:nba-team:1610612739",
       "text": "Cleveland Cavaliers without E. Mobley",
       "label": "ESTIMATE",
-      "p_team_win": "0.367",
+      "p_team_win": "0.355",
       "range": {
-       "low": "0.262",
-       "high": "0.487",
+       "low": "0.274",
+       "high": "0.444",
        "level": "0.90"
       },
       "n": 58,
       "n_unit": "games E. Mobley missed for Cleveland Cavaliers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1324,16 +1357,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628404:nba-team:1610612752",
       "text": "New York Knicks without J. Hart",
       "label": "ESTIMATE",
-      "p_team_win": "0.280",
+      "p_team_win": "0.316",
       "range": {
-       "low": "0.160",
-       "high": "0.443",
+       "low": "0.230",
+       "high": "0.417",
        "level": "0.90"
       },
       "n": 19,
       "n_unit": "games J. Hart missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1346,16 +1380,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1628973:nba-team:1610612752",
       "text": "New York Knicks without J. Brunson",
       "label": "ESTIMATE",
-      "p_team_win": "0.190",
+      "p_team_win": "0.269",
       "range": {
-       "low": "0.110",
-       "high": "0.309",
+       "low": "0.195",
+       "high": "0.358",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games J. Brunson missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1368,16 +1403,17 @@
       "scenario_id": "nba:0022600191:absent:nba-player:1630540:nba-team:1610612752",
       "text": "New York Knicks without M. McBride",
       "label": "ESTIMATE",
-      "p_team_win": "0.385",
+      "p_team_win": "0.368",
       "range": {
-       "low": "0.291",
-       "high": "0.488",
+       "low": "0.294",
+       "high": "0.448",
        "level": "0.90"
       },
       "n": 71,
       "n_unit": "games M. McBride missed for New York Knicks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1396,7 +1432,7 @@
     "game_id": "nba:0022600192",
     "team": "Oklahoma City Thunder",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.936056",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -1490,16 +1526,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1641731:nba-team:1610612764",
       "text": "Washington Wizards without B. Coulibaly",
       "label": "ESTIMATE",
-      "p_team_win": "0.961",
+      "p_team_win": "0.953",
       "range": {
-       "low": "0.935",
-       "high": "0.977",
+       "low": "0.930",
+       "high": "0.968",
        "level": "0.90"
       },
       "n": 29,
       "n_unit": "games B. Coulibaly missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1512,16 +1549,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630264:nba-team:1610612764",
       "text": "Washington Wizards without A. Gill",
       "label": "ESTIMATE",
-      "p_team_win": "0.877",
+      "p_team_win": "0.901",
       "range": {
-       "low": "0.816",
-       "high": "0.920",
+       "low": "0.860",
+       "high": "0.931",
        "level": "0.90"
       },
       "n": 85,
       "n_unit": "games A. Gill missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1534,16 +1572,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630551:nba-team:1610612764",
       "text": "Washington Wizards without J. Champagnie",
       "label": "ESTIMATE",
-      "p_team_win": "0.950",
+      "p_team_win": "0.944",
       "range": {
-       "low": "0.913",
-       "high": "0.971",
+       "low": "0.916",
+       "high": "0.964",
        "level": "0.90"
       },
       "n": 46,
       "n_unit": "games J. Champagnie missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1556,16 +1595,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1641717:nba-team:1610612760",
       "text": "Oklahoma City Thunder without C. Wallace",
       "label": "ESTIMATE",
-      "p_team_win": "0.952",
+      "p_team_win": "0.946",
       "range": {
        "low": "0.921",
-       "high": "0.972",
+       "high": "0.963",
        "level": "0.90"
       },
       "n": 14,
       "n_unit": "games C. Wallace missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1578,16 +1618,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630198:nba-team:1610612760",
       "text": "Oklahoma City Thunder without I. Joe",
       "label": "ESTIMATE",
-      "p_team_win": "0.848",
+      "p_team_win": "0.911",
       "range": {
-       "low": "0.709",
-       "high": "0.927",
+       "low": "0.862",
+       "high": "0.944",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games I. Joe missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1600,16 +1641,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1628983:nba-team:1610612760",
       "text": "Oklahoma City Thunder without S. Gilgeous-Alexander",
       "label": "ESTIMATE",
-      "p_team_win": "0.839",
+      "p_team_win": "0.907",
       "range": {
-       "low": "0.706",
-       "high": "0.919",
+       "low": "0.857",
+       "high": "0.941",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games S. Gilgeous-Alexander missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1626,7 +1668,7 @@
     "game_id": "nba:0022600192",
     "team": "Washington Wizards",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.063944",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -1720,9 +1762,9 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1641717:nba-team:1610612760",
       "text": "Oklahoma City Thunder without C. Wallace",
       "label": "ESTIMATE",
-      "p_team_win": "0.048",
+      "p_team_win": "0.054",
       "range": {
-       "low": "0.028",
+       "low": "0.037",
        "high": "0.079",
        "level": "0.90"
       },
@@ -1730,6 +1772,7 @@
       "n_unit": "games C. Wallace missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1742,16 +1785,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630198:nba-team:1610612760",
       "text": "Oklahoma City Thunder without I. Joe",
       "label": "ESTIMATE",
-      "p_team_win": "0.152",
+      "p_team_win": "0.089",
       "range": {
-       "low": "0.073",
-       "high": "0.291",
+       "low": "0.056",
+       "high": "0.138",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games I. Joe missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1764,16 +1808,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1628983:nba-team:1610612760",
       "text": "Oklahoma City Thunder without S. Gilgeous-Alexander",
       "label": "ESTIMATE",
-      "p_team_win": "0.161",
+      "p_team_win": "0.093",
       "range": {
-       "low": "0.081",
-       "high": "0.294",
+       "low": "0.059",
+       "high": "0.143",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games S. Gilgeous-Alexander missed for Oklahoma City Thunder, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1786,16 +1831,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1641731:nba-team:1610612764",
       "text": "Washington Wizards without B. Coulibaly",
       "label": "ESTIMATE",
-      "p_team_win": "0.039",
+      "p_team_win": "0.047",
       "range": {
-       "low": "0.023",
-       "high": "0.065",
+       "low": "0.032",
+       "high": "0.070",
        "level": "0.90"
       },
       "n": 29,
       "n_unit": "games B. Coulibaly missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1808,16 +1854,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630264:nba-team:1610612764",
       "text": "Washington Wizards without A. Gill",
       "label": "ESTIMATE",
-      "p_team_win": "0.123",
+      "p_team_win": "0.099",
       "range": {
-       "low": "0.080",
-       "high": "0.184",
+       "low": "0.069",
+       "high": "0.140",
        "level": "0.90"
       },
       "n": 85,
       "n_unit": "games A. Gill missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1830,16 +1877,17 @@
       "scenario_id": "nba:0022600192:absent:nba-player:1630551:nba-team:1610612764",
       "text": "Washington Wizards without J. Champagnie",
       "label": "ESTIMATE",
-      "p_team_win": "0.050",
+      "p_team_win": "0.056",
       "range": {
-       "low": "0.029",
-       "high": "0.087",
+       "low": "0.036",
+       "high": "0.084",
        "level": "0.90"
       },
       "n": 46,
       "n_unit": "games J. Champagnie missed for Washington Wizards, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1858,7 +1906,7 @@
     "game_id": "nba:0022600193",
     "team": "Golden State Warriors",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.640267",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -1952,16 +2000,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1641710:nba-team:1610612753",
       "text": "Orlando Magic without A. Black",
       "label": "ESTIMATE",
-      "p_team_win": "0.663",
+      "p_team_win": "0.650",
       "range": {
-       "low": "0.521",
-       "high": "0.781",
+       "low": "0.556",
+       "high": "0.734",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Black missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1974,16 +2023,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1628976:nba-team:1610612753",
       "text": "Orlando Magic without W. Carter Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.505",
+      "p_team_win": "0.562",
       "range": {
-       "low": "0.396",
-       "high": "0.614",
+       "low": "0.477",
+       "high": "0.644",
        "level": "0.90"
       },
       "n": 45,
       "n_unit": "games W. Carter Jr. missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -1996,16 +2046,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1631094:nba-team:1610612753",
       "text": "Orlando Magic without P. Banchero",
       "label": "ESTIMATE",
-      "p_team_win": "0.618",
+      "p_team_win": "0.629",
       "range": {
-       "low": "0.495",
-       "high": "0.728",
+       "low": "0.541",
+       "high": "0.709",
        "level": "0.90"
       },
       "n": 45,
       "n_unit": "games P. Banchero missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2018,16 +2069,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1641764:nba-team:1610612744",
       "text": "Golden State Warriors without B. Podziemski",
       "label": "ESTIMATE",
-      "p_team_win": "0.683",
+      "p_team_win": "0.656",
       "range": {
-       "low": "0.519",
-       "high": "0.812",
+       "low": "0.556",
+       "high": "0.745",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games B. Podziemski missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2040,16 +2092,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1630541:nba-team:1610612744",
       "text": "Golden State Warriors without M. Moody",
       "label": "ESTIMATE",
-      "p_team_win": "0.583",
+      "p_team_win": "0.616",
       "range": {
-       "low": "0.430",
-       "high": "0.722",
+       "low": "0.517",
+       "high": "0.706",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games M. Moody missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2062,16 +2115,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:203110:nba-team:1610612744",
       "text": "Golden State Warriors without D. Green",
       "label": "ESTIMATE",
-      "p_team_win": "0.569",
+      "p_team_win": "0.600",
       "range": {
-       "low": "0.453",
-       "high": "0.678",
+       "low": "0.514",
+       "high": "0.681",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games D. Green missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2088,7 +2142,7 @@
     "game_id": "nba:0022600193",
     "team": "Orlando Magic",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.359733",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -2182,16 +2236,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1641764:nba-team:1610612744",
       "text": "Golden State Warriors without B. Podziemski",
       "label": "ESTIMATE",
-      "p_team_win": "0.317",
+      "p_team_win": "0.344",
       "range": {
-       "low": "0.188",
-       "high": "0.481",
+       "low": "0.255",
+       "high": "0.444",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games B. Podziemski missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2204,16 +2259,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1630541:nba-team:1610612744",
       "text": "Golden State Warriors without M. Moody",
       "label": "ESTIMATE",
-      "p_team_win": "0.417",
+      "p_team_win": "0.384",
       "range": {
-       "low": "0.278",
-       "high": "0.570",
+       "low": "0.294",
+       "high": "0.483",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games M. Moody missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2226,16 +2282,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:203110:nba-team:1610612744",
       "text": "Golden State Warriors without D. Green",
       "label": "ESTIMATE",
-      "p_team_win": "0.431",
+      "p_team_win": "0.400",
       "range": {
-       "low": "0.322",
-       "high": "0.547",
+       "low": "0.319",
+       "high": "0.486",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games D. Green missed for Golden State Warriors, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2248,16 +2305,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1641710:nba-team:1610612753",
       "text": "Orlando Magic without A. Black",
       "label": "ESTIMATE",
-      "p_team_win": "0.337",
+      "p_team_win": "0.350",
       "range": {
-       "low": "0.219",
-       "high": "0.479",
+       "low": "0.266",
+       "high": "0.444",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Black missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2270,16 +2328,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1628976:nba-team:1610612753",
       "text": "Orlando Magic without W. Carter Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.495",
+      "p_team_win": "0.438",
       "range": {
-       "low": "0.386",
-       "high": "0.604",
+       "low": "0.356",
+       "high": "0.523",
        "level": "0.90"
       },
       "n": 45,
       "n_unit": "games W. Carter Jr. missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2292,16 +2351,17 @@
       "scenario_id": "nba:0022600193:absent:nba-player:1631094:nba-team:1610612753",
       "text": "Orlando Magic without P. Banchero",
       "label": "ESTIMATE",
-      "p_team_win": "0.382",
+      "p_team_win": "0.371",
       "range": {
-       "low": "0.272",
-       "high": "0.505",
+       "low": "0.291",
+       "high": "0.459",
        "level": "0.90"
       },
       "n": 45,
       "n_unit": "games P. Banchero missed for Orlando Magic, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2320,7 +2380,7 @@
     "game_id": "nba:0022600194",
     "team": "Phoenix Suns",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.475292",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -2414,16 +2474,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1630578:nba-team:1610612745",
       "text": "Houston Rockets without A. Sengun",
       "label": "ESTIMATE",
-      "p_team_win": "0.762",
+      "p_team_win": "0.603",
       "range": {
-       "low": "0.628",
-       "high": "0.858",
+       "low": "0.502",
+       "high": "0.696",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games A. Sengun missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2436,16 +2497,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1631095:nba-team:1610612745",
       "text": "Houston Rockets without J. Smith Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.584",
+      "p_team_win": "0.523",
       "range": {
-       "low": "0.433",
-       "high": "0.720",
+       "low": "0.423",
+       "high": "0.620",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games J. Smith Jr. missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2458,16 +2520,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1641708:nba-team:1610612745",
       "text": "Houston Rockets without A. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.348",
+      "p_team_win": "0.404",
       "range": {
-       "low": "0.247",
-       "high": "0.464",
+       "low": "0.321",
+       "high": "0.492",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Thompson missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2480,16 +2543,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1626164:nba-team:1610612756",
       "text": "Phoenix Suns without D. Booker",
       "label": "ESTIMATE",
-      "p_team_win": "0.315",
+      "p_team_win": "0.404",
       "range": {
-       "low": "0.199",
-       "high": "0.459",
+       "low": "0.312",
+       "high": "0.503",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games D. Booker missed for Phoenix Suns, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2502,16 +2566,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1628960:nba-team:1610612756",
       "text": "Phoenix Suns without G. Allen",
       "label": "ESTIMATE",
-      "p_team_win": "0.497",
+      "p_team_win": "0.487",
       "range": {
-       "low": "0.381",
-       "high": "0.613",
+       "low": "0.401",
+       "high": "0.575",
        "level": "0.90"
       },
       "n": 55,
       "n_unit": "games G. Allen missed for Phoenix Suns, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2524,16 +2589,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1642346:nba-team:1610612756",
       "text": "Phoenix Suns without R. Dunn",
       "label": "ESTIMATE",
-      "p_team_win": "0.489",
+      "p_team_win": "0.480",
       "range": {
-       "low": "0.320",
-       "high": "0.660",
+       "low": "0.377",
+       "high": "0.585",
        "level": "0.90"
       },
       "n": 20,
       "n_unit": "games R. Dunn missed for Phoenix Suns, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2550,7 +2616,7 @@
     "game_id": "nba:0022600194",
     "team": "Houston Rockets",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.524708",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -2644,16 +2710,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1626164:nba-team:1610612756",
       "text": "Phoenix Suns without D. Booker",
       "label": "ESTIMATE",
-      "p_team_win": "0.685",
+      "p_team_win": "0.596",
       "range": {
-       "low": "0.541",
-       "high": "0.801",
+       "low": "0.497",
+       "high": "0.688",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games D. Booker missed for Phoenix Suns, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2666,16 +2733,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1628960:nba-team:1610612756",
       "text": "Phoenix Suns without G. Allen",
       "label": "ESTIMATE",
-      "p_team_win": "0.503",
+      "p_team_win": "0.513",
       "range": {
-       "low": "0.387",
-       "high": "0.619",
+       "low": "0.425",
+       "high": "0.599",
        "level": "0.90"
       },
       "n": 55,
       "n_unit": "games G. Allen missed for Phoenix Suns, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2688,16 +2756,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1642346:nba-team:1610612756",
       "text": "Phoenix Suns without R. Dunn",
       "label": "ESTIMATE",
-      "p_team_win": "0.511",
+      "p_team_win": "0.520",
       "range": {
-       "low": "0.340",
-       "high": "0.680",
+       "low": "0.415",
+       "high": "0.623",
        "level": "0.90"
       },
       "n": 20,
       "n_unit": "games R. Dunn missed for Phoenix Suns, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2710,16 +2779,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1630578:nba-team:1610612745",
       "text": "Houston Rockets without A. Sengun",
       "label": "ESTIMATE",
-      "p_team_win": "0.238",
+      "p_team_win": "0.397",
       "range": {
-       "low": "0.142",
-       "high": "0.372",
+       "low": "0.304",
+       "high": "0.498",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games A. Sengun missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2732,16 +2802,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1631095:nba-team:1610612745",
       "text": "Houston Rockets without J. Smith Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.416",
+      "p_team_win": "0.477",
       "range": {
-       "low": "0.280",
-       "high": "0.567",
+       "low": "0.380",
+       "high": "0.577",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games J. Smith Jr. missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2754,16 +2825,17 @@
       "scenario_id": "nba:0022600194:absent:nba-player:1641708:nba-team:1610612745",
       "text": "Houston Rockets without A. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.652",
+      "p_team_win": "0.596",
       "range": {
-       "low": "0.536",
-       "high": "0.753",
+       "low": "0.508",
+       "high": "0.679",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Thompson missed for Houston Rockets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2782,7 +2854,7 @@
     "game_id": "nba:0022600195",
     "team": "Portland Trail Blazers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.501433",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -2876,16 +2948,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630577:nba-team:1610612759",
       "text": "San Antonio Spurs without J. Champagnie",
       "label": "ESTIMATE",
-      "p_team_win": "0.548",
+      "p_team_win": "0.507",
       "range": {
-       "low": "0.226",
-       "high": "0.834",
+       "low": "0.383",
+       "high": "0.631",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games J. Champagnie missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2898,16 +2971,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1629640:nba-team:1610612759",
       "text": "San Antonio Spurs without K. Johnson",
       "label": "ESTIMATE",
-      "p_team_win": "0.476",
+      "p_team_win": "0.495",
       "range": {
-       "low": "0.263",
-       "high": "0.698",
+       "low": "0.380",
+       "high": "0.610",
        "level": "0.90"
       },
       "n": 14,
       "n_unit": "games K. Johnson missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2920,16 +2994,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630170:nba-team:1610612759",
       "text": "San Antonio Spurs without D. Vassell",
       "label": "ESTIMATE",
-      "p_team_win": "0.475",
+      "p_team_win": "0.490",
       "range": {
-       "low": "0.326",
-       "high": "0.628",
+       "low": "0.390",
+       "high": "0.591",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games D. Vassell missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2942,16 +3017,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1641739:nba-team:1610612757",
       "text": "Portland Trail Blazers without T. Camara",
       "label": "ESTIMATE",
-      "p_team_win": "0.603",
+      "p_team_win": "0.522",
       "range": {
-       "low": "0.331",
-       "high": "0.823",
+       "low": "0.399",
+       "high": "0.642",
        "level": "0.90"
       },
       "n": 7,
       "n_unit": "games T. Camara missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2964,16 +3040,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1631200:nba-team:1610612757",
       "text": "Portland Trail Blazers without K. Murray",
       "label": "ESTIMATE",
-      "p_team_win": "0.560",
+      "p_team_win": "0.535",
       "range": {
-       "low": "0.438",
-       "high": "0.675",
+       "low": "0.443",
+       "high": "0.624",
        "level": "0.90"
       },
       "n": 58,
       "n_unit": "games K. Murray missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -2986,16 +3063,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630703:nba-team:1610612757",
       "text": "Portland Trail Blazers without S. Henderson",
       "label": "ESTIMATE",
-      "p_team_win": "0.296",
+      "p_team_win": "0.409",
       "range": {
-       "low": "0.180",
-       "high": "0.447",
+       "low": "0.311",
+       "high": "0.515",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games S. Henderson missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3012,7 +3090,7 @@
     "game_id": "nba:0022600195",
     "team": "San Antonio Spurs",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.498567",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -3106,16 +3184,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1641739:nba-team:1610612757",
       "text": "Portland Trail Blazers without T. Camara",
       "label": "ESTIMATE",
-      "p_team_win": "0.397",
+      "p_team_win": "0.478",
       "range": {
-       "low": "0.177",
-       "high": "0.669",
+       "low": "0.358",
+       "high": "0.601",
        "level": "0.90"
       },
       "n": 7,
       "n_unit": "games T. Camara missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3128,16 +3207,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1631200:nba-team:1610612757",
       "text": "Portland Trail Blazers without K. Murray",
       "label": "ESTIMATE",
-      "p_team_win": "0.440",
+      "p_team_win": "0.465",
       "range": {
-       "low": "0.325",
-       "high": "0.562",
+       "low": "0.376",
+       "high": "0.557",
        "level": "0.90"
       },
       "n": 58,
       "n_unit": "games K. Murray missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3150,16 +3230,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630703:nba-team:1610612757",
       "text": "Portland Trail Blazers without S. Henderson",
       "label": "ESTIMATE",
-      "p_team_win": "0.704",
+      "p_team_win": "0.591",
       "range": {
-       "low": "0.553",
-       "high": "0.820",
+       "low": "0.485",
+       "high": "0.689",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games S. Henderson missed for Portland Trail Blazers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3172,16 +3253,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630577:nba-team:1610612759",
       "text": "San Antonio Spurs without J. Champagnie",
       "label": "ESTIMATE",
-      "p_team_win": "0.452",
+      "p_team_win": "0.493",
       "range": {
-       "low": "0.166",
-       "high": "0.774",
+       "low": "0.369",
+       "high": "0.617",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games J. Champagnie missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3194,16 +3276,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1629640:nba-team:1610612759",
       "text": "San Antonio Spurs without K. Johnson",
       "label": "ESTIMATE",
-      "p_team_win": "0.524",
+      "p_team_win": "0.505",
       "range": {
-       "low": "0.302",
-       "high": "0.737",
+       "low": "0.390",
+       "high": "0.620",
        "level": "0.90"
       },
       "n": 14,
       "n_unit": "games K. Johnson missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3216,16 +3299,17 @@
       "scenario_id": "nba:0022600195:absent:nba-player:1630170:nba-team:1610612759",
       "text": "San Antonio Spurs without D. Vassell",
       "label": "ESTIMATE",
-      "p_team_win": "0.525",
+      "p_team_win": "0.510",
       "range": {
-       "low": "0.372",
-       "high": "0.674",
+       "low": "0.409",
+       "high": "0.610",
        "level": "0.90"
       },
       "n": 28,
       "n_unit": "games D. Vassell missed for San Antonio Spurs, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3244,7 +3328,7 @@
     "game_id": "nba:0022600196",
     "team": "Chicago Bulls",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.363546",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -3338,16 +3422,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630178:nba-team:1610612755",
       "text": "Philadelphia 76ers without T. Maxey",
       "label": "ESTIMATE",
-      "p_team_win": "0.498",
+      "p_team_win": "0.429",
       "range": {
-       "low": "0.368",
-       "high": "0.629",
+       "low": "0.340",
+       "high": "0.523",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games T. Maxey missed for Philadelphia 76ers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3360,16 +3445,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1626162:nba-team:1610612755",
       "text": "Philadelphia 76ers without K. Oubre Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.325",
+      "p_team_win": "0.343",
       "range": {
-       "low": "0.227",
-       "high": "0.442",
+       "low": "0.267",
+       "high": "0.428",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games K. Oubre Jr. missed for Philadelphia 76ers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3382,16 +3468,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1641737:nba-team:1610612755",
       "text": "Philadelphia 76ers without A. Bona",
       "label": "ESTIMATE",
-      "p_team_win": "0.295",
+      "p_team_win": "0.334",
       "range": {
-       "low": "0.181",
-       "high": "0.440",
+       "low": "0.250",
+       "high": "0.430",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Bona missed for Philadelphia 76ers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3404,16 +3491,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630172:nba-team:1610612741",
       "text": "Chicago Bulls without P. Williams",
       "label": "ESTIMATE",
-      "p_team_win": "0.483",
+      "p_team_win": "0.416",
       "range": {
-       "low": "0.341",
-       "high": "0.627",
+       "low": "0.324",
+       "high": "0.514",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games P. Williams missed for Chicago Bulls, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3426,16 +3514,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1641824:nba-team:1610612741",
       "text": "Chicago Bulls without M. Buzelis",
       "label": "ESTIMATE",
-      "p_team_win": "0.483",
+      "p_team_win": "0.378",
       "range": {
-       "low": "0.188",
-       "high": "0.790",
+       "low": "0.270",
+       "high": "0.500",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games M. Buzelis missed for Chicago Bulls, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3448,16 +3537,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630581:nba-team:1610612741",
       "text": "Chicago Bulls without J. Giddey",
       "label": "ESTIMATE",
-      "p_team_win": "0.323",
+      "p_team_win": "0.346",
       "range": {
-       "low": "0.205",
-       "high": "0.469",
+       "low": "0.261",
+       "high": "0.442",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games J. Giddey missed for Chicago Bulls, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3474,7 +3564,7 @@
     "game_id": "nba:0022600196",
     "team": "Philadelphia 76ers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.636454",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -3568,16 +3658,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630172:nba-team:1610612741",
       "text": "Chicago Bulls without P. Williams",
       "label": "ESTIMATE",
-      "p_team_win": "0.517",
+      "p_team_win": "0.584",
       "range": {
-       "low": "0.373",
-       "high": "0.659",
+       "low": "0.486",
+       "high": "0.676",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games P. Williams missed for Chicago Bulls, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3590,16 +3681,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1641824:nba-team:1610612741",
       "text": "Chicago Bulls without M. Buzelis",
       "label": "ESTIMATE",
-      "p_team_win": "0.517",
+      "p_team_win": "0.622",
       "range": {
-       "low": "0.210",
-       "high": "0.812",
+       "low": "0.500",
+       "high": "0.730",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games M. Buzelis missed for Chicago Bulls, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3612,16 +3704,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630581:nba-team:1610612741",
       "text": "Chicago Bulls without J. Giddey",
       "label": "ESTIMATE",
-      "p_team_win": "0.677",
+      "p_team_win": "0.654",
       "range": {
-       "low": "0.531",
-       "high": "0.795",
+       "low": "0.558",
+       "high": "0.739",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games J. Giddey missed for Chicago Bulls, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3634,16 +3727,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1630178:nba-team:1610612755",
       "text": "Philadelphia 76ers without T. Maxey",
       "label": "ESTIMATE",
-      "p_team_win": "0.502",
+      "p_team_win": "0.571",
       "range": {
-       "low": "0.371",
-       "high": "0.632",
+       "low": "0.477",
+       "high": "0.660",
        "level": "0.90"
       },
       "n": 32,
       "n_unit": "games T. Maxey missed for Philadelphia 76ers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3656,16 +3750,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1626162:nba-team:1610612755",
       "text": "Philadelphia 76ers without K. Oubre Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.675",
+      "p_team_win": "0.657",
       "range": {
-       "low": "0.558",
-       "high": "0.773",
+       "low": "0.572",
+       "high": "0.733",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games K. Oubre Jr. missed for Philadelphia 76ers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3678,16 +3773,17 @@
       "scenario_id": "nba:0022600196:absent:nba-player:1641737:nba-team:1610612755",
       "text": "Philadelphia 76ers without A. Bona",
       "label": "ESTIMATE",
-      "p_team_win": "0.705",
+      "p_team_win": "0.666",
       "range": {
-       "low": "0.560",
-       "high": "0.819",
+       "low": "0.570",
+       "high": "0.750",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games A. Bona missed for Philadelphia 76ers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3706,7 +3802,7 @@
     "game_id": "nba:0022600197",
     "team": "Detroit Pistons",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.675968",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -3800,16 +3896,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1630559:nba-team:1610612747",
       "text": "Los Angeles Lakers without A. Reaves",
       "label": "ESTIMATE",
-      "p_team_win": "0.773",
+      "p_team_win": "0.725",
       "range": {
-       "low": "0.658",
-       "high": "0.857",
+       "low": "0.640",
+       "high": "0.796",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games A. Reaves missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3822,16 +3919,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:2544:nba-team:1610612747",
       "text": "Los Angeles Lakers without L. James",
       "label": "ESTIMATE",
-      "p_team_win": "0.709",
+      "p_team_win": "0.692",
       "range": {
-       "low": "0.577",
-       "high": "0.812",
+       "low": "0.602",
+       "high": "0.769",
        "level": "0.90"
       },
       "n": 30,
       "n_unit": "games L. James missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3844,16 +3942,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1629060:nba-team:1610612747",
       "text": "Los Angeles Lakers without R. Hachimura",
       "label": "ESTIMATE",
-      "p_team_win": "0.773",
+      "p_team_win": "0.732",
       "range": {
-       "low": "0.674",
-       "high": "0.849",
+       "low": "0.654",
+       "high": "0.797",
        "level": "0.90"
       },
       "n": 50,
       "n_unit": "games R. Hachimura missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3866,16 +3965,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1631105:nba-team:1610612765",
       "text": "Detroit Pistons without J. Duren",
       "label": "ESTIMATE",
-      "p_team_win": "0.554",
+      "p_team_win": "0.605",
       "range": {
-       "low": "0.443",
-       "high": "0.659",
+       "low": "0.520",
+       "high": "0.683",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games J. Duren missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3890,14 +3990,15 @@
       "label": "ESTIMATE",
       "p_team_win": "0.676",
       "range": {
-       "low": "0.561",
-       "high": "0.773",
+       "low": "0.592",
+       "high": "0.750",
        "level": "0.90"
       },
       "n": 42,
       "n_unit": "games C. Cunningham missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3910,16 +4011,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1641709:nba-team:1610612765",
       "text": "Detroit Pistons without A. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.735",
+      "p_team_win": "0.695",
       "range": {
-       "low": "0.556",
-       "high": "0.860",
+       "low": "0.594",
+       "high": "0.780",
        "level": "0.90"
       },
       "n": 13,
       "n_unit": "games A. Thompson missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -3936,7 +4038,7 @@
     "game_id": "nba:0022600197",
     "team": "Los Angeles Lakers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.324032",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -4030,16 +4132,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1631105:nba-team:1610612765",
       "text": "Detroit Pistons without J. Duren",
       "label": "ESTIMATE",
-      "p_team_win": "0.446",
+      "p_team_win": "0.395",
       "range": {
-       "low": "0.341",
-       "high": "0.557",
+       "low": "0.317",
+       "high": "0.480",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games J. Duren missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4054,14 +4157,15 @@
       "label": "ESTIMATE",
       "p_team_win": "0.324",
       "range": {
-       "low": "0.227",
-       "high": "0.439",
+       "low": "0.250",
+       "high": "0.408",
        "level": "0.90"
       },
       "n": 42,
       "n_unit": "games C. Cunningham missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4074,16 +4178,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1641709:nba-team:1610612765",
       "text": "Detroit Pistons without A. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.265",
+      "p_team_win": "0.305",
       "range": {
-       "low": "0.140",
-       "high": "0.444",
+       "low": "0.220",
+       "high": "0.406",
        "level": "0.90"
       },
       "n": 13,
       "n_unit": "games A. Thompson missed for Detroit Pistons, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4096,16 +4201,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1630559:nba-team:1610612747",
       "text": "Los Angeles Lakers without A. Reaves",
       "label": "ESTIMATE",
-      "p_team_win": "0.227",
+      "p_team_win": "0.275",
       "range": {
-       "low": "0.143",
-       "high": "0.342",
+       "low": "0.204",
+       "high": "0.360",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games A. Reaves missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4118,16 +4224,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:2544:nba-team:1610612747",
       "text": "Los Angeles Lakers without L. James",
       "label": "ESTIMATE",
-      "p_team_win": "0.291",
+      "p_team_win": "0.308",
       "range": {
-       "low": "0.188",
-       "high": "0.423",
+       "low": "0.231",
+       "high": "0.398",
        "level": "0.90"
       },
       "n": 30,
       "n_unit": "games L. James missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4140,16 +4247,17 @@
       "scenario_id": "nba:0022600197:absent:nba-player:1629060:nba-team:1610612747",
       "text": "Los Angeles Lakers without R. Hachimura",
       "label": "ESTIMATE",
-      "p_team_win": "0.227",
+      "p_team_win": "0.268",
       "range": {
-       "low": "0.151",
-       "high": "0.326",
+       "low": "0.203",
+       "high": "0.346",
        "level": "0.90"
       },
       "n": 50,
       "n_unit": "games R. Hachimura missed for Los Angeles Lakers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4168,7 +4276,7 @@
     "game_id": "nba:0022600198",
     "team": "Minnesota Timberwolves",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.903498",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -4262,16 +4370,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1641718:nba-team:1610612762",
       "text": "Utah Jazz without K. George",
       "label": "ESTIMATE",
-      "p_team_win": "0.871",
+      "p_team_win": "0.889",
       "range": {
-       "low": "0.781",
-       "high": "0.927",
+       "low": "0.839",
+       "high": "0.925",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games K. George missed for Utah Jazz, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4284,16 +4393,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1641729:nba-team:1610612762",
       "text": "Utah Jazz without B. Sensabaugh",
       "label": "ESTIMATE",
-      "p_team_win": "0.837",
+      "p_team_win": "0.866",
       "range": {
-       "low": "0.763",
-       "high": "0.891",
+       "low": "0.817",
+       "high": "0.903",
        "level": "0.90"
       },
       "n": 68,
       "n_unit": "games B. Sensabaugh missed for Utah Jazz, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4306,16 +4416,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1642271:nba-team:1610612762",
       "text": "Utah Jazz without K. Filipowski",
       "label": "ESTIMATE",
-      "p_team_win": "0.881",
+      "p_team_win": "0.899",
       "range": {
-       "low": "0.689",
-       "high": "0.961",
+       "low": "0.835",
+       "high": "0.940",
        "level": "0.90"
       },
       "n": 12,
       "n_unit": "games K. Filipowski missed for Utah Jazz, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4328,16 +4439,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1629675:nba-team:1610612750",
       "text": "Minnesota Timberwolves without N. Reid",
       "label": "ESTIMATE",
-      "p_team_win": "0.836",
+      "p_team_win": "0.898",
       "range": {
-       "low": "0.474",
-       "high": "0.966",
+       "low": "0.839",
+       "high": "0.937",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games N. Reid missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4350,16 +4462,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1630183:nba-team:1610612750",
       "text": "Minnesota Timberwolves without J. McDaniels",
       "label": "ESTIMATE",
-      "p_team_win": "0.911",
+      "p_team_win": "0.906",
       "range": {
-       "low": "0.828",
-       "high": "0.956",
+       "low": "0.861",
+       "high": "0.938",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games J. McDaniels missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4372,16 +4485,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:203497:nba-team:1610612750",
       "text": "Minnesota Timberwolves without R. Gobert",
       "label": "ESTIMATE",
-      "p_team_win": "0.896",
+      "p_team_win": "0.901",
       "range": {
-       "low": "0.795",
-       "high": "0.950",
+       "low": "0.853",
+       "high": "0.935",
        "level": "0.90"
       },
       "n": 19,
       "n_unit": "games R. Gobert missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4398,7 +4512,7 @@
     "game_id": "nba:0022600198",
     "team": "Utah Jazz",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.096502",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -4492,16 +4606,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1629675:nba-team:1610612750",
       "text": "Minnesota Timberwolves without N. Reid",
       "label": "ESTIMATE",
-      "p_team_win": "0.164",
+      "p_team_win": "0.102",
       "range": {
-       "low": "0.034",
-       "high": "0.526",
+       "low": "0.063",
+       "high": "0.161",
        "level": "0.90"
       },
       "n": 6,
       "n_unit": "games N. Reid missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4514,16 +4629,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1630183:nba-team:1610612750",
       "text": "Minnesota Timberwolves without J. McDaniels",
       "label": "ESTIMATE",
-      "p_team_win": "0.089",
+      "p_team_win": "0.094",
       "range": {
-       "low": "0.044",
-       "high": "0.172",
+       "low": "0.062",
+       "high": "0.139",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games J. McDaniels missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4536,16 +4652,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:203497:nba-team:1610612750",
       "text": "Minnesota Timberwolves without R. Gobert",
       "label": "ESTIMATE",
-      "p_team_win": "0.104",
+      "p_team_win": "0.099",
       "range": {
-       "low": "0.050",
-       "high": "0.205",
+       "low": "0.065",
+       "high": "0.147",
        "level": "0.90"
       },
       "n": 19,
       "n_unit": "games R. Gobert missed for Minnesota Timberwolves, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4558,16 +4675,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1641718:nba-team:1610612762",
       "text": "Utah Jazz without K. George",
       "label": "ESTIMATE",
-      "p_team_win": "0.129",
+      "p_team_win": "0.111",
       "range": {
-       "low": "0.073",
-       "high": "0.219",
+       "low": "0.075",
+       "high": "0.161",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games K. George missed for Utah Jazz, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4580,16 +4698,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1641729:nba-team:1610612762",
       "text": "Utah Jazz without B. Sensabaugh",
       "label": "ESTIMATE",
-      "p_team_win": "0.163",
+      "p_team_win": "0.134",
       "range": {
-       "low": "0.109",
-       "high": "0.237",
+       "low": "0.097",
+       "high": "0.183",
        "level": "0.90"
       },
       "n": 68,
       "n_unit": "games B. Sensabaugh missed for Utah Jazz, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4602,16 +4721,17 @@
       "scenario_id": "nba:0022600198:absent:nba-player:1642271:nba-team:1610612762",
       "text": "Utah Jazz without K. Filipowski",
       "label": "ESTIMATE",
-      "p_team_win": "0.119",
+      "p_team_win": "0.101",
       "range": {
-       "low": "0.039",
-       "high": "0.311",
+       "low": "0.060",
+       "high": "0.165",
        "level": "0.90"
       },
       "n": 12,
       "n_unit": "games K. Filipowski missed for Utah Jazz, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4630,7 +4750,7 @@
     "game_id": "nba:0022600199",
     "team": "Dallas Mavericks",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.755213",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -4724,16 +4844,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1629651:nba-team:1610612751",
       "text": "Brooklyn Nets without N. Claxton",
       "label": "ESTIMATE",
-      "p_team_win": "0.665",
+      "p_team_win": "0.715",
       "range": {
-       "low": "0.521",
-       "high": "0.783",
+       "low": "0.625",
+       "high": "0.791",
        "level": "0.90"
       },
       "n": 31,
       "n_unit": "games N. Claxton missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4746,16 +4867,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630592:nba-team:1610612751",
       "text": "Brooklyn Nets without J. Wilson",
       "label": "ESTIMATE",
-      "p_team_win": "0.682",
+      "p_team_win": "0.714",
       "range": {
-       "low": "0.571",
-       "high": "0.775",
+       "low": "0.634",
+       "high": "0.782",
        "level": "0.90"
       },
       "n": 67,
       "n_unit": "games J. Wilson missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4768,16 +4890,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630549:nba-team:1610612751",
       "text": "Brooklyn Nets without D. Sharpe",
       "label": "ESTIMATE",
-      "p_team_win": "0.804",
+      "p_team_win": "0.774",
       "range": {
-       "low": "0.662",
-       "high": "0.896",
+       "low": "0.687",
+       "high": "0.842",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games D. Sharpe missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4790,16 +4913,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:203939:nba-team:1610612742",
       "text": "Dallas Mavericks without D. Powell",
       "label": "ESTIMATE",
-      "p_team_win": "0.764",
+      "p_team_win": "0.760",
       "range": {
-       "low": "0.671",
-       "high": "0.838",
+       "low": "0.691",
+       "high": "0.818",
        "level": "0.90"
       },
       "n": 64,
       "n_unit": "games D. Powell missed for Dallas Mavericks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4812,16 +4936,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630230:nba-team:1610612742",
       "text": "Dallas Mavericks without N. Marshall",
       "label": "ESTIMATE",
-      "p_team_win": "0.700",
+      "p_team_win": "0.737",
       "range": {
-       "low": "0.525",
-       "high": "0.831",
+       "low": "0.646",
+       "high": "0.812",
        "level": "0.90"
       },
       "n": 18,
       "n_unit": "games N. Marshall missed for Dallas Mavericks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4834,16 +4959,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:202691:nba-team:1610612742",
       "text": "Dallas Mavericks without K. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.868",
+      "p_team_win": "0.801",
       "range": {
-       "low": "0.761",
-       "high": "0.932",
+       "low": "0.723",
+       "high": "0.861",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games K. Thompson missed for Dallas Mavericks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4860,7 +4986,7 @@
     "game_id": "nba:0022600199",
     "team": "Brooklyn Nets",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.244787",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -4954,16 +5080,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:203939:nba-team:1610612742",
       "text": "Dallas Mavericks without D. Powell",
       "label": "ESTIMATE",
-      "p_team_win": "0.236",
+      "p_team_win": "0.240",
       "range": {
-       "low": "0.162",
-       "high": "0.329",
+       "low": "0.182",
+       "high": "0.309",
        "level": "0.90"
       },
       "n": 64,
       "n_unit": "games D. Powell missed for Dallas Mavericks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4976,16 +5103,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630230:nba-team:1610612742",
       "text": "Dallas Mavericks without N. Marshall",
       "label": "ESTIMATE",
-      "p_team_win": "0.300",
+      "p_team_win": "0.263",
       "range": {
-       "low": "0.169",
-       "high": "0.475",
+       "low": "0.188",
+       "high": "0.354",
        "level": "0.90"
       },
       "n": 18,
       "n_unit": "games N. Marshall missed for Dallas Mavericks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -4998,16 +5126,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:202691:nba-team:1610612742",
       "text": "Dallas Mavericks without K. Thompson",
       "label": "ESTIMATE",
-      "p_team_win": "0.132",
+      "p_team_win": "0.199",
       "range": {
-       "low": "0.068",
-       "high": "0.239",
+       "low": "0.139",
+       "high": "0.277",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games K. Thompson missed for Dallas Mavericks, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5020,16 +5149,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1629651:nba-team:1610612751",
       "text": "Brooklyn Nets without N. Claxton",
       "label": "ESTIMATE",
-      "p_team_win": "0.335",
+      "p_team_win": "0.285",
       "range": {
-       "low": "0.217",
-       "high": "0.479",
+       "low": "0.209",
+       "high": "0.375",
        "level": "0.90"
       },
       "n": 31,
       "n_unit": "games N. Claxton missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5042,16 +5172,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630592:nba-team:1610612751",
       "text": "Brooklyn Nets without J. Wilson",
       "label": "ESTIMATE",
-      "p_team_win": "0.318",
+      "p_team_win": "0.286",
       "range": {
-       "low": "0.225",
-       "high": "0.429",
+       "low": "0.218",
+       "high": "0.366",
        "level": "0.90"
       },
       "n": 67,
       "n_unit": "games J. Wilson missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5064,16 +5195,17 @@
       "scenario_id": "nba:0022600199:absent:nba-player:1630549:nba-team:1610612751",
       "text": "Brooklyn Nets without D. Sharpe",
       "label": "ESTIMATE",
-      "p_team_win": "0.196",
+      "p_team_win": "0.226",
       "range": {
-       "low": "0.104",
-       "high": "0.338",
+       "low": "0.158",
+       "high": "0.313",
        "level": "0.90"
       },
       "n": 22,
       "n_unit": "games D. Sharpe missed for Brooklyn Nets, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5092,7 +5224,7 @@
     "game_id": "nba:0022600200",
     "team": "Milwaukee Bucks",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.267383",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -5186,16 +5318,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1630573:nba-team:1610612738",
       "text": "Boston Celtics without S. Hauser",
       "label": "ESTIMATE",
-      "p_team_win": "0.357",
+      "p_team_win": "0.295",
       "range": {
-       "low": "0.186",
-       "high": "0.574",
+       "low": "0.201",
+       "high": "0.412",
        "level": "0.90"
       },
       "n": 17,
       "n_unit": "games S. Hauser missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5208,16 +5341,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1628401:nba-team:1610612738",
       "text": "Boston Celtics without D. White",
       "label": "ESTIMATE",
-      "p_team_win": "0.383",
+      "p_team_win": "0.299",
       "range": {
-       "low": "0.191",
-       "high": "0.619",
+       "low": "0.202",
+       "high": "0.419",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games D. White missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5230,16 +5364,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1627759:nba-team:1610612738",
       "text": "Boston Celtics without J. Brown",
       "label": "ESTIMATE",
-      "p_team_win": "0.149",
+      "p_team_win": "0.188",
       "range": {
-       "low": "0.097",
-       "high": "0.222",
+       "low": "0.136",
+       "high": "0.254",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games J. Brown missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5252,16 +5387,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1631260:nba-team:1610612749",
       "text": "Milwaukee Bucks without A. Green",
       "label": "ESTIMATE",
-      "p_team_win": "0.208",
+      "p_team_win": "0.239",
       "range": {
-       "low": "0.128",
-       "high": "0.320",
+       "low": "0.174",
+       "high": "0.318",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games A. Green missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5274,16 +5410,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1626171:nba-team:1610612749",
       "text": "Milwaukee Bucks without B. Portis",
       "label": "ESTIMATE",
-      "p_team_win": "0.338",
+      "p_team_win": "0.298",
       "range": {
-       "low": "0.221",
-       "high": "0.479",
+       "low": "0.222",
+       "high": "0.388",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games B. Portis missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5296,16 +5433,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:203507:nba-team:1610612749",
       "text": "Milwaukee Bucks without G. Antetokounmpo",
       "label": "ESTIMATE",
-      "p_team_win": "0.207",
+      "p_team_win": "0.236",
       "range": {
-       "low": "0.133",
-       "high": "0.308",
+       "low": "0.174",
+       "high": "0.310",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games G. Antetokounmpo missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5322,7 +5460,7 @@
     "game_id": "nba:0022600200",
     "team": "Boston Celtics",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.732617",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -5416,16 +5554,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1631260:nba-team:1610612749",
       "text": "Milwaukee Bucks without A. Green",
       "label": "ESTIMATE",
-      "p_team_win": "0.792",
+      "p_team_win": "0.761",
       "range": {
-       "low": "0.680",
-       "high": "0.872",
+       "low": "0.682",
+       "high": "0.826",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games A. Green missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5438,16 +5577,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1626171:nba-team:1610612749",
       "text": "Milwaukee Bucks without B. Portis",
       "label": "ESTIMATE",
-      "p_team_win": "0.662",
+      "p_team_win": "0.702",
       "range": {
-       "low": "0.521",
-       "high": "0.779",
+       "low": "0.612",
+       "high": "0.778",
        "level": "0.90"
       },
       "n": 35,
       "n_unit": "games B. Portis missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5460,16 +5600,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:203507:nba-team:1610612749",
       "text": "Milwaukee Bucks without G. Antetokounmpo",
       "label": "ESTIMATE",
-      "p_team_win": "0.793",
+      "p_team_win": "0.764",
       "range": {
-       "low": "0.692",
-       "high": "0.867",
+       "low": "0.690",
+       "high": "0.826",
        "level": "0.90"
       },
       "n": 51,
       "n_unit": "games G. Antetokounmpo missed for Milwaukee Bucks, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5482,16 +5623,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1630573:nba-team:1610612738",
       "text": "Boston Celtics without S. Hauser",
       "label": "ESTIMATE",
-      "p_team_win": "0.643",
+      "p_team_win": "0.705",
       "range": {
-       "low": "0.426",
-       "high": "0.814",
+       "low": "0.588",
+       "high": "0.799",
        "level": "0.90"
       },
       "n": 17,
       "n_unit": "games S. Hauser missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5504,16 +5646,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1628401:nba-team:1610612738",
       "text": "Boston Celtics without D. White",
       "label": "ESTIMATE",
-      "p_team_win": "0.617",
+      "p_team_win": "0.701",
       "range": {
-       "low": "0.381",
-       "high": "0.809",
+       "low": "0.581",
+       "high": "0.798",
        "level": "0.90"
       },
       "n": 16,
       "n_unit": "games D. White missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5526,16 +5669,17 @@
       "scenario_id": "nba:0022600200:absent:nba-player:1627759:nba-team:1610612738",
       "text": "Boston Celtics without J. Brown",
       "label": "ESTIMATE",
-      "p_team_win": "0.851",
+      "p_team_win": "0.812",
       "range": {
-       "low": "0.778",
-       "high": "0.903",
+       "low": "0.746",
+       "high": "0.864",
        "level": "0.90"
       },
       "n": 36,
       "n_unit": "games J. Brown missed for Boston Celtics, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5554,7 +5698,7 @@
     "game_id": "nba:0022600201",
     "team": "LA Clippers",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.727341",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -5648,16 +5792,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1630530:nba-team:1610612740",
       "text": "New Orleans Pelicans without T. Murphy III",
       "label": "ESTIMATE",
-      "p_team_win": "0.723",
+      "p_team_win": "0.726",
       "range": {
-       "low": "0.563",
-       "high": "0.841",
+       "low": "0.632",
+       "high": "0.803",
        "level": "0.90"
       },
       "n": 24,
       "n_unit": "games T. Murphy III missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5670,16 +5815,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1641722:nba-team:1610612740",
       "text": "New Orleans Pelicans without J. Hawkins",
       "label": "ESTIMATE",
-      "p_team_win": "0.674",
+      "p_team_win": "0.697",
       "range": {
-       "low": "0.566",
-       "high": "0.767",
+       "low": "0.618",
+       "high": "0.766",
        "level": "0.90"
       },
       "n": 61,
       "n_unit": "games J. Hawkins missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5692,16 +5838,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1629627:nba-team:1610612740",
       "text": "New Orleans Pelicans without Z. Williamson",
       "label": "ESTIMATE",
-      "p_team_win": "0.841",
+      "p_team_win": "0.802",
       "range": {
-       "low": "0.775",
-       "high": "0.890",
+       "low": "0.743",
+       "high": "0.850",
        "level": "0.90"
       },
       "n": 68,
       "n_unit": "games Z. Williamson missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5714,16 +5861,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:202695:nba-team:1610612746",
       "text": "LA Clippers without K. Leonard",
       "label": "ESTIMATE",
-      "p_team_win": "0.504",
+      "p_team_win": "0.628",
       "range": {
-       "low": "0.366",
-       "high": "0.642",
+       "low": "0.533",
+       "high": "0.714",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games K. Leonard missed for LA Clippers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5736,16 +5884,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1627739:nba-team:1610612746",
       "text": "LA Clippers without K. Dunn",
       "label": "ESTIMATE",
-      "p_team_win": "0.697",
+      "p_team_win": "0.721",
       "range": {
-       "low": "0.464",
-       "high": "0.860",
+       "low": "0.617",
+       "high": "0.805",
        "level": "0.90"
       },
       "n": 8,
       "n_unit": "games K. Dunn missed for LA Clippers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5758,16 +5907,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1627884:nba-team:1610612746",
       "text": "LA Clippers without D. Jones Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.732",
+      "p_team_win": "0.730",
       "range": {
-       "low": "0.611",
-       "high": "0.826",
+       "low": "0.648",
+       "high": "0.799",
        "level": "0.90"
       },
       "n": 37,
       "n_unit": "games D. Jones Jr. missed for LA Clippers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5784,7 +5934,7 @@
     "game_id": "nba:0022600201",
     "team": "New Orleans Pelicans",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.272659",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -5878,16 +6028,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:202695:nba-team:1610612746",
       "text": "LA Clippers without K. Leonard",
       "label": "ESTIMATE",
-      "p_team_win": "0.496",
+      "p_team_win": "0.372",
       "range": {
-       "low": "0.358",
-       "high": "0.634",
+       "low": "0.286",
+       "high": "0.467",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games K. Leonard missed for LA Clippers, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5900,16 +6051,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1627739:nba-team:1610612746",
       "text": "LA Clippers without K. Dunn",
       "label": "ESTIMATE",
-      "p_team_win": "0.303",
+      "p_team_win": "0.279",
       "range": {
-       "low": "0.140",
-       "high": "0.536",
+       "low": "0.195",
+       "high": "0.383",
        "level": "0.90"
       },
       "n": 8,
       "n_unit": "games K. Dunn missed for LA Clippers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5922,16 +6074,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1627884:nba-team:1610612746",
       "text": "LA Clippers without D. Jones Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.268",
+      "p_team_win": "0.270",
       "range": {
-       "low": "0.174",
-       "high": "0.389",
+       "low": "0.201",
+       "high": "0.352",
        "level": "0.90"
       },
       "n": 37,
       "n_unit": "games D. Jones Jr. missed for LA Clippers, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5944,16 +6097,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1630530:nba-team:1610612740",
       "text": "New Orleans Pelicans without T. Murphy III",
       "label": "ESTIMATE",
-      "p_team_win": "0.277",
+      "p_team_win": "0.274",
       "range": {
-       "low": "0.159",
-       "high": "0.437",
+       "low": "0.197",
+       "high": "0.368",
        "level": "0.90"
       },
       "n": 24,
       "n_unit": "games T. Murphy III missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5966,16 +6120,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1641722:nba-team:1610612740",
       "text": "New Orleans Pelicans without J. Hawkins",
       "label": "ESTIMATE",
-      "p_team_win": "0.326",
+      "p_team_win": "0.303",
       "range": {
-       "low": "0.233",
-       "high": "0.434",
+       "low": "0.234",
+       "high": "0.382",
        "level": "0.90"
       },
       "n": 61,
       "n_unit": "games J. Hawkins missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -5988,16 +6143,17 @@
       "scenario_id": "nba:0022600201:absent:nba-player:1629627:nba-team:1610612740",
       "text": "New Orleans Pelicans without Z. Williamson",
       "label": "ESTIMATE",
-      "p_team_win": "0.159",
+      "p_team_win": "0.198",
       "range": {
-       "low": "0.110",
-       "high": "0.225",
+       "low": "0.150",
+       "high": "0.257",
        "level": "0.90"
       },
       "n": 68,
       "n_unit": "games Z. Williamson missed for New Orleans Pelicans, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6016,7 +6172,7 @@
     "game_id": "nba:0022600202",
     "team": "Sacramento Kings",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.456053",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -6110,16 +6266,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1628389:nba-team:1610612748",
       "text": "Miami Heat without B. Adebayo",
       "label": "ESTIMATE",
-      "p_team_win": "0.404",
+      "p_team_win": "0.436",
       "range": {
-       "low": "0.255",
-       "high": "0.573",
+       "low": "0.337",
+       "high": "0.540",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games B. Adebayo missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6132,16 +6289,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1631170:nba-team:1610612748",
       "text": "Miami Heat without J. Jaquez Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.651",
+      "p_team_win": "0.556",
       "range": {
-       "low": "0.524",
-       "high": "0.759",
+       "low": "0.463",
+       "high": "0.646",
        "level": "0.90"
       },
       "n": 30,
       "n_unit": "games J. Jaquez Jr. missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6156,14 +6314,15 @@
       "label": "ESTIMATE",
       "p_team_win": "0.456",
       "range": {
-       "low": "0.346",
-       "high": "0.570",
+       "low": "0.372",
+       "high": "0.542",
        "level": "0.90"
       },
       "n": 76,
       "n_unit": "games T. Herro missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6176,16 +6335,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1628370:nba-team:1610612758",
       "text": "Sacramento Kings without M. Monk",
       "label": "ESTIMATE",
-      "p_team_win": "0.247",
+      "p_team_win": "0.338",
       "range": {
-       "low": "0.166",
-       "high": "0.352",
+       "low": "0.262",
+       "high": "0.424",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games M. Monk missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6198,16 +6358,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1631099:nba-team:1610612758",
       "text": "Sacramento Kings without K. Murray",
       "label": "ESTIMATE",
-      "p_team_win": "0.445",
+      "p_team_win": "0.451",
       "range": {
-       "low": "0.304",
-       "high": "0.596",
+       "low": "0.356",
+       "high": "0.551",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games K. Murray missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6220,16 +6381,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1627734:nba-team:1610612758",
       "text": "Sacramento Kings without D. Sabonis",
       "label": "ESTIMATE",
-      "p_team_win": "0.363",
+      "p_team_win": "0.408",
       "range": {
-       "low": "0.253",
-       "high": "0.490",
+       "low": "0.322",
+       "high": "0.500",
        "level": "0.90"
       },
       "n": 44,
       "n_unit": "games D. Sabonis missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6246,7 +6408,7 @@
     "game_id": "nba:0022600202",
     "team": "Miami Heat",
     "is_sample": false,
-    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 c8aa4e64bd1cc578, schedule_effects.json sha256 62f8b68b06f2acad",
+    "source": "Research scenario estimates (Elo residuals, 2023-24 to 2025-26): player_absence_effects.json sha256 300c43b76b791e5d, schedule_effects.json sha256 b8e1ee328a3f8724",
     "baseline": {
      "p_team_win": "0.543947",
      "forecast_id": "forecasts.json sha256 cf0824723c410446"
@@ -6340,16 +6502,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1628370:nba-team:1610612758",
       "text": "Sacramento Kings without M. Monk",
       "label": "ESTIMATE",
-      "p_team_win": "0.753",
+      "p_team_win": "0.662",
       "range": {
-       "low": "0.648",
-       "high": "0.834",
+       "low": "0.576",
+       "high": "0.738",
        "level": "0.90"
       },
       "n": 34,
       "n_unit": "games M. Monk missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6362,16 +6525,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1631099:nba-team:1610612758",
       "text": "Sacramento Kings without K. Murray",
       "label": "ESTIMATE",
-      "p_team_win": "0.555",
+      "p_team_win": "0.549",
       "range": {
-       "low": "0.404",
-       "high": "0.696",
+       "low": "0.449",
+       "high": "0.644",
        "level": "0.90"
       },
       "n": 33,
       "n_unit": "games K. Murray missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6384,16 +6548,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1627734:nba-team:1610612758",
       "text": "Sacramento Kings without D. Sabonis",
       "label": "ESTIMATE",
-      "p_team_win": "0.637",
+      "p_team_win": "0.592",
       "range": {
-       "low": "0.510",
-       "high": "0.747",
+       "low": "0.500",
+       "high": "0.678",
        "level": "0.90"
       },
       "n": 44,
       "n_unit": "games D. Sabonis missed for Sacramento Kings, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6406,16 +6571,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1628389:nba-team:1610612748",
       "text": "Miami Heat without B. Adebayo",
       "label": "ESTIMATE",
-      "p_team_win": "0.596",
+      "p_team_win": "0.564",
       "range": {
-       "low": "0.427",
-       "high": "0.745",
+       "low": "0.460",
+       "high": "0.663",
        "level": "0.90"
       },
       "n": 23,
       "n_unit": "games B. Adebayo missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6428,16 +6594,17 @@
       "scenario_id": "nba:0022600202:absent:nba-player:1631170:nba-team:1610612748",
       "text": "Miami Heat without J. Jaquez Jr.",
       "label": "ESTIMATE",
-      "p_team_win": "0.349",
+      "p_team_win": "0.444",
       "range": {
-       "low": "0.241",
-       "high": "0.476",
+       "low": "0.354",
+       "high": "0.537",
        "level": "0.90"
       },
       "n": 30,
       "n_unit": "games J. Jaquez Jr. missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
@@ -6452,14 +6619,15 @@
       "label": "ESTIMATE",
       "p_team_win": "0.544",
       "range": {
-       "low": "0.430",
-       "high": "0.654",
+       "low": "0.458",
+       "high": "0.628",
        "level": "0.90"
       },
       "n": 76,
       "n_unit": "games T. Herro missed for Miami Heat, 2023-24, 2024-25, 2025-26",
       "caveats": [
        "Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+       "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
        "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
        "Player listed from 2025-26 play-by-play; the current 2026-27 roster is not verified.",
        "Estimate from 2023-24 to 2025-26 games, not a tested claim.",
