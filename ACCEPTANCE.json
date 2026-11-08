@@ -6,61 +6,97 @@
       "id": "G01",
       "name": "Data/provenance",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Raw hashes, schema/completeness, totals/IDs and source/use notes; no invented fields",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "2024-25 rebuilt independently from pinned archives: SEAL MATCH 6/6; 2023-24 rebuild reviewer 1642 8/8; balldontlie 14/14 pages match manifest sha256 and bytes. Scope: second score source is same organisation; BALLDONTLIE reconciliation of 2023-24 NOT_RUN; Max's local 2023-24 manifest upstream_revision defect (uncommitted build).",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G02",
       "name": "Temporal correctness",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Future-perturbation, availability cutoff, one-row/game, event boundaries and exposure audit",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Reviewer-replayed (1642): pre-shot invariance 9/9 on Research's builder, 3 full games, FGA only (D12). Not re-run here (needs 2023-24 build). Live-forecast cutoff tests pass.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G03",
       "name": "Statistical oracles",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Conjugate moments, score fixtures, exact tiny null and explicit undefined cases",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "handoff kernel tests (golden fixtures, Miller-Sanjurjo exact, Holm, bootstrap insufficiency) pass on Linux within 141 passed.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G04",
       "name": "Registered adversarial tests",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Mandatory applicable attacks execute; missing prerequisites block; changes logged",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Referee-enforced attack set: reviewer AL tests incl. AL4/AL5 pass (211 passed). Research attack catalogue partial: clutch, spec curve, influence, time replication NOT_RUN.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G05",
       "name": "Harness truth isolation",
       "owner": "Research/Max",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Actual access-denial tests; no truth leakage; labels match estimands",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Logical isolation only: idea-family truth-hiding tests and Experience engine-isolation tests pass. OS-level isolation NOT_RUN by design.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G06",
       "name": "Null and power",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Independent replicated null/planted/weak/confounded cases; uncertainty and actual counts",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Idea-family synthetic tests pass; null calibration (0.043) and power figures are self-reported; no independent harness replay.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G07",
@@ -69,78 +105,126 @@
       "status": "NOT_RUN",
       "required_evidence": "Disjoint train/tune/calibration/final groups; held-out family, base rates and scope disclosed",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "No calibration built for the gate as defined; Research's descriptive calibration check of the live Elo pending.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G08",
       "name": "Final-data/adaptivity",
       "owner": "Max/Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Frozen family/epoch, persistent record-level exposure registry and atomic unlock; new-ID/renamed-file/restart bypass probes; full family reported",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Custodian probes 10/10 on Linux; tamper refusals pass; confirmatory final run once with dry run 11/11 before and Max's verifier after. Scope: confirmatory operator = this reviewer; independent replay of final_result.json pending (Research). One stale test assertion (test_real_2024_tampered_copy_is_refused_on_a_ledger_copy) fails only because committed evidence now contains final_result.json; the refusal itself is correct.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G09",
       "name": "Forecast comparison",
       "owner": "Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Identical eligible games/fallbacks; baseline, proper scores, dependence assumptions, coverage",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Reviewer 1733 reproduced the GP final verdicts and receipt 3e238d2d. Live-forecast backtest self-reported; market comparison is descriptive, not a skill comparison.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G10",
       "name": "NBA event mapping",
       "owner": "Max/Research",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Exact game/participants/date/outcome and regulation/overtime/cancel mapping; unknowns block",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "verify_mappings replayed into a scratch dir on the 02:15 capture: 13/13 Polymarket mappings 16/16 checks, identical to committed records. Kalshi unverified by design (overtime rule UNKNOWN).",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G11",
       "name": "Quote normalization",
       "owner": "Research/Experience",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Independent quote-side/unit/tick/quantity fixtures; difference is descriptive, no profit claim",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Reviewer adapter tests and tests/experience: 231 passed on Linux. 16 deferred validator probes remain strict xfail per docs/DECISIONS.md.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G12",
       "name": "Read-only live adapters",
       "owner": "Experience",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Actual permitted metadata/book fetch; stale/empty/error modes, timestamps and raw hashes",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Recorded bundle offline rebuild reproducible; code scan finds no POST/order paths in market adapters. Live capture not replayed (network); 429/rate-limit handling not exercised.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G13",
       "name": "Authority/immutability",
       "owner": "Max",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "required_evidence": "Exact confirmation, retry identity, stale edits, historical evidence and export stability",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Independent tamper attacks on ledger copies: edit, edit+rehash, delete, reorder, duplicate all refused; truncation of last line and full chain rebuild accepted (documented limit; git history anchors). Ledger/agent-loop/dialogue/scenario tests pass.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G14",
       "name": "Injection/resource/security",
       "owner": "All",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Malicious source/file/URL, bounded tools/jobs/audio, private keys and no order capability",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "No balldontlie key value in any file on any remote branch; no order/POST capability in market code; proxy/allowlist tests pass. No fuzzing; Meta key not scanned by value.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G15",
@@ -149,28 +233,46 @@
       "status": "NOT_RUN",
       "required_evidence": "Actual browser/mic flow, correction/cancel/permissions/error/export; logs and environment",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "No real microphone/voice session in a real browser. Needs a human run.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G16",
       "name": "Separate review/replay",
       "owner": "Max",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Reviewer other than author replays exact scope; root causes repaired and rechecked",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Non-author review exists through ~22:30 7 Nov plus this replay of all suites (incl. market, scenario, routing, idea proposer tests). No adversarial review of features added after 22:30 beyond their own tests.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G17",
       "name": "Demo and claims",
       "owner": "All",
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "required_evidence": "Every spoken headline linked to actual evidence/mode/limits; recorded fallback labelled",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Confirmatory figures in README and SUBMISSION.md checked against final_result.json. SUBMISSION.md predates scenarios and the model-proposed idea family.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     },
     {
       "id": "G18",
@@ -179,8 +281,14 @@
       "status": "NOT_RUN",
       "required_evidence": "Actual event rules/reuse/AI and submission requirements recorded; no concealed preparation",
       "source_identity": null,
-      "evidence": [],
-      "reviewer": null
+      "evidence": [
+        {
+          "report": "reports/review/2026-11-08-0310-gate-review.md",
+          "note": "Event rules and organiser ruling on pre-event work not recorded.",
+          "logs": "reports/review/logs/2026-11-08-gates/"
+        }
+      ],
+      "reviewer": "Claude (adviser session; not an author of any reviewed code), replay on Linux at max/integrate-r001-e001@240e3d5, 2026-11-08 ~02:40-03:10 UTC"
     }
   ]
 }
