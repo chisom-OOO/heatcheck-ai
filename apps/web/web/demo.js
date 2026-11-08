@@ -455,7 +455,7 @@ async function askScenario(g, s, data) {
   ui.refText.textContent = line;
   document.body.dataset.phase = "ref";
   await h.speak(line, "ref", { voiceOn: state.voiceOn });
-  const stamp = scenarioStamp(data);
+  const stamp = scenarioStamp(data, s);
   ui.stamp.className = `stamp ${stamp.kind}`;
   ui.stamp.textContent = stamp.text;
   ui.stamp.hidden = false;
