@@ -210,5 +210,5 @@ test("voices: Heater and Ref get different voices when two exist", () => {
   assert.equal(heater.name, "Microsoft Guy Online");
   assert.equal(ref.name, "Microsoft Libby Online");
   assert.deepEqual(M.pickVoices([]), { heater: null, ref: null });
-  assert.deepEqual(M.VOICE, { heater: { rate: 1.15, pitch: 1.1 }, ref: { rate: 0.95, pitch: 0.9 } });
+  assert.deepEqual(M.VOICE, { heater: { rate: 1.15, pitch: 1.1 }, ref: { rate: 1.0, pitch: 1.05 } });
 });

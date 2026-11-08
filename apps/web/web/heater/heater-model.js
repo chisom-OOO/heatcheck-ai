@@ -393,7 +393,7 @@ export function pickVoices(voices) {
 
 export const VOICE = Object.freeze({
   heater: { rate: 1.15, pitch: 1.1 },
-  ref: { rate: 0.95, pitch: 0.9 },
+  ref: { rate: 1.0, pitch: 1.05 },   // user, 8 Nov: never the same as Frost (0.95 / 0.9)
 });
 
 /** Milliseconds each scripted step lasts when it is not waiting on speech. */
