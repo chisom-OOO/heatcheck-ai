@@ -353,20 +353,59 @@ test("Space is wired to skip, and the Ref's voice avoids Frost's while he is on 
 test("layout: Heater left, conversation middle, Frost right; small portraits on top when narrow", () => {
   assert.ok(HTML.indexOf('class="hero"') < HTML.indexOf('class="talk"') && HTML.indexOf('class="talk"') < HTML.indexOf('class="frost-side"'));
   assert.ok(HTML.indexOf('id="convo"') < HTML.indexOf('id="ref"'), "the Ref's card comes after the conversation");
-  assert.match(CSS, /body\[data-cast="frost"\] \.stage \{\s*grid-template-columns: [^;]+;\s*grid-template-areas: "hero talk frost" "ask ask ask";/);
+  // big figures (8 Nov): both characters span both rows (the ask box sits under the conversation)
+  assert.match(CSS, /body\[data-cast="frost"\] \.stage \{\s*grid-template-columns: [^;]+;\s*grid-template-areas: "hero talk frost" "hero ask frost";/);
   assert.match(CSS, /grid-template-areas: "hero frost" "talk talk" "ask ask";/);
   assert.match(CSS, /\.cv-heater::before \{ left: -24px;/, "Heater's tail points left");
   assert.match(CSS, /\.cv-frost::before \{ right: -24px;/, "Frost's tail points right");
-  // rehearsal fix 1: the middle column keeps at least 560 px; side columns stretch, so a figure never
-  // spills over the conversation; at laptop widths both characters drop to about 60% height
-  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(560px, 760px\) minmax\(0, 1fr\);/);
-  assert.match(CSS, /\.frost-side \{ grid-area: frost; justify-self: stretch;[^}]*overflow: hidden;/);
-  assert.match(CSS, /body\[data-cast="frost"\] \.hero \{ justify-self: stretch;[^}]*overflow: hidden;/);
-  assert.match(CSS, /@media \(min-width: 901px\) and \(max-width: 1680px\) \{\s*body\[data-cast="frost"\] \.hero \.h-root, body\[data-cast="frost"\] \.f-root \{\s*height: min\(calc\(\(100vh - 230px\) \* \.6\), 432px\);/);
+  // the middle column keeps at least 560 px (640 on wide screens); each side column is a size container
+  // that clips, and a figure is at most 88% of the viewport height and 165% of its column width
+  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(560px, clamp\(560px, 100vw - 1280px, 640px\)\) minmax\(0, 1fr\);/);
+  assert.match(CSS, /body\[data-cast="frost"\] \.hero, \.frost-side \{\s*--fig-h: min\(88vh, calc\(100vh - var\(--ru-h\) - 96px\), 165cqw\);\s*container-type: inline-size;[^}]*overflow: clip;/);
+  assert.match(CSS, /body\[data-cast="frost"\] #heater, body\[data-cast="frost"\] #frost \{ position: sticky; bottom: var\(--ru-h\); \}/, "figures stand above the footer");
+  assert.match(CSS, /body\[data-cast="frost"\] \.hero \.h-root \{ height: var\(--fig-h\);/);
+  assert.match(CSS, /\.f-root \{[^}]*height: var\(--fig-h, /);
   assert.match(CSS, /@media \(max-width: 900px\) \{\s*\/\* small portraits/);
   assert.match(CSS, /\.cv-heater \{[^}]*border: 3px solid #FF7A1A/);
   assert.match(CSS, /\.cv-frost \{[^}]*border: 2px solid var\(--ice\)/);
   assert.match(CSS, /\.f-root \{[^}]*transform: translateX\(40px\); opacity: 0;/, "Frost waits to slide in");
   assert.match(CSS, /\.f-root\.entered \{ transform: none; opacity: 1; \}/);
   assert.match(CSS, /body\[data-cast="frost"\] \.ref \{ margin: 18px auto 0;/, "the Ref's card is centred");
+});
+
+test("name labels: HEATER in Oswald orange, FROST in Nunito ice blue, 44 px, glow; fonts from Google Fonts", () => {
+  assert.match(HTML, /<section class="hero" aria-label="Heater">\s*<p class="cast-name heater-name" aria-hidden="true">Heater<\/p>/);
+  assert.match(HTML, /<section class="frost-side"[^>]*>\s*<p class="cast-name frost-name" aria-hidden="true">Frost<\/p>/);
+  assert.match(HTML, /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Nunito:wght@700&family=Oswald:wght@700&display=swap">/);
+  assert.match(CSS, /\.cast-name \{ display: none; \}/, "only with both characters on stage");
+  assert.match(CSS, /body\[data-cast="frost"\] \.cast-name \{[^}]*font-size: 44px;[^}]*text-transform: uppercase;/);
+  assert.match(CSS, /\.heater-name \{[^}]*font-family: "Oswald"[^}]*font-weight: 700; letter-spacing: 4px;[^}]*color: #FF7A1A; text-shadow: 0 0 16px rgba\(255, 122, 26/);
+  assert.match(CSS, /\.frost-name \{[^}]*font-family: "Nunito"[^}]*font-weight: 700;[^}]*color: #8FD3FF; text-shadow: 0 0 16px rgba\(143, 211, 255/);
+});
+
+test("the question as asked replaces the wordmark during an exchange; the wordmark is back on the home view", () => {
+  assert.match(HTML, /<p class="brand">HEAT<span>CHECK<\/span><\/p>\s*<p class="asked" id="asked" hidden><\/p>/);
+  assert.match(CSS, /\.asked \{[^}]*text-align: center;[^}]*font: 700 26px\/1\.25 system-ui[^}]*color: #ECEAF4;/);
+  const fn = JS.slice(JS.indexOf("function showAsked("), JS.indexOf("\n}\n", JS.indexOf("function showAsked(")));
+  assert.match(fn, /ui\.asked\.hidden = !text;\s*ui\.brand\.hidden = Boolean\(text\);/);
+  const resetFn = JS.slice(JS.indexOf("function reset() {"), JS.indexOf("\n}\n", JS.indexOf("function reset() {")));
+  assert.match(resetFn, /showAsked\(""\);/, "each exchange starts from the wordmark");
+  assert.match(JS, /reset\(\);\s*showAsked\(question\);\s*voice\.stopSpeaking\(\);\s*log\(`question: \$\{question\}`\);/, "typed, chip or voice question");
+  assert.match(JS, /reset\(\);\s*showAsked\(ASK_MESSAGE\);/, "a market card's Ask");
+  assert.match(JS, /if \(view !== "talk"\) \{[^}]*showAsked\(""\);/, "board and idea views show the wordmark");
+  assert.ok(HTML.indexOf('id="btn-board"') > HTML.indexOf('id="asked"'), "view buttons stay on the right of the top bar");
+});
+
+test("Ref card: double-size badge, headline (ref_headline or verdict + title), explanation at 70%", async () => {
+  const { refHeadline } = await import("../web/frost/frost-model.js");
+  assert.equal(refHeadline("HOT HAND: NOT SHOWN", "Not enough evidence", "Hot hand"), "HOT HAND: NOT SHOWN", "Max's field wins");
+  assert.equal(refHeadline(undefined, "Not enough evidence", "Hot hand: three in a row"), "Not enough evidence — Hot hand: three in a row");
+  assert.equal(refHeadline("  ", "", "Tamper test"), "Tamper test");
+  assert.match(HTML, /<header><span class="ref-badge">THE REF<\/span><\/header>\s*<p class="ref-title ref-headline" id="ref-title"><\/p>\s*<p class="ref-text" id="ref-text"><\/p>/);
+  assert.match(CSS, /\.ref-badge \{ font: 700 1\.56rem\/1 var\(--mono\);/, "double the old .78rem");
+  assert.match(CSS, /\.ref-headline \{[^}]*font: 700 30px\/1\.15 var\(--cond\); text-transform: uppercase; color: #2EC4B6;/);
+  assert.match(CSS, /\.ref-text \{[^}]*font: 500 22px\/1\.4 [^}]*opacity: \.7;/);
+  assert.match(JS, /refHeadline: forced \? null : api\?\.ref_headline \?\? null,/);
+  assert.match(JS, /ui\.refTitle\.textContent = refHeadline\(show\.headline, show\.stamp\.text, show\.title\);/);
+  assert.match(JS, /headline: resp\.ref_headline,/);
 });

@@ -194,6 +194,12 @@ class TestPassThrough(unittest.TestCase):
         c.close()
         self.assertIn("connect-src 'self';", csp)
         self.assertNotIn("8770", csp)
+        # Google Fonts only, and only for styles and font files (the two name-label fonts)
+        directives = dict(d.strip().split(" ", 1) for d in csp.split(";"))
+        self.assertEqual(directives["script-src"], "'self'")
+        self.assertEqual(directives["style-src"], "'self' https://fonts.googleapis.com")
+        self.assertEqual(directives["font-src"], "'self' https://fonts.gstatic.com")
+        self.assertEqual(directives["default-src"], "'self'")
 
 
 class TestPageUsesRelativeUrls(unittest.TestCase):

@@ -83,6 +83,17 @@ export function normalizeExchange(x) {
   return { take, challenges, frostReaction: str(x?.frostReaction), heaterReaction: str(x?.heaterReaction) };
 }
 
+/** The Ref card's first line (user, 8 Nov): Max's ``ref_headline`` when his answer has one; until then
+ *  built here from the verdict's stamp words and the claim title, "<VERDICT> — <claim title>" (shown in
+ *  capitals by the CSS). PROVISIONAL pattern: switch to Max's exact wording when his field lands. */
+export function refHeadline(apiHeadline, stampText, title) {
+  const h = String(apiHeadline ?? "").trim();
+  if (h) return h;
+  const v = String(stampText ?? "").trim();
+  const t = String(title ?? "").trim();
+  return v && t ? `${v} — ${t}` : v || t;
+}
+
 /** The exchange from Max's dialogue answer, or null (Heater-only flow). Shape of the sample response
  *  (user, 8 Nov; Max's API to match): ``frost`` = [{check, question, chip (text), source}] and
  *  ``frost_reaction``. ``check`` is never shown (no type tags); ``source`` goes on the chip's tooltip.
