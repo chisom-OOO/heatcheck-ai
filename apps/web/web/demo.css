@@ -393,14 +393,16 @@ body { padding-bottom: var(--ru-h); }
    centred at the bottom of the middle column. */
 :root { --ice: #8FD3FF; --ice-ink: #EAF6FF; --ice-bg: #101823; --f-flip: 1; /* poses face left; -1 flips */ }
 body[data-cast="frost"] .stage {
-  grid-template-columns: minmax(0, 1fr) minmax(420px, 760px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(560px, 760px) minmax(0, 1fr);
   grid-template-areas: "hero talk frost" "ask ask ask";
   align-items: end;
 }
 body[data-cast="frost"] .talk { max-width: 760px; justify-self: center; width: 100%; align-self: end; }
-body[data-cast="frost"] .hero { justify-self: start; }
+/* Both side columns stretch to their track, so a figure is never wider than its column and never
+   covers the conversation (rehearsal, 1440x900: Frost's panel overlapped from x=947). */
+body[data-cast="frost"] .hero { justify-self: stretch; justify-content: flex-start; overflow: hidden; }
 body[data-cast="frost"] .hero .h-root { height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px); }
-.frost-side { grid-area: frost; justify-self: end; position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: flex-end; min-width: 0; overflow: hidden; }
+.frost-side { grid-area: frost; justify-self: stretch; position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: flex-end; min-width: 0; overflow: hidden; }
 .f-root {
   position: relative; height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px);
   min-height: 380px; aspect-ratio: 687 / 1024; max-width: 100%;
@@ -451,6 +453,23 @@ body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-
   100% { opacity: 1; transform: translateX(-50%) rotate(-9deg) scale(1); }
 }
 .skip-hint { margin: 0; text-align: center; color: var(--muted); font-size: .8rem; }
+/* Laptop widths (1440x900 in rehearsal): both characters at about 60% height so the side columns
+   hold them and the middle column keeps at least 560 px. */
+@media (min-width: 901px) and (max-width: 1680px) {
+  body[data-cast="frost"] .hero .h-root, body[data-cast="frost"] .f-root {
+    height: min(calc((100vh - 230px) * .6), 432px); height: min(calc((100dvh - 230px) * .6), 432px); min-height: 0;
+  }
+}
+/* The Ref card and its stamp stay clear of the fixed footer when scrolled into view. The stamp hangs
+   about 50 px below the card (26 px offset plus its rotation), so the card keeps that much room under it
+   (the page can scroll that far) and the scroll margin covers it (measured in tests/layout). */
+body[data-cast="frost"] .ref { scroll-margin-bottom: calc(var(--ru-h) + 64px); scroll-margin-top: 16px; }
+body[data-cast="frost"] .ref.slammed { margin-bottom: 56px; }
+.cv, .cv-chip { scroll-margin-bottom: calc(var(--ru-h) + 16px); }
+/* Once the Ref is checking, earlier chips fold to one line (the full text stays in the page and the
+   tooltip; hover or keyboard focus opens it again), so the card fits on screen after three rounds. */
+.convo.settled .cv-chip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
+.convo.settled .cv-chip:hover, .convo.settled .cv-chip:focus { white-space: normal; }
 .sample-flag {
   margin: 0; padding: 6px 10px; border: 1px dashed #FFC24D; border-radius: 6px; color: #FFC24D;
   font: 700 .78rem/1.3 var(--mono); text-align: center;
