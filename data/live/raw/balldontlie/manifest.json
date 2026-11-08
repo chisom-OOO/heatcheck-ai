@@ -1,0 +1,254 @@
+{
+ "source": "balldontlie GET /v1/games (read-only)",
+ "key_handling": "Authorization header only; key not stored here",
+ "requests": [
+  {
+   "n": 1,
+   "query": "season_2026",
+   "page": 0,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:01:33.310599Z",
+   "received_utc": "2026-11-08T00:01:33.938943Z",
+   "bytes": 88589,
+   "sha256": "d7e5e3e7b2682ae75c3cb66c8a1348de355d055aabc814a157c1fbc972bea22f",
+   "file": "01-d7e5e3e7b2682ae7.json",
+   "games_in_page": 100,
+   "meta": {
+    "next_cursor": 21718019,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 2,
+   "query": "season_2026",
+   "page": 1,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718019",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:01:46.944126Z",
+   "received_utc": "2026-11-08T00:01:47.415365Z",
+   "bytes": 90938,
+   "sha256": "301068cf0390baccc8d0297566d1454f59e7d18d5590885754753d247c2871d4",
+   "file": "02-301068cf0390bacc.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718019,
+    "next_cursor": 21718120,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 3,
+   "query": "season_2026",
+   "page": 2,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718120",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:02:00.420775Z",
+   "received_utc": "2026-11-08T00:02:00.901983Z",
+   "bytes": 92219,
+   "sha256": "2c576c20321e30e882e121ea52fe5b08d3f3367c264581605c0a4bdb519e12ed",
+   "file": "03-2c576c20321e30e8.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718120,
+    "next_cursor": 21718222,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 4,
+   "query": "season_2026",
+   "page": 3,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718222",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:02:13.909914Z",
+   "received_utc": "2026-11-08T00:02:15.693423Z",
+   "bytes": 91813,
+   "sha256": "1cd06d2e090fd4af7f214fd43d512904442134345dbe28a4a98aaa793cbf678f",
+   "file": "04-1cd06d2e090fd4af.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718222,
+    "next_cursor": 21718327,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 5,
+   "query": "season_2026",
+   "page": 4,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718327",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:02:28.697941Z",
+   "received_utc": "2026-11-08T00:02:29.074081Z",
+   "bytes": 91877,
+   "sha256": "55ce8235e7bc7b42f1995395a97da6be30a1854ef69c3498169ddf488b12f0b2",
+   "file": "05-55ce8235e7bc7b42.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718327,
+    "next_cursor": 21718433,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 6,
+   "query": "season_2026",
+   "page": 5,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718433",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:02:42.078468Z",
+   "received_utc": "2026-11-08T00:02:42.999180Z",
+   "bytes": 91811,
+   "sha256": "5c296b3375e2f060a815679b7ed9584517a4a043bce43799bade0cf8a5f3c054",
+   "file": "06-5c296b3375e2f060.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718433,
+    "next_cursor": 21718541,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 7,
+   "query": "season_2026",
+   "page": 6,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718541",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:02:56.003028Z",
+   "received_utc": "2026-11-08T00:02:56.642851Z",
+   "bytes": 91895,
+   "sha256": "3350d3b57af5a4b44ef1e588745b39eaf23e20aefa06ce92adf88a1aaef9630b",
+   "file": "07-3350d3b57af5a4b4.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718541,
+    "next_cursor": 21718651,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 8,
+   "query": "season_2026",
+   "page": 7,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718651",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:03:09.646940Z",
+   "received_utc": "2026-11-08T00:03:10.286361Z",
+   "bytes": 91820,
+   "sha256": "06d930a956a0dda560f876efbb04d1f46be0d2a8aeb449c0eabcf890e207ee0a",
+   "file": "08-06d930a956a0dda5.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718651,
+    "next_cursor": 21718775,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 9,
+   "query": "season_2026",
+   "page": 8,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718775",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:03:23.291867Z",
+   "received_utc": "2026-11-08T00:03:23.630948Z",
+   "bytes": 91864,
+   "sha256": "b43cd112fe30a3d3832c36e1a40eabfd93446f6d4c26c70b827c71f155138f26",
+   "file": "09-b43cd112fe30a3d3.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718775,
+    "next_cursor": 21718890,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 10,
+   "query": "season_2026",
+   "page": 9,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21718890",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:03:36.635272Z",
+   "received_utc": "2026-11-08T00:03:36.946652Z",
+   "bytes": 91920,
+   "sha256": "ca5ed1614b433cad4b239af50fbe77353f5ffbb983bec62e878f6a5965815fcb",
+   "file": "10-ca5ed1614b433cad.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21718890,
+    "next_cursor": 21719011,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 11,
+   "query": "season_2026",
+   "page": 10,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21719011",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:03:49.952458Z",
+   "received_utc": "2026-11-08T00:03:50.291268Z",
+   "bytes": 91775,
+   "sha256": "0e347c1235d55d227b58c7483ee83b5145738d72a76de1c26698e98172606617",
+   "file": "11-0e347c1235d55d22.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21719011,
+    "next_cursor": 21719125,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 12,
+   "query": "season_2026",
+   "page": 11,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21719125",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:04:03.299658Z",
+   "received_utc": "2026-11-08T00:04:03.918033Z",
+   "bytes": 91876,
+   "sha256": "4f035e3fabfacca4f7bc711b3917dd11be36e22103181ce8be95c5a470ff4e2c",
+   "file": "12-4f035e3fabfacca4.json",
+   "games_in_page": 100,
+   "meta": {
+    "prev_cursor": 21719125,
+    "next_cursor": 21719240,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 13,
+   "query": "season_2026",
+   "page": 12,
+   "url": "https://api.balldontlie.io/v1/games?seasons%5B%5D=2026&per_page=100&cursor=21719240",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:04:16.923079Z",
+   "received_utc": "2026-11-08T00:04:17.182719Z",
+   "bytes": 58,
+   "sha256": "c2f7a847dab7aff92522df62371f4359c77c787f18d550a5b8de8dd3e10a1cf7",
+   "file": "13-c2f7a847dab7aff9.json",
+   "games_in_page": 0,
+   "meta": {
+    "prev_cursor": 21719240,
+    "per_page": 100
+   }
+  },
+  {
+   "n": 14,
+   "query": "dates_2026-11-07_08",
+   "page": 0,
+   "url": "https://api.balldontlie.io/v1/games?dates%5B%5D=2026-11-07&dates%5B%5D=2026-11-08&per_page=100",
+   "http_status": 200,
+   "fetch_start_utc": "2026-11-08T00:04:30.185376Z",
+   "received_utc": "2026-11-08T00:04:30.564477Z",
+   "bytes": 12847,
+   "sha256": "3d6a7506b66c5dfb6bd89e300aa71cbb25cc33e8799a687d7174a25d1eeed8ed",
+   "file": "14-3d6a7506b66c5dfb.json",
+   "games_in_page": 14,
+   "meta": {
+    "per_page": 100
+   }
+  }
+ ]
+}
