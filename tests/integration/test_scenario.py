@@ -419,13 +419,13 @@ def _allen(rs, row):
 
 
 def test_research_worked_example_reproduced_point_and_interval(rs):
-    """Research's report: CLE without J. Allen + NYK back-to-back -> 0.533, 95% [0.311, 0.742]."""
+    """Research: CLE without J. Allen + NYK back-to-back -> 0.533 raw, 0.649 after shrinkage (f86d797)."""
     row = G["191"]
     theirs = rs.mod.scenario_probability(row["p_home_win"], row["home_team_id"], row["away_team_id"],
                                          [{"type": "player_absence", "key": _allen(rs, row), "side": "home"},
                                           {"type": "schedule", "effect": "back_to_back", "side": "away"}],
                                          rs.absence, rs.schedule)
-    assert round(theirs["scenario_p_home"], 3) == 0.533
+    assert round(theirs["scenario_p_home"], 3) == 0.649
     mine = est("What if Cleveland were without Jarrett Allen and the Knicks on a back-to-back?", row, rs)
     assert [e["type"] for e in mine["effects"]] == ["ESTIMATE", "ESTIMATE"]
     assert mine["scenario"]["p"] == round(theirs["scenario_p_home"], 4)
@@ -459,7 +459,7 @@ def test_hidden_players_and_raw_only_in_evidence(rs):
     flagged = {**low, "flags": ["absences_mix_rest_injury_suspension_and_coach_decisions"], "shown_by_default": False}
     assert shown_by_default(flagged)[0] is False
     assert shown_by_default({**flagged, "shown_by_default": None, "flags": ["not_shown_by_default"]})[0] is False
-    assert shown_by_default({**low, "flags": []})[0] is True
+    assert shown_by_default({**low, "flags": [], "shown_by_default": True})[0] is True
     for g in GAMES:
         for s in scenario_menu(g, DOC, False, SHA, NOW, rs)["scenarios"]:
             if s["change"]["kind"] == "PLAYER_OUT":
@@ -473,3 +473,25 @@ def test_hidden_players_and_raw_only_in_evidence(rs):
 def test_free_text_player_with_no_estimate_says_no_data(rs):
     e = est("Cleveland without Nobody Atall", G["191"], rs)
     assert e["scenario"] is None and e["effects"][0]["type"] == "NO_NUMBER" and "No data" in e["effects"][0]["text"]
+
+
+def test_get_serves_researchs_own_answers_with_raw_only_in_evidence(rs):
+    """GET /api/scenario = Research's scenario_api_answer() for the card's team; equals Research's committed
+    data/scenario/scenario_answers.json apart from forecast_id/source and Max's added evidence field."""
+    committed = json.loads((ROOT / "data" / "scenario" / "scenario_answers.json").read_text(encoding="utf-8"))["answers"]
+    n = 0
+    for g in GAMES:
+        for team, tid in ((g["home_team"], g["home_team_id"]), (g["away_team"], g["away_team_id"])):
+            a = rs.api_answer(g, team, SHA)
+            want = committed[g["game_id"]][tid]
+            assert a["baseline"]["p_team_win"] == want["baseline"]["p_team_win"]
+            strip = lambda xs: [{k: v for k, v in x.items() if k != "evidence"} for x in xs]  # noqa: E731
+            assert strip(a["scenarios"]) == want["scenarios"]
+            experience_rules(a, team, float(want["baseline"]["p_team_win"]))
+            for sc in a["scenarios"]:
+                assert "\"raw_" not in json.dumps({k: v for k, v in sc.items() if k != "evidence"})
+                if ":absent:" in sc["scenario_id"]:
+                    ev = sc["evidence"]
+                    assert ev["shown_by_default"] is True and "raw_estimate" in ev["raw"]["effect_log_odds"]
+            n += len(a["scenarios"])
+    assert n == 280

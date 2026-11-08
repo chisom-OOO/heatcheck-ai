@@ -315,6 +315,11 @@ def run_scenario_menu(query: str, live_forecast: Path | None, cfg: ScenarioConfi
     if row is None:
         return 404, {"error": f"{gid} is not in the live forecast"}
     provider = (cfg.provider if cfg else None) or ResearchStub()
+    if hasattr(provider, "api_answer") and not fc["is_sample"]:
+        try:
+            return 200, provider.api_answer(row, team or row["home_team"], fc["file_sha256"])
+        except ValueError as e:  # includes Research's ScenarioRefused
+            return 400, {"error": str(e)}
     try:
         return 200, scenario_menu(row, fc["forecast"], fc["is_sample"], fc["file_sha256"],
                                   ((cfg.clock if cfg else None) or _now)(), provider, team)

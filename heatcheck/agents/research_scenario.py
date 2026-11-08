@@ -72,6 +72,17 @@ def shown_by_default(row: dict) -> tuple[bool, str]:
     return True, ""
 
 
+def raw_values(row: dict) -> dict:
+    """Research's unshrunk numbers for a player row (evidence drawer only, never the default)."""
+    out = {}
+    for scale in ("effect_log_odds", "effect_win_prob"):
+        part = row.get(scale) or {}
+        vals = {k: part[k] for k in part if k.startswith("raw") or k == "shrinkage_factor"}
+        if vals:
+            out[scale] = vals
+    return out
+
+
 def _norm(s: str) -> str:
     return re.sub(r"[^a-z ]", "", s.lower().replace(".", " ")).split()
 
@@ -189,7 +200,7 @@ class ResearchScenario:
                 return {"status": "NOT_AVAILABLE", "reason": f"Research's combiner refused: {e}"}
             cav = [FLAG_TEXT.get(f, f.replace("_", " ")) for f in row.get("flags") or []]
             cav.append(f"from {', '.join(row.get('seasons') or [])} data; not checked against tonight's roster")
-            raw = {k: row[k] for k in row if "raw" in k}  # raw (unshrunk) values, if Research supplies them
+            raw = raw_values(row)  # unshrunk values: evidence drawer only
             return self._result(game, side, rc, row["n_games_missed"], "games missed", "NOT_TESTED",
                                 cav or ["absence estimates are descriptive"],
                                 {"player": row["player_name"], "key": row["key"], "seasons": row.get("seasons"),
@@ -198,6 +209,33 @@ class ResearchScenario:
                                  "effect_log_odds": row.get("effect_log_odds"), **({"raw": raw} if raw else {})},
                                 "absence: mean Elo residual with vs without him (Research)")
         return {"status": "NOT_AVAILABLE", "reason": f"no Research estimate for {change['kind']}"}
+
+    def api_answer(self, game: dict, team: str, forecast_sha256: str) -> dict:
+        """GET /api/scenario: Research's own scenario_api_answer() for the card's team and exact baseline
+        (p_home_win for the home team, 1 - p_home_win in decimal arithmetic for the away team, as Research
+        specifies). Max adds only ``evidence`` (raw unshrunk values, for the drawer) on absence scenarios."""
+        from decimal import Decimal
+        self._load()
+        if team == game["home_team"]:
+            tid, base = game["home_team_id"], Decimal(repr(game["p_home_win"]))
+        elif team == game["away_team"]:
+            tid, base = game["away_team_id"], Decimal(1) - Decimal(repr(game["p_home_win"]))
+        else:
+            raise ValueError("team must be one of the game's teams")
+        source = (f"Research scenario estimates: player_absence_effects.json sha256 "
+                  f"{self.tables_sha256['absence'][:16]}, schedule_effects.json sha256 "
+                  f"{self.tables_sha256['schedule'][:16]}; code sha256 {self.identity['code_sha256'][:16]}")
+        ans = self.mod.scenario_api_answer(game, tid, team, str(base), f"live-forecast:{forecast_sha256}",
+                                           self.absence, self.schedule, source=source)
+        for s in ans.get("scenarios", []):
+            # Research's id: <game>:absent:nba-player:<id>:nba-team:<id>; table key: nba-player:<id>|nba-team:<id>
+            key = (s["scenario_id"].split(":absent:", 1)[1].replace(":nba-team:", "|nba-team:")
+                   if ":absent:" in s["scenario_id"] else None)
+            if key and key in self.absence:
+                row = self.absence[key]
+                s["evidence"] = {"player": row.get("player_name"), "key": key, "n_games_played": row.get("n_games_played"),
+                                 "shown_by_default": row.get("shown_by_default"), "raw": raw_values(row)}
+        return ans
 
     def menu(self, ctx: dict) -> list[dict] | None:
         self._load()
