@@ -1,0 +1,114 @@
+{
+  "format": "heatcheck-idea-family/1",
+  "mode": "development",
+  "label": "EXPLORATORY",
+  "registration_hash": "2ca00c88984e647a5a2a103abbfc257f4142c312ba0ec3a73ffa7155a94126a0",
+  "n_ideas": 5,
+  "alpha": 0.05,
+  "B": 999,
+  "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+  "results": [
+    {
+      "idea_hash": "9dc21071871eda0980ba976b9567c37c1264f61bd9f1adccecb4c03daf5938e7",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "home_back_to_back",
+        "level": "yes"
+      },
+      "n_condition": 154,
+      "n_rest": 772,
+      "rate_condition": 0.5,
+      "rate_rest": 0.5634715025906736,
+      "status": "EXECUTED",
+      "T": -0.06347150259067358,
+      "null_mean": -0.00020956627174243474,
+      "B_effective": 999,
+      "p_raw": 0.19,
+      "p_holm": 0.632,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "16499a5407159ef8a5df11293d51e3c355911f3331625a2ec95913c617cafc35",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "away_back_to_back",
+        "level": "yes"
+      },
+      "n_condition": 169,
+      "n_rest": 757,
+      "rate_condition": 0.591715976331361,
+      "rate_rest": 0.5442536327608983,
+      "status": "EXECUTED",
+      "T": 0.04746234357046264,
+      "null_mean": -3.855872161937944e-05,
+      "B_effective": 999,
+      "p_raw": 0.232,
+      "p_holm": 0.632,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "db3edf1fa3bff04bdd6c6e38103e5eae8ed68ec6dab16c719cf5b6e4d9c767be",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "rest_advantage",
+        "level": "home_more"
+      },
+      "n_condition": 222,
+      "n_rest": 704,
+      "rate_condition": 0.5900900900900901,
+      "rate_rest": 0.5411931818181818,
+      "status": "EXECUTED",
+      "T": 0.04889690827190829,
+      "null_mean": 0.000453399242813654,
+      "B_effective": 999,
+      "p_raw": 0.233,
+      "p_holm": 0.632,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "058ed484d1783d8de78760b8b4d725e6b0b3278ada15b208622d7b5f01582653",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "rest_advantage",
+        "level": "away_more"
+      },
+      "n_condition": 196,
+      "n_rest": 730,
+      "rate_condition": 0.4897959183673469,
+      "rate_rest": 0.5698630136986301,
+      "status": "EXECUTED",
+      "T": -0.0800670953312832,
+      "null_mean": -0.001497275861268036,
+      "B_effective": 999,
+      "p_raw": 0.043,
+      "p_holm": 0.21499999999999997,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "c3b268b50c38153f8a35f3535356d925d9ed47a27799fad3501dc7d011f5b736",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "two_sided",
+        "feature": "home_rest_days",
+        "level": "0"
+      },
+      "n_condition": 154,
+      "n_rest": 772,
+      "rate_condition": 0.5,
+      "rate_rest": 0.5634715025906736,
+      "status": "EXECUTED",
+      "T": -0.06347150259067358,
+      "null_mean": 0.0015290844306388362,
+      "B_effective": 999,
+      "p_raw": 0.158,
+      "p_holm": 0.632,
+      "verdict": "NOT_A_CANDIDATE"
+    }
+  ],
+  "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+  "created_utc": "2026-11-08T02:00:30.550339Z"
+}

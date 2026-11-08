@@ -42,7 +42,7 @@ Max's own baseline at this commit (author's runs, Windows, 8 Nov 02:20–02:40 U
 | `uv run --frozen pytest -q` (root `tests/`, what CI runs) | 642 passed, 29 skipped, 16 xfailed |
 | `uv run --frozen ruff check .` | clean |
 | HO: `python -m pytest -q --ignore=tests/test_custodian.py --ignore=tests/test_confirmatory.py --ignore=tests/test_guard_fixes.py` | 92 passed, 8 skipped (dataset not built) |
-| `apps/web`: `python -m unittest discover -s tests` | 104 OK |
+| `cd apps\web && uv run --frozen python -m unittest discover -s tests` (Max's standard checks from 8 Nov 02:45) | 104 OK (106 after experience/market-board@a90d7c4) |
 | `apps/web`: `node --test tests/*.test.mjs` | 71 pass |
 
 CI (`.github/workflows/checks.yml`) runs only the root `tests/` (`testpaths = ["tests"]`): the HO
@@ -188,7 +188,7 @@ and `apps/web` suites are **not** in CI.
 - One-command live rerun (network, read-only GETs): `capture_quotes.cmd` (Windows) or
   `uv run --frozen python tools/capture_quotes.py`. Author's run 02:15 UTC: 24 MATCHED, 4 REJECTED, 188 files,
   no key value in any file.
-- Contradiction: `apps/web/HANDOFF.md:98` and the Experience ledger G12 say "BLOCKED"/never ran; the
+- (HANDOFF.md corrected 8 Nov.) Contradiction: `apps/web/HANDOFF.md:98` and the Experience ledger G12 say "BLOCKED"/never ran; the
   reports above document live captures. Reviewer 1642 row 4e passed the recorded bundle; G12 live
   capture itself "NOT_RUN by me".
 
@@ -255,8 +255,8 @@ and `apps/web` suites are **not** in CI.
 ## Known contradictions and stale claims (found while compiling this)
 - `ACCEPTANCE.json` lists no evidence for any gate; the HO and Experience ledgers carry their own
   author-assigned statuses (e.g. "EVIDENCE_SUBMITTED", "PASS_PENDING_RESEARCH"). Neither is a reviewer mark.
-- `DEFECTS.md` still says "No production functionality exists".
-- `apps/web/REPORT.md` cites `evidence/test_run.log`, `e2e_results.json`, `harness_batch.json`,
+- `DEFECTS.md` said "No production functionality exists" (corrected 8 Nov, see that file).
+- (Note added to the report 8 Nov.) `apps/web/REPORT.md` cites `evidence/test_run.log`, `e2e_results.json`, `harness_batch.json`,
   `screenshots/` that exist only under `incoming/experience-20261107/evidence/`; it describes 68 tests
   (now 104).
 - `HO/EVIDENCE.md` §8 says 40 tests; the HO suite now has 100 collected on Windows plus the

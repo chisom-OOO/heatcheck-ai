@@ -80,6 +80,13 @@ HYPOTHETICAL_ANSWER = (
     "pre-tip injury and lineup reports, player-level on/off or plus-minus data for the players "
     "involved, and a lineup-aware model evaluated on past games before it is trusted.")
 
+# Research's calibration report (research/calibration@6cd2431), fixed text; shown when the model
+# favours the home team more than the market (home team's forecast above the ask). No model change.
+HOME_BIAS_CAVEAT = ("On last season's games, this model overrated home teams by about 7 points "
+                    "(62.4% predicted vs 55.5% actual). Part of any home-side gap is the model's own bias.")
+HOME_BIAS_HEATER = ("And the Ref's calibration note says this model has overrated home teams before, "
+                    "so part of this gap could be the model's own bias, not the market's.")
+
 SAMPLE_HEATER = (
     "This card uses a SAMPLE forecast: its numbers are made up, so there is nothing real to "
     "explain yet. Once Research's real forecast arrives, I can walk through where it sits against "
@@ -90,6 +97,8 @@ THESIS = re.compile(r"\bback[- ]to[- ]backs?\b|\bb2b\b|\brest(?:ed|ing)?\b|\bres
 THESIS_CLAIM = "GP-REST"
 
 HEATER_SYSTEM = (
+    "If known_model_bias is set, say in words (no numbers) that part of the gap may be the model's "
+    "own bias. "
     "You are the Heater, a friendly NBA explainer. In two to four short sentences, explain the "
     "flag on this game card: where the model's forecast sits against the market's quoted bid and "
     "ask. Cite only the model inputs listed in inputs_used and the card's own numbers, copied "
@@ -423,6 +432,11 @@ def investigate(
     facts = card_facts(card, inputs)
     thesis = thesis_summary(message, thesis_entry)
     hypothetical = bool(HYPOTHETICAL.search(message))
+    # Only where the card shows a valid comparison (every check passed) with the home team's forecast
+    # above the ask; a "Can't compare" card shows no gap, so the note would not apply.
+    home_bias = (not lf.is_sample and verdict == VERDICT_WORTH and flag == "FORECAST_ABOVE_ASK"
+                 and card["team_id"] == card["forecast_row"]["home_team_id"])
+    caveats = [HOME_BIAS_CAVEAT] if home_bias else []
 
     if lf.is_sample:
         # Never voice a SAMPLE value as the model's forecast; no LLM call either.
@@ -431,11 +445,14 @@ def investigate(
         heater_text, heater_source = HYPOTHETICAL_ANSWER.format(inputs=", ".join(inputs)), "FIXED_HYPOTHETICAL"
     else:
         heater_text, heater_source = heater_template(card, flag, inputs), "TEMPLATE"
+        if home_bias:
+            heater_text = f"{heater_text} {HOME_BIAS_HEATER}"
         if heater_llm is not None:
             ctx = {"fan_message": message, "team": card["team_name"], "flag": flag,
                    "card_numbers": {k: v for k, v in facts.items() if k not in ("team", "inputs_used")},
                    "inputs_used": inputs, "inputs_model_lacks": card["missing_inputs"],
-                   "refs_verdict": verdict}
+                   "refs_verdict": verdict,
+                   "known_model_bias": HOME_BIAS_CAVEAT if home_bias else None}
             try:
                 text = heater_llm(HEATER_SYSTEM, json.dumps(ctx)).strip()
             except Exception as e:  # provider failure never invents text
@@ -474,7 +491,7 @@ def investigate(
             "received_utc": quote["body"]["received_utc"], "status": quote["body"]["status"]},
         "heater_text": heater_text, "heater_source": heater_source, "hypothetical": hypothetical,
         "challenger_checks": [c.as_dict() for c in checks], "thesis": thesis,
-        "verdict": verdict, "ref_text": ref_text,
+        "verdict": verdict, "ref_text": ref_text, "caveats": caveats,
     }
     identity = {
         "protocol_version": PROTOCOL_VERSION, "format": FORMAT, "lane": LANE, "channel": CHANNEL,
@@ -494,7 +511,7 @@ def investigate(
                   "best_ask": response["quote"] and response["quote"]["best_ask"],
                   "received_utc": None if quote is None else quote["body"]["received_utc"],
                   "provider_time_utc": None if quote is None else quote["body"].get("provider_time_utc")},
-        "flag": flag, "challenger_checks": response["challenger_checks"],
+        "flag": flag, "caveats": caveats, "challenger_checks": response["challenger_checks"],
         "thesis": None if thesis is None else {k: thesis.get(k) for k in ("claim_id", "status", "evidence_id", "decision")},
         "referee": REF_IDENTITY, "verdict": verdict,
         "heater": {"source": heater_source, "text": heater_text, "hypothetical": hypothetical},

@@ -256,7 +256,7 @@ def run_route(req: dict, live_forecast: Path | None, clock=None) -> dict:
 def run_scenario_parse(req: dict, live_forecast: Path | None, clock=None) -> tuple[int, dict]:
     fc = live_forecast_payload(live_forecast)
     if fc["status"] != "OK":
-        return 200, {"status": "NO_FORECAST", "label": "HYPOTHETICAL",
+        return 200, {"status": "NO_FORECAST", "label": "NO NUMBER",
                      "heater_text": f"I can't run a what-if without a forecast ({fc['reason']})."}
     games = fc["forecast"]["games"]
     gid = req.get("game_id")
@@ -268,7 +268,7 @@ def run_scenario_parse(req: dict, live_forecast: Path | None, clock=None) -> tup
         row, cands = pick_game(req["message"], games, _now_z(clock))
         if row is None:
             names = ", ".join(f"{g['away_team']} at {g['home_team']}" for g in cands[:4])
-            return 200, {"status": "NEEDS_GAME", "label": "HYPOTHETICAL",
+            return 200, {"status": "NEEDS_GAME", "label": "NO NUMBER",
                          "candidates": [g["game_id"] for g in cands],
                          "heater_text": "Which game do you mean? Name a team playing tonight"
                          + (f" ({names})." if names else ".")}

@@ -1,0 +1,12 @@
+{
+  "family_dir": "does_rest_matter_model",
+  "proposer": "MODEL: Heater's proposer, one Meta muse-spark-1.3 call (Max, tools/propose_ideas.py --llm), response forced into the grammar's JSON schema",
+  "fan_message": "Does rest matter?",
+  "request_source": "max/integrate-r001-e001 commit c15abf7, data/max/idea_requests/does_rest_matter_heater_dev.json",
+  "request_sha256": "4a7e42a3b576d00d1c94b587d61325b4e17926898d53a025492f73c16462af2e",
+  "model_output_source": "same commit, data/max/idea_requests/does_rest_matter_heater_dev.model_output.json (copied as model_output_does_rest_matter.json)",
+  "model_output_sha256": "bea64d2422e66c535adb9688dc748c02c11a9ca28221cfa0282868ca9d2158bd",
+  "checked_by_research": "model_output_text parses to exactly the request's 5 ideas; source = LLM; keyword fallback not used",
+  "observation": "ideas 1 (home_back_to_back yes) and 5 (home_rest_days 0) define the same game group; the grammar does not detect semantic duplicates. Run unchanged; the duplicate only makes Holm stricter.",
+  "copied_byte_for_byte": true
+}

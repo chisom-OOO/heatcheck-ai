@@ -24,7 +24,8 @@ Scenario flow:
    - MARKET_PRICE is a hypothetical market price; it changes the comparison, not the forecast.
    Effects that failed Research's tests are shown with that verdict and left out of the total.
    The Challenger checks double counting, sample size and staleness. The Ref verdict is always
-   "HYPOTHETICAL · Edge unverified": a scenario is never evidence that the model beats the market.
+   "<STAMP> · Edge unverified" (STAMP = ESTIMATE / YOUR ASSUMPTION / SAMPLE / NO NUMBER): a scenario is
+   never evidence that the model beats the market.
 """
 
 from __future__ import annotations
@@ -41,7 +42,15 @@ FORMAT = "heatcheck-whatif/1"           # Max's free-text what-if (POST /api/sce
 MENU_FORMAT = "heatcheck-scenario/1"    # Experience's per-game scenario list (GET /api/scenario), adopted
 PROTOCOL_VERSION = "scenario-1"
 LANE = "SCENARIO"
-VERDICT = "HYPOTHETICAL · Edge unverified"
+EDGE = "Edge unverified"
+
+
+def verdict_for(stamp: str) -> str:
+    """The Ref's verdict uses the stamp's own word: "ESTIMATE · Edge unverified" etc."""
+    return f"{stamp} · {EDGE}"
+
+
+VERDICT = verdict_for("ESTIMATE")  # preset menu scenarios: always Research's data
 HOME_COURT_ELO = 100.0  # B1 Elo constant, stated in the live forecast's model text
 Z95 = 1.959963984540054  # same constant as Research's combiner
 MIN_N = 30              # same floor as the hot-hand comparison: below this a sample is "small"
@@ -301,7 +310,7 @@ def parse_changes(message: str, row: dict | None) -> list[dict]:
 def describe_change(c: dict, row: dict) -> str:
     team = c.get("team")
     if c["kind"] == "MARKET_PRICE":
-        return f"The market prices {team or row['home_team']} at {c['price'] * 100:.1f}% (a hypothetical price)."
+        return f"The market prices {team or row['home_team']} at {c['price'] * 100:.1f}% (your price)."
     if c["kind"] == "VENUE_NEUTRAL":
         return "The game is played on a neutral floor: no home court."
     if c["kind"] == "HOME_AWAY_SWAP":
@@ -321,9 +330,22 @@ def _canon(obj: Any) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()
 
 
+def _json_numbers(obj: Any) -> Any:
+    """Whole-number floats as ints, as a browser's JSON writes them (-5.0 -> -5), so the id survives
+    the round trip through the page. Other values are unchanged."""
+    if isinstance(obj, float) and obj.is_integer():
+        return int(obj)
+    if isinstance(obj, dict):
+        return {k: _json_numbers(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_numbers(v) for v in obj]
+    return obj
+
+
 def interpretation_id(game_id: str, forecast_sha256: str, changes: list[dict], focus_team: str) -> str:
-    return hashlib.sha256(_canon({"format": FORMAT, "game_id": game_id, "forecast_sha256": forecast_sha256,
-                                  "changes": changes, "focus_team": focus_team})).hexdigest()
+    return hashlib.sha256(_canon(_json_numbers({"format": FORMAT, "game_id": game_id,
+                                                "forecast_sha256": forecast_sha256, "changes": changes,
+                                                "focus_team": focus_team}))).hexdigest()
 
 
 def parse_scenario(message: str, row: dict, forecast_sha256: str) -> dict:
@@ -343,7 +365,7 @@ def parse_scenario(message: str, row: dict, forecast_sha256: str) -> dict:
             "forecast_sha256": forecast_sha256, "changes": changes, "interpretation": lines,
             "interpretation_id": interpretation_id(row["game_id"], forecast_sha256, changes, focus),
             "message_sha256": hashlib.sha256(message.encode("utf-8")).hexdigest(),
-            "heater_text": heater, "label": "HYPOTHETICAL"}
+            "heater_text": heater, "label": "READ_BACK"}
 
 
 class ConfirmationError(ValueError):
@@ -560,7 +582,7 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
         team = c.get("team") or focus
         tsign = 1.0 if team == home else -1.0
         if k == "MARKET_PRICE":
-            effects.append(Effect(c, "HYPOTHETICAL_PRICE", f"Hypothetical market price {_pct(c['price'])} for "
+            effects.append(Effect(c, "HYPOTHETICAL_PRICE", f"Your market price {_pct(c['price'])} for "
                                   f"{c.get('team') or focus}; it changes the comparison, not the forecast.",
                                   included=can_number))
         elif k in ("VENUE_NEUTRAL", "HOME_AWAY_SWAP"):
@@ -663,11 +685,14 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
     model_changes = [e for e in effects if e.kind_label != "HYPOTHETICAL_PRICE"]
     if scen is None and not reasons and model_changes:
         reasons = ["none of these changes can be quantified with the current model"]
-    ref = VERDICT + ". "
+    eff_dicts = [e.as_dict() for e in effects]
+    source = number_source(eff_dicts, scen, is_sample)
+    stamp = stamp_for(eff_dicts, scen, is_sample)
+    ref = verdict_for(stamp) + ". "
     shown = scen["p"] if scen is not None else baseline
     if price is not None and not reasons:
         rel = "above" if shown > price else "below" if shown < price else "level with"
-        ref += (f"Against a hypothetical market price of {_pct(price)}, the "
+        ref += (f"Against your market price of {_pct(price)}, the "
                 f"{'scenario' if scen is not None else 'unchanged forecast'} for {focus} sits "
                 f"{abs(shown - price) * 100:.1f} points {rel} it. ")
     if scen is not None:
@@ -681,15 +706,42 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
         ref += "Watch out: " + "; ".join(flags) + ". "
     ref += "Nothing here shows the model beats the market."
     return {
-        "format": FORMAT, "label": "HYPOTHETICAL", "game_id": row["game_id"], "game": _game_label(row),
+        "format": FORMAT, "label": stamp, "game_id": row["game_id"], "game": _game_label(row),
         "focus_team": focus, "as_of_utc": as_of_utc, "is_sample": is_sample,
         "baseline": None if is_sample else {"p": round(baseline, 4), "source": "live forecast",
                                             "data_cutoff_utc": forecast_doc["data_cutoff_utc"]},
         "scenario": scen, "hypothetical_price": price,
         "effects": [e.as_dict() for e in effects], "challenger_checks": [c.as_dict() for c in checks],
-        "verdict": VERDICT, "ref_text": ref.strip(), "sample_note": sample_note,
+        "verdict": verdict_for(stamp), "ref_text": ref.strip(), "sample_note": sample_note,
         "provider": provider.identity,
+        "stamp": stamp, "number_source": source,
     }
+
+
+USER_SUPPLIED = ("YOUR_ASSUMPTION", "HYPOTHETICAL_PRICE")
+
+
+def number_source(effects: list[dict], scenario: dict | None, is_sample: bool) -> str | None:
+    """Where the shown number comes from: "USER" when it depends on any number the user supplied
+    (their own adjustment or a market price), "DATA" when only on data (Research's estimates or the
+    Elo model), None for a SAMPLE forecast or when there is no number."""
+    if is_sample:
+        return None
+    if any(e["type"] in USER_SUPPLIED and e["included"] for e in effects):
+        return "USER"
+    return "DATA" if scenario is not None else None
+
+
+def stamp_for(effects: list[dict], scenario: dict | None, is_sample: bool) -> str:
+    """The page's stamp for a what-if (one rule for the API and the page):
+    YOUR ASSUMPTION when any number shown depends on a number the user supplied (their own
+    adjustment or a hypothetical market price); ESTIMATE when the number comes from data (Research's
+    estimates or the forecast's Elo model, preset or typed); SAMPLE for a sample forecast;
+    NO NUMBER when nothing could be quantified."""
+    if is_sample:
+        return "SAMPLE"
+    return {"USER": "YOUR ASSUMPTION", "DATA": "ESTIMATE"}.get(number_source(effects, scenario, False),
+                                                                "NO NUMBER")
 
 
 def scenario_identity(est: dict, changes: list[dict], interp_id: str, forecast_sha256: str,
@@ -702,7 +754,7 @@ def scenario_identity(est: dict, changes: list[dict], interp_id: str, forecast_s
             "scenario": est["scenario"], "hypothetical_price": est["hypothetical_price"],
             "effects": est["effects"], "challenger_checks": est["challenger_checks"],
             "provider": est["provider"], "referee": REF_IDENTITY, "verdict": est["verdict"],
-            "label": "HYPOTHETICAL", "outcome": None}
+            "label": est["stamp"], "number_source": est["number_source"], "outcome": None}
 
 
 # ------------------------------------------------------------------ GET /api/scenario (heatcheck-scenario/1)

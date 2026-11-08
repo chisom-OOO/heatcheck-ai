@@ -1,0 +1,6 @@
+code: research/calibration working tree on e03629d
+$ python -I handoff/research-20261107/scripts/calibration_check.py $DATA2023 $DATA2024 $CSV2025 data/live/raw/balldontlie data/calibration/elo_calibration_check.json
+2025-26: n=1230 Elo brier 0.2136 ll 0.6180 | B0 brier 0.2478 ll 0.6887 | pred 0.6236 actual 0.5545 diff +0.0691 [0.0453, 0.0925] | implied HCA 41.9
+2026-27 to date: n=132 Elo brier 0.2210 ll 0.6282 | B0 brier 0.2542 ll 0.7018 | pred 0.6300 actual 0.5152 diff +0.1148 [0.0304, 0.1843] | implied HCA 4.8
+combined: n=1362 Elo brier 0.2143 ll 0.6190 | B0 brier 0.2484 ll 0.6900 | pred 0.6242 actual 0.5507 diff +0.0735 [0.0502, 0.0967] | implied HCA 38.3
+exit=0

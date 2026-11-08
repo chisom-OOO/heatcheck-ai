@@ -133,8 +133,20 @@ export function refScenarioText(s, data) {
 
 const lowerFirst = (t) => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
 
-/** Stamp: ESTIMATE, or SAMPLE when the numbers are invented. */
-export const scenarioStamp = (data) => (data.isSample ? { text: "SAMPLE", kind: "blocked" } : { text: "ESTIMATE", kind: "insufficient" });
+// Stamp rule (2026-11-08): ESTIMATE whenever the number comes from data, preset or typed;
+// YOUR ASSUMPTION when the user supplied the number. Typed what-ifs show the server's own "stamp"
+// (Max's whatifStamp in whatif/whatif.js). Presets come from GET /api/scenario, whose numbers are
+// always Research's data: their stamp is the scenario's own label. Kinds match Max's STAMPS.
+export const STAMP_ESTIMATE = { text: "ESTIMATE", kind: "insufficient" };
+const STAMP_SAMPLE = { text: "SAMPLE", kind: "blocked" };
+const STAMP_NO_NUMBER = { text: "NO NUMBER", kind: "blocked" };
+
+/** Preset scenario stamp: the scenario's own label from GET /api/scenario (readScenarios accepts only
+ *  "ESTIMATE"), or SAMPLE when the numbers are invented. */
+export function scenarioStamp(data, s) {
+  if (data.isSample) return STAMP_SAMPLE;
+  return s?.label === "ESTIMATE" ? STAMP_ESTIMATE : STAMP_NO_NUMBER;
+}
 
 /** Heater's end pose. Never vindicated: a scenario is an estimate, not a result. */
 export function scenarioEndState(s, data) {

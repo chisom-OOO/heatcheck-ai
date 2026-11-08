@@ -1,0 +1,421 @@
+{
+ "format": "heatcheck-calibration-check/1",
+ "label": "DESCRIPTIVE (not a registered test; no model change)",
+ "model": "B1 Elo, frozen constants: K 20, home court 100, carry 0.75*r+0.25*1505; pre-game ratings only",
+ "base_rate": "B0 = 0.582, the registered 2023-24 fit-split home-win rate (frozen); coin 0.5 for reference",
+ "data": {
+  "2025-26": "shufinskiy/nba_data@46488f0f cdnnba_2025 (sha256 464f585fc3b9c8fb)",
+  "2026-27": "Max's raw balldontlie pages, max/nba-schedule@eec051d (completed regular-season games)"
+ },
+ "assumptions": [
+  "neutral-site games are not flagged in 2025-26 or 2026-27 (home court applied to all)",
+  "implied_home_court_elo_points is descriptive only: the home-court value that would make the mean predicted rate match the actual rate; it is not a fitted or adopted change"
+ ],
+ "results": {
+  "2025-26": {
+   "elo": {
+    "n": 1230,
+    "brier": 0.21359507838650646,
+    "log_loss": 0.6179703203706486
+   },
+   "base_rate_B0_0.582": {
+    "n": 1230,
+    "brier": 0.24779066666666666,
+    "log_loss": 0.6887498559118874
+   },
+   "coin_0.5": {
+    "n": 1230,
+    "brier": 0.25,
+    "log_loss": 0.6931471805599453
+   },
+   "home_bias": {
+    "mean_predicted_home_win": 0.623552582486909,
+    "actual_home_win_rate": 0.5544715447154471,
+    "predicted_minus_actual": 0.0690810377714619,
+    "ci95_date_bootstrap": [
+     0.04532831956608568,
+     0.09253275757027472
+    ],
+    "n_dates": 164
+   },
+   "implied_home_court_elo_points": 41.91465532676641,
+   "reliability_10pct_bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 0
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 10,
+     "mean_predicted": 0.15853225830212508,
+     "actual_home_win_rate": 0.0,
+     "actual_wilson95": [
+      -2.7755575615628914e-17,
+      0.2775401687666166
+     ],
+     "predicted_minus_actual": 0.15853225830212508
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 54,
+     "mean_predicted": 0.2613692916580995,
+     "actual_home_win_rate": 0.16666666666666666,
+     "actual_wilson95": [
+      0.0902428998661039,
+      0.28736767798789736
+     ],
+     "predicted_minus_actual": 0.09470262499143287
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 104,
+     "mean_predicted": 0.3523857270837437,
+     "actual_home_win_rate": 0.3076923076923077,
+     "actual_wilson95": [
+      0.2271632987893137,
+      0.4019223230857327
+     ],
+     "predicted_minus_actual": 0.04469341939143601
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 169,
+     "mean_predicted": 0.4562735883956243,
+     "actual_home_win_rate": 0.34911242603550297,
+     "actual_wilson95": [
+      0.2813200542416404,
+      0.4236120917232198
+     ],
+     "predicted_minus_actual": 0.10716116236012135
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 177,
+     "mean_predicted": 0.5494525457723248,
+     "actual_home_win_rate": 0.4463276836158192,
+     "actual_wilson95": [
+      0.3750052273369053,
+      0.5199304511795422
+     ],
+     "predicted_minus_actual": 0.10312486215650563
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 232,
+     "mean_predicted": 0.6521316091446524,
+     "actual_home_win_rate": 0.6206896551724138,
+     "actual_wilson95": [
+      0.5567654972189019,
+      0.680682009921484
+     ],
+     "predicted_minus_actual": 0.03144195397223859
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 249,
+     "mean_predicted": 0.7515528802592794,
+     "actual_home_win_rate": 0.678714859437751,
+     "actual_wilson95": [
+      0.6183755051825716,
+      0.7336235329503938
+     ],
+     "predicted_minus_actual": 0.07283802082152835
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 192,
+     "mean_predicted": 0.8449870383301095,
+     "actual_home_win_rate": 0.796875,
+     "actual_wilson95": [
+      0.73440317870563,
+      0.8476999086874468
+     ],
+     "predicted_minus_actual": 0.04811203833010946
+    },
+    {
+     "bin": "0.9-1.0",
+     "n": 43,
+     "mean_predicted": 0.9207034326410993,
+     "actual_home_win_rate": 0.8604651162790697,
+     "actual_wilson95": [
+      0.7273612340557432,
+      0.9344436573228605
+     ],
+     "predicted_minus_actual": 0.06023831636202959
+    }
+   ],
+   "date_range": [
+    "2025-10-21",
+    "2026-04-12"
+   ]
+  },
+  "2026-27 to date": {
+   "elo": {
+    "n": 132,
+    "brier": 0.22104556364909028,
+    "log_loss": 0.6281703699767113
+   },
+   "base_rate_B0_0.582": {
+    "n": 132,
+    "brier": 0.25423915151515153,
+    "log_loss": 0.7017643537751509
+   },
+   "coin_0.5": {
+    "n": 132,
+    "brier": 0.25,
+    "log_loss": 0.6931471805599454
+   },
+   "home_bias": {
+    "mean_predicted_home_win": 0.6299535001853243,
+    "actual_home_win_rate": 0.5151515151515151,
+    "predicted_minus_actual": 0.11480198503380912,
+    "ci95_date_bootstrap": [
+     0.030397060838553966,
+     0.18427503235572032
+    ],
+    "n_dates": 17
+   },
+   "implied_home_court_elo_points": 4.7755612118001665,
+   "reliability_10pct_bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 0
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 0
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 6,
+     "mean_predicted": 0.2421918513118634,
+     "actual_home_win_rate": 0.16666666666666666,
+     "actual_wilson95": [
+      0.03005258587173032,
+      0.563509436563646
+     ],
+     "predicted_minus_actual": 0.07552518464519675
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 14,
+     "mean_predicted": 0.3540498527415625,
+     "actual_home_win_rate": 0.21428571428571427,
+     "actual_wilson95": [
+      0.0757124833691637,
+      0.4758972377320828
+     ],
+     "predicted_minus_actual": 0.1397641384558482
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 11,
+     "mean_predicted": 0.4397598023936068,
+     "actual_home_win_rate": 0.2727272727272727,
+     "actual_wilson95": [
+      0.09745880573921467,
+      0.5656502930102463
+     ],
+     "predicted_minus_actual": 0.16703252966633408
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 17,
+     "mean_predicted": 0.5516787996035037,
+     "actual_home_win_rate": 0.47058823529411764,
+     "actual_wilson95": [
+      0.26164801196088106,
+      0.6903710268845051
+     ],
+     "predicted_minus_actual": 0.0810905643093861
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 27,
+     "mean_predicted": 0.6467779518413196,
+     "actual_home_win_rate": 0.5185185185185185,
+     "actual_wilson95": [
+      0.3398532458621043,
+      0.6925704935029092
+     ],
+     "predicted_minus_actual": 0.1282594333228011
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 33,
+     "mean_predicted": 0.7418270206554735,
+     "actual_home_win_rate": 0.5454545454545454,
+     "actual_wilson95": [
+      0.3798565794374957,
+      0.701573108741085
+     ],
+     "predicted_minus_actual": 0.19637247520092804
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 21,
+     "mean_predicted": 0.8495669922621348,
+     "actual_home_win_rate": 0.8571428571428571,
+     "actual_wilson95": [
+      0.6536350585077049,
+      0.950190782017865
+     ],
+     "predicted_minus_actual": -0.007575864880722261
+    },
+    {
+     "bin": "0.9-1.0",
+     "n": 3,
+     "mean_predicted": 0.9146374465898043,
+     "actual_home_win_rate": 1.0,
+     "actual_wilson95": [
+      0.43849391955098227,
+      1.0
+     ],
+     "predicted_minus_actual": -0.08536255341019572
+    }
+   ],
+   "date_range": [
+    "2026-10-20",
+    "2026-11-06"
+   ]
+  },
+  "combined": {
+   "elo": {
+    "n": 1362,
+    "brier": 0.21431715184807845,
+    "log_loss": 0.618958871433791
+   },
+   "base_rate_B0_0.582": {
+    "n": 1362,
+    "brier": 0.24841562995594713,
+    "log_loss": 0.6900111728854196
+   },
+   "coin_0.5": {
+    "n": 1362,
+    "brier": 0.25,
+    "log_loss": 0.6931471805599453
+   },
+   "home_bias": {
+    "mean_predicted_home_win": 0.6241729357440241,
+    "actual_home_win_rate": 0.5506607929515418,
+    "predicted_minus_actual": 0.0735121427924823,
+    "ci95_date_bootstrap": [
+     0.05021638730013295,
+     0.09667901863245243
+    ],
+    "n_dates": 181
+   },
+   "implied_home_court_elo_points": 38.27358906418917,
+   "reliability_10pct_bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 0
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 10,
+     "mean_predicted": 0.15853225830212508,
+     "actual_home_win_rate": 0.0,
+     "actual_wilson95": [
+      -2.7755575615628914e-17,
+      0.2775401687666166
+     ],
+     "predicted_minus_actual": 0.15853225830212508
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 60,
+     "mean_predicted": 0.25945154762347594,
+     "actual_home_win_rate": 0.16666666666666666,
+     "actual_wilson95": [
+      0.09313077201321032,
+      0.28031851497207827
+     ],
+     "predicted_minus_actual": 0.09278488095680928
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 118,
+     "mean_predicted": 0.3525831657211121,
+     "actual_home_win_rate": 0.2966101694915254,
+     "actual_wilson95": [
+      0.22166449745305883,
+      0.3843813850698232
+     ],
+     "predicted_minus_actual": 0.05597299622958668
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 180,
+     "mean_predicted": 0.45526441258438977,
+     "actual_home_win_rate": 0.34444444444444444,
+     "actual_wilson95": [
+      0.27892731457327735,
+      0.4164626298136297
+     ],
+     "predicted_minus_actual": 0.11081996813994532
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 194,
+     "mean_predicted": 0.5496476298709334,
+     "actual_home_win_rate": 0.4484536082474227,
+     "actual_wilson95": [
+      0.3801450812943822,
+      0.5187639449164856
+     ],
+     "predicted_minus_actual": 0.10119402162351071
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 259,
+     "mean_predicted": 0.6515735058736485,
+     "actual_home_win_rate": 0.61003861003861,
+     "actual_wilson95": [
+      0.5494428276394162,
+      0.6674178215120118
+     ],
+     "predicted_minus_actual": 0.04153489583503844
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 282,
+     "mean_predicted": 0.7504147477524511,
+     "actual_home_win_rate": 0.6631205673758865,
+     "actual_wilson95": [
+      0.6060912277578262,
+      0.7157653529498106
+     ],
+     "predicted_minus_actual": 0.08729418037656456
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 213,
+     "mean_predicted": 0.8454385830839712,
+     "actual_home_win_rate": 0.8028169014084507,
+     "actual_wilson95": [
+      0.7442235628044204,
+      0.8506807360017129
+     ],
+     "predicted_minus_actual": 0.042621681675520495
+    },
+    {
+     "bin": "0.9-1.0",
+     "n": 46,
+     "mean_predicted": 0.9203078248551454,
+     "actual_home_win_rate": 0.8695652173913043,
+     "actual_wilson95": [
+      0.7433386576963865,
+      0.9388224286250797
+     ],
+     "predicted_minus_actual": 0.05074260746384107
+    }
+   ],
+   "date_range": [
+    "2025-10-21",
+    "2026-11-06"
+   ]
+  }
+ },
+ "created_utc": "2026-11-08T02:14:08.425164Z"
+}

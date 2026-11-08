@@ -39,13 +39,13 @@ test("confirmation echoes exactly what the server showed", () => {
   assert.ok(!/\d+(\.\d+)?%/.test(it.heater_text), "the interpretation shows no number");
 });
 
-test("neutral floor: baseline vs scenario side by side, HYPOTHETICAL, model recalculated", () => {
+test("neutral floor: baseline vs scenario side by side, ESTIMATE (model recalculated from data)", () => {
   const v = S.scenarioView(C.neutral.estimate);
-  assert.equal(v.badge, "HYPOTHETICAL");
+  assert.equal(v.badge, "ESTIMATE");   // Elo model recalculation: the number comes from data
   assert.equal(v.baseline, "73.3%");   // Boston at Milwaukee: no home court for Milwaukee
   assert.equal(v.scenario, "83.0%");
-  assert.equal(v.effects[0].label, "MODEL RECALCULATED");
-  assert.equal(v.verdict, "HYPOTHETICAL · Edge unverified");
+  assert.equal(v.effects[0].label, "ESTIMATE");
+  assert.equal(v.verdict, "ESTIMATE · Edge unverified");
 });
 
 test("your own adjustment is labelled as yours", () => {
@@ -76,11 +76,13 @@ test("player out uses Research's shrunk estimate, labelled ESTIMATE, with a rang
 test("a hypothetical price leaves the forecast unchanged and says so", () => {
   const v = S.scenarioView(C.price.estimate);
   assert.equal(v.scenario, "32.4% (forecast unchanged)");
-  assert.equal(v.price, "Hypothetical market price: 30.0%");
+  assert.equal(v.price, "Your market price: 30.0%");
+  assert.equal(v.badge, "YOUR ASSUMPTION");
+  assert.equal(v.verdict, "YOUR ASSUMPTION · Edge unverified");
 });
 
 test("a SAMPLE estimate never shows a number", () => {
-  const est = { ...C.neutral.estimate, is_sample: true, baseline: null, scenario: null };
+  const est = { ...C.neutral.estimate, is_sample: true, baseline: null, scenario: null, stamp: "SAMPLE", number_source: null };
   const v = S.scenarioView(est);
   assert.equal(v.badge, "SAMPLE");
   assert.equal(v.baseline, "SAMPLE: not shown");
@@ -92,6 +94,36 @@ test("no view text calls anything an edge found or a bet", () => {
     const v = S.scenarioView(c.estimate);
     const all = JSON.stringify(v) + c.estimate.ref_text;
     assert.ok(!/\bbet\b|edge found|guarantee/i.test(all), all);
-    assert.ok(c.estimate.ref_text.startsWith("HYPOTHETICAL · Edge unverified"));
+    assert.ok(c.estimate.ref_text.startsWith(`${c.estimate.stamp} · Edge unverified`), c.estimate.ref_text);
+    const shown = JSON.stringify({ ...v, effects: v.effects.map(({ kind, ...rest }) => rest) });  // kind = CSS class only
+    assert.ok(!/hypothetical/i.test(c.estimate.ref_text + shown), "no HYPOTHETICAL in the panel or Ref line");
   }
+});
+
+test("stamp: the page shows the server's stamp (ESTIMATE from data, YOUR ASSUMPTION from the user's number)", () => {
+  const want = { neutral: "ESTIMATE", player_out: "ESTIMATE", assume_pp: "YOUR ASSUMPTION", price: "YOUR ASSUMPTION",
+    points: "NO NUMBER", no_data: "NO NUMBER" };
+  for (const [k, text] of Object.entries(want)) {
+    assert.equal(C[k].estimate.stamp, text, k);            // the API (fixture generated from Max's server code)
+    assert.equal(S.whatifStamp(C[k].estimate).text, text, k);  // the page
+    assert.equal(S.scenarioView(C[k].estimate).badge, text, k);
+  }
+  assert.equal(S.whatifStamp({ stamp: "EDGE FOUND" }).text, "NO NUMBER");  // unknown stamps are never shown
+  assert.equal(S.whatifStamp({}).text, "NO NUMBER");
+});
+
+test("demo.js stamps a what-if with whatifStamp, not a fixed word", async () => {
+  const { readFileSync: rf } = await import("node:fs");
+  const src = rf(new URL("../web/demo.js", import.meta.url), "utf8");
+  assert.ok(src.includes("whatifStamp(est)"));
+  assert.ok(!src.includes('ui.stamp.textContent = "HYPOTHETICAL"'));
+});
+
+test("number_source: the stamp must agree with where the server says the number came from", () => {
+  for (const c of Object.values(C)) {
+    const want = { DATA: "ESTIMATE", USER: "YOUR ASSUMPTION" }[c.estimate.number_source];
+    if (want) assert.equal(S.whatifStamp(c.estimate).text, want);
+  }
+  assert.equal(S.whatifStamp({ stamp: "ESTIMATE", number_source: "USER" }).text, "NO NUMBER");
+  assert.equal(S.whatifStamp({ stamp: "YOUR ASSUMPTION", number_source: "USER" }).text, "YOUR ASSUMPTION");
 });

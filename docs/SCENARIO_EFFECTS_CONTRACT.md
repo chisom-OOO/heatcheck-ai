@@ -1,87 +1,165 @@
-# Scenario effects: the final format (for Research's research/scenario-effects)
+# Scenario effects: the current interface (Research ↔ Max ↔ Experience)
 
-Prepared by Max, 8 November 2026 (updated 01:35Z). Code: `heatcheck/agents/scenario.py`.
-Until Research's branch is merged, the server uses `ResearchStub` and every game card says "no
-scenarios for this game (Research's scenario functions (research/scenario-effects) are not merged
-yet)". Switching to the real functions is one adapter class implementing the three calls below.
+Written by Research, 8 November 2026. It replaces the stub-era version (Max, 01:35Z), which described an
+`elo_shift` provider that no longer exists. It is based on `max/integrate-r001-e001@11772da`,
+`heatcheck/agents/research_scenario.py`, and Research's code at `research/scenario-effects@f86d797`.
 
-## 1. What the page receives: Experience's `heatcheck-scenario/1`, adopted unchanged
+**Everything here is an ESTIMATE, not a claim.** No scenario is a tested result, and no scenario is
+evidence that the model beats the market.
 
-`GET /api/scenario?game_id=nba:0022600191[&team=<full team name>]` (team defaults to the home team,
-the same team as the card's market comparison). The format is the one in `apps/web/HANDOFF.md`:
+## 1. Research supplies
 
-```json
-{"format": "heatcheck-scenario/1", "status": "OK", "game_id": "nba:0022600191",
- "team": "Cleveland Cavaliers", "is_sample": false, "source": "...",
- "baseline": {"p_team_win": "0.661772", "forecast_id": "live-forecast:<sha256 of forecasts.json>"},
- "scenarios": [{"scenario_id": "...", "text": "The Knicks are on a back-to-back", "label": "ESTIMATE",
-   "p_team_win": "0.69...", "range": {"low": "...", "high": "...", "level": "0.90"},
-   "n": 1224, "n_unit": "games", "caveats": ["..."], "method": "...", "verdict": "NOT_TESTED",
-   "change": {...}}],
- "failed_tests": [], "not_quantified": [], "verdict": "HYPOTHETICAL · Edge unverified"}
-```
+**Code:** `handoff/research-20261107/src/heatcheck/scenario.py`. It is pure (no file, network or database
+side effects). Max loads it by file path as `research_scenario`.
 
-Max's additions, all ignored by Experience's current reader, so nothing it shows changes:
-- `verdict` on each scenario: Research's own test result for that effect.
-- `failed_tests`: effects whose own test FAILED. They are kept out of `scenarios` so they are
-  never shown as a plain estimate.
-- `not_quantified`: `{scenario_id, text, reason}` for a change with no number.
-- `status: "UNAVAILABLE"` + `reason` when there is nothing to show.
+| Function | Use |
+|---|---|
+| `scenario_api_answer(game, team_id, team_name, baseline_p_team, forecast_id, absence, schedule, *, source, max_players=3, level=0.90)` | One `GET /api/scenario` answer in Experience's `heatcheck-scenario/1` for one game card |
+| `scenario_probability(baseline_p_home, home_team_id, away_team_id, changes, absence, schedule, *, baseline_includes=(), min_n_missed=5)` | Combines changes with a baseline home-win probability; used by free-text what-ifs |
+| `ScenarioRefused` | Raised, never repaired, for any change the combiner will not accept |
 
-Max computes `p_team_win` and `range` from your Elo shift with the live forecast's own formula
-(p = 1/(1+10^(-(Elo_h - Elo_a + H)/400)), H = 100, or 0 at a neutral site), so the baseline and
-scenario come from one model. Your function never returns a probability.
+**Tables** (`data/scenario/`, rebuilt by `scripts/scenario_effects.py`):
+- **`player_absence_effects.json`** (`heatcheck-scenario-absence/1`).
+  - `effects` is keyed `nba-player:<id>|nba-team:<id>`.
+  - Each row has `player_name`, `team`, `seasons`, `n_games_missed`, `n_games_played`,
+    `median_events_per_game`, `flags` and `shown_by_default`.
+  - `effect_win_prob` and `effect_log_odds` each carry `estimate`, `ci80` and `ci95`. These are the
+    **empirical-Bayes-shrunk** values, the default.
+  - The unshrunk values sit alongside as `raw_estimate`, `raw_ci80`, `raw_ci95` and `shrinkage_factor`.
+  - File-level `shrinkage` records τ² = 0.00647 (τ = 0.080) from 489 well-covered keys, and `coverage`
+    records the counts.
+- **`schedule_effects.json`** (`heatcheck-scenario-schedule/1`).
+  - Entries: `back_to_back`, `three_in_four`, and `rest_diff.by_value["-3".."3"]`.
+  - Each carries the same effect blocks, plus `n_condition`.
+  - `registered_verdict` is GP-REST INSUFFICIENT_EVIDENCE on the back-to-back and rest-difference entries,
+    and `null` on 3-in-4.
+- **`scenario_answers.json`:** precomputed `scenario_api_answer()` output for both teams of every game in
+  `data/live/forecasts.json`. It is for reference and tests. The server calls the function live.
 
-## 2. What Max calls: three methods
+**Effect definition:** the mean of (team result − frozen B1 Elo expectation) with the condition, minus the
+mean without it. The log-odds value is win-probability effect / (pbar × (1 − pbar)).
 
-```python
-provider.menu(ctx) -> list[change] | None        # the scenarios worth showing for this game
-provider.estimate(change, ctx) -> dict           # one change
-provider.points_to_elo() -> float | None         # Elo per game point, for user adjustments
-provider.identity -> {"name", "version", "commit"}
-```
+## 2. GET /api/scenario: what the page receives
 
-`ctx = {"game": <forecast row: game_id, tip_utc, home_team(_id), away_team(_id), p_home_win,
-elo_home, elo_away>, "home_court_elo": 100 or 0, "as_of_utc": "...Z"}`.
+`GET /api/scenario?game_id=nba:<id>[&team=<full team name>]`. The team defaults to the home team.
 
-A change is `{"kind": "REST" | "PLAYER_OUT", "team": <full name>, "text": <one plain sentence>,
-"detail": "back-to-back" ...}` or `{"kind": "PLAYER_OUT", "player": "...", ...}`. `menu` returns
-the changes you can estimate from the schedule or your data. Free-text questions send the user's
-confirmed change to `estimate` the same way.
+1. Max's `ResearchScenario.api_answer()` takes the card's team and the **exact baseline string**:
+   `p_home_win` for the home team, or `1 − p_home_win` in decimal arithmetic for the away team.
+2. It calls `scenario_api_answer()` unchanged.
+3. It then adds **only** an `evidence` field on absence scenarios: the raw, unshrunk values and the shrinkage
+   factor, for the evidence drawer. Experience's reader ignores it.
 
-`estimate` returns:
+**What each answer contains** (`heatcheck-scenario/1`, `apps/web/HANDOFF.md`):
+- `format`, `status: "OK"`, `game_id`, `team`, `is_sample: false`, `source`;
+- `baseline` `{p_team_win, forecast_id}`, echoed unchanged;
+- `scenarios`: each has `scenario_id`, `text`, `label: "ESTIMATE"`, `p_team_win`, `range` and `n`.
+  - `p_team_win` and the range ends are decimal strings with 3 decimals, in 0–1.
+  - `range` is `{low, high, level: "0.90"}`, with low ≤ p ≤ high.
+  - `n` is a positive integer, with `n_unit`.
+  - Each scenario also carries `caveats` (at least 5) and `method`.
 
-```json
-{"status": "ESTIMATE", "elo_shift": -30.0, "elo_shift_range": [-55.0, -5.0], "level": 0.90,
- "n": 1224, "n_unit": "games", "verdict": "SURVIVED | INSUFFICIENT_EVIDENCE | FAILED | NOT_TESTED",
- "data_through_utc": "2026-11-06T07:00:00Z", "caveats": ["at least one"], "method": "one line"}
-```
+**Which scenarios are offered, for each team:**
+- on a back-to-back;
+- on a 3-in-4;
+- without one of up to 3 players. A player is offered only if he has `shown_by_default`, at least 5 games
+  missed, no risk flag, a name, and appeared for that team in 2025-26, and is not listed for both teams.
+  Players are ordered by games played.
 
-- `elo_shift` is for `change["team"]`: negative means that team gets worse. Same Elo units as
-  the live forecast.
-- **Required for an ESTIMATE:** `level` (the interval's coverage, in 0..1), an integer `n` ≥ 1, and at
-  least one caveat. Without any one of them, the change goes to `not_quantified` with the reason;
-  Max never invents a level or a caveat.
-- `{"status": "NO_DATA", "reason": "..."}`, e.g. a player with no missed games, gives "No data"
-  and no number.
-- `{"status": "NOT_AVAILABLE", "reason": "..."}` gives "Can't quantify this with the current
-  model" and no number.
+**IDs:** `<game_id>:b2b:<side>`, `<game_id>:3in4:<side>`, `<game_id>:absent:nba-player:<id>:nba-team:<id>`.
 
-## 3. Max's checks on top
-- **SAMPLE_SIZE:** `n` < 30 adds a caveat on the card and a flag in the what-if.
-- **ESTIMATE_STALENESS:** `data_through_utc` older than 400 days adds the same caveat and flag.
-- **DOUBLE_COUNT:** a free-text what-if that combines a user adjustment with a PLAYER_OUT or REST
-  estimate for the same team is flagged.
-- **Verdict:** always "HYPOTHETICAL · Edge unverified" (Experience's Ref line ends "Edge unverified:
-  nothing shows this model beats the market").
+**Checks:**
+- Experience's own `readScenarios` and `scenarioProblem` (`experience/market-board@c9ef784`) accept all 280
+  scenarios in the committed answers and refuse 5 of 5 deliberately broken ones
+  (`reports/research/logs/scenario/`).
+- Max reports that his endpoint's answers equal `scenario_answers.json` for all 14 games × 2 teams.
 
-## 4. Free-text what-ifs (Max's POST endpoints, format `heatcheck-whatif/1`)
-- `POST /api/route {message}` returns OPEN_BOARD, OPEN_CARD, SCENARIO or DIALOGUE.
-- `POST /api/scenario {message[, game_id]}` returns the parsed changes for confirmation; no number.
-- `POST /api/scenario/estimate` takes the confirmed interpretation, recalculates or estimates it,
-  checks it, records it in the ledger, and returns baseline vs scenario.
-- Changes the parser understands:
-  - Neutral floor and home/away swap: the forecast's own Elo, exact.
-  - Hypothetical market price.
-  - User adjustments: "Your assumption, not modelled".
-  - PLAYER_OUT and REST: your `estimate`.
+## 3. Free-text what-ifs (Max's `heatcheck-whatif/1`)
+
+Max's parser turns a confirmed change into one combiner call against the game's forecast baseline:
+
+| User change | Combiner change |
+|---|---|
+| a team on a back-to-back | `{"type": "schedule", "effect": "back_to_back", "side": "home"\|"away"}` |
+| a team on a 3-in-4 | `{"type": "schedule", "effect": "three_in_four", "side": ...}` |
+| a player out | `{"type": "player_absence", "key": "nba-player:<id>\|nba-team:<id>", "side": ...}` (matched by name within the game's teams; ambiguous names are refused) |
+
+- **Interval:** Max converts the result to the live forecast's Elo units (Elo = log-odds × 400 / ln 10) and
+  shows Research's **95%** interval (normal approximation). The card's scenarios use **90%**; both come from
+  the same estimate.
+- **Agreement:** Max's what-if equals `scenario_probability()` to the digit (Max's integration tests).
+- **Errors:**
+  - A `ScenarioRefused` becomes `NOT_AVAILABLE` with Research's reason.
+  - A player with no estimate becomes `NO_DATA`.
+  - A player not shown by default becomes `NO_DATA` or `NOT_AVAILABLE` with the reason.
+- **Rest difference:** "rest difference" between the two teams is not offered in free text. It needs both
+  teams' rest days, which the forecast row does not carry.
+
+## 4. Rules the combiner enforces (refuses, never repairs)
+
+**Refused:**
+- unknown fields, types or effects;
+- the same player twice;
+- a player whose estimate is for the other team;
+- fewer than 5 games missed;
+- two rest changes for one team;
+- `rest_diff` together with any team-level rest change;
+- any rest change when `baseline_includes` contains `"rest"`;
+- an effect with no estimate (a bucket with no games);
+- a baseline outside (0, 1).
+
+**Assumptions** (also returned in the result's `assumptions`):
+- Effects are independent and additive on the log-odds scale.
+- Each effect's 95% bootstrap interval is treated as normal and combined in quadrature.
+- The baseline is treated as fixed.
+
+Real absences and schedule spots co-occur, so combined scenarios can double count partly even when nothing
+is refused.
+
+## 5. Verdicts and wording
+
+- Card scenarios always carry `label: "ESTIMATE"`.
+- A rest scenario's caveats say the effect is **unproven** (GP-REST INSUFFICIENT_EVIDENCE).
+- Absence scenarios say that absences mix rest and injury, that the estimate is shrunk toward no effect, and
+  that the 2026-27 roster is not verified.
+- Max's overall verdict is "HYPOTHETICAL · Edge unverified". Experience's Ref line ends "Edge unverified:
+  nothing shows this model beats the market".
+
+## 6. Updates
+
+- Max re-reads the two tables when their modification time or size changes, so new Research tables need no
+  server change.
+- A code change to `scenario.py` takes effect on server restart (Max's identity block records its sha256).
+- Field names and meanings in this document are stable. Research adds fields only; it never renames or
+  removes them without updating this contract.
+
+## 7. Limits (stated in the tables and reports)
+
+- Absence estimates are not injury effects. They mix rest, injury, suspension, illness and coach decisions.
+- Shrinkage uses a single pooled prior. Stars' effects are likely pulled toward zero too much.
+- Elo partly absorbs long absences.
+- Rosters are not verified for 2026-27.
+- 2025-26 neutral-site games are not flagged.
+- Schedule effects are confounded with travel, opponent and planned rest.
+
+## Stamp rule (8 Nov 2026, user's instruction; one rule for the API and the page)
+
+| What the shown number depends on | Stamp |
+|---|---|
+| Data only: Research's estimates (preset `GET /api/scenario`, or typed player-out / rest) or the forecast's Elo model (neutral site, home/away swap) | **ESTIMATE** |
+| Any number the user supplied: their own adjustment ("assume it costs Boston 5%") or a hypothetical market price, alone or combined with data | **YOUR ASSUMPTION** |
+| A SAMPLE forecast | **SAMPLE** |
+| Nothing could be quantified | **NO NUMBER** |
+
+`POST /api/scenario/estimate` returns it as `stamp` (`heatcheck.agents.scenario.stamp_for`); preset
+scenarios carry `label: "ESTIMATE"`. The page never decides the stamp: `whatifStamp(est)` in
+`apps/web/web/whatif/whatif.js` shows the server's value (unknown values show NO NUMBER).
+The response also carries `number_source`: "DATA" (ESTIMATE), "USER" (YOUR ASSUMPTION) or null; the
+page shows NO NUMBER if the two ever disagree.
+
+Same word everywhere (user's instruction, 8 Nov ~04:10): the what-if panel badge, the Ref verdict
+`"<STAMP> · Edge unverified"` (e.g. "ESTIMATE · Edge unverified", "YOUR ASSUMPTION · Edge
+unverified") and the start of the Ref line all use the stamp's word. "HYPOTHETICAL" is no longer
+shown in the what-if panel or Ref line; this supersedes the "HYPOTHETICAL · Edge unverified" wording
+in §5 above. A user's market price is shown as "Your market price" (API field names such as
+`hypothetical_price` are unchanged). The read-back before confirmation is badged CONFIRM (no number). Tests: `tests/integration/test_scenario.py`
+(`test_stamp_rule_…`), `apps/web/tests/whatif.test.mjs` (fixture generated from the server code).

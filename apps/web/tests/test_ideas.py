@@ -33,12 +33,22 @@ def snapshot(root):
 
 
 class TestReader(unittest.TestCase):
+    """Research's families only: Heater's proposals (read_proposals, default the repo's
+    data/max/idea_requests) are pointed at an empty directory here so these tests do not change
+    whenever Max commits a new proposal. TestProposals covers that path."""
+
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         self.copy = os.path.join(self.tmp, "idea-family")
         shutil.copytree(FIX, self.copy)
+        self._old_proposals = os.environ.get("HEATCHECK_PROPOSALS")
+        os.environ["HEATCHECK_PROPOSALS"] = os.path.join(self.tmp, "no-proposals")
 
     def tearDown(self):
+        if self._old_proposals is None:
+            os.environ.pop("HEATCHECK_PROPOSALS", None)
+        else:
+            os.environ["HEATCHECK_PROPOSALS"] = self._old_proposals
         shutil.rmtree(self.tmp)
 
     def edit(self, rel, fn, raw=False):
@@ -74,6 +84,31 @@ class TestReader(unittest.TestCase):
     def test_committed_api_capture_equals_the_reader_output(self):
         with open(API_CAPTURE, encoding="utf-8") as f:
             self.assertEqual(json.load(f), json.loads(json.dumps(ideas.read_all(FIX))))
+
+    def _write_note(self, fam, **over):
+        with open(os.path.join(self.copy, fam, "results.json"), "rb") as f:
+            sha = hashlib.sha256(f.read()).hexdigest()
+        note = {"format": "heatcheck-idea-family-note/1", "kind": "LEAD_NOT_FINDING",
+                "cites_results_sha256": sha, "note": "Lead, not finding. Holm is applied within each family."}
+        note.update(over)
+        with open(os.path.join(self.copy, fam, "NOTE.json"), "w") as f:
+            json.dump(note, f)
+
+    def _family(self, name):
+        return next(f for f in ideas.read_all(self.copy)["families"] if f["name"] == name)
+
+    def test_research_note_is_shown_only_when_it_cites_these_results(self):
+        self.assertNotIn("research_note", self._family("dev_example"))           # no note: field absent
+        self._write_note("dev_example")
+        f = self._family("dev_example")
+        self.assertTrue(f["research_note"].startswith("Lead, not finding."))
+        self.assertIn("Research's note cites these results", f["checks"])
+        self._write_note("dev_example", cites_results_sha256="0" * 64)          # stale note
+        f = self._family("dev_example")
+        self.assertIsNone(f["research_note"])
+        self.assertTrue(any("not shown" in c and "cites_results_sha256" in c for c in f["checks"]))
+        self._write_note("dev_example", format="other/1")
+        self.assertIsNone(self._family("dev_example")["research_note"])
 
     def test_changed_registration_is_refused(self):
         self.edit("dev_example/registration.json", lambda b: b.replace(b'"B": 999', b'"B": 99'), raw=True)
@@ -114,6 +149,55 @@ class TestReader(unittest.TestCase):
         with self.assertRaises(ideas.IdeasUnavailable) as c:
             ideas.read_all(os.path.join(self.tmp, "nope"))
         self.assertIn("not merged", str(c.exception))
+
+
+class TestProposals(unittest.TestCase):
+    """Heater-proposed families (Max's read_proposals): shown NOT_RUN only when the request
+    file's ideas equal the model's parsed ideas. Uses Max's committed files in data/max/idea_requests."""
+    REQ_DIR = ideas.PROPOSALS_DIR
+    NAME = "does_rest_matter_heater_dev"
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self._old = os.environ.pop("HEATCHECK_PROPOSALS", None)
+
+    def tearDown(self):
+        os.environ.pop("HEATCHECK_PROPOSALS", None)
+        if self._old is not None:
+            os.environ["HEATCHECK_PROPOSALS"] = self._old
+        shutil.rmtree(self.tmp)
+
+    def test_committed_model_proposal_is_listed_not_run(self):
+        if not os.path.isfile(os.path.join(self.REQ_DIR, self.NAME + ".model_output.json")):
+            self.skipTest("no committed model proposal in data/max/idea_requests")
+        out, refused = ideas.read_proposals()
+        self.assertEqual(refused, [])
+        p = next(x for x in out if x["name"] == self.NAME)
+        self.assertEqual(p["status"], "NOT_RUN")
+        with open(os.path.join(self.REQ_DIR, self.NAME + ".json"), "rb") as f:
+            req = f.read()
+        self.assertEqual(p["request_sha256"], hashlib.sha256(req).hexdigest())
+        self.assertEqual(len(p["ideas"]), len(json.loads(req)["ideas"]))
+        # the keyword-fallback request has no model output beside it, so it is not listed
+        self.assertNotIn("does_rest_matter_dev", [x["name"] for x in out])
+
+    def test_request_not_matching_the_model_output_is_refused(self):
+        if not os.path.isfile(os.path.join(self.REQ_DIR, self.NAME + ".model_output.json")):
+            self.skipTest("no committed model proposal in data/max/idea_requests")
+        d = os.path.join(self.tmp, "req")
+        os.mkdir(d)
+        for suffix in (".json", ".model_output.json"):
+            shutil.copyfile(os.path.join(self.REQ_DIR, self.NAME + suffix), os.path.join(d, self.NAME + suffix))
+        p = os.path.join(d, self.NAME + ".json")
+        with open(p, encoding="utf-8") as f:
+            req = json.load(f)
+        req["ideas"] = req["ideas"][:-1]
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(req, f)
+        os.environ["HEATCHECK_PROPOSALS"] = d
+        out, refused = ideas.read_proposals()
+        self.assertEqual(out, [])
+        self.assertEqual(refused, [{"name": self.NAME, "reason": "proposal: request file does not match the model's parsed ideas"}])
 
 
 class TestRoute(unittest.TestCase):

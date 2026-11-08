@@ -29,6 +29,7 @@ from heatcheck.agents.scenario import (
     parse_changes,
     parse_scenario,
     route,
+    verdict_for,
 )
 from heatcheck.api.dialogue_server import ScenarioConfig, serve
 from heatcheck.ledger.evidence import EvidenceLedger
@@ -100,7 +101,7 @@ def test_parse_each_kind():
 
 def test_interpretation_needs_confirmation_and_shows_no_number():
     it = parse_scenario("What if Cleveland played on a neutral floor?", G["191"], SHA)
-    assert it["status"] == "NEEDS_CONFIRMATION" and it["label"] == "HYPOTHETICAL"
+    assert it["status"] == "NEEDS_CONFIRMATION" and it["label"] == "READ_BACK"
     assert it["interpretation"] == ["The game is played on a neutral floor: no home court."]
     assert "%" not in it["heater_text"] and "Confirm" in it["heater_text"]
     assert parse_scenario("tell me a story", G["191"], SHA)["status"] == "NO_CHANGES"
@@ -194,7 +195,7 @@ def test_stub_gives_no_number_for_player_out_and_rest():
     e = est("Cleveland without Donovan Mitchell", G["191"])
     assert e["scenario"] is None and e["effects"][0]["type"] == "NO_NUMBER"
     assert "Can't quantify this with the current model; it would need" in e["effects"][0]["text"]
-    assert e["provider"]["version"] == "STUB" and e["verdict"] == VERDICT
+    assert e["provider"]["version"] == "STUB" and e["verdict"] == verdict_for("NO NUMBER")
 
 
 class FakeResearch(ResearchStub):
@@ -262,7 +263,9 @@ def test_forecast_staleness_flag():
 def test_ref_never_claims_an_edge_or_a_bet(msg):
     row = route(msg, GAMES, NOW)["game_id"]
     e = est(msg, next(g for g in GAMES if g["game_id"] == row))
-    assert e["ref_text"].startswith(VERDICT) and e["label"] == "HYPOTHETICAL"
+    assert e["ref_text"].startswith(verdict_for(e["stamp"])) and e["label"] == e["stamp"]
+    assert "HYPOTHETICAL" not in e["ref_text"].upper() and e["verdict"].endswith("Edge unverified")
+    assert e["number_source"] == {"ESTIMATE": "DATA", "YOUR ASSUMPTION": "USER"}.get(e["stamp"])
     assert not re.search(r"\bbet\b|edge found|guarantee", e["ref_text"], re.I)
 
 
@@ -310,7 +313,7 @@ def test_http_route_parse_confirm_estimate_and_ledger(server):
     code, e = post(base, "/api/scenario/estimate", body)
     assert code == 200 and e["verdict"] == VERDICT and e["scenario"]["p"] < e["baseline"]["p"]
     entry = ledger.get(e["evidence_id"])["identity"]
-    assert entry["lane"] == "SCENARIO" and entry["label"] == "HYPOTHETICAL" and entry["changes"] == it["changes"]
+    assert entry["lane"] == "SCENARIO" and entry["label"] == e["stamp"] and entry["changes"] == it["changes"]
     assert entry["interpretation_id"] == it["interpretation_id"] and entry["outcome"] is None
     # a new forecast file revokes the confirmation
     fc.write_bytes(FORECAST.read_bytes() + b"\n")
@@ -506,3 +509,42 @@ def test_free_text_estimate_shows_shrunk_and_keeps_raw_only_in_evidence(rs):
     assert raw["raw_estimate"] == row["effect_log_odds"]["raw_estimate"]
     shown = {k: v for k, v in eff.items() if k != "evidence"}
     assert '"raw_' not in json.dumps(shown) and '"raw_' not in json.dumps({k: v for k, v in e.items() if k != "effects"})
+
+
+def test_stamp_rule_estimate_from_data_your_assumption_from_user_numbers(rs):
+    """ESTIMATE when the number comes from data (preset or typed); YOUR ASSUMPTION when the user
+    supplied the number; SAMPLE; NO NUMBER."""
+    cases = {
+        "What if Detroit were without Cade Cunningham?": ("197", "ESTIMATE"),           # Research's data, typed
+        "What if the Lakers were on a back-to-back?": ("197", "ESTIMATE"),
+        "What if Boston and Milwaukee played on a neutral floor?": ("200", "ESTIMATE"),  # Elo model recalculation
+        "Assume it costs Boston 5%": ("200", "YOUR ASSUMPTION"),
+        "What if the Lakers were priced at 30% on Polymarket?": ("197", "YOUR ASSUMPTION"),
+        "What if Detroit were without Cade Cunningham and it costs them 3%?": ("197", "YOUR ASSUMPTION"),
+        "Detroit without Nobody Atall": ("197", "NO NUMBER"),
+        "assume it costs Boston 3 points": ("200", "NO NUMBER"),
+    }
+    for msg, (g, want) in cases.items():
+        e = est(msg, G[g], rs)
+        assert e["stamp"] == want, (msg, e["stamp"], [x["type"] for x in e["effects"]])
+        if want == "ESTIMATE":
+            assert e["scenario"] is not None
+    # preset scenarios (GET /api/scenario) are Research's data: label ESTIMATE on every one
+    assert {s["label"] for s in rs.api_answer(G["197"], G["197"]["home_team"], SHA)["scenarios"]} == {"ESTIMATE"}
+
+
+def test_confirmation_survives_the_browser_json_round_trip():
+    """Regression (8 Nov 02:50): the page echoes amount -5.0 as -5 (JavaScript JSON), which changed the
+    interpretation id and gave 409 'confirmation revoked' for every whole-number assumption."""
+    row = G["200"]
+    it = parse_scenario("Assume it costs Boston 5%", row, SHA)
+    assert it["changes"][0]["amount"] == -5.0
+    browser = [{**it["changes"][0], "amount": -5}]  # JSON.stringify(-5.0) === "-5"
+    assert json.dumps(browser).count('"amount": -5,') == 1
+    req = {"confirmed": True, "changes": browser, "focus_team": it["focus_team"],
+           "interpretation_id": it["interpretation_id"]}
+    changes, focus = check_confirmation(req, row, SHA)
+    assert focus == "Boston Celtics"
+    edited = {**req, "changes": [{**req["changes"][0], "amount": -6}]}
+    with pytest.raises(ConfirmationError):
+        check_confirmation(edited, row, SHA)  # a real edit still revokes

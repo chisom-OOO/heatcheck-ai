@@ -119,6 +119,8 @@ export function cardView(row, { resp = null, error = null, forecast = null, isSa
       ? `Same game, team and outcome; the price ${recorded ? "was fresh when recorded" : "is fresh"}. Nothing shows the model beats the market.`
       : reasons.join("; "),
     dataNote: resp?.data_note || (sample ? "SAMPLE forecast: values are invented, not a real forecast." : ""),
+    // Max's server decides when a caveat applies (e.g. the model's home-team bias); the card shows its text.
+    caveats: Array.isArray(resp?.caveats) ? resp.caveats.filter((c) => typeof c === "string" && c) : [],
     canAsk: Boolean(resp),
   };
 }

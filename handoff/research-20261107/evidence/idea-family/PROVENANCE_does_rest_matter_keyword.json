@@ -1,0 +1,9 @@
+{
+  "family_dir": "does_rest_matter_keyword",
+  "proposer": "KEYWORD RULES: Heater's proposer, deterministic keyword path (not model-proposed)",
+  "fan_message": "Does rest matter?",
+  "request_source": "max/integrate-r001-e001 commit e1c2dc3, data/max/idea_requests/does_rest_matter_dev.json",
+  "request_sha256": "981af07bd7148aab9ae2286ad719cb6c4d8820a9303f7eac16fa9b9cdb39abf8",
+  "copied_byte_for_byte": true,
+  "note": "Run by Research as the fallback while the model-proposed request is pending. registration.json and results.json are the runner's own write-once outputs."
+}
