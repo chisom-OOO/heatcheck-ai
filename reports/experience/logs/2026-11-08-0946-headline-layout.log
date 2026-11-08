@@ -1,0 +1,12 @@
+commit: 77a703e7369fb92047868ad686ce1b9a810aa9b1
+command: node apps/web/tests/layout/frost_layout.mjs reports/experience/2026-11-08-0946-headline-layout
+edge: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+
+PASS home-1440x900
+PASS dialogue-1440x900
+PASS market-1440x900
+PASS home-1920x1080
+PASS dialogue-1920x1080
+PASS market-1920x1080
+6/6 cases PASS
+exit=0

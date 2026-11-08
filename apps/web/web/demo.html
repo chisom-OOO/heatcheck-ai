@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HeatCheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&family=Oswald:wght@700&display=swap">
 <link rel="stylesheet" href="heater/heater.css">
 <link rel="stylesheet" href="demo.css">
 <script type="module" src="demo.js"></script>
@@ -20,12 +23,14 @@
   </svg>
 
   <section class="hero" aria-label="Heater">
+    <p class="cast-name heater-name" aria-hidden="true">Heater</p>
     <div id="heater"></div>
   </section>
 
   <section class="talk" aria-live="polite">
     <div class="topbar">
       <p class="brand">HEAT<span>CHECK</span></p>
+      <p class="asked" id="asked" hidden></p>
       <div class="view-buttons">
         <button type="button" class="view-toggle" id="btn-board" aria-pressed="false">Tonight's games</button>
         <button type="button" class="view-toggle" id="btn-ideas" aria-pressed="false">Idea board</button>
@@ -43,7 +48,8 @@
     <p class="sample-flag" id="sample-flag" hidden>SAMPLE RESPONSE (frost/fixtures/sample-dialogue.json), not a live answer</p>
     <ol class="convo" id="convo" hidden aria-label="Heater and Frost"></ol>
     <article class="ref" id="ref" hidden>
-      <header><span class="ref-badge">THE REF</span><span class="ref-title" id="ref-title"></span></header>
+      <header><span class="ref-badge">THE REF</span></header>
+      <p class="ref-title ref-headline" id="ref-title"></p>
       <p class="ref-text" id="ref-text"></p>
       <div class="stamp" id="stamp" hidden></div>
       <details class="evidence" id="evidence" hidden>
@@ -58,6 +64,7 @@
   </section>
 
   <section class="frost-side" id="frost-side" hidden aria-label="Frost">
+    <p class="cast-name frost-name" aria-hidden="true">Frost</p>
     <div id="frost"></div>
   </section>
 

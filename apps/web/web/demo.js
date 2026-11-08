@@ -26,7 +26,7 @@ import {
 import { MIC, createVoice } from "./voice.js";
 import { firstAskThisSession, loadResponsibleUse } from "./responsible.js";
 import { mount as mountFrost } from "./frost/frost.js";
-import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, skippable } from "./frost/frost-model.js";
+import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, refHeadline, skippable } from "./frost/frost-model.js";
 import {
   TAMPER_EVENTS_URL, TAMPER_FLIP_URL, TAMPER_RESTORE_URL, eventRows, flipView, mockTamperFetch, postTamper, restoreView,
   tamperMode, tamperRefLine,
@@ -47,6 +47,7 @@ const ui = {
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"), ruNotice: $("ru-notice"),
   convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"), sampleFlag: $("sample-flag"),
+  brand: document.querySelector(".brand"), asked: $("asked"),
   tamper: $("tamper"), tamperBtn: $("btn-tamper"), restoreBtn: $("btn-restore"),
 };
 // The tamper button against Max's endpoints (shown by default; ?tamper=0 hides it); ?tamper=mock:
@@ -147,6 +148,7 @@ async function answer(question) {
   // Frost's questions and result chips come only from the server's answer; none: Heater-only flow.
   const exchange = forced ? null : exchangeFromApi(api, { take });
   return { claimId, entry, apiOnly, take, lastWord, exchange, sample: Boolean(api?.is_sample),
+    refHeadline: forced ? null : api?.ref_headline ?? null,
     takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
@@ -181,7 +183,16 @@ function reset() {
   ui.skipHint.hidden = true;
   ui.sampleFlag.hidden = true;
   ui.tamper.hidden = true;
+  showAsked("");
   setCast(false);
+}
+
+/** During an exchange the question as asked replaces the HEATCHECK wordmark; "" brings the
+ *  wordmark back (home view, other views, and exchanges that start from a button, not a question). */
+function showAsked(text) {
+  ui.asked.textContent = text || "";
+  ui.asked.hidden = !text;
+  ui.brand.hidden = Boolean(text);
 }
 
 // ------------------------------------------------------------------ Frost on stage
@@ -291,6 +302,7 @@ async function runExchange(ex, show) {
         h.setState("thinking");
         const refLine = show.refLine();
         ui.ref.classList.remove("checking");
+        ui.refTitle.textContent = refHeadline(show.headline, { verdict: show.verdict, claimId: show.claimId, title: show.title, stampText: show.stamp.text });
         ui.refText.textContent = refLine;
         document.body.dataset.phase = "ref";
         keepInView(ui.ref, "end");
@@ -407,6 +419,7 @@ async function ask(question) {
   const h = state.heater;
   const turn = state.turn++;
   reset();
+  showAsked(question);
   voice.stopSpeaking();
   log(`question: ${question}`);
 
@@ -423,6 +436,7 @@ async function ask(question) {
     const heaterReaction = a.exchange.heaterReaction || a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "");
     await runExchange({ ...a.exchange, heaterReaction }, {
       title: CLAIM_TITLES[a.claimId] || a.claimId,
+      headline: a.refHeadline, verdict: decision, claimId: a.claimId,
       refLine: () => refLineFor(a),
       stamp: stampFor(decision, state.personality),
       heaterEnd: decision ? stateForDecision(decision) : "unsure",
@@ -458,6 +472,7 @@ async function ask(question) {
   const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
   const refLine = refLineFor(a);
   ui.ref.classList.remove("checking");
+  ui.refTitle.textContent = refHeadline(a.refHeadline, { verdict: decision, claimId: a.claimId, title: CLAIM_TITLES[a.claimId] || a.claimId, stampText: stampFor(decision, state.personality).text });
   ui.refText.textContent = refLine;
   document.body.dataset.phase = "ref";
   await h.speak(refLine, "ref", { voiceOn: state.voiceOn });
@@ -609,7 +624,7 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; ui.tamper.hidden = true; setCast(false); }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; ui.tamper.hidden = true; showAsked(""); setCast(false); }
 }
 
 function toggleView(view, open) {
@@ -866,6 +881,7 @@ async function runScenario(question, gameId) {
   setBusy(true);
   setView("talk");
   reset();
+  showAsked(question);
   voice.stopSpeaking();
   const h = state.heater;
   h.setState("listening");
@@ -967,6 +983,7 @@ async function askMarket(g) {
   setBusy(true);
   setView("talk");
   reset();
+  showAsked(ASK_MESSAGE);   // what the card's Ask sends to Max's server
   voice.stopSpeaking();
   const h = state.heater;
   // Responsible use: the full notice once per session, the first time a market card is asked about.
@@ -996,6 +1013,7 @@ async function askMarket(g) {
   if (exchange) {
     await runExchange({ ...exchange, heaterReaction: marketReaction(split, resp) }, {
       title: `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`,
+      headline: resp.ref_headline,
       refLine: () => marketRefPlain(resp),
       stamp: marketStamp(resp),
       heaterEnd: marketEndState(resp),
@@ -1023,11 +1041,12 @@ async function askMarket(g) {
   await h.play("heat_check", TIMING.heat_check);
   h.setState("thinking");
   const line = marketRefPlain(resp);
+  const stamp = marketStamp(resp);
   ui.ref.classList.remove("checking");
+  ui.refTitle.textContent = refHeadline(resp.ref_headline, { title: `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`, stampText: stamp.text });
   ui.refText.textContent = line;
   document.body.dataset.phase = "ref";
   await h.speak(line, "ref", { voiceOn: state.voiceOn });
-  const stamp = marketStamp(resp);
   ui.stamp.className = `stamp ${stamp.kind}`;
   ui.stamp.textContent = stamp.text;
   ui.stamp.hidden = false;

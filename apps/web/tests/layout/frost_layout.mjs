@@ -106,8 +106,31 @@ async function launchEdge() {
   return { send, close };
 }
 
-const MEASURE = `(() => {
+const MEASURE = `(async () => {
   const r = (el) => { if (!el || el.hidden) return null; const b = el.getBoundingClientRect(); return { l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height }; };
+  // the drawn figure: bounding box of the visible pose's bright pixels, mapped to the screen
+  window.__bb = window.__bb || {};
+  const figure = async (img) => {
+    if (!img) return null;
+    const src = img.currentSrc || img.src;
+    if (!window.__bb[src]) {
+      const im = new Image(); im.src = src; await im.decode();
+      const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
+      const g = c.getContext("2d"); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data;
+      let l = c.width, rr = -1, t = c.height, bb = -1;
+      for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) { const k = (y * c.width + x) * 4;
+        if (d[k + 3] > 40 && Math.max(d[k], d[k + 1], d[k + 2]) > 60) { if (x < l) l = x; if (x > rr) rr = x; if (y < t) t = y; if (y > bb) bb = y; } }
+      window.__bb[src] = [l / c.width, (rr + 1) / c.width, t / c.height, (bb + 1) / c.height];
+    }
+    const [fl, fr, ft, fb] = window.__bb[src];
+    const b = img.getBoundingClientRect();   // poses fill their box (same 687/1024 aspect)
+    return { l: b.left + fl * b.width, r: b.left + fr * b.width, t: b.top + ft * b.height, b: b.top + fb * b.height, boxH: b.height, src: src.split("/").pop() };
+  };
+  const label = (el) => { if (!el) return null; const cs = getComputedStyle(el); return { ...r(el), shown: cs.display !== "none", text: el.innerText, font: cs.fontFamily, size: cs.fontSize, color: cs.color }; };
+  const asked = document.getElementById("asked"), acs = getComputedStyle(asked);
+  const input = document.getElementById("q").getBoundingClientRect();
+  const inputOn = input.top >= 0 && input.bottom <= document.getElementById("ru-footer").getBoundingClientRect().top;
+  const inputAt = inputOn ? document.elementFromPoint(input.left + 20, (input.top + input.bottom) / 2) : null;
   const foot = document.getElementById("ru-footer").getBoundingClientRect().top;
   const items = [...document.querySelectorAll("#convo > li")].map((li) => {
     const b = li.getBoundingClientRect();
@@ -121,7 +144,12 @@ const MEASURE = `(() => {
     froot: r(document.querySelector(".f-root")), hroot: r(document.querySelector(".hero .h-root")),
     ref: r(document.getElementById("ref")), stamp: r(document.getElementById("stamp")), items,
     frostBubbles: document.querySelectorAll("#convo .cv-frost").length, chips: document.querySelectorAll("#convo .cv-chip").length,
-    sample: !document.getElementById("sample-flag").hidden, stampText: document.getElementById("stamp").textContent };
+    sample: !document.getElementById("sample-flag").hidden, stampText: document.getElementById("stamp").textContent,
+    hfig: await figure(document.querySelector(".hero .h-pose.on")), ffig: await figure(document.querySelector(".f-pose.on")),
+    hname: label(document.querySelector(".heater-name")), fname: label(document.querySelector(".frost-name")),
+    brandShown: !document.querySelector(".brand").hidden, asked: { shown: !asked.hidden, text: asked.textContent, size: acs.fontSize, weight: acs.fontWeight, color: acs.color, align: acs.textAlign },
+    form: r(document.getElementById("ask")), inputFree: inputOn ? Boolean(inputAt && document.getElementById("ask").contains(inputAt)) : null,
+    headline: document.getElementById("ref-title").textContent, badgeSize: getComputedStyle(document.querySelector(".ref-badge")).fontSize };
 })()`;
 
 function judge(name, m, expect) {
@@ -131,9 +159,33 @@ function judge(name, m, expect) {
   ok(s.cast === "frost", `Frost on stage (cast=${s.cast})`);
   ok(s.talk.w >= 560, `middle column ${s.talk.w.toFixed(0)} px >= 560`);
   ok(s.side.l >= s.talk.r - 0.5, `Frost's column starts after the conversation (${s.side.l.toFixed(0)} >= ${s.talk.r.toFixed(0)})`);
-  ok(s.froot.l >= s.side.l - 0.5 && s.froot.r <= s.side.r + 0.5, `Frost's figure inside his column (${s.froot.l.toFixed(0)}..${s.froot.r.toFixed(0)} in ${s.side.l.toFixed(0)}..${s.side.r.toFixed(0)})`);
-  ok(s.hroot.r <= s.hero.r + 0.5, `Heater's figure inside his column (${s.hroot.r.toFixed(0)} <= ${s.hero.r.toFixed(0)})`);
+  ok(s.hero.r <= s.talk.l + 0.5, `Heater's column ends before the conversation (${s.hero.r.toFixed(0)} <= ${s.talk.l.toFixed(0)})`);
+  // the drawn figures (not their boxes, whose empty edges may be clipped) stay inside their columns
+  for (const [who, f, col] of [["Heater", s.hfig, s.hero], ["Frost", s.ffig, s.side]]) {
+    ok(f && f.l >= col.l - 1 && f.r <= col.r + 1, `${who}'s drawn figure (${f?.src}) inside his column (${f?.l.toFixed(0)}..${f?.r.toFixed(0)} in ${col.l.toFixed(0)}..${col.r.toFixed(0)})`);
+    const frac = f ? f.boxH / s.vh : 0;
+    if (s.vw >= 1900) ok(frac >= 0.85 && frac <= 0.9 + 1e-3, `${who} is ${(frac * 100).toFixed(1)}% of the viewport height (85-90% at 1920x1080)`);
+    else ok(frac >= 0.6, `${who} is ${(frac * 100).toFixed(1)}% of the viewport height (as large as the column allows)`);
+    ok(f && f.b <= s.foot + 0.5 && f.b >= s.foot - 90, `${who}'s feet near the bottom above the footer (${f?.b.toFixed(0)}, footer ${s.foot.toFixed(0)})`);
+  }
+  // name labels: shown, centred over the figure, above its head, inside the column, in their colours
+  for (const [who, n, f, col, color, font] of [["HEATER", s.hname, s.hfig, s.hero, "rgb(255, 122, 26)", "Oswald"], ["FROST", s.fname, s.ffig, s.side, "rgb(143, 211, 255)", "Nunito"]]) {
+    ok(n?.shown && n.text === who, `${who} label shown (${n?.text})`);
+    ok(Boolean(n) && n.size === "44px" && n.color === color && n.font.replace(/"/g, "").startsWith(font),`${who} label 44px ${color} ${font} (${n?.size} ${n?.color} ${n?.font})`);
+    ok(n && n.l >= col.l - 1 && n.r <= col.r + 1, `${who} label inside its column`);
+    ok(n && f && Math.abs((n.l + n.r) / 2 - (f.l + f.r) / 2) <= 45, `${who} label centred over the figure (label ${((n.l + n.r) / 2).toFixed(0)}, figure ${((f.l + f.r) / 2).toFixed(0)})`);
+    ok(n && f && n.b <= f.t + 2, `${who} label above the head (label bottom ${n?.b.toFixed(0)}, head ${f?.t.toFixed(0)})`);
+  }
+  // the ask box sits under the conversation, uncovered
+  ok(s.form.l >= s.hero.r - 0.5 && s.form.r <= s.side.l + 0.5, `ask box within the middle column (${s.form.l.toFixed(0)}..${s.form.r.toFixed(0)})`);
+  ok(s.inputFree !== false, `question box not covered (${s.inputFree === null ? "scrolled below the Ref card, not checked here" : "on screen"})`);
+  // the question replaces the wordmark; the Ref card's headline and badge
+  ok(!s.brandShown && s.asked.shown && s.asked.text === expect.asked, `question shown instead of the wordmark ("${s.asked.text}")`);
+  ok(s.asked.size === "26px" && s.asked.weight === "700" && s.asked.color === "rgb(236, 234, 244)" && s.asked.align === "center", `question style ${s.asked.size} ${s.asked.weight} ${s.asked.color} ${s.asked.align}`);
+  ok(s.headline && s.headline.length > 0, `Ref headline: "${s.headline}"`);
+  ok(s.badgeSize === "24.96px", `THE REF badge ${s.badgeSize} (double .78rem)`);
   for (const it of s.items) {
+    ok(it.l >= s.hero.r - 0.5, `${it.cls} starts at ${it.l.toFixed(0)}, after Heater's column at ${s.hero.r.toFixed(0)}`);
     ok(it.r <= s.side.l + 0.5, `${it.cls} ends at ${it.r.toFixed(0)}, before Frost's column at ${s.side.l.toFixed(0)}`);
     ok(it.covered !== true, `${it.cls} not covered at its right edge`);
   }
@@ -172,7 +224,24 @@ async function runCase(b, base, [w, h], kind) {
   const shot = await b.send("Page.captureScreenshot", { format: "png" });
   writeFileSync(join(OUT, `${name}.png`), Buffer.from(shot.data, "base64"));
   if (!atStamp) return { case: name, pass: false, fails: [`no stamp within 180 s (phase ${final.phase})`], final };
-  return judge(name, { atStamp, final }, kind === "dialogue" ? { questions: 3, chips: 3, sample: true } : { questions: 3, chips: 3 });
+  return judge(name, { atStamp, final }, kind === "dialogue" ? { questions: 3, chips: 3, sample: true, asked: "Is the hot hand real?" } : { questions: 3, chips: 3, asked: "Walk me through this game" });
+}
+
+/** The idle home view: the wordmark, no question, no name labels (Heater alone). */
+async function homeCase(b, base, [w, h]) {
+  const name = `home-${w}x${h}`;
+  await b.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+  await b.send("Page.navigate", { url: `${base}/demo.html?voice=0` });
+  const ev = async (expr) => (await b.send("Runtime.evaluate", { expression: expr, returnByValue: true, awaitPromise: true })).result.value;
+  for (let i = 0; i < 100 && !(await ev("document.body.dataset.ready === '1'")); i++) await sleep(100);
+  await sleep(500);
+  const s = await ev(`({ brand: !document.querySelector(".brand").hidden, asked: !document.getElementById("asked").hidden,
+    label: getComputedStyle(document.querySelector(".heater-name")).display })`);
+  const shot = await b.send("Page.captureScreenshot", { format: "png" });
+  writeFileSync(join(OUT, `${name}.png`), Buffer.from(shot.data, "base64"));
+  const fails = [];
+  if (!s.brand || s.asked) fails.push(`home: wordmark shown and no question (brand ${s.brand}, asked ${s.asked})`);
+  return { case: name, pass: fails.length === 0, fails, final: s };
 }
 
 mkdirSync(OUT, { recursive: true });
@@ -183,8 +252,12 @@ const results = [];
 try {
   await b.send("Page.enable");
   await b.send("Runtime.enable");
-  for (const vp of VIEWPORTS) for (const kind of ["dialogue", "market"]) {
-    const r = await runCase(b, base, vp, kind);
+  // offline: the Google Fonts stylesheet is blocked, so the labels use their fallback fonts here; the
+  // check reads the declared family (Oswald / Nunito first)
+  await b.send("Network.enable");
+  await b.send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
+  for (const vp of VIEWPORTS) for (const kind of ["home", "dialogue", "market"]) {
+    const r = kind === "home" ? await homeCase(b, base, vp) : await runCase(b, base, vp, kind);
     results.push(r);
     console.log(`${r.pass ? "PASS" : "FAIL"} ${r.case}${r.fails.length ? `\n  - ${r.fails.join("\n  - ")}` : ""}`);
   }

@@ -295,7 +295,21 @@ test("a chip is its own item on Frost's side, with no voice; the tooltip holds i
   assert.match(src, /li\.title = chip\.source \? `\$\{chip\.text\} \(source: \$\{chip\.source\}\)` : chip\.text;/);
   assert.match(src, /li\.tabIndex = 0;/);
   assert.ok(!/speak/.test(src));
-  assert.match(CSS, /\.cv-chip \{\s*align-self: flex-end; max-width: 80%;/);
+});
+
+test("a result chip reads as a fact, not a speaker: centred, grey, no tail, smaller, ice border only", () => {
+  const i = CSS.indexOf(".cv-chip {");
+  const rule = CSS.slice(i, CSS.indexOf("}", i));
+  assert.match(rule, /align-self: center;/, "centred in the thread");
+  assert.match(rule, /color: #9B97AD;/, "grey text");
+  assert.match(rule, /background: rgba\(255, 255, 255, \.045\);/, "subtle dark background");
+  assert.match(rule, /border-left: 3px solid var\(--ice\);/, "ice-blue left border");
+  const size = Number(rule.match(/font-size: (\d+)px/)[1]);
+  const bubble = Number(CSS.match(/\.cv-text \{[^}]*font-size: (\d+)px/)[1]);
+  assert.ok(size < bubble && size >= bubble - 3, `slightly smaller than the bubbles (${size} vs ${bubble})`);
+  assert.ok(!/\.cv-chip::(before|after)/.test(CSS), "no bubble tail");
+  assert.ok(!/\.cv-chip\.(pass|fail|info)\s*\{/.test(CSS), "the border is the only colour: no pass/fail colours");
+  assert.ok(!/class(Name)? = [^;]*\bcv\b[^-]/.test(JS.slice(JS.indexOf("function convoChip("), JS.indexOf("\n}\n", JS.indexOf("function convoChip(")))), "not a .cv bubble");
 });
 
 test("ask() runs the Frost exchange only when the answer has one; otherwise the Heater-only flow is unchanged", () => {
@@ -339,20 +353,67 @@ test("Space is wired to skip, and the Ref's voice avoids Frost's while he is on 
 test("layout: Heater left, conversation middle, Frost right; small portraits on top when narrow", () => {
   assert.ok(HTML.indexOf('class="hero"') < HTML.indexOf('class="talk"') && HTML.indexOf('class="talk"') < HTML.indexOf('class="frost-side"'));
   assert.ok(HTML.indexOf('id="convo"') < HTML.indexOf('id="ref"'), "the Ref's card comes after the conversation");
-  assert.match(CSS, /body\[data-cast="frost"\] \.stage \{\s*grid-template-columns: [^;]+;\s*grid-template-areas: "hero talk frost" "ask ask ask";/);
+  // big figures (8 Nov): both characters span both rows (the ask box sits under the conversation)
+  assert.match(CSS, /body\[data-cast="frost"\] \.stage \{\s*grid-template-columns: [^;]+;\s*grid-template-areas: "hero talk frost" "hero ask frost";/);
   assert.match(CSS, /grid-template-areas: "hero frost" "talk talk" "ask ask";/);
   assert.match(CSS, /\.cv-heater::before \{ left: -24px;/, "Heater's tail points left");
   assert.match(CSS, /\.cv-frost::before \{ right: -24px;/, "Frost's tail points right");
-  // rehearsal fix 1: the middle column keeps at least 560 px; side columns stretch, so a figure never
-  // spills over the conversation; at laptop widths both characters drop to about 60% height
-  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(560px, 760px\) minmax\(0, 1fr\);/);
-  assert.match(CSS, /\.frost-side \{ grid-area: frost; justify-self: stretch;[^}]*overflow: hidden;/);
-  assert.match(CSS, /body\[data-cast="frost"\] \.hero \{ justify-self: stretch;[^}]*overflow: hidden;/);
-  assert.match(CSS, /@media \(min-width: 901px\) and \(max-width: 1680px\) \{\s*body\[data-cast="frost"\] \.hero \.h-root, body\[data-cast="frost"\] \.f-root \{\s*height: min\(calc\(\(100vh - 230px\) \* \.6\), 432px\);/);
+  // the middle column keeps at least 560 px (640 on wide screens); each side column is a size container
+  // that clips, and a figure is at most 88% of the viewport height and 165% of its column width
+  assert.match(CSS, /grid-template-columns: minmax\(0, 1fr\) minmax\(560px, clamp\(560px, 100vw - 1280px, 640px\)\) minmax\(0, 1fr\);/);
+  assert.match(CSS, /body\[data-cast="frost"\] \.hero, \.frost-side \{\s*--fig-h: min\(88vh, calc\(100vh - var\(--ru-h\) - 96px\), 165cqw\);\s*container-type: inline-size;[^}]*overflow: clip;/);
+  assert.match(CSS, /body\[data-cast="frost"\] #heater, body\[data-cast="frost"\] #frost \{ position: sticky; bottom: var\(--ru-h\); \}/, "figures stand above the footer");
+  assert.match(CSS, /body\[data-cast="frost"\] \.hero \.h-root \{ height: var\(--fig-h\);/);
+  assert.match(CSS, /\.f-root \{[^}]*height: var\(--fig-h, /);
   assert.match(CSS, /@media \(max-width: 900px\) \{\s*\/\* small portraits/);
   assert.match(CSS, /\.cv-heater \{[^}]*border: 3px solid #FF7A1A/);
   assert.match(CSS, /\.cv-frost \{[^}]*border: 2px solid var\(--ice\)/);
   assert.match(CSS, /\.f-root \{[^}]*transform: translateX\(40px\); opacity: 0;/, "Frost waits to slide in");
   assert.match(CSS, /\.f-root\.entered \{ transform: none; opacity: 1; \}/);
   assert.match(CSS, /body\[data-cast="frost"\] \.ref \{ margin: 18px auto 0;/, "the Ref's card is centred");
+});
+
+test("name labels: HEATER in Oswald orange, FROST in Nunito ice blue, 44 px, glow; fonts from Google Fonts", () => {
+  assert.match(HTML, /<section class="hero" aria-label="Heater">\s*<p class="cast-name heater-name" aria-hidden="true">Heater<\/p>/);
+  assert.match(HTML, /<section class="frost-side"[^>]*>\s*<p class="cast-name frost-name" aria-hidden="true">Frost<\/p>/);
+  assert.match(HTML, /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Nunito:wght@700&family=Oswald:wght@700&display=swap">/);
+  assert.match(CSS, /\.cast-name \{ display: none; \}/, "only with both characters on stage");
+  assert.match(CSS, /body\[data-cast="frost"\] \.cast-name \{[^}]*font-size: 44px;[^}]*text-transform: uppercase;/);
+  assert.match(CSS, /\.heater-name \{[^}]*font-family: "Oswald"[^}]*font-weight: 700; letter-spacing: 4px;[^}]*color: #FF7A1A; text-shadow: 0 0 16px rgba\(255, 122, 26/);
+  assert.match(CSS, /\.frost-name \{[^}]*font-family: "Nunito"[^}]*font-weight: 700;[^}]*color: #8FD3FF; text-shadow: 0 0 16px rgba\(143, 211, 255/);
+});
+
+test("the question as asked replaces the wordmark during an exchange; the wordmark is back on the home view", () => {
+  assert.match(HTML, /<p class="brand">HEAT<span>CHECK<\/span><\/p>\s*<p class="asked" id="asked" hidden><\/p>/);
+  assert.match(CSS, /\.asked \{[^}]*text-align: center;[^}]*font: 700 26px\/1\.25 system-ui[^}]*color: #ECEAF4;/);
+  const fn = JS.slice(JS.indexOf("function showAsked("), JS.indexOf("\n}\n", JS.indexOf("function showAsked(")));
+  assert.match(fn, /ui\.asked\.hidden = !text;\s*ui\.brand\.hidden = Boolean\(text\);/);
+  const resetFn = JS.slice(JS.indexOf("function reset() {"), JS.indexOf("\n}\n", JS.indexOf("function reset() {")));
+  assert.match(resetFn, /showAsked\(""\);/, "each exchange starts from the wordmark");
+  assert.match(JS, /reset\(\);\s*showAsked\(question\);\s*voice\.stopSpeaking\(\);\s*log\(`question: \$\{question\}`\);/, "typed, chip or voice question");
+  assert.match(JS, /reset\(\);\s*showAsked\(ASK_MESSAGE\);/, "a market card's Ask");
+  assert.match(JS, /if \(view !== "talk"\) \{[^}]*showAsked\(""\);/, "board and idea views show the wordmark");
+  assert.ok(HTML.indexOf('id="btn-board"') > HTML.indexOf('id="asked"'), "view buttons stay on the right of the top bar");
+});
+
+test("Ref card: double-size badge, headline (ref_headline or verdict + title), explanation at 70%", async () => {
+  const { refHeadline } = await import("../web/frost/frost-model.js");
+  assert.equal(refHeadline("X FROM MAX", { verdict: "NOT_SUPPORTED", claimId: "CONF-HH" }), "X FROM MAX", "Max's field wins");
+  // Max's patterns (heatcheck/api/display_titles.py, e031a91), for answers without the field
+  assert.equal(refHeadline(undefined, { verdict: "INSUFFICIENT_EVIDENCE", claimId: "CONF-HH", title: "x" }), "NOT ENOUGH EVIDENCE: HOT HAND NOT SHOWN");
+  assert.equal(refHeadline(null, { verdict: "SURVIVED_PROTOCOL", claimId: "CONF-HA" }), "SURVIVED: HOME ADVANTAGE HOLDS UP");
+  assert.equal(refHeadline(null, { verdict: "NOT_SUPPORTED", claimId: "GP-REST" }), "NOT SUPPORTED: REST AND BACK-TO-BACKS DOESN'T SHOW");
+  assert.equal(refHeadline(null, { verdict: "DATA_INVALID", claimId: "CONF-HH" }), "DATA INVALID: NO RULING");
+  assert.equal(refHeadline(null, { verdict: null, claimId: "NONE" }), "NO TEST: NO RULING");
+  // market cards (no pattern from Max) and other cards: stamp words and title
+  assert.equal(refHeadline(null, { title: "Nets at Hawks · forecast vs. market", stampText: "Sample" }), "Sample — Nets at Hawks · forecast vs. market");
+  assert.equal(refHeadline("  ", { title: "Tamper test" }), "Tamper test");
+  assert.match(HTML, /<header><span class="ref-badge">THE REF<\/span><\/header>\s*<p class="ref-title ref-headline" id="ref-title"><\/p>\s*<p class="ref-text" id="ref-text"><\/p>/);
+  assert.match(CSS, /\.ref-badge \{ font: 700 1\.56rem\/1 var\(--mono\);/, "double the old .78rem");
+  assert.match(CSS, /\.ref-headline \{[^}]*font: 700 30px\/1\.15 var\(--cond\); text-transform: uppercase; color: #2EC4B6;/);
+  assert.match(CSS, /\.ref-text \{[^}]*font: 500 22px\/1\.4 [^}]*opacity: \.7;/);
+  assert.match(JS, /refHeadline: forced \? null : api\?\.ref_headline \?\? null,/);
+  assert.match(JS, /ui\.refTitle\.textContent = refHeadline\(show\.headline, \{ verdict: show\.verdict, claimId: show\.claimId, title: show\.title, stampText: show\.stamp\.text \}\);/);
+  assert.match(JS, /headline: a\.refHeadline, verdict: decision, claimId: a\.claimId,/);
+  assert.match(JS, /headline: resp\.ref_headline,/);
 });

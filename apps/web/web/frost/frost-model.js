@@ -83,6 +83,39 @@ export function normalizeExchange(x) {
   return { take, challenges, frostReaction: str(x?.frostReaction), heaterReaction: str(x?.heaterReaction) };
 }
 
+/** Max's headline table (heatcheck/api/display_titles.py, e031a91), copied for answers that predate his
+ *  ``ref_headline`` field. Keep in step with his file. */
+export const HEADLINE_TITLES = {
+  "HH-K3": "Hot hand", "HH-K2": "Hot hand", "CONF-HH": "Hot hand",
+  "GP-REST": "Rest and back-to-backs", "GP-ELO": "Elo vs the base rate",
+  "CONF-HA": "Home advantage", "CONF-MOM": "Momentum",
+};
+export const HEADLINE_PATTERNS = {
+  SURVIVED_PROTOCOL: "SURVIVED: {TITLE} HOLDS UP",
+  NOT_SUPPORTED: "NOT SUPPORTED: {TITLE} DOESN'T SHOW",
+  INSUFFICIENT_EVIDENCE: "NOT ENOUGH EVIDENCE: {TITLE} NOT SHOWN",
+  DATA_INVALID: "DATA INVALID: NO RULING",
+  BLOCKED: "NO TEST: NO RULING",
+};
+
+/** The Ref card's first line (user, 8 Nov): Max's ``ref_headline`` when the answer has one; else his
+ *  pattern for a protocol verdict (same table as his server); else (market cards, which have no pattern,
+ *  and the tamper / idea / what-if cards) "<stamp words> — <title>", shown in capitals by the CSS. */
+export function refHeadline(apiHeadline, { verdict, claimId, title, stampText } = {}) {
+  const h = String(apiHeadline ?? "").trim();
+  if (h) return h;
+  if (verdict !== undefined) {
+    const v = verdict ?? (claimId == null || claimId === "NONE" ? "BLOCKED" : null);
+    if (v && HEADLINE_PATTERNS[v]) {
+      const t = HEADLINE_TITLES[claimId] || String(title ?? claimId ?? "");
+      return HEADLINE_PATTERNS[v].replace("{TITLE}", t.toUpperCase());
+    }
+  }
+  const s = String(stampText ?? "").trim();
+  const t = String(title ?? "").trim();
+  return s && t ? `${s} — ${t}` : s || t;
+}
+
 /** The exchange from Max's dialogue answer, or null (Heater-only flow). Shape of the sample response
  *  (user, 8 Nov; Max's API to match): ``frost`` = [{check, question, chip (text), source}] and
  *  ``frost_reaction``. ``check`` is never shown (no type tags); ``source`` goes on the chip's tooltip.
