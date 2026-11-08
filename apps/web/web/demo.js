@@ -676,14 +676,14 @@ async function askMarket(g) {
 // ------------------------------------------------------------------ voice input
 const micStatus = $("mic-status");
 const voice = createVoice({
-  // Browser speech recognition only: the server transcription route has no provider in the demo.
-  provider: () => "browser",
+  // Default: record and transcribe on our server (every browser); browser speech is a fallback only.
   onState: (s) => {
     if (s === "LISTENING") state.heater?.setState("listening");
     else if (!state.busy && state.heater?.state === "listening") state.heater.setState("idle");
   },
-  onTranscript: (text) => { micStatus.textContent = ""; ui.q.value = text; ask(text); },
-  onStatus: (s) => { micStatus.textContent = /^(Hearing|Listening)/.test(s) ? s : ""; },
+  // The transcript goes in the question box for the user to confirm or edit; nothing is asked yet.
+  onTranscript: (text) => { ui.q.value = text; ui.q.focus(); micStatus.textContent = MIC.HEARD; },
+  onStatus: (s) => { micStatus.textContent = s; },
   onError: (e) => { micStatus.textContent = e; },
 });
 // voice.js writes text labels into the button; keep a drawn mic icon instead
@@ -707,7 +707,21 @@ const keepIcon = () => {
 keepIcon();
 new MutationObserver(keepIcon).observe(micBtn, { childList: true, characterData: true, subtree: true, attributeFilter: ["aria-pressed"] });
 if (voice.support.ok) {
-  micBtn.addEventListener("click", () => voice.toggle());   // toggle() reaches rec.start() with no await
+  // Tap to start and tap to stop, or hold and release (held > 0.5 s). Recording stops at 30 s.
+  let downAt = 0, startedHere = false;
+  micBtn.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    downAt = performance.now();
+    startedHere = !voice.isListening();
+    if (startedHere) voice.start();                  // fallback speech: start() runs inside the gesture
+  });
+  micBtn.addEventListener("pointerup", () => {
+    if (!downAt) return;
+    const held = performance.now() - downAt;
+    downAt = 0;
+    if (!startedHere || held > 500) voice.stop();
+  });
+  micBtn.addEventListener("click", (e) => { if (e.detail === 0) voice.toggle(); });  // keyboard
 } else {
   micBtn.hidden = true;
   micStatus.textContent = MIC.UNSUPPORTED;

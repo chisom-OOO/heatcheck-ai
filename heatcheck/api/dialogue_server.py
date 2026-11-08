@@ -48,6 +48,8 @@ from heatcheck.agents.scenario import (
     scenario_menu,
 )
 from heatcheck.api.display_titles import DISPLAY_TITLES
+from heatcheck.api.transcription import MAX_BYTES as TRANSCRIBE_MAX
+from heatcheck.api.transcription import TranscribeError, Transcriber
 from heatcheck.contracts.bundle import BundleError, load_bundle
 from heatcheck.contracts.live_forecast import (
     LiveForecastError,
@@ -60,6 +62,7 @@ from heatcheck.ledger.evidence import EvidenceLedger
 CONSOLE = Path(__file__).with_name("console.html")
 
 MAX_BODY = 16 * 1024
+TRANSCRIBE_MAX_BYTES = TRANSCRIBE_MAX
 MAX_QUESTION = 500
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765"}
 
@@ -333,7 +336,8 @@ SCENARIO_PATHS = ("/api/route", "/api/scenario", "/api/scenario/estimate")
 
 
 def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
-                 investigation: InvestigationConfig | None = None, scenario: ScenarioConfig | None = None):
+                 investigation: InvestigationConfig | None = None, scenario: ScenarioConfig | None = None,
+                 transcriber: Transcriber | None = None):
     lock = threading.Lock()  # one turn at a time: the ledger is append-only and file-backed
 
     class Handler(BaseHTTPRequestHandler):
@@ -408,7 +412,41 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
             except Exception as e:  # never invent an estimate
                 return self._send(500, {"error": f"scenario failed: {type(e).__name__}"})
 
+        def _transcribe(self):
+            """POST /api/transcribe: one WAV clip in, {"transcript"} out. The audio is never stored."""
+            ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+            n = int(self.headers.get("Content-Length") or 0)
+            if n > TRANSCRIBE_MAX_BYTES:
+                # Read and drop the upload (never stored) so the client sees the 413 instead of a
+                # reset connection; beyond 8 MB just close.
+                if n <= 4 * TRANSCRIBE_MAX_BYTES:
+                    left = n
+                    while left > 0:
+                        chunk = self.rfile.read(min(left, 65536))
+                        if not chunk:
+                            break
+                        left -= len(chunk)
+                else:
+                    self.close_connection = True
+                return self._send(413, {"error": "TOO_LARGE",
+                                        "message": "That recording is too long. Keep it under 30 seconds."})
+            audio = self.rfile.read(n) if n > 0 else b""  # always read first, so every answer arrives
+            if transcriber is None or not transcriber.configured:
+                return self._send(503, {"error": "SERVICE_UNAVAILABLE",
+                                        "message": "Voice transcription is off on this server."})
+            if ctype not in ("audio/wav", "audio/x-wav", "audio/wave"):
+                return self._send(415, {"error": "BAD_AUDIO", "message": "Send 16 kHz mono 16-bit PCM WAV."})
+            try:
+                return self._send(200, transcriber.transcribe(audio))
+            except TranscribeError as e:
+                return self._send(e.status, e.body())
+            except Exception as e:  # never invent a transcript
+                return self._send(502, {"error": "SERVICE_UNAVAILABLE",
+                                        "message": f"Transcription failed ({type(e).__name__})."})
+
         def do_POST(self):
+            if self.path == "/api/transcribe":
+                return self._transcribe()
             if self.path not in ("/api/dialogue", "/api/investigate", *SCENARIO_PATHS):
                 return self._send(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
@@ -445,6 +483,7 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
 
 def serve(dialogue: Dialogue, port: int = 8770, live_forecast: Path | None = None,
           investigation: InvestigationConfig | None = None,
-          scenario: ScenarioConfig | None = None) -> ThreadingHTTPServer:
+          scenario: ScenarioConfig | None = None,
+          transcriber: Transcriber | None = None) -> ThreadingHTTPServer:
     return ThreadingHTTPServer(("127.0.0.1", port),
-                               make_handler(dialogue, live_forecast, investigation, scenario))
+                               make_handler(dialogue, live_forecast, investigation, scenario, transcriber))
