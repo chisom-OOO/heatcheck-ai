@@ -157,8 +157,10 @@ function fillCard(card, g, board, { onAsk }, slot) {
  *  ``onScenario(game, scenario, data)`` does the same for one preset scenario ("What if…?");
  *  ``onOwnScenario(game, text)`` takes the card's "Your own scenario" box into the free-text flow;
  *  ``onRetry()`` adds a "Try again" button when the board could not load.
+ *  ``notice``: the full safer-gambling text (Max's responsible_use.json), shown in the header above
+ *  the cards whenever prices are shown.
  *  Returns {update(game)}: redraws that game's card in place once its comparison has answered. */
-export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loadScenarios, onRetry } = {}) {
+export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loadScenarios, onRetry, notice } = {}) {
   root.replaceChildren();
   const none = { update: () => false };
   const head = el("header", "board-head");
@@ -176,6 +178,11 @@ export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loa
   }
   if (board.isSample) head.append(el("p", "board-sample", "SAMPLE forecast: the forecast values are invented, not a real forecast."));
   head.append(el("p", "board-note", "Forecast vs. the market's quoted bid and ask. Descriptive only, never a betting tip."));
+  if (typeof notice === "string" && notice.trim()) {
+    const n = el("p", "board-notice", notice);
+    if (n.setAttribute) n.setAttribute("role", "note");
+    head.append(n);
+  }
   root.append(head);
   if (!board.games.length) {
     root.append(el("p", "board-note", "The forecast file lists no games."));

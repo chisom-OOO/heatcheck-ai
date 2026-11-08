@@ -31,8 +31,8 @@ export const poseFile = (state) => `poses/${POSE_FOR_STATE[state] || "idle"}.web
 export const PLACEHOLDER_LINES = Object.freeze({
   "HH-K2": ["Two in a row? He's HEATING UP! Give him the ball!"],
   "HH-K3": ["Three straight? He's ON FIRE! Nobody can guard him now!"],
-  "GP-REST": ["Fresh legs WIN games. Bet the rested team, every time!"],
-  "*": ["I've seen enough. This one is a LOCK!"],
+  "GP-REST": ["Fresh legs WIN games. The rested team takes it, every time!"],
+  "*": ["I've seen enough. I KNOW I'm right about this one!"],
 });
 
 /** Pull a {claim_id: [lines]} table out of a personality file. Accepts

@@ -24,6 +24,7 @@ import {
   ESTIMATE_URL, SCENARIO_URL, confirmBody, whatifStamp, postJson, renderEstimate, renderInterpretation, routeMessage,
 } from "./whatif/whatif.js";
 import { MIC, createVoice } from "./voice.js";
+import { firstTimeThisSession, loadResponsibleUse } from "./responsible.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
@@ -38,6 +39,7 @@ const ui = {
   refText: $("ref-text"), stamp: $("stamp"), evidence: $("evidence"), evidenceBody: $("evidence-body"),
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"),
+  rgShort: $("rg-short"), rgFirst: $("rg-first"), rgFirstText: $("rg-first-text"), rgFirstOk: $("rg-first-ok"),
 };
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
   ledger: null, turn: 0, busy: false, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
@@ -319,7 +321,21 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.rgFirst.hidden = true; }
+}
+
+// ------------------------------------------------------------------ responsible use (safer gambling)
+// Max's responsible_use.json is the only source of the wording (see responsible.js).
+/** The full notice, or the footer's short text if Max's file could not be read. */
+const responsibleFull = () => state.responsible?.full || ui.rgShort.textContent;
+function sessionStore() { try { return window.sessionStorage; } catch { return null; } }
+/** The full notice above the conversation, the first time a market card or what-if is asked about
+ *  in this browser session. It stays until "Got it" or a view change; it never blocks the answer. */
+function showFirstAskNotice() {
+  if (!firstTimeThisSession(sessionStore())) return;
+  ui.rgFirstText.textContent = responsibleFull();
+  ui.rgFirst.hidden = false;
+  log("responsible use: first-ask notice shown");
 }
 
 function toggleView(view, open) {
@@ -415,6 +431,7 @@ const boardHandlers = () => ({
   onScenario: (g, s, data) => askScenario(g, s, data),
   // "Your own scenario" on a card: Max's free-text what-if flow, pinned to that card's game.
   onOwnScenario: (g, text) => { if (!state.busy) runScenario(text, g.row.game_id); },
+  notice: responsibleFull(),
 });
 
 async function openBoard() {
@@ -431,6 +448,7 @@ async function loadBoardView() {
   ui.board.replaceChildren(Object.assign(document.createElement("p"), { className: "board-note", textContent: "Loading tonight's games…" }));
   if (!state.busy) state.heater?.setState("thinking");
   const board = await loadForecast();
+  await state.responsibleLoad;              // a local file, read at start: the header notice is ready
   if (!state.busy) state.heater?.setState("idle");
   log(`board: ${board.status}${board.reason ? ` (${board.reason})` : ""}, ${board.games.length} games`);
   if (board.status !== "OK") {              // not kept: opening the board again retries
@@ -469,6 +487,7 @@ async function askScenario(g, s, data) {
   setBusy(true);
   setView("talk");
   reset();
+  showFirstAskNotice();
   voice.stopSpeaking();
   const h = state.heater;
   log(`scenario ${g.row.game_id} ${s.scenario_id}: ${data.baseline.p_team_win} -> ${s.p_team_win}`);
@@ -575,6 +594,7 @@ async function runScenario(question, gameId) {
   setBusy(true);
   setView("talk");
   reset();
+  showFirstAskNotice();
   voice.stopSpeaking();
   const h = state.heater;
   h.setState("listening");
@@ -676,6 +696,7 @@ async function askMarket(g) {
   setBusy(true);
   setView("talk");
   reset();
+  showFirstAskNotice();
   voice.stopSpeaking();
   const h = state.heater;
   h.setState("listening");
@@ -833,6 +854,14 @@ async function main() {
   // The home view first: no network wait before it is drawn, and the board is fetched only when
   // opened. The evidence ledger loads in the background; a question waits for it (ledgerReady).
   setView("talk");
+  // Safer-gambling wording from Max's single source; the static footer text stands if it fails.
+  state.responsibleLoad = loadResponsibleUse().then((r) => {
+    state.responsible = r;
+    if (r) ui.rgShort.textContent = r.short;
+    log(`responsible use: ${r ? "responsible_use.json" : "not loaded, static footer text"}`);
+    return r;
+  });
+  ui.rgFirstOk.addEventListener("click", () => { ui.rgFirst.hidden = true; });
   ui.boardBtn.addEventListener("click", () => toggleView("board", openBoard));
   ui.ideasBtn.addEventListener("click", () => toggleView("ideas", openIdeas));
   state.ledgerLoad = loadLedger().then((l) => {

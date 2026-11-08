@@ -24,8 +24,8 @@ body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflo
   position: relative; min-height: 100vh; min-height: 100dvh;
   display: grid;
   grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-areas: "hero talk" "ask ask";
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-areas: "hero talk" "ask ask" "foot foot";
   gap: 0 24px; padding: 20px clamp(16px, 3vw, 48px) 18px;
   isolation: isolate;
 }
@@ -284,7 +284,7 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
 
 /* ------------------------------------------------------------------ narrow screens */
 @media (max-width: 860px) {
-  .stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "hero" "talk" "ask"; grid-template-rows: auto auto auto; }
+  .stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "hero" "talk" "ask" "foot"; grid-template-rows: auto auto auto auto; }
   .hero .h-root { height: 56vh; min-height: 420px; }
   .talk { max-width: none; }
   .bubble { margin-left: 0; margin-top: 16px; }
@@ -365,3 +365,27 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
 .mcard-verdict.pending { font-style: italic; }
 .board-error { color: var(--heat); }
 .board-retry { margin-top: 8px; }
+
+/* Experience: responsible use (safer gambling). Text from Max's responsible_use.json. Calm, not an ad:
+   muted text, no colour fills; always visible in the footer. */
+.rg-footer {
+  grid-area: foot; position: relative; z-index: 2; justify-self: center; max-width: 1100px; width: 100%;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid #2C2A3C; text-align: center;
+}
+.rg-footer p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.4; }
+.board-notice {
+  margin: 6px 0 2px; padding: 8px 12px; border-left: 3px solid var(--ref);
+  background: rgba(46, 196, 182, .06); color: #C9C6DA; font-size: .82rem; line-height: 1.45;
+}
+.rg-first {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 14px; align-items: start;
+  padding: 12px 14px; border: 1.5px solid rgba(46, 196, 182, .45); border-radius: 12px;
+  background: rgba(46, 196, 182, .06);
+}
+.rg-first-text { margin: 0; color: #D7D4E6; font-size: .88rem; line-height: 1.45; }
+.rg-first-ok {
+  font: 700 .85rem var(--cond); letter-spacing: .06em; color: var(--ref-ink); background: transparent;
+  border: 1.5px solid rgba(46, 196, 182, .6); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+}
+.rg-first-ok:focus-visible { outline: 2px solid var(--ref); outline-offset: 2px; }
+@media (max-width: 480px) { .rg-first { grid-template-columns: 1fr; } .rg-first-ok { justify-self: start; } }
