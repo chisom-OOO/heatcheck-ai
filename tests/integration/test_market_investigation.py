@@ -354,7 +354,8 @@ def test_home_bias_caveat_when_model_favours_home_more_than_market(bundle):
     assert ident["caveats"] == [HOME_BIAS_CAVEAT]
     assert out["verdict"] == VERDICT_WORTH and "Edge unverified" in out["verdict"]  # verdict unchanged
     assert HOME_BIAS_CAVEAT not in out["ref_text"]
-    assert "own bias" in out["heater_text"]  # Heater reacts, in words
+    # Heater reacts in words, AFTER the Ref: the bias line is his reaction, not his first line
+    assert "own bias" in out["heater_reaction"] and "own bias" not in out["heater_text"]
 
 
 @pytest.mark.parametrize("p_home", [0.2, 0.265])  # below the bid 0.26; inside the spread 0.26-0.27
@@ -362,7 +363,7 @@ def test_no_home_bias_caveat_when_model_not_above_the_ask(bundle, p_home):
     sha, recs = bundle
     out, _ = run(verified(recs), sha, doc=forecast_doc(p_home))
     assert out["flag"] != "FORECAST_ABOVE_ASK" and out["caveats"] == []
-    assert "own bias" not in out["heater_text"]
+    assert "own bias" not in out["heater_text"] + out["heater_reaction"]
 
 
 def test_no_home_bias_caveat_for_the_away_team_or_a_sample(bundle):
@@ -380,14 +381,44 @@ def test_no_home_bias_caveat_for_the_away_team_or_a_sample(bundle):
     assert out["caveats"] == []
 
 
-def test_llm_heater_is_told_about_the_bias(bundle):
+# ------------------------------------------------------------------ Heater speaks before the Ref (rehearsal fix)
+
+REF_WORDS = ("ref", "verdict", "unverified", "worth investigating", "can't compare", "own bias", "calibration")
+
+
+def test_heater_first_line_never_mentions_the_ref_or_its_verdict(bundle):
+    sha, recs = bundle
+    for kw in ({}, {"as_of": "2026-11-07T22:30:00Z"}, {"doc": forecast_doc(0.2)}):
+        out, ident = run(verified(recs), sha, **kw)
+        low = out["heater_text"].lower()
+        assert not [w for w in REF_WORDS if w in low], out["heater_text"]
+        assert out["heater_reaction"] and ident["heater"]["reaction"] == out["heater_reaction"]
+
+
+def test_llm_heater_is_not_given_the_verdict_or_the_bias(bundle):
     sha, recs = bundle
     seen = []
-    run(verified(recs), sha, heater_llm=lambda s_, u: seen.append(json.loads(u)) or "")
-    assert seen and seen[0]["known_model_bias"] == HOME_BIAS_CAVEAT
+    run(verified(recs), sha, heater_llm=lambda s_, u: seen.append((s_, json.loads(u))) or "")
+    system, ctx = seen[0]
+    assert "refs_verdict" not in ctx and "known_model_bias" not in ctx
+    assert "BEFORE the Ref" in system
+
+
+def test_llm_take_that_mentions_the_ref_falls_back_to_the_template(bundle):
+    sha, recs = bundle
+    out, _ = run(verified(recs), sha, heater_llm=lambda s_, u: "The Ref will say worth a look, I bet!")
+    assert out["heater_source"].startswith("TEMPLATE (guard rejected") and "ref:" in out["heater_source"]
+
+
+def test_board_load_with_no_message_does_not_call_the_model(bundle):
+    sha, recs = bundle
+    called = []
+    out, _ = run(verified(recs), sha, message="", heater_llm=lambda s_, u: called.append(1) or "x")
+    assert called == [] and out["heater_source"] == "TEMPLATE"
 
 
 def test_no_home_bias_caveat_when_the_card_cannot_compare(bundle):
     sha, recs = bundle
     out, _ = run(verified(recs), sha, as_of="2026-11-07T22:30:00Z")  # after tip: Can't compare
-    assert out["verdict"] == VERDICT_CANT and out["caveats"] == [] and "own bias" not in out["heater_text"]
+    assert out["verdict"] == VERDICT_CANT and out["caveats"] == []
+    assert "own bias" not in out["heater_text"] + out["heater_reaction"]

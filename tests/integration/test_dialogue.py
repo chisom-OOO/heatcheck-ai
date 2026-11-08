@@ -24,6 +24,7 @@ pytest.importorskip("pandas")
 
 from heatcheck.agents.dialogue import (  # noqa: E402
     HEATER_FALLBACK,
+    HEATER_TAKE_FALLBACK,
     NO_TEST_REF,
     Dialogue,
     LLMChallenger,
@@ -33,6 +34,7 @@ from heatcheck.agents.dialogue import (  # noqa: E402
     ref_facts,
     ref_guard,
     ref_template,
+    take_mentions_ref,
 )
 from heatcheck.agents.llm import LLMUnavailable, MetaChat, usage_summary  # noqa: E402
 from heatcheck.agents.views import shot_view_from_league  # noqa: E402
@@ -182,7 +184,8 @@ def test_heater_with_invented_number_falls_back_to_fixed_line(view, tmp_path):
     t = FakeTransport(heater="SHOOTERS HIT 61.3% WHEN HOT, FOLKS!")
     out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
     assert out["sources"]["heater"].startswith("TEMPLATE (guard rejected numbers")
-    assert out["heater_text"] == HEATER_FALLBACK[out["verdict"]]
+    assert out["heater_text"] == HEATER_TAKE_FALLBACK   # verdict-blind: spoken before the Ref
+    assert out["heater_reaction"] == HEATER_FALLBACK[out["verdict"]]  # after the stamp
 
 
 def test_ref_template_shows_display_title_and_reason(view, tmp_path):
@@ -398,3 +401,32 @@ def test_console_page_served_and_other_paths_404():
         assert e.value.code == 404
     finally:
         srv.shutdown()
+
+
+# --------------------------------------------------------------------------- Heater speaks before the Ref
+
+def test_heater_take_is_written_without_the_verdict(view, tmp_path):
+    t = FakeTransport(heater="HOT HAND IS REAL, I can FEEL it!")
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    heater_calls = [c for c in t.calls if c.get("stream")]
+    ctx = json.loads(heater_calls[0]["messages"][-1]["content"])
+    assert set(ctx) == {"fan_question"}            # no verdict, no claim result
+    assert "BEFORE the Ref" in heater_calls[0]["messages"][0]["content"]
+    assert out["heater_text"] == "HOT HAND IS REAL, I can FEEL it!"
+    assert out["heater_reaction"] == HEATER_FALLBACK[out["verdict"]]
+
+
+@pytest.mark.parametrize("line", ["The Ref says NOT SUPPORTED, folks!", "It SURVIVED the checks!",
+                                  "No registered test, so just my opinion!"])
+def test_heater_take_that_mentions_the_ref_falls_back(view, tmp_path, line):
+    t = FakeTransport(heater=line)
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    assert out["heater_text"] == HEATER_TAKE_FALLBACK
+    assert out["sources"]["heater"].startswith("TEMPLATE (guard rejected Ref mention")
+
+
+def test_no_test_question_take_says_nothing_about_tests_and_reaction_does(view, tmp_path):
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), None).turn("Who has the best sneakers?")
+    assert out["claim_id"] == "NONE" and out["heater_text"] == HEATER_TAKE_FALLBACK
+    assert take_mentions_ref(out["heater_text"]) == []
+    assert "no registered test" in out["heater_reaction"]

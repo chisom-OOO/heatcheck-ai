@@ -63,47 +63,59 @@ KINDS = ("MARKET_PRICE", "VENUE_NEUTRAL", "HOME_AWAY_SWAP", "PLAYER_OUT", "REST"
 
 # ------------------------------------------------------------------ teams
 
-# (full name as in the forecast file, aliases matched case-insensitively, abbreviation matched as-is)
+# (full name as in the forecast file, aliases, abbreviation). Aliases match case-, space- and
+# punctuation-insensitively ("Trail Blazers", "trailblazers", "trail-blazers"); the abbreviation
+# matches in capitals, and in any case only where it is not an ordinary word.
 TEAMS: tuple[tuple[str, tuple[str, ...], str], ...] = (
     ("Atlanta Hawks", ("atlanta", "hawks"), "ATL"),
-    ("Boston Celtics", ("boston", "celtics"), "BOS"),
+    ("Boston Celtics", ("boston", "celtics", "celts"), "BOS"),
     ("Brooklyn Nets", ("brooklyn", "nets"), "BKN"),
     ("Charlotte Hornets", ("charlotte", "hornets"), "CHA"),
     ("Chicago Bulls", ("chicago", "bulls"), "CHI"),
     ("Cleveland Cavaliers", ("cleveland", "cavaliers", "cavs"), "CLE"),
     ("Dallas Mavericks", ("dallas", "mavericks", "mavs"), "DAL"),
-    ("Denver Nuggets", ("denver", "nuggets"), "DEN"),
+    ("Denver Nuggets", ("denver", "nuggets", "nugs"), "DEN"),
     ("Detroit Pistons", ("detroit", "pistons"), "DET"),
     ("Golden State Warriors", ("golden state", "warriors", "dubs"), "GSW"),
     ("Houston Rockets", ("houston", "rockets"), "HOU"),
     ("Indiana Pacers", ("indiana", "pacers"), "IND"),
-    ("LA Clippers", ("la clippers", "los angeles clippers", "clippers"), "LAC"),
+    ("LA Clippers", ("la clippers", "los angeles clippers", "clippers", "clips"), "LAC"),
     ("Los Angeles Lakers", ("la lakers", "los angeles lakers", "lakers"), "LAL"),
-    ("Memphis Grizzlies", ("memphis", "grizzlies"), "MEM"),
+    ("Memphis Grizzlies", ("memphis", "grizzlies", "grizz"), "MEM"),
     ("Miami Heat", ("miami",), "MIA"),  # "heat" alone is HeatCheck's own word
     ("Milwaukee Bucks", ("milwaukee", "bucks"), "MIL"),
-    ("Minnesota Timberwolves", ("minnesota", "timberwolves", "wolves"), "MIN"),
-    ("New Orleans Pelicans", ("new orleans", "pelicans"), "NOP"),
+    ("Minnesota Timberwolves", ("minnesota", "timberwolves", "t wolves", "wolves"), "MIN"),
+    ("New Orleans Pelicans", ("new orleans", "pelicans", "pels", "nola"), "NOP"),
     ("New York Knicks", ("new york", "knicks"), "NYK"),
     ("Oklahoma City Thunder", ("oklahoma city", "oklahoma", "thunder"), "OKC"),
     ("Orlando Magic", ("orlando", "magic"), "ORL"),
-    ("Philadelphia 76ers", ("philadelphia", "76ers", "sixers"), "PHI"),
+    ("Philadelphia 76ers", ("philadelphia", "philly", "76ers", "sixers"), "PHI"),
     ("Phoenix Suns", ("phoenix", "suns"), "PHX"),
-    ("Portland Trail Blazers", ("portland", "trail blazers", "blazers"), "POR"),
+    ("Portland Trail Blazers", ("portland", "trail blazers", "blazers", "rip city"), "POR"),
     ("Sacramento Kings", ("sacramento", "kings"), "SAC"),
     ("San Antonio Spurs", ("san antonio", "spurs"), "SAS"),
-    ("Toronto Raptors", ("toronto", "raptors"), "TOR"),
+    ("Toronto Raptors", ("toronto", "raptors", "raps"), "TOR"),
     ("Utah Jazz", ("utah", "jazz"), "UTA"),
-    ("Washington Wizards", ("washington", "wizards"), "WAS"),
+    ("Washington Wizards", ("washington", "wizards", "wiz"), "WAS"),
 )
+# Abbreviations matched in any case: not English words (so "was", "min", "den" stay words).
+LOWER_ABBR_OK = {"ATL", "BKN", "BOS", "CLE", "DAL", "GSW", "LAC", "LAL", "MIL", "NOP", "NYK", "OKC",
+                 "ORL", "PHI", "PHX", "SAS", "UTA"}
+
+
+def _loose(word: str) -> str:
+    """Regex for an alias: any run of spaces/punctuation between its parts, or none."""
+    parts = [re.escape(w) for w in re.split(r"[\W_]+", word) if w]
+    return r"[\W_]*".join(parts)
 
 
 def _team_patterns() -> list[tuple[str, re.Pattern]]:
     out = []
     for name, aliases, abbr in TEAMS:
         words = sorted({name.lower(), *aliases}, key=len, reverse=True)
-        alt = "|".join(re.escape(w) for w in words)
-        out.append((name, re.compile(rf"(?<![\w-])(?:(?i:{alt})|{abbr})(?![\w-])")))
+        alt = "|".join(_loose(w) for w in words)
+        abbrs = f"(?i:{abbr})" if abbr in LOWER_ABBR_OK else abbr
+        out.append((name, re.compile(rf"(?<![A-Za-z0-9])(?:(?i:{alt})|{abbrs})(?![A-Za-z0-9])")))
     return out
 
 
@@ -167,7 +179,7 @@ def route(message: str, games: list[dict], now_utc: str | None = None) -> dict:
                 "candidates": [g["game_id"] for g in cands], "reason": "the message describes a change"}
     if game:
         return {"action": "OPEN_CARD", "game_id": game["game_id"], "candidates": [g["game_id"] for g in cands],
-                "reason": f"names {_game_label(game)}"}
+                "reason": f"names {_game_label(game)}", "under_way": under_way(game, now_utc)}
     if cands:
         return {"action": "OPEN_BOARD", "game_id": None, "candidates": [g["game_id"] for g in cands],
                 "reason": "names teams in more than one game"}
@@ -184,7 +196,18 @@ def board_intro(n_games: int, n_comparable: int | None = None) -> str:
             "through it.")
 
 
-def card_intro(row: dict) -> str:
+UNDER_WAY = "This game is under way, so there's no pre-game comparison."
+
+
+def under_way(row: dict, now_utc: str | None) -> bool:
+    """True once the game has tipped: its card opens, but there is no pre-game comparison."""
+    return bool(now_utc) and row["tip_utc"] <= now_utc
+
+
+def card_intro(row: dict, now_utc: str | None = None) -> str:
+    if under_way(row, now_utc):
+        return f"Here's {_game_label(row)}. {UNDER_WAY}"
+
     return (f"Here's {_game_label(row)}: the model's forecast next to the market's bid and ask. Ask me "
             "about it, or try a what-if.")
 
