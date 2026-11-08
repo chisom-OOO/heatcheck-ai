@@ -61,7 +61,9 @@ def main(argv: list[str]) -> int:
     run_dir = QUOTES / started.strftime("%Y%m%dT%H%M%SZ")
     say(f"forecast {forecast.relative_to(ROOT)}; capture into {run_dir.relative_to(ROOT)}")
     t0 = time.time()
-    r = run([sys.executable, "-m", "heatcheck.markets.live_quotes", "capture", str(forecast), str(run_dir)])
+    # repo-relative paths: they are written into the bundles' provenance text (no machine paths)
+    r = run([sys.executable, "-m", "heatcheck.markets.live_quotes", "capture",
+             forecast.relative_to(ROOT).as_posix(), run_dir.relative_to(ROOT).as_posix()])
     tail = [x for x in r.stdout.strip().splitlines() if x.strip()][-6:]
     for line in tail:
         say(f"  {line}")

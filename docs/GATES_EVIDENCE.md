@@ -161,8 +161,11 @@ and `apps/web` suites are **not** in CI.
   (the first argument is the output directory: use a scratch dir, because writing into
   `data/max/mapping_verifications` rewrites the committed records with a new timestamp), then compare
   the checks with the committed `data/max/mapping_verifications/*-pm-0215.json`
-  — author's run: 13/13 Polymarket VERIFIED. Known blemish: those 13 committed records store
-  `bundle_dir` as an absolute Windows path (fixed in `tools/capture_quotes.py` for later captures). Kalshi mappings are not verified (overtime rule UNKNOWN); the
+  — author's run: 13/13 Polymarket VERIFIED. Those 13 records first stored `bundle_dir` as an absolute Windows path, which
+  broke CI on Linux (runs 42437889459, 42438601883); the field was made repo-relative in the commit
+  after 1941cdc, every other byte unchanged, and `tools/verify_mappings.py` now always writes it relative. The 0215 capture's bundle
+  provenance text also names the forecast file by an absolute local path (content-hashed raw files,
+  so left as captured; not used for loading); later captures use repo-relative paths. Kalshi mappings are not verified (overtime rule UNKNOWN); the
   market check uses only VERIFIED mappings.
 
 ## G11 Quote normalization (Research/Experience)
