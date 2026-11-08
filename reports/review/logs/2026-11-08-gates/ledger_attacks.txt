@@ -1,0 +1,10 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+committed ledger lines: 8 verifies: 8
+OK  edit middle verdict, no rehash                          -> REFUSED: ledger line 2: identity hash mismatch (tampered)
+OK  edit middle verdict + rehash that line                  -> REFUSED: ledger line 3: chain broken (a line was edited, deleted, inserted or reordered b
+OK  delete a middle line                                    -> REFUSED: ledger line 2: chain broken (a line was edited, deleted, inserted or reordered b
+OK  swap two lines                                          -> REFUSED: ledger line 2: chain broken (a line was edited, deleted, inserted or reordered b
+OK  append a duplicate of line 1                            -> REFUSED: ledger line 9: chain broken (a line was edited, deleted, inserted or reordered b
+OK  truncate the last line (known limit)                    -> ACCEPTED
+OK  rebuild the whole chain after editing (known limit)     -> ACCEPTED
+head of committed ledger: 3be1f0320fe8ad35
