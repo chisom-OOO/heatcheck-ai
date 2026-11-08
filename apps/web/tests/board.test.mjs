@@ -207,3 +207,14 @@ test("'Do home teams win more?' -> CONF-HA SURVIVED: vindicated pose, SURVIVED s
   assert.ok(ref.text.includes(`${H.fmtPct(entry.identity.result.detail.home_win_rate)}`), ref.text);
   assert.equal(H.routeQuestion("Do home teams win more?"), "CONF-HA");  // offline routing agrees
 });
+
+test("Max: the card shows the server's caveats (home-bias note) and nothing it did not send", () => {
+  const row = { game_id: "nba:1", away_team: "A", home_team: "H", tip_utc: "2026-11-08T23:00:00Z", p_home_win: 0.7 };
+  const text = "On last season's games, this model overrated home teams by about 7 points (62.4% predicted vs 55.5% actual). Part of any home-side gap is the model's own bias.";
+  const base = { team: "H", forecast: { p_team_win: "0.7" }, verdict: "Worth investigating · Edge unverified",
+    challenger_checks: [], quote: { venue: "POLYMARKET", best_bid: "0.6", best_ask: "0.61", received_utc: "2026-11-08T00:00:00Z" } };
+  assert.deepEqual(B.cardView(row, { resp: { ...base, caveats: [text] } }).caveats, [text]);
+  assert.deepEqual(B.cardView(row, { resp: base }).caveats, []);
+  assert.deepEqual(B.cardView(row, { resp: { ...base, caveats: [1, "", null] } }).caveats, []);
+  assert.equal(B.cardView(row, { resp: { ...base, caveats: [text] } }).verdict, "Worth investigating · Edge unverified");
+});

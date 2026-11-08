@@ -95,7 +95,7 @@ beats the market." The stamp is ESTIMATE (or SAMPLE), and the end pose is never 
 
 ## Known limits (not hidden in the UI)
 
-- **Live venue fetch has not run (G12).** This workspace's egress proxy denies polymarket.com and kalshi.com. The adapters were written from the vendor docs read on 7 Nov 2026 and tested only against authored payloads.
+- **Live venue fetch (G12): superseded.** When this was written, this workspace's egress proxy denied polymarket.com and kalshi.com and the adapters had been tested only against authored payloads. Since then real read-only captures ran: `reports/experience/2026-11-07-1623-live-quote.md`, `reports/experience/2026-11-07-2240-live-quotes.md`, and Max's captures in `data/experience/quotes/2026110*` (one command: `capture_quotes.cmd`). The gate review marks G12 PARTIAL (`ACCEPTANCE.json`; `reports/review/2026-11-08-0310-gate-review.md`); rate-limit/429 handling is still not exercised. (Note added by Max, 8 Nov 2026.)
 - **Live venue fetch fails behind any HTTP proxy.** The adapter refuses private/loopback DNS answers by resolving locally. Where DNS is only available through a proxy, live fetch reports UNAVAILABLE rather than bypassing the check.
 - **No real microphone was used.** Chrome's fake media device exercised the push-to-talk and recording path. Latency figures need a real mic session; the table in the Evidence tab records them.
 - **Screen capture is untested.** It cannot be exercised headless, because the browser permission picker needs a real user gesture.

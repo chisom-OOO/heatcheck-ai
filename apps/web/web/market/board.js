@@ -118,6 +118,7 @@ export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loa
     row("Inputs used", v.inputs);
     card.append(dl);
     card.append(el("p", `mcard-verdict ${v.verdictKind}`, v.verdict), el("p", "mcard-why", v.why));
+    for (const c of v.caveats || []) card.append(el("p", "mcard-caveat", c));
     if (v.canAsk && onAsk) {
       const b = el("button", "mcard-ask", "Ask Heater about this game");
       b.type = "button";

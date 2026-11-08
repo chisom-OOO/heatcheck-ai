@@ -3,6 +3,10 @@
 HeatCheck-Experience, local build, 7 Nov 2026. Everything below was executed in this workspace;
 the raw output is in `evidence/test_run.log`, `evidence/e2e_results.json`,
 `evidence/extension_results.json`, `evidence/harness_batch.json` and `evidence/screenshots/`.
+(Note added by Max, 8 Nov 2026: those files are in `incoming/experience-20261107/evidence/`, not in
+`apps/web/evidence/`; this report describes the 7 Nov handoff. The suite has grown since: on
+8 Nov `cd apps\web && uv run --frozen python -m unittest discover -s tests` ran 107 tests, all OK,
+and `node --test tests/*.test.mjs` 76 pass. Later results are in `reports/experience/`.)
 
 ```
 date_utc: 2026-11-07T15:43:42Z

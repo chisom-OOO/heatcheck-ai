@@ -356,3 +356,6 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
   font: 600 1rem/1.4 var(--cond); }
 .mcard.mcard-focus { border-color: var(--heat); box-shadow: 0 0 0 3px rgba(255, 122, 26, .35); }
 @media (max-width: 640px) { .scenario { margin-left: 0; } .scn-compare { grid-template-columns: 1fr; } }
+
+/* Max: model-bias caveat on a market card (server text) */
+.mcard-caveat{margin:6px 0 0;padding:6px 8px;border-left:3px solid #f5b83d;font-size:13px;line-height:1.35;color:inherit;opacity:.92}

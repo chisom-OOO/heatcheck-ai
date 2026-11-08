@@ -335,3 +335,59 @@ def test_latest_quote_matches_eligibility_rule_on_verified_mapping(bundle, as_of
     a = select_quote_for_cutoff(mapping, quotes, as_of, LIVE_MAX_AGE)
     b = latest_quote(quotes, as_of, LIVE_MAX_AGE)
     assert (a.status, a.quote_record_id, a.age_seconds) == (b.status, b.quote_record_id, b.age_seconds)
+
+
+# ------------------------------------------------------------------ home-bias caveat (Research calibration 6cd2431)
+
+from heatcheck.agents.market_investigation import HOME_BIAS_CAVEAT  # noqa: E402
+
+
+def test_home_bias_caveat_text_is_researchs_fixed_text():
+    assert HOME_BIAS_CAVEAT == ("On last season's games, this model overrated home teams by about 7 points "
+                                "(62.4% predicted vs 55.5% actual). Part of any home-side gap is the model's own bias.")
+
+
+def test_home_bias_caveat_when_model_favours_home_more_than_market(bundle):
+    sha, recs = bundle
+    out, ident = run(verified(recs), sha)  # IND is home, p 0.4 above the ask 0.27
+    assert out["flag"] == "FORECAST_ABOVE_ASK" and out["caveats"] == [HOME_BIAS_CAVEAT]
+    assert ident["caveats"] == [HOME_BIAS_CAVEAT]
+    assert out["verdict"] == VERDICT_WORTH and "Edge unverified" in out["verdict"]  # verdict unchanged
+    assert HOME_BIAS_CAVEAT not in out["ref_text"]
+    assert "own bias" in out["heater_text"]  # Heater reacts, in words
+
+
+@pytest.mark.parametrize("p_home", [0.2, 0.265])  # below the bid 0.26; inside the spread 0.26-0.27
+def test_no_home_bias_caveat_when_model_not_above_the_ask(bundle, p_home):
+    sha, recs = bundle
+    out, _ = run(verified(recs), sha, doc=forecast_doc(p_home))
+    assert out["flag"] != "FORECAST_ABOVE_ASK" and out["caveats"] == []
+    assert "own bias" not in out["heater_text"]
+
+
+def test_no_home_bias_caveat_for_the_away_team_or_a_sample(bundle):
+    sha, recs = bundle
+    recs_away = verified(recs)
+    for r in recs_away:
+        if r["record_type"] == "VENUE_MAPPING" and r["body"]["mapping_id"] == POLY:
+            r["body"]["team_id"] = DEN  # in-memory only: contract pays on the away team
+    out, _ = run(recs_away, sha)  # away team 0.6 above the ask: favours the AWAY team, no home caveat
+    assert out["team"] == "Denver Nuggets" and out["caveats"] == []
+    doc = forecast_doc()
+    doc["source"] = {"results": "SAMPLE - hand-made", "fetched_utc": "SAMPLE", "sha256": "SAMPLE",
+                     "cross_check": "NOT_RUN"}
+    out, _ = run(verified(recs), sha, doc=doc)
+    assert out["caveats"] == []
+
+
+def test_llm_heater_is_told_about_the_bias(bundle):
+    sha, recs = bundle
+    seen = []
+    run(verified(recs), sha, heater_llm=lambda s_, u: seen.append(json.loads(u)) or "")
+    assert seen and seen[0]["known_model_bias"] == HOME_BIAS_CAVEAT
+
+
+def test_no_home_bias_caveat_when_the_card_cannot_compare(bundle):
+    sha, recs = bundle
+    out, _ = run(verified(recs), sha, as_of="2026-11-07T22:30:00Z")  # after tip: Can't compare
+    assert out["verdict"] == VERDICT_CANT and out["caveats"] == [] and "own bias" not in out["heater_text"]

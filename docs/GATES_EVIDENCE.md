@@ -188,7 +188,7 @@ and `apps/web` suites are **not** in CI.
 - One-command live rerun (network, read-only GETs): `capture_quotes.cmd` (Windows) or
   `uv run --frozen python tools/capture_quotes.py`. Author's run 02:15 UTC: 24 MATCHED, 4 REJECTED, 188 files,
   no key value in any file.
-- Contradiction: `apps/web/HANDOFF.md:98` and the Experience ledger G12 say "BLOCKED"/never ran; the
+- (HANDOFF.md corrected 8 Nov.) Contradiction: `apps/web/HANDOFF.md:98` and the Experience ledger G12 say "BLOCKED"/never ran; the
   reports above document live captures. Reviewer 1642 row 4e passed the recorded bundle; G12 live
   capture itself "NOT_RUN by me".
 
@@ -255,8 +255,8 @@ and `apps/web` suites are **not** in CI.
 ## Known contradictions and stale claims (found while compiling this)
 - `ACCEPTANCE.json` lists no evidence for any gate; the HO and Experience ledgers carry their own
   author-assigned statuses (e.g. "EVIDENCE_SUBMITTED", "PASS_PENDING_RESEARCH"). Neither is a reviewer mark.
-- `DEFECTS.md` still says "No production functionality exists".
-- `apps/web/REPORT.md` cites `evidence/test_run.log`, `e2e_results.json`, `harness_batch.json`,
+- `DEFECTS.md` said "No production functionality exists" (corrected 8 Nov, see that file).
+- (Note added to the report 8 Nov.) `apps/web/REPORT.md` cites `evidence/test_run.log`, `e2e_results.json`, `harness_batch.json`,
   `screenshots/` that exist only under `incoming/experience-20261107/evidence/`; it describes 68 tests
   (now 104).
 - `HO/EVIDENCE.md` §8 says 40 tests; the HO suite now has 100 collected on Windows plus the
