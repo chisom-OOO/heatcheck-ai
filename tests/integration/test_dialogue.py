@@ -20,6 +20,8 @@ from threading import Thread
 
 import pytest
 
+from heatcheck.agents import frost
+
 pytest.importorskip("pandas")
 
 from heatcheck.agents.dialogue import (  # noqa: E402
@@ -176,8 +178,11 @@ def test_ref_is_deterministic_and_never_calls_the_model(view, tmp_path):
     assert "61.3" not in out["ref_text"]
     assert ref_guard(out["ref_text"], facts) == []   # the template passes the guard itself
     kinds = [((c.get("response_format") or {}).get("json_schema") or {}).get("name") or
-             ("heater" if c.get("stream") else "ref") for c in t.calls]
-    assert kinds == ["claim_mapping", "heater"]
+             ("heater" if c.get("stream") else
+              "frost" if c["messages"][0]["content"] == frost.FROST_SYSTEM else "ref") for c in t.calls]
+    # Frost may rephrase its questions (Frost, 8 Nov 2026); the Ref still never calls the model.
+    assert [k for k in kinds if k != "frost"] == ["claim_mapping", "heater"]
+    assert kinds.count("frost") == len(out["frost"])
 
 
 def test_heater_with_invented_number_falls_back_to_fixed_line(view, tmp_path):
@@ -304,7 +309,8 @@ def test_timeout_falls_back_within_deadline(view, tmp_path):
     assert out["sources"]["ref"] == "TEMPLATE"
     assert "LLM not called" in out["sources"]["challenger"]
     log = [json.loads(x) for x in (tmp_path / "usage.jsonl").read_text().splitlines()]
-    assert [r["status"] for r in log].count("TIMEOUT") == 2
+    assert [r["status"] for r in log if r["role"] != "frost"].count("TIMEOUT") == 2
+    assert all(f["question"] for f in out["frost"])  # Frost's questions fell back to templates
     # Each provider wait ends at its 0.3 s deadline, not at the 1 s reply. (The turn's total also
     # includes the permutation test on this league, so it is not bounded here.)
     assert all(r["latency_ms"] < 600 for r in log), [r["latency_ms"] for r in log]
@@ -341,11 +347,13 @@ def test_usage_logged_per_call_without_key_or_prompt(view, tmp_path):
     Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("secret question about hot hand streak")
     raw = (tmp_path / "usage.jsonl").read_text()
     rows = [json.loads(x) for x in raw.splitlines()]
-    assert sorted(r["role"] for r in rows) == ["discoverer_map", "heater"]   # Ref: no model
+    assert sorted(r["role"] for r in rows if r["role"] != "frost") == ["discoverer_map", "heater"]   # Ref: no model
+    rows = [r for r in rows if r["role"] != "frost"]  # Frost's rephrase calls are logged too
     assert all(r["prompt_tokens"] == 50 and r["completion_tokens"] == 40 and r["est_cost_usd"] > 0 for r in rows)
     assert FAKE_KEY not in raw and "secret question" not in raw
     s = usage_summary(tmp_path / "usage.jsonl")
-    assert s["calls"] == 2 and s["tokens"]["prompt"] == 100
+    n_frost = s["calls"] - 2
+    assert 0 <= n_frost <= 3 and s["tokens"]["prompt"] == 50 * s["calls"]
     assert all(a == f"Bearer {FAKE_KEY}" for a in t.seen_auth)
     body = json.dumps(t.calls)
     assert FAKE_KEY not in body and all(c["reasoning_effort"] == "minimal" for c in t.calls)
@@ -446,3 +454,28 @@ def test_heater_take_with_better_between_lockdown_is_kept(view, tmp_path):
     t = FakeTransport(heater=line)
     out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
     assert out["heater_text"] == line and out["sources"]["heater"] == "LLM"
+
+
+
+# ------------------------------------------------------------------ Frost (8 Nov 2026)
+
+def test_frost_rephrase_with_a_number_or_ref_word_keeps_the_template(view, tmp_path):
+    for bad in ("Did 87% of them go in?", "Did the Ref already rule on it?"):
+        t = FakeTransport(ref=bad)   # non-stream, no schema: what Frost's rephrase call receives
+        out = Dialogue(view, EvidenceLedger(tmp_path / f"l{len(bad)}.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+        chal = {c.check: c.question for c in frost.select(ref_facts(EvidenceLedger(tmp_path / f"l{len(bad)}.jsonl").get(out["evidence_record_id"])))}
+        assert out["frost"] and all(f["question"] == chal[f["check"]] for f in out["frost"])
+
+
+def test_frost_rephrase_that_passes_the_guard_replaces_only_the_question(view, tmp_path):
+    t = FakeTransport(ref="Go on then, prove it wasn't luck?")
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    assert out["frost"] and all(f["question"] == "Go on then, prove it wasn't luck?" for f in out["frost"])
+    assert len({f["chip"] for f in out["frost"]}) == len(out["frost"])   # chips untouched
+
+
+def test_every_turn_carries_frost_keys(view, tmp_path):
+    d = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), None)
+    for q in ("hot hand three straight?", "who is the best dunker ever?"):
+        out = d.turn(q)
+        assert isinstance(out["frost"], list) and len(out["frost"]) <= 3 and out["frost_reaction"]

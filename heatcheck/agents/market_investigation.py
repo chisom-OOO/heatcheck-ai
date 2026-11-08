@@ -415,6 +415,66 @@ def thesis_summary(message: str, thesis_entry: dict | None) -> dict | None:
                     "on tonight's game, and the forecast here does not use rest."}
 
 
+# --------------------------------------------------------------------------- Frost on market cards
+# Max, 8 Nov 2026: three challenges anchored to the model-bias note, the mapping verification and
+# inputs_used. Chips are filled only from this card's checks and Research's fixed calibration note.
+# Templates only (no model call), so loading the board stays fast. Same payload shape as dialogue.
+
+FROST_MARKET_REACTION = {
+    VERDICT_WORTH: "A gap, Heater. Not an edge. Nobody has shown this model beats the market.",
+    VERDICT_CANT: "Nothing to compare, Heater. No price we trust, no take.",
+}
+
+
+# Same words as the page (apps/web/web/market/board-model.js INPUT_WORDS).
+INPUT_WORDS = {"elo_rating_home": "Elo rating (home)", "elo_rating_away": "Elo rating (away)",
+               "home_court": "home court"}
+OVERTIME_WORDS = {"INCLUDES_OVERTIME": "overtime included", "REGULATION_ONLY": "regulation time only"}
+
+
+def _words(names: list[str], conj: str = "and") -> str:
+    w = [INPUT_WORDS.get(n, n.replace("_", " ")) for n in names]
+    return w[0] if len(w) == 1 else ", ".join(w[:-1]) + f" {conj} " + w[-1]
+
+
+def frost_market(checks: list[Check], *, home_bias: bool, team_is_home: bool, team_name: str = "",
+                 overtime: str = "", inputs_used: list[str] | None = None,
+                 missing: list[str] | None = None) -> list:
+    from heatcheck.agents.frost import Challenge
+    by = {c.check_id: c for c in checks}
+    if home_bias:
+        bias = f"Yes, and it applies here. {HOME_BIAS_CAVEAT}"
+    elif team_is_home:
+        bias = f"{HOME_BIAS_CAVEAT} This card shows no gap to compare, so it changes nothing here."
+    else:
+        bias = f"{HOME_BIAS_CAVEAT} This card is for the away team, so that home-side bias would lean the other way."
+    om = by.get("OUTCOME_MATCH")
+    if om is None:
+        mapping = "Not checked."
+    elif om.status == "PASS":
+        ot = OVERTIME_WORDS.get(overtime, overtime.replace("_", " ").lower())
+        mapping = (f"Verified: the contract pays if the {team_name} win" + (f", {ot}" if ot else "") +
+                   ", and the game, teams and tip time match the forecast.")
+    else:
+        mapping = f"Not confirmed: {om.detail}."
+    mi = by.get("MISSING_INPUTS")
+    if mi is None:
+        inputs = "Not checked."
+    elif missing:
+        inputs = f"The model uses only {_words(inputs_used or [])}. It does not see {_words(missing, 'or')}."
+    else:
+        inputs = f"The model uses {_words(inputs_used or [])}; no listed factor is missing."
+    return [
+        Challenge("model_bias", "basketball", "Has this model been wrong before in a way that shows up on this card?",
+                  bias, "calibration note (Research, research/calibration@6cd2431)"),
+        Challenge("mapping_verification", "process",
+                  "How do you know that price is for this game, and pays if this team wins?",
+                  mapping, "challenger_checks.OUTCOME_MATCH"),
+        Challenge("inputs_used", "numbers", "What doesn't the model know about tonight?", inputs,
+                  "challenger_checks.MISSING_INPUTS"),
+    ]
+
+
 def investigate(
     lf: LiveForecast,
     forecast_file_sha256: str,
@@ -482,6 +542,14 @@ def investigate(
     if template_bad:  # a template that fails its own guard is a code defect; fail loudly
         raise AssertionError(f"Heater template fails guard: {template_bad}")
 
+    from heatcheck.agents.frost import to_payload
+    frost = to_payload(frost_market(checks, home_bias=home_bias,
+                                    team_is_home=card["team_id"] == card["forecast_row"]["home_team_id"],
+                                    team_name=card["team_name"],
+                                    overtime=card["mapping"].get("overtime_convention") or "",
+                                    inputs_used=inputs, missing=card.get("missing_inputs") or []))
+    frost_reaction = FROST_MARKET_REACTION.get(verdict, "")
+
     quote = card["quote"]
     row = card["forecast_row"]
     if mode == "RECORDED" and not lf.is_sample:
@@ -505,7 +573,7 @@ def investigate(
             "best_ask": None if card["best_ask"] is None else str(card["best_ask"]),
             "received_utc": quote["body"]["received_utc"], "status": quote["body"]["status"]},
         "heater_text": heater_text, "heater_reaction": heater_reaction, "heater_source": heater_source,
-        "hypothetical": hypothetical,
+        "hypothetical": hypothetical, "frost": frost, "frost_reaction": frost_reaction,
         "challenger_checks": [c.as_dict() for c in checks], "thesis": thesis,
         "verdict": verdict, "ref_text": ref_text, "caveats": caveats,
     }
@@ -532,6 +600,7 @@ def investigate(
         "referee": REF_IDENTITY, "verdict": verdict,
         "heater": {"source": heater_source, "text": heater_text, "reaction": heater_reaction,
                    "hypothetical": hypothetical},
+        "frost": {"source": "TEMPLATE", "challenges": frost, "reaction": frost_reaction},
         # The message may be personal: only its hash is kept.
         "message_sha256": hashlib.sha256(message.encode("utf-8")).hexdigest(),
         "outcome": None,  # scored after the game from the official result; never filled here

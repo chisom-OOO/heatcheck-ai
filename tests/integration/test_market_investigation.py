@@ -450,3 +450,26 @@ def test_model_heater_line_with_betting_wording_falls_back_to_the_template(bundl
     sha, recs = bundle
     out, _ = run(verified(recs), sha, heater_llm=lambda s_, u: line)
     assert out["heater_source"].startswith("TEMPLATE (guard rejected") and out["heater_text"] != line
+
+
+# ------------------------------------------------------------------ Frost on market cards (Max, 8 Nov 2026)
+
+def test_market_card_has_three_anchored_frost_challenges(bundle):
+    from heatcheck.agents.dialogue import betting_words, number_violations
+    from heatcheck.agents.market_investigation import HOME_BIAS_CAVEAT
+    sha, recs = bundle
+    for kw in ({}, {"doc": forecast_doc(0.2)}, {"as_of": "2026-11-07T22:30:00Z"}):
+        out, ident = run(verified(recs), sha, **kw)
+        assert [f["check"] for f in out["frost"]] == ["model_bias", "mapping_verification", "inputs_used"]
+        assert all(set(f) == {"check", "question", "chip", "source"} and f["source"] for f in out["frost"])
+        assert out["frost_reaction"] and ident["frost"]["challenges"] == out["frost"]
+        facts = {"note": HOME_BIAS_CAVEAT, "checks": out["challenger_checks"]}
+        for f in out["frost"]:
+            assert number_violations(f["chip"], facts) == [], f["chip"]
+            assert betting_words(f["question"] + " " + f["chip"]) == []
+    assert run(recs, sha)[0]["frost"][1]["chip"].startswith("Not confirmed:")
+    good = run(verified(recs), sha)[0]["frost"]
+    assert good[1]["chip"].startswith("Verified: the contract pays if the Indiana Pacers win, overtime included")
+    assert good[2]["chip"] == ("The model uses only Elo rating (home), Elo rating (away) and home court. "
+                               "It does not see lineups, injuries, rest, recent form or matchups.")
+    assert "_" not in good[1]["chip"] + good[2]["chip"] and "nba-team" not in good[1]["chip"]
