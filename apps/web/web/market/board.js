@@ -12,6 +12,7 @@
 // each game once and keeps the answer. All text is set with textContent.
 
 import { cardView, pickMapping } from "./board-model.js";
+import { scenarioSlot } from "./scenario.js";
 
 async function getJson(url, init = {}, timeoutMs = 35000) {
   const ctl = new AbortController();
@@ -77,8 +78,9 @@ function el(tag, cls, text) {
   return e;
 }
 
-/** Render the board into ``root``. ``onAsk(game)`` runs Heater and the Ref on one card. */
-export function renderBoard(root, board, { onAsk } = {}) {
+/** Render the board into ``root``. ``onAsk(game)`` runs Heater and the Ref on one card;
+ *  ``onScenario(game, scenario, data)`` does the same for one scenario ("What if…?"). */
+export function renderBoard(root, board, { onAsk, onScenario, loadScenarios } = {}) {
   root.replaceChildren();
   const head = el("header", "board-head");
   head.append(el("h2", "board-title", "Tonight's games"));
@@ -120,6 +122,7 @@ export function renderBoard(root, board, { onAsk } = {}) {
       b.addEventListener("click", () => onAsk(g));
       card.append(b);
     }
+    if (onScenario) card.append(scenarioSlot(g, { onAsk: onScenario, ...(loadScenarios ? { load: loadScenarios } : {}) }));
     grid.append(card);
   }
   root.append(grid);

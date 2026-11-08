@@ -15,6 +15,7 @@ import {
 } from "./heater/heater-model.js";
 import { loadBoard, renderBoard } from "./market/board.js";
 import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, marketStamp } from "./market/board-model.js";
+import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } from "./market/scenario-model.js";
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
 import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
 import { createVoice } from "./voice.js";
@@ -377,7 +378,75 @@ async function openBoard() {
     state.board = await loadBoard({ log });
     state.heater.setState("idle");
   }
-  renderBoard(ui.board, state.board, { onAsk: (g) => askMarket(g) });
+  renderBoard(ui.board, state.board, { onAsk: (g) => askMarket(g), onScenario: (g, s, data) => askScenario(g, s, data) });
+}
+
+function scenarioDetails(s, data) {
+  const dl = document.createElement("dl");
+  const row = (k, v) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  };
+  row("Label", data.isSample ? "SAMPLE ESTIMATE" : "ESTIMATE");
+  row("Scenario", `${s.text} (${s.scenario_id})`);
+  row("Forecast now", `${data.baseline.p_team_win}${data.baseline.forecast_id ? ` (${data.baseline.forecast_id})` : ""}`);
+  row("In this scenario", s.p_team_win);
+  row("Range", `${s.range.low} to ${s.range.high} at level ${s.range.level}`);
+  row("n", `${s.n} ${s.n_unit}`);
+  if (s.method) row("Method", s.method);
+  s.caveats.forEach((c, i) => row(`Caveat ${i + 1}`, c));
+  if (data.source) row("Source", data.source);
+  row("Receipt", s.evidence_id || "not recorded");
+  return dl;
+}
+
+/** Heater reacts to one scenario; the Ref words the estimate and keeps "Edge unverified". */
+async function askScenario(g, s, data) {
+  if (state.busy) return;
+  state.busy = true;
+  setBusy(true);
+  setView("talk");
+  reset();
+  voice.stopSpeaking();
+  const h = state.heater;
+  log(`scenario ${g.row.game_id} ${s.scenario_id}: ${data.baseline.p_team_win} -> ${s.p_team_win}`);
+  h.setState("listening");
+  await sleep(350);
+  h.setState("thinking");
+  await sleep(TIMING.thinkingMin);
+  document.body.dataset.phase = "take";
+  const take = heaterScenarioLine(s, data);
+  ui.take.textContent = take;
+  ui.bubble.hidden = false;
+  restartAnim(ui.bubble);
+  h.setState("hot_take");
+  await h.speak(take, "heater", { voiceOn: state.voiceOn });
+  document.body.dataset.phase = "check";
+  ui.refTitle.textContent = `${g.row.away_team} at ${g.row.home_team} · what if: ${s.text}`;
+  ui.refText.textContent = "Checking the tape";
+  ui.ref.classList.add("checking");
+  ui.ref.hidden = false;
+  restartAnim(ui.ref);
+  await h.play("heat_check", TIMING.heat_check);
+  h.setState("thinking");
+  const line = refScenarioText(s, data);
+  ui.ref.classList.remove("checking");
+  ui.refText.textContent = line;
+  document.body.dataset.phase = "ref";
+  await h.speak(line, "ref", { voiceOn: state.voiceOn });
+  const stamp = scenarioStamp(data);
+  ui.stamp.className = `stamp ${stamp.kind}`;
+  ui.stamp.textContent = stamp.text;
+  ui.stamp.hidden = false;
+  restartAnim(ui.stamp);
+  ui.ref.classList.add("slammed");
+  h.setState(scenarioEndState(s, data), { restart: true });
+  ui.evidenceBody.replaceChildren(scenarioDetails(s, data));
+  ui.evidence.hidden = false;
+  document.body.dataset.phase = "done";
+  state.busy = false;
+  setBusy(false);
 }
 
 function marketDetails(resp) {

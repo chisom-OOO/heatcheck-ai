@@ -1,0 +1,99 @@
+{
+  "note": "SAMPLE: hand-made answers in the proposed heatcheck-scenario/1 format, for apps/web tests only. Every value is invented; none is an estimate. Max's server has no /api/scenario yet. The demo page never reads this file.",
+  "sample_card": {
+    "format": "heatcheck-scenario/1",
+    "status": "OK",
+    "game_id": "nba:0022600190",
+    "team": "Atlanta Hawks",
+    "is_sample": true,
+    "source": "SAMPLE: hand-made test fixture (apps/web/tests); values invented",
+    "baseline": { "p_team_win": "0.5", "forecast_id": "SAMPLE" },
+    "scenarios": [
+      {
+        "scenario_id": "sample-rest",
+        "text": "Atlanta's starters rest",
+        "label": "ESTIMATE",
+        "p_team_win": "0.41",
+        "range": { "low": "0.33", "high": "0.49", "level": "0.9" },
+        "n": 120,
+        "n_unit": "games",
+        "caveats": ["SAMPLE: invented numbers"],
+        "evidence_id": "SAMPLE"
+      }
+    ]
+  },
+  "test_card": {
+    "format": "heatcheck-scenario/1",
+    "status": "OK",
+    "game_id": "nba:0099900001",
+    "team": "Test Home Team",
+    "is_sample": false,
+    "source": "SAMPLE: hand-made test fixture (apps/web tests); is_sample false only to exercise the real-answer wording",
+    "baseline": { "p_team_win": "0.600", "forecast_id": "test-forecast" },
+    "scenarios": [
+      {
+        "scenario_id": "test-up",
+        "text": "The away team is on the second night of a back-to-back",
+        "label": "ESTIMATE",
+        "p_team_win": "0.652",
+        "range": { "low": "0.618", "high": "0.690", "level": "0.90" },
+        "n": 1224,
+        "n_unit": "games",
+        "caveats": ["Rest effect is averaged over all teams", "Does not see who actually plays."],
+        "method": "test method text",
+        "evidence_id": "test-evidence-up"
+      },
+      {
+        "scenario_id": "test-down",
+        "text": "Home team's leading scorer sits out",
+        "label": "ESTIMATE",
+        "p_team_win": "0.541",
+        "range": { "low": "0.470", "high": "0.612", "level": "0.90" },
+        "n": 37,
+        "n_unit": "games",
+        "caveats": ["Few games with this player out"],
+        "evidence_id": "test-evidence-down"
+      },
+      {
+        "scenario_id": "test-flat",
+        "text": "The game is on a Sunday",
+        "label": "ESTIMATE",
+        "p_team_win": "0.603",
+        "range": { "low": "0.570", "high": "0.636", "level": "0.90" },
+        "n": 300,
+        "n_unit": "games",
+        "caveats": ["Day of week is not in the model"]
+      },
+      {
+        "scenario_id": "test-bad-label",
+        "text": "Labelled as a finding",
+        "label": "FINDING",
+        "p_team_win": "0.700",
+        "range": { "low": "0.650", "high": "0.750", "level": "0.90" },
+        "n": 50,
+        "n_unit": "games",
+        "caveats": ["x"]
+      },
+      {
+        "scenario_id": "test-no-caveats",
+        "text": "No caveats given",
+        "label": "ESTIMATE",
+        "p_team_win": "0.620",
+        "range": { "low": "0.600", "high": "0.640", "level": "0.90" },
+        "n": 50,
+        "n_unit": "games",
+        "caveats": []
+      },
+      {
+        "scenario_id": "test-outside",
+        "text": "Point outside its range",
+        "label": "ESTIMATE",
+        "p_team_win": "0.700",
+        "range": { "low": "0.600", "high": "0.650", "level": "0.90" },
+        "n": 50,
+        "n_unit": "games",
+        "caveats": ["x"]
+      }
+    ]
+  }
+}

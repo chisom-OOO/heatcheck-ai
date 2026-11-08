@@ -184,6 +184,56 @@ body[data-view="board"] .talk { max-width: 980px; align-self: start; }
 }
 .mcard-ask:disabled { opacity: .45; cursor: default; }
 
+/* ------------------------------------------------------------------ scenario view (What if…?) */
+.scen-wrap { display: grid; gap: 8px; }
+.mcard-whatif {
+  justify-self: start; cursor: pointer; font: 700 .85rem var(--cond); letter-spacing: .05em;
+  color: var(--ref-ink); background: transparent; border: 1px solid rgba(46, 196, 182, .55);
+  border-radius: 999px; padding: 6px 13px;
+}
+.mcard-whatif:focus-visible, .scen-ask:focus-visible { outline: 2px solid var(--ref); outline-offset: 2px; }
+.mcard-whatif:disabled { opacity: .45; cursor: default; }
+.scen-slot { display: grid; gap: 10px; }
+.scen {
+  display: grid; gap: 8px; padding: 12px; border-radius: 10px;
+  background: rgba(46, 196, 182, .06); border: 1px solid rgba(46, 196, 182, .28);
+}
+.scen-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.scen-title { margin: 0; flex: 1 1 12rem; font: 800 .98rem/1.25 var(--cond); }
+.scen-label {
+  font: 900 .72rem/1 var(--cond); letter-spacing: .12em; color: #1E0E00;
+  background: #FFB627; border-radius: 4px; padding: 4px 6px;
+}
+.scen-sample { position: static; }
+.scen-pair { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: stretch; }
+.scen-cell { display: grid; gap: 2px; padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, .04); }
+.scen-cell.if { background: rgba(255, 182, 39, .1); }
+.scen-cell-head { color: var(--muted); font-size: .78rem; }
+.scen-cell-value { font: 800 1.05rem/1.2 var(--cond); overflow-wrap: anywhere; }
+.scen-change { align-self: center; font: 800 .95rem var(--cond); white-space: nowrap; color: #C9C6DA; }
+.scen-change.up { color: #FFB627; }
+.scen-change.down { color: #8FD3FF; }
+.scen-barwrap { display: grid; gap: 3px; }
+.scen-bar { position: relative; height: 16px; border-radius: 8px; background: rgba(255, 255, 255, .08); }
+.scen-range { position: absolute; top: 3px; bottom: 3px; min-width: 2px; border-radius: 5px; background: rgba(255, 182, 39, .45); }
+.scen-base { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--fg); }
+.scen-point {
+  position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%;
+  background: #FFB627; box-shadow: 0 0 0 2px var(--stage);
+}
+.scen-point.down { background: #8FD3FF; }
+.scen-point.flat { background: #C9C6DA; }
+.scen-scale { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .72rem; }
+.scen-key { text-align: center; }
+.scen-meta { margin: 0; font-size: .84rem; }
+.scen-caveats-head { margin: 0; color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
+.scen-caveats { margin: 0; padding-left: 18px; font-size: .84rem; color: #D6D3E6; }
+.scen-note, .scen-source { margin: 0; color: var(--muted); font-size: .84rem; }
+@media (max-width: 480px) {
+  .scen-pair { grid-template-columns: 1fr 1fr; }
+  .scen-change { grid-column: 1 / -1; }
+}
+
 /* ------------------------------------------------------------------ idea board */
 .view-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }

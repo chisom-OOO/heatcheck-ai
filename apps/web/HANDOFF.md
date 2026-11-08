@@ -46,10 +46,46 @@ Branch status: local build only; no push, deployment, outside message or paid se
 | GET | /api/evidence | Max's evidence ledger (`--ledger`), verified, read-only |
 | GET | /api/ideas | Research's idea-family results (`--ideas`, default `handoff/research-20261107/evidence/idea-family`); a family is shown only when registration_hash and results_sha256 bindings hold; 404 with the reason when there are none |
 | GET | /api/market-mappings | the market board's mapping ids (newest `data/experience/quotes/*/board.mappings.json`, or `--quote-index`); no prices |
-| any | /api/dialogue · /api/investigate · /api/live-forecast · /api/display-titles | **pass-through** to Max's dialogue server (`--api`, default `http://127.0.0.1:8770`, loopback only): method, body, status and Content-Type unchanged; 502 `UPSTREAM_UNAVAILABLE` when it does not answer |
+| any | /api/dialogue · /api/investigate · /api/live-forecast · /api/display-titles · /api/scenario | **pass-through** to Max's dialogue server (`--api`, default `http://127.0.0.1:8770`, loopback only): method, body, status and Content-Type unchanged; 502 `UPSTREAM_UNAVAILABLE` when it does not answer |
 
 `GET /` serves `demo.html` (the demo page); the older workspace UI is at `/index.html`. The demo
 page calls relative `/api/...` URLs only, so it is same-origin on any port and needs no CORS.
+
+## Proposed: GET /api/scenario (format `heatcheck-scenario/1`), for Max's server
+
+The game card's "What if…?" view reads this; Max's server does not have it yet, so the card says
+"No scenarios: Max's server has no scenario endpoint yet." The page computes no probability, range
+or n. It only checks the answer and words it.
+
+`GET /api/scenario?game_id=nba:0022600191` → 200:
+
+```json
+{
+  "format": "heatcheck-scenario/1", "status": "OK",
+  "game_id": "nba:0022600191", "team": "Cleveland Cavaliers",
+  "is_sample": false, "source": "where the estimates come from",
+  "baseline": { "p_team_win": "<the card's forecast, same string>", "forecast_id": "..." },
+  "scenarios": [{
+    "scenario_id": "...", "text": "The away team is on the second night of a back-to-back",
+    "label": "ESTIMATE", "p_team_win": "0.xxx",
+    "range": { "low": "0.xxx", "high": "0.xxx", "level": "0.90" },
+    "n": 1224, "n_unit": "games",
+    "caveats": ["at least one"], "method": "optional", "evidence_id": "optional"
+  }]
+}
+```
+
+Rules the page enforces:
+- probabilities are decimal strings in 0–1, with low ≤ p_team_win ≤ high;
+- `label` is exactly `ESTIMATE`;
+- `n` is a positive integer;
+- there is at least one caveat;
+- `game_id`, `team`, `baseline.p_team_win` and `is_sample` must equal the card's investigate answer.
+
+A scenario that breaks a rule is listed under "Not shown" with the reason; an answer for another
+game, team, baseline or SAMPLE status is refused whole. Heater reacts by direction only (no digits;
+a fixed line for SAMPLE). The Ref's line always ends "Edge unverified: nothing shows this model
+beats the market." The stamp is ESTIMATE (or SAMPLE), and the end pose is never vindicated.
 
 ## What Research needs to plug in
 

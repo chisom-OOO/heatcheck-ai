@@ -139,6 +139,13 @@ class TestPassThrough(unittest.TestCase):
         self.assertEqual(bad[0], 403)
         self.assertEqual(len(MockMax.seen), 1)  # the refused request never reached Max
 
+    def test_scenario_is_forwarded_with_its_query_string(self):
+        # Max's server has no /api/scenario yet: his own 404 must come back unchanged.
+        status, _, data = self.req("GET", "/api/scenario?game_id=nba%3A0022600190")
+        self.assertEqual((status, json.loads(data)), (404, exchange("unknown_path")["body"]))
+        self.assertEqual(MockMax.seen[-1]["method"], "GET")
+        self.assertEqual(MockMax.seen[-1]["path"], "/api/scenario?game_id=nba%3A0022600190")
+
     def test_local_routes_are_not_forwarded(self):
         status, _, _ = self.req("GET", "/api/health")
         self.assertEqual(status, 200)
@@ -192,6 +199,7 @@ class TestPassThrough(unittest.TestCase):
 class TestPageUsesRelativeUrls(unittest.TestCase):
     def test_no_absolute_api_url_in_page_code(self):
         files = ["demo.js", "demo.html", os.path.join("market", "board.js"), os.path.join("market", "board-model.js"),
+                 os.path.join("market", "scenario.js"), os.path.join("market", "scenario-model.js"),
                  os.path.join("ideas", "idea-board.js"), os.path.join("ideas", "idea-model.js")]
         for name in files:
             with open(os.path.join(ROOT, "web", name), encoding="utf-8") as f:

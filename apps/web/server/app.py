@@ -321,7 +321,7 @@ CSP = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' 
 # The page calls relative /api/... URLs only. Max's endpoints are forwarded to his dialogue server
 # with method, body and status unchanged, so the page is same-origin on any port and needs no CORS.
 UPSTREAM_DEFAULT = "http://127.0.0.1:8770"
-MAX_ENDPOINTS = {"dialogue", "investigate", "live-forecast", "display-titles"}
+MAX_ENDPOINTS = {"dialogue", "investigate", "live-forecast", "display-titles", "scenario"}
 UPSTREAM_TIMEOUT = 60  # Max's doc: client timeout of at least 30 s
 UPSTREAM_MAX_BODY = 4 * 1024 * 1024
 
