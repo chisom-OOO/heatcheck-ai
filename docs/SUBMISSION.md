@@ -214,8 +214,8 @@ Research checked Polymarket's raw payload: the Cleveland contract really is the 
     leaves **35 of 1,046** intervals excluding zero.
   - The shrunk value is the default; the raw value appears only in the evidence drawer.
   - Players with a risk flag (small n, team change, garbage-time appearances) are not shown.
-- **Schedule:** back-to-back −0.053 (95% −0.079 to −0.028) and 3-in-4 −0.029. Both are shown as
-  **unproven**, because the registered rest test was INSUFFICIENT_EVIDENCE.
+- **Schedule:** back-to-back −0.053 (95% −0.079 to −0.028), 3-in-4 −0.029; both shown as **unproven**
+  (registered rest test: INSUFFICIENT_EVIDENCE).
 - **Combination:** on the log-odds scale, assuming independence; overlapping rest changes are refused.
 - **Example:** Cleveland without J. Allen is −0.062 (raw −0.172). With New York also on a back-to-back,
   Cleveland's 0.662 becomes **0.649** (95% 0.513–0.764).
