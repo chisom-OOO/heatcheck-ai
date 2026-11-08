@@ -218,13 +218,17 @@ def test_real_2024_build_matches_frozen_seal():
 
 @real2024
 def test_real_2024_tampered_copy_is_refused_on_a_ledger_copy(tmp_path):
-    """Against the REAL frozen family, on a COPY of evidence/: a one-label change is refused before reserve."""
+    """Against the REAL frozen family, on a COPY of evidence/: a one-label change is refused before reserve.
+    Since the authorised run (review/confirmatory-run@5f0a432) the committed evidence holds final_result.json, so
+    the check is that the ledger and final_result.json are byte-identical before and after (or still absent)."""
     import shutil
     ev = tmp_path / "evidence"; shutil.copytree(ROOT / "evidence", ev)
     bad = _tamper_copy(Path(DATA_2024), tmp_path / "bad", "restricted_labels.sqlite",
                        "UPDATE game_labels SET home_win = 1 - home_win WHERE rowid = 1")
+    result = ev / CF.SUBDIR / "final_result.json"
     ledger = (ev / "custodian_ledger.jsonl").read_bytes()
+    before = result.read_bytes() if result.exists() else None
     with pytest.raises(CF.Refused, match="sealed data"):
         CF.final(bad, ev, "pytest")
     assert (ev / "custodian_ledger.jsonl").read_bytes() == ledger
-    assert not (ev / CF.SUBDIR / "final_result.json").exists()
+    assert (result.read_bytes() if result.exists() else None) == before
