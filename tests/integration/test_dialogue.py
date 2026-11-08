@@ -490,3 +490,24 @@ def test_frost_rephrase_with_betting_wording_keeps_the_template(view, tmp_path, 
     out = Dialogue(view, led, llm(tmp_path, t)).turn("hot hand three straight?")
     chal = {c.check: c.question for c in frost.select(ref_facts(led.get(out["evidence_record_id"])))}
     assert out["frost"] and all(f["question"] == chal[f["check"]] for f in out["frost"])
+
+
+
+# ------------------------------------------------------------------ fixed chip routes (user, 8 Nov)
+
+@pytest.mark.parametrize("q,cid", [("Is the hot hand real?", "CONF-HH"), ("Does rest matter?", "GP-REST"),
+                                   ("Do home teams win more?", "CONF-HA"), ("  is the HOT hand  real ", "CONF-HH"),
+                                   ("does rest matter", "GP-REST")])
+def test_the_three_chips_are_routed_without_the_model(view, tmp_path, q, cid):
+    t = FakeTransport(mapping='{"claim_id": "NONE"}')   # the model would say NONE
+    d = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t))
+    got, source, ident = d._map(q)
+    assert got == cid and source.startswith("FIXED_CHIP_RULE") and ident["rule"] == "CHIP_ROUTES"
+    assert t.calls == []
+
+
+@pytest.mark.parametrize("q", ["Is the hot hand real in the playoffs?", "Does rest matter for old teams?"])
+def test_other_wording_still_goes_to_the_model(view, tmp_path, q):
+    t = FakeTransport(mapping='{"claim_id": "NONE"}')
+    got, source, _ = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t))._map(q)
+    assert (got, source) == ("NONE", "LLM") and len(t.calls) == 1

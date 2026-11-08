@@ -194,33 +194,35 @@ Both `POST /api/dialogue` and `POST /api/investigate` return two more fields, al
   at most about 4 s to a dialogue turn. Market cards add none.
 - Frost decides nothing. The verdict, the stamp and `ref_text` are unchanged.
 
-Real example: `POST /api/dialogue {"question": "Is the hot hand real?"}` on the demo data (maps to HH-K3, verdict INSUFFICIENT_EVIDENCE; template mode, so the questions are the templates):
+Real example: `POST /api/dialogue {"question": "Is the hot hand real?"}` on the demo data (fixed chip route to CONF-HH, verdict INSUFFICIENT_EVIDENCE; template mode, so the questions are the templates):
 
 ```json
 {
   "frost": [
     {
-      "check": "A-PERMUTATION-NULL",
-      "question": "Streaks happen by chance. If nobody had a hot hand at all, how streaky would shooting look?",
-      "chip": "Shuffled every player's shots within each game. Real shooting was no streakier than the shuffles (p = 0.061, alpha 0.050).",
-      "source": "A-PERMUTATION-NULL"
+      "check": "sealed_season",
+      "question": "Did anyone look at this season before the test was written?",
+      "chip": "The whole 2024-25 season was sealed before any test ran; the test ran once, on 219274 shots the system had never seen.",
+      "source": "custodian seal"
     },
     {
-      "check": "A-SHOT-VALUE-SELECTION",
-      "question": "Hot shooters take harder shots. Fewer makes after a streak could be confidence, not cold hands.",
-      "chip": "Checked whether players took more 3-pointers after streaks: no shift beyond the limit. (3pt share after makes minus after misses = -0.0476; limit 0.1)",
-      "source": "A-SHOT-VALUE-SELECTION"
+      "check": "multiplicity",
+      "question": "You tested several ideas at once. Any of them could pass by luck. Did you raise the bar for that?",
+      "chip": "Yes, the bar was raised for testing the ideas together. It didn't clear it (p = 1.000).",
+      "source": "result.p_holm"
     },
     {
-      "check": "A-SPLIT-HALF-REPLICATION",
-      "question": "Show me it again. Does it hold in two separate slices of the data, or only one?",
-      "chip": "Even and odd groups tested separately: bias-corrected effect even=-0.140111, odd=+0.610580",
-      "source": "A-SPLIT-HALF-REPLICATION"
+      "check": "no_equivalence_test",
+      "question": "Same rate after makes and misses. That's not 'no hot hand', that's 'couldn't find one'. Which is it?",
+      "chip": "Couldn't find one. The test can only say 'not shown'; nobody registered a test for 'no effect exists'.",
+      "source": "decision rule"
     }
   ],
   "frost_reaction": "Not shown. That's not the same as wrong, Heater."
 }
 ```
+
+**Fixed routes for the page's three chips** (before any model call, like home advantage): "Is the hot hand real?" -> CONF-HH, "Does rest matter?" -> GP-REST, "Do home teams win more?" -> CONF-HA (exact text; case, spaces and the final "?" ignored; `sources.mapping` = `FIXED_CHIP_RULE (...)`). Any other wording is mapped by the model.
 
 ## Tamper demo: `POST /api/tamper/flip`, `POST /api/tamper/restore`, `GET /api/tamper/events` (added 8 Nov 2026)
 
