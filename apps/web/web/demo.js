@@ -25,6 +25,8 @@ import {
 } from "./whatif/whatif.js";
 import { MIC, createVoice } from "./voice.js";
 import { firstAskThisSession, loadResponsibleUse } from "./responsible.js";
+import { mount as mountFrost } from "./frost/frost.js";
+import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, skippable } from "./frost/frost-model.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
@@ -39,6 +41,7 @@ const ui = {
   refText: $("ref-text"), stamp: $("stamp"), evidence: $("evidence"), evidenceBody: $("evidence-body"),
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"), ruNotice: $("ru-notice"),
+  convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"), sampleFlag: $("sample-flag"),
 };
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
   ledger: null, turn: 0, busy: false, responsible: null, ruMemo: { shown: false }, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
@@ -65,7 +68,16 @@ async function loadLedger() {
     source: "fixture: byte copy of reports/max/logs/2026-11-07-loop/evidence_real_game.jsonl" };
 }
 
+// ?frost=sample: the dialogue answer is the user's sample response (8 Nov), for building Frost before
+// Max's API returns ``frost``. Always labelled SAMPLE on the page; never used without the parameter.
+const FROST_SAMPLE = params.get("frost") === "sample" ? new URL("./frost/fixtures/sample-dialogue.json", import.meta.url) : null;
+
 async function askDialogue(question) {
+  if (FROST_SAMPLE) {
+    const r = await fetch(FROST_SAMPLE);
+    if (!r.ok) throw new Error(`Frost sample: HTTP ${r.status}`);
+    return { ...(await r.json()), is_sample: true };
+  }
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 30000);  // Max's doc: client timeout of at least 30 s
   try {
@@ -123,7 +135,9 @@ async function answer(question) {
   // rejects Ref words) and heater_reaction is the line for after the stamp. The page checks the take
   // again: one that mentions the Ref or a verdict (an older server) is held back to after the stamp.
   const { take, takeFromApi, lastWord } = dialogueLines(forced ? null : api, () => takeFor(claimId, state.personality, state.turn));
-  return { claimId, entry, apiOnly, take, lastWord,
+  // Frost's questions and result chips come only from the server's answer; none: Heater-only flow.
+  const exchange = forced ? null : exchangeFromApi(api, { take });
+  return { claimId, entry, apiOnly, take, lastWord, exchange, sample: Boolean(api?.is_sample),
     takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
@@ -152,6 +166,143 @@ function reset() {
   ui.evidence.open = false;
   ui.scenario.hidden = true;
   ui.ruNotice.hidden = true;
+  ui.convo.replaceChildren();
+  ui.convo.hidden = true;
+  ui.skipHint.hidden = true;
+  ui.sampleFlag.hidden = true;
+  setCast(false);
+}
+
+// ------------------------------------------------------------------ Frost on stage
+/** Three-column stage with Frost (he stays off stage until his first question), or Heater alone.
+ *  With Frost, the Ref's voice is chosen so it never matches Frost's. */
+function setCast(frost) {
+  document.body.dataset.cast = frost ? "frost" : "";
+  ui.frostSide.hidden = !frost;
+  if (!frost) state.frost?.leave();
+  if (state.heater) state.heater.voicePicker = frost ? pickCastVoices : null;
+}
+
+/** One bubble in the middle column, no name tag: the side and colour say who is talking. */
+function convoBubble(who, text, extra = "") {
+  const li = document.createElement("li");
+  li.className = `cv cv-${who}${extra ? ` ${extra}` : ""}`;
+  const p = document.createElement("p");
+  p.className = "cv-text";
+  p.textContent = text;
+  li.append(p);
+  ui.convo.append(li);
+  return li;
+}
+
+/** A result chip under Frost's question, on his side. No voice. The source goes on the tooltip. */
+function convoChip(chip) {
+  const li = document.createElement("li");
+  li.className = `cv-chip ${chip.kind}`;
+  li.textContent = chip.text;
+  if (chip.source) li.title = `Source: ${chip.source}`;
+  ui.convo.append(li);
+  return li;
+}
+
+/** Space: draw everything up to the stamp at once and stop the voice that is talking. */
+function skipToStamp() {
+  if (!state.exchangeRunning || state.skip) return;
+  state.skip = true;
+  globalThis.speechSynthesis?.cancel();
+  state.skipNow?.();
+  log("skip: Space, straight to the stamp");
+}
+
+/** Await a step unless Space was pressed (then at once). */
+const untilSkip = (p) => (state.skip ? Promise.resolve() : Promise.race([p, state.skipSignal]));
+/** Pause while a result chip shows (adviser: about 1.2 s, no voice). */
+const CHIP_PAUSE_MS = 1200;
+
+/** Heater's take, Frost's questions with their result chips, the Ref, the stamp, then Frost's and
+ *  Heater's reactions. Nothing here decides: the questions, chips and verdict are the server's and
+ *  the record's. */
+async function runExchange(a, turn) {
+  const h = state.heater;
+  const opts = { voiceOn: state.voiceOn };
+  const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
+  const ex = { ...a.exchange, heaterReaction: a.exchange.heaterReaction || a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "") };
+  const steps = exchangeSteps(ex);
+  setCast(true);
+  const f = state.frost || (state.frost = mountFrost($("frost")));
+  f.leave();
+  f.setState("idle");
+  ui.convo.hidden = false;
+  ui.sampleFlag.hidden = !a.sample;
+  state.skip = false;
+  state.skipSignal = new Promise((res) => { state.skipNow = res; });
+  state.exchangeRunning = true;
+  ui.skipHint.hidden = false;
+  log(`frost: ${a.exchange.challenges.length} question(s)`);
+  try {
+    for (const st of steps) {
+      const fast = state.skip && skippable(st);
+      if (st.kind === "take") {
+        document.body.dataset.phase = "take";
+        convoBubble("heater", st.text);
+        h.setState("hot_take");
+        if (!fast) await untilSkip(h.speak(st.text, "heater", opts));
+      } else if (st.kind === "question") {
+        document.body.dataset.phase = "challenge";
+        if (st.first) { f.enter(); if (!fast) await untilSkip(sleep(450)); }
+        f.setState("challenging");
+        h.setState("listening");
+        convoBubble("frost", st.text);
+        if (!fast) await untilSkip(f.speak(st.text, opts));
+      } else if (st.kind === "chip") {
+        f.setState("evidence");
+        convoChip(st.chip);
+        if (!fast) await untilSkip(sleep(CHIP_PAUSE_MS));
+      } else if (st.kind === "ruling") {
+        f.setState("unconvinced");
+        document.body.dataset.phase = "check";
+        ui.refTitle.textContent = CLAIM_TITLES[a.claimId] || a.claimId;
+        ui.refText.textContent = "Checking the tape";
+        ui.ref.classList.add("checking");
+        ui.ref.hidden = false;
+        restartAnim(ui.ref);
+        if (!fast) await untilSkip(h.play("heat_check", TIMING.heat_check));
+        h.setState("thinking");
+        const refLine = refLineFor(a);
+        ui.ref.classList.remove("checking");
+        ui.refText.textContent = refLine;
+        document.body.dataset.phase = "ref";
+        if (!fast) await untilSkip(h.speak(refLine, "ref", opts));
+      } else if (st.kind === "stamp") {
+        state.exchangeRunning = false;
+        ui.skipHint.hidden = true;
+        const stamp = stampFor(decision, state.personality);
+        ui.stamp.className = `stamp ${stamp.kind}`;
+        ui.stamp.textContent = stamp.text;
+        ui.stamp.hidden = false;
+        restartAnim(ui.stamp);
+        ui.ref.classList.add("slammed");
+        h.setState(decision ? stateForDecision(decision) : "unsure", { restart: true });
+        f.setState(frostEndState(decision));
+        if (a.entry) {
+          ui.evidenceBody.replaceChildren(evidenceDetails(a.entry, state.ledger.verified));
+          ui.evidence.hidden = false;
+        }
+        document.body.dataset.phase = "verdict";
+        await sleep(700);
+      } else if (st.kind === "reaction") {
+        convoBubble(st.who, st.text, "cv-reaction");
+        if (st.who === "frost") await f.speak(st.text, opts);
+        else await h.speak(st.text, "heater", opts);
+      }
+    }
+    f.setState("idle");
+    h.setState("idle");
+  } finally {
+    state.exchangeRunning = false;
+    state.skip = false;
+    ui.skipHint.hidden = true;
+  }
 }
 
 function restartAnim(el) {
@@ -242,6 +393,15 @@ async function ask(question) {
   state.current = a;
   log(`claim ${a.claimId}; record ${a.entry ? a.entry.evidence_id.slice(0, 8) : "none"}; line from ${a.takeSource}`);
 
+  // With Frost's questions in the answer: Heater, Frost, the Ref in the middle column.
+  if (a.exchange) {
+    await runExchange(a, turn);
+    document.body.dataset.phase = "done";
+    state.busy = false;
+    setBusy(false);
+    return;
+  }
+
   // 1. Heater's hot take
   document.body.dataset.phase = "take";
   ui.take.textContent = a.take;
@@ -321,7 +481,7 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; setCast(false); }
 }
 
 function toggleView(view, open) {
@@ -856,6 +1016,12 @@ async function main() {
   const p = await loadPersonality();
   if (p) { state.personality = p; state.personalitySource = "heater_personality.json"; }
   $("ask").addEventListener("submit", (e) => { e.preventDefault(); ask(ui.q.value); });
+  // Space skips Heater and Frost's back-and-forth straight to the stamp (only while it runs).
+  document.addEventListener("keydown", (e) => {
+    if (!isSkipKey(e, { running: state.exchangeRunning })) return;
+    e.preventDefault();
+    skipToStamp();
+  });
   ui.chips.forEach((c) => c.addEventListener("click", () => { ui.q.value = c.textContent; ask(c.textContent); }));
   if (DEBUG) ledgerReady().then(buildDebug, () => {});
   document.body.dataset.ready = "1";

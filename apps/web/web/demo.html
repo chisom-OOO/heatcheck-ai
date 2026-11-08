@@ -38,6 +38,8 @@
       <p class="bubble-text" id="take"></p>
       <p class="bubble-react" id="react" hidden></p>
     </div>
+    <p class="sample-flag" id="sample-flag" hidden>SAMPLE RESPONSE (frost/fixtures/sample-dialogue.json), not a live answer</p>
+    <ol class="convo" id="convo" hidden aria-label="Heater and Frost"></ol>
     <article class="ref" id="ref" hidden>
       <header><span class="ref-badge">THE REF</span><span class="ref-title" id="ref-title"></span></header>
       <p class="ref-text" id="ref-text"></p>
@@ -49,6 +51,11 @@
     </article>
     <section class="scenario" id="scenario" hidden aria-label="What-if scenario"></section>
     <p class="hint" id="hint">Ask Heater a question. The Ref checks his take against real NBA data.</p>
+    <p class="skip-hint" id="skip-hint" hidden>Press Space to skip to the verdict</p>
+  </section>
+
+  <section class="frost-side" id="frost-side" hidden aria-label="Frost">
+    <div id="frost"></div>
   </section>
 
   <form class="ask" id="ask" autocomplete="off">
