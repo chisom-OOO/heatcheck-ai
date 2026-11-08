@@ -359,3 +359,148 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
 
 /* Max: model-bias caveat on a market card (server text) */
 .mcard-caveat{margin:6px 0 0;padding:6px 8px;border-left:3px solid #f5b83d;font-size:13px;line-height:1.35;color:inherit;opacity:.92}
+
+/* Experience: board cards drawn before Max's comparison answers, and the board's load error */
+.mcard.pending { opacity: .82; }
+.mcard-verdict.pending { font-style: italic; }
+.board-error { color: var(--heat); }
+.board-retry { margin-top: 8px; }
+
+/* ------------------------------------------------------------------ responsible use (Max, 8 Nov 2026)
+   Calm, small, always visible; not styled like an ad. Text: responsible_use.json. */
+:root { --ru-h: 30px; }
+.stage { box-sizing: border-box; min-height: calc(100vh - var(--ru-h)); min-height: calc(100dvh - var(--ru-h)); }
+.board { max-height: calc(100vh - 230px - var(--ru-h)); max-height: calc(100dvh - 230px - var(--ru-h)); }
+.ru-footer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; min-height: var(--ru-h); box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; padding: 6px 16px;
+  font-size: .78rem; line-height: 1.35; color: var(--muted); text-align: center;
+  background: rgba(18, 18, 26, .94); border-top: 1px solid #262433;
+}
+body { padding-bottom: var(--ru-h); }
+.board-ru { margin: 2px 0 0; color: var(--muted); font-size: .84rem; line-height: 1.45; max-width: 75ch; }
+.ru-notice {
+  margin: 0 0 4px; padding: 10px 14px; border-left: 3px solid #3A3752; border-radius: 6px;
+  background: #17161F; color: var(--muted); font-size: .86rem; line-height: 1.45;
+}
+@media (max-width: 860px) { :root { --ru-h: 44px; } .ru-footer { font-size: .72rem; } }
+
+/* ------------------------------------------------------------------ Frost (Experience, 8 Nov 2026)
+   With Frost on stage (body[data-cast="frost"]): Heater left, the conversation in the middle, Frost
+   right (adviser's grid: 1fr | 420-760px | 1fr). Frost slides in on his first question. Bubbles
+   alternate with no name tags: Heater's orange with a tail to the left, Frost's ice blue with a tail
+   to the right; result chips sit under Frost's questions on his side. The Ref's card and stamp are
+   centred at the bottom of the middle column. */
+:root { --ice: #8FD3FF; --ice-ink: #EAF6FF; --ice-bg: #101823; --f-flip: 1; /* poses face left; -1 flips */ }
+body[data-cast="frost"] .stage {
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 760px) minmax(0, 1fr);
+  grid-template-areas: "hero talk frost" "ask ask ask";
+  align-items: end;
+}
+body[data-cast="frost"] .talk { max-width: 760px; justify-self: center; width: 100%; align-self: end; }
+body[data-cast="frost"] .hero { justify-self: start; }
+body[data-cast="frost"] .hero .h-root { height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px); }
+.frost-side { grid-area: frost; justify-self: end; position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: flex-end; min-width: 0; overflow: hidden; }
+.f-root {
+  position: relative; height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px);
+  min-height: 380px; aspect-ratio: 687 / 1024; max-width: 100%;
+  transform: translateX(40px); opacity: 0; transition: transform .35s ease-out, opacity .35s ease-out;
+}
+.f-root.entered { transform: none; opacity: 1; }
+.f-body { position: absolute; inset: 0; }
+.f-spot { position: absolute; inset: -10% -40% -4%; background: radial-gradient(ellipse 44% 44% at 50% 50%, #16222C, #141B23 45%, #13161D 72%, #12121A 100%) #12121A; }
+.f-pose { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .2s; mix-blend-mode: lighten; transform: scaleX(var(--f-flip)); }
+.f-pose.on { opacity: 1; }
+.f-missing { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; text-align: center; color: var(--muted); font: .8rem var(--mono); }
+.f-missing:empty { display: none; }
+.f-root.talking .f-body { animation: f-breathe 1.6s ease-in-out infinite; }
+@keyframes f-breathe { 50% { transform: translateY(-3px); } }
+
+.convo { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.cv { position: relative; max-width: 92%; padding: 14px 18px; border-radius: 16px; animation: pop-in .26s cubic-bezier(.2, .9, .3, 1.3) both; }
+.cv-text { margin: 0; overflow-wrap: anywhere; font-size: 18px; line-height: 1.35; }
+.cv::before, .cv::after { content: ""; position: absolute; top: 40%; }
+.cv-heater {
+  align-self: flex-start; margin-left: 14px; transform-origin: 0 60%;
+  background: #1A1622; border: 3px solid #FF7A1A;
+}
+.cv-heater .cv-text { font-weight: 800; color: #FFF1DE; }
+.cv-heater::before { left: -24px; width: 26px; height: 26px; background: #FF7A1A; clip-path: polygon(100% 0, 0 55%, 100% 100%); }
+.cv-heater::after { left: -17px; width: 22px; height: 18px; margin-top: 4px; background: #1A1622; clip-path: polygon(100% 0, 0 55%, 100% 100%); }
+.cv-frost {
+  align-self: flex-end; margin-right: 14px; transform-origin: 100% 60%;
+  background: var(--ice-bg); border: 2px solid var(--ice);
+}
+.cv-frost .cv-text { color: var(--ice-ink); }
+.cv-frost::before { right: -24px; width: 26px; height: 26px; background: var(--ice); clip-path: polygon(0 0, 100% 55%, 0 100%); }
+.cv-frost::after { right: -17px; width: 22px; height: 18px; margin-top: 4px; background: var(--ice-bg); clip-path: polygon(0 0, 100% 55%, 0 100%); }
+.cv-reaction .cv-text { font-size: 17px; }
+.cv-chip {
+  align-self: flex-end; max-width: 80%; margin: -4px 14px 0 0; padding: 8px 12px; border-radius: 6px;
+  font-size: 14px; line-height: 1.4; color: #BFE6FF; background: #0B1B2B; border-left: 3px solid var(--ice);
+  overflow-wrap: anywhere; animation: pop-in .2s ease-out both;
+}
+.cv-chip.pass { border-left-color: var(--ref); }
+.cv-chip.fail { border-left-color: #FF8A8E; }
+body[data-cast="frost"] .ref { margin: 18px auto 0; width: min(100%, 620px); text-align: left; align-self: center; }
+body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-50%) rotate(-9deg); animation-name: slam-centre; max-width: 80%; }
+@keyframes slam-centre {
+  0%   { opacity: 0; transform: translateX(-50%) rotate(-16deg) scale(2.6); }
+  45%  { opacity: 1; transform: translateX(-50%) rotate(-9deg) scale(.92); }
+  70%  { transform: translateX(-50%) rotate(-8deg) scale(1); }
+  100% { opacity: 1; transform: translateX(-50%) rotate(-9deg) scale(1); }
+}
+.skip-hint { margin: 0; text-align: center; color: var(--muted); font-size: .8rem; }
+.sample-flag {
+  margin: 0; padding: 6px 10px; border: 1px dashed #FFC24D; border-radius: 6px; color: #FFC24D;
+  font: 700 .78rem/1.3 var(--mono); text-align: center;
+}
+@media (max-width: 900px) {
+  /* small portraits along the top: Heater left, Frost right, the conversation below */
+  body[data-cast="frost"] .stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "hero frost" "talk talk" "ask ask"; grid-template-rows: auto auto auto;
+  }
+  body[data-cast="frost"] .hero .h-root, body[data-cast="frost"] .f-root { height: 140px; min-height: 0; }
+  body[data-cast="frost"] .hero { justify-self: center; justify-content: flex-start; }
+  body[data-cast="frost"] .frost-side { justify-self: center; justify-content: flex-end; }
+  .cv { max-width: 94%; }
+  .cv-text { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-root { transition: opacity .2s; transform: none; }
+  .f-root.talking .f-body, .cv, .cv-chip { animation: none; }
+  body[data-cast="frost"] .stamp { animation: none; }
+}
+
+/* ------------------------------------------------------------------ tamper test (Experience, 8 Nov 2026)
+   A red "Corrupt one byte" button (hidden unless ?tamper=1 or ?tamper=mock), the panel with what the
+   validator caught, the ledger with the new row, and "Restore the byte". */
+.tamper-btn, .restore-btn {
+  font: 800 .86rem/1 var(--cond); font-stretch: condensed; letter-spacing: .04em; text-transform: uppercase;
+  padding: 9px 14px; border-radius: 999px; cursor: pointer;
+}
+.tamper-btn { color: #fff; background: #D7263D; border: 2px solid #FF5A6E; }
+.tamper-btn:hover:not(:disabled) { background: #F0304A; }
+.restore-btn { color: #0E1A12; background: #7EE0A1; border: 2px solid #B6F2CB; }
+.tamper-btn:disabled, .restore-btn:disabled { opacity: .45; cursor: not-allowed; }
+.tamper { margin: 0; padding: 14px 16px; border: 2px solid #D7263D; border-radius: 10px; background: #1A1216; }
+.tamper-mock { margin: 0 0 10px; padding: 6px 10px; border: 1px dashed #FFC24D; border-radius: 6px; color: #FFC24D; font: 700 .78rem/1.3 var(--mono); }
+.tamper-problem { margin: 0 0 8px; color: #FF8A8E; }
+.tamper-alarm { padding: 8px 10px; border: 2px solid #FF5A6E; border-radius: 6px; font-weight: 800; color: #FFD9DE; background: #4A1018; }
+.tamper-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 12px; }
+.tamper-facts dt { color: var(--muted); font-size: .84rem; }
+.tamper-facts dd { margin: 0; font: .9rem/1.35 var(--mono); overflow-wrap: anywhere; }
+.tamper-facts .tamper-error { color: #FF8A8E; font-weight: 700; }
+.tamper-ledger { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.tamper-ledger caption { text-align: left; color: var(--muted); font-size: .8rem; padding-bottom: 4px; }
+.tamper-ledger th, .tamper-ledger td { text-align: left; padding: 5px 8px; border-top: 1px solid #2E2A3C; overflow-wrap: anywhere; }
+.tamper-ledger th { color: var(--muted); font-weight: 600; }
+.tamper-ledger .mono { font-family: var(--mono); }
+.tamper-ledger .tamper-new td { background: #3A1820; color: #FFD9DE; font-weight: 700; animation: row-in .6s ease-out both; }
+@keyframes row-in { from { opacity: 0; transform: translateY(-6px); background: #7A2030; } }
+.tamper-status { margin: 10px 0 0; color: var(--muted); font-size: .86rem; }
+.tamper-status:empty { display: none; }
+.tamper-status.good { color: #7EE0A1; }
+.tamper-status.bad { color: #FF8A8E; }
+@media (prefers-reduced-motion: reduce) { .tamper-ledger .tamper-new td { animation: none; } }

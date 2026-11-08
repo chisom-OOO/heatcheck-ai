@@ -158,6 +158,12 @@ Run the tests: `uv run --frozen --all-groups pytest -q`.
 | `tests/` | Contract, integration and reviewer test suites |
 | `incoming/` | Byte-for-byte imports of the original hand-offs, kept for provenance |
 
+## Responsible use
+
+Responsible use. HeatCheck is a statistics demo. It is not a betting or trading service, not financial advice, and not a recommendation to bet or trade. Market prices are shown read-only, for comparison only; HeatCheck never places orders, takes money or links to betting or trading. Nothing shows this model beats the market: a gap between the forecast and the price is a question to look into, not an edge. The HeatCheck team accepts no responsibility for any decision anyone makes using it; use at your own risk. Betting and prediction-market trading are for adults only (18+, or 21+ where the law requires), and only where they are legal. If gambling stops being fun, the National Gambling Helpline (GamCare) is free, confidential and open 24/7: 0808 8020 133, gamcare.org.uk (checked 8 November 2026).
+
+Read-only by design: HeatCheck holds no venue keys or accounts and has no order path; the independent gate review's order-capability scan (`place_order`, `/orders`, POST in market code) found none (`reports/review/2026-11-08-0310-gate-review.md`). Kalshi quotes stay unverified (only Polymarket mappings are verified).
+
 ## Disclosures and limits
 
 - **How it was built.** Four Claude sessions with fixed roles (integration, research, experience, independent review) coordinated through GitHub branches and committed reports, plus a separate adviser session that ran the confirmatory test after the reviewer's machine failed. Meta `muse-spark-1.3` powers Heater; the character art is AI-generated with Google Gemini.
@@ -166,4 +172,5 @@ Run the tests: `uv run --frozen --all-groups pytest -q`.
 - **Isolation is logical, not OS-enforced.** The custodian and evaluator run as the same user; reviewer sign-offs are recorded, not cryptographically signed.
 - **One season per test.** Confirmatory evidence comes from a single sealed season. The 2023-24 final run's inputs predate the data-binding fix and can only be shown to match today's data.
 - **Data rights.** Upstream code is Apache-2.0, which does not establish rights to the underlying NBA data; raw files are fetched, verified by hash and never redistributed.
+- **Voice input.** The mic records a short clip in the browser (16 kHz mono WAV, at most 30 s), and HeatCheck's server sends it to Meta `muse-voice-transcribe-1.0` with the key held server-side. The transcript is placed in the question box to confirm or edit; audio is never stored. The API call follows the team's earlier project [Unbluffable](https://github.com/chisom-OOO/unbluffable) (`voice/provider.py`, `transcribe()`), used as a reference for the call only: HeatCheck's code (`heatcheck/api/transcription.py`) is its own. Transcription cost is logged at a stand-in rate of $0.01 per minute, not a published price.
 - **The market board is not advice.** No evidence shows this model beats the market; large gaps most likely reflect what Elo doesn't know (injuries, lineups, trades).

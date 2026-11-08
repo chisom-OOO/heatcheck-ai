@@ -1,0 +1,1 @@
+{"first_flip_status": 200, "panel": "Nothing was flipped: the server did not report a flipped byte (HTTP 429: one flip per 5 seconds; wait a moment and try again).", "calls": [[36222.86, "POST", "/api/tamper/flip", 200], [36222.95, "POST", "/api/tamper/flip", 429]], "errors": []}

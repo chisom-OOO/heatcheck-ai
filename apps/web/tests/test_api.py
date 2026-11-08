@@ -194,10 +194,18 @@ class Api(unittest.TestCase):
         st, r = self.req("POST", f"/api/file?session_id={sid}", b"MZ\x90\x00", {"Content-Type": "text/csv", "X-File-Name": "x.csv"})
         self.assertEqual(st, 422)
 
-    def test_transcribe_blocked_without_provider(self):
+    def test_transcribe_is_forwarded_to_max_api(self):
+        # Max, 8 Nov 2026: /api/transcribe now goes to Max's API (Meta Voice Transcribe, key
+        # server-side), replacing this server's local route. Point it at a closed port so a demo
+        # running on 8770 does not answer.
+        old = os.environ.get("HEATCHECK_DIALOGUE_API")
+        os.environ["HEATCHECK_DIALOGUE_API"] = "http://127.0.0.1:9"
+        self.addCleanup(lambda: os.environ.pop("HEATCHECK_DIALOGUE_API") if old is None
+                        else os.environ.__setitem__("HEATCHECK_DIALOGUE_API", old))
         st, r = self.req("POST", "/api/transcribe", b"RIFF....WAVE", {"Content-Type": "audio/wav"})
-        self.assertEqual((st, r["error"]), (503, "BLOCKED"))
-        self.assertEqual(self.req("POST", "/api/transcribe", b"", {"Content-Type": "audio/wav"})[0], 400)
+        self.assertEqual((st, r["error"]), (502, "UPSTREAM_UNAVAILABLE"))
+        st, r = self.req("POST", "/api/transcribe", b"x" * (2 * 1024 * 1024 + 1), {"Content-Type": "audio/wav"})
+        self.assertEqual((st, r["error"]), (413, "TOO_LARGE"))
 
     # --- market
     def test_market_flow(self):

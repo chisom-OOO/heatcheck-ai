@@ -218,3 +218,16 @@ test("Max: the card shows the server's caveats (home-bias note) and nothing it d
   assert.deepEqual(B.cardView(row, { resp: { ...base, caveats: [1, "", null] } }).caveats, []);
   assert.equal(B.cardView(row, { resp: { ...base, caveats: [text] } }).verdict, "Worth investigating · Edge unverified");
 });
+
+test("Max: the board header shows the full responsible-use text next to 'never a betting tip'", async () => {
+  const ru = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "web", "responsible_use.json"), "utf8"));
+  const board = await withFetch(mockFetch(), () => loadBoard());
+  const root = new El("section");
+  renderBoard(root, board, { responsibleText: ru.full });
+  const head = byClass(root, "board-head")[0];
+  assert.equal(byClass(head, "board-ru")[0].textContent, ru.full);
+  assert.match(head.textContent, /Descriptive only, never a betting tip\./);
+  const plain = new El("section");
+  renderBoard(plain, board, {});
+  assert.equal(byClass(plain, "board-ru").length, 0);   // no text loaded: nothing invented (footer still shows)
+});

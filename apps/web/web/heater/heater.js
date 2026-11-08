@@ -21,6 +21,7 @@ export class Heater extends EventTarget {
     this.state = null;
     this.timers = [];
     this.speaking = null;
+    this.voicePicker = null;    // demo with Frost: pickCastVoices, so the Ref never shares Frost's voice
     this.layers = [...root.querySelectorAll(".h-pose")];
     this.slices = [...root.querySelectorAll(".h-slice")];
     this.missing = root.querySelector(".h-missing");
@@ -132,7 +133,7 @@ export class Heater extends EventTarget {
         return;
       }
       const u = new SpeechSynthesisUtterance(text);
-      const { heater, ref } = pickVoices(synth.getVoices());
+      const { heater, ref } = (this.voicePicker || pickVoices)(synth.getVoices());
       const v = isHeater ? heater : ref;
       if (v) u.voice = v;
       u.rate = settings.rate;

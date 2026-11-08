@@ -168,6 +168,89 @@ Measured on 2026-11-07; see `reports/max/`.
 
 Use a client timeout of at least 30 s and show a waiting state.
 
+## Frost, the visible challenger (`frost`, `frost_reaction`; added 8 Nov 2026)
+
+Both `POST /api/dialogue` and `POST /api/investigate` return two more fields, always present:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `frost` | array of 0–3 objects | Frost's challenges, shown **before** the Ref speaks. Each is `{"check", "question", "chip", "source"}`. |
+| `frost.check` | string | The check or recorded fact the challenge is anchored to (e.g. `A-PERMUTATION-NULL`, `sealed_season`, `multiplicity`, `no_equivalence_test`, `ci_rule`, `elo_baseline`; market: `model_bias`, `mapping_verification`, `inputs_used`). |
+| `frost.question` | string | Frost's question. The template, or a model rephrasing that passed the guard (no number outside the record, no Ref/verdict word, at most 220 characters). |
+| `frost.chip` | string | The answer, as a result chip. **Template only**, filled from the Ref's facts (dialogue) or the card's own checks (market); never model-written. |
+| `frost.source` | string | Where the chip's facts came from (attack id, record field, or check id). |
+| `frost_reaction` | string | Frost's line **after** the stamp, keyed by the verdict the Ref gave. |
+
+- **Dialogue:** challenges come from the adviser's `heatcheck/agents/frost.py` (chip templates fixed by
+  Max so every number is the recorded value): up to three, one per kind while kinds remain, in
+  priority order. A challenge whose chip cannot be anchored to the record is not offered. Turns with no evidence entry (no registered test, or a
+  confirmatory claim not yet run) return `frost: []` and the `null`-verdict reaction ("Nobody knows
+  yet. Including you.").
+- **Market cards:** always three, in this order: `model_bias` (Research's calibration note: home
+  teams overrated last season), `mapping_verification` (the OUTCOME_MATCH check), `inputs_used`
+  (the MISSING_INPUTS check). Templates only, with no model call, so the board stays fast.
+  `frost_reaction` is keyed by the card verdict.
+- **Latency:** with a key, the three rephrase calls run in parallel with a 4 s cap, so Frost adds
+  at most about 4 s to a dialogue turn. Market cards add none.
+- Frost decides nothing. The verdict, the stamp and `ref_text` are unchanged.
+
+Real example: `POST /api/dialogue {"question": "Is the hot hand real?"}` on the demo data (maps to HH-K3, verdict INSUFFICIENT_EVIDENCE; template mode, so the questions are the templates):
+
+```json
+{
+  "frost": [
+    {
+      "check": "A-PERMUTATION-NULL",
+      "question": "Streaks happen by chance. If nobody had a hot hand at all, how streaky would shooting look?",
+      "chip": "Shuffled every player's shots within each game. Real shooting was no streakier than the shuffles (p = 0.061, alpha 0.050).",
+      "source": "A-PERMUTATION-NULL"
+    },
+    {
+      "check": "A-SHOT-VALUE-SELECTION",
+      "question": "Hot shooters take harder shots. Fewer makes after a streak could be confidence, not cold hands.",
+      "chip": "Checked whether players took more 3-pointers after streaks: no shift beyond the limit. (3pt share after makes minus after misses = -0.0476; limit 0.1)",
+      "source": "A-SHOT-VALUE-SELECTION"
+    },
+    {
+      "check": "A-SPLIT-HALF-REPLICATION",
+      "question": "Show me it again. Does it hold in two separate slices of the data, or only one?",
+      "chip": "Even and odd groups tested separately: bias-corrected effect even=-0.140111, odd=+0.610580",
+      "source": "A-SPLIT-HALF-REPLICATION"
+    }
+  ],
+  "frost_reaction": "Not shown. That's not the same as wrong, Heater."
+}
+```
+
+## Tamper demo: `POST /api/tamper/flip`, `POST /api/tamper/restore`, `GET /api/tamper/events` (added 8 Nov 2026)
+
+Judge-operated. Shows that the evidence ledger catches a single changed byte. **Read-only on committed
+evidence:** `evidence/evidence.jsonl` is only read; the flip happens on a scratch copy in
+`logs/tamper_scratch/`.
+
+- **`POST /api/tamper/flip`** (no body needed): copies the committed ledger, flips one bit of the first
+  letter of the verdict (`"decision"`) on a middle line, and reads the copy with the real
+  `EvidenceLedger` reader, which re-checks every line's hashes and the chain. Response `200`:
+
+  ```json
+  {"offset": 24585, "line": 5, "expected": "0x53 'S'", "actual": "0x52 'R'", "verdict": "DATA_INVALID",
+   "error": "ledger line 5: identity hash mismatch (tampered)",
+   "ledger_event_id": "5bd45a045dfe921e6184ae89c361eaf3392657ef2843bbcdc7657d0c6cb81674"}
+  ```
+
+  (A real run on the committed file. `error` is the reader's own message. `ledger_event_id` differs per run.)
+  `429 {"error": "RATE_LIMITED"}` within 5 s of the last flip. `500 {"error": "NOT_DETECTED"}` if the
+  reader ever accepts the tampered copy (reported, never hidden). `503 {"error": "TAMPER_OFF"}` when the
+  server runs with `--no-tamper`.
+- **`POST /api/tamper/restore`**: deletes the scratch copy. `200 {"restored": true}` (idempotent).
+- **`GET /api/tamper/events`**: `200 {"events": [...]}`, the TAMPER_ATTEMPT entries, oldest first. Each
+  has `evidence_id`, `created_at_utc`, `kind`, `at_utc`, `target`, `target_sha256`, `line`, `offset`,
+  `scratch_path_sha256`, `validator_message` and `verdict`. The flipped bytes are never stored.
+- **Where attempts are recorded:** `logs/tamper_events.jsonl`, a separate hash-chained ledger (same
+  `EvidenceLedger` class, normal appends, chain intact). They are not written into the dialogue
+  evidence ledger, because the agent loop reads `identity.data` from every entry there, so a
+  non-claim entry would break the next question.
+
 ## `GET /api/display-titles`
 
 ```json

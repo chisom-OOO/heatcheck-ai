@@ -16,7 +16,6 @@ import traceback
 import urllib.parse
 import urllib.request
 import uuid
-from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
@@ -255,34 +254,6 @@ def attack_envelopes(plan, res, data_hash):
 
 # ------------------------------------------------------------------------------ voice
 
-def transcribe(audio, mime):
-    key = os.environ.get("META_API_KEY")
-    if not key:
-        raise ApiError(503, "BLOCKED", "No server-side transcription provider configured (META_API_KEY unset). "
-                                        "Use browser speech or type the claim.")
-    if not mime.startswith("audio/wav") and not mime.startswith("audio/x-wav"):
-        raise ApiError(415, "UNSUPPORTED_AUDIO", "send 16-bit mono PCM WAV (16 or 24 kHz)")
-    boundary = uuid.uuid4().hex
-    req_json = json.dumps({"mode": "PUSH_TO_TALK", "model": "muse-voice-transcribe-1.0", "audioEncoding": "WAV",
-                           "keywords": ["NBA", "free throw", "clutch", "hot hand", "Celtics", "Knicks"]})
-    body = (f"--{boundary}\r\nContent-Disposition: form-data; name=\"request\"\r\nContent-Type: application/json\r\n\r\n"
-            f"{req_json}\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"cmd.wav\"\r\n"
-            f"Content-Type: audio/wav\r\n\r\n").encode() + audio + f"\r\n--{boundary}--\r\n".encode()
-    req = urllib.request.Request("https://api.meta.ai/v1/asr/transcribe", data=body, method="POST",
-                                 headers={"Authorization": f"Bearer {key}",
-                                          "Content-Type": f"multipart/form-data; boundary={boundary}",
-                                          "Accept": "application/json"})
-    t0 = datetime.now(UTC)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            out = json.loads(r.read(1_000_000))
-    except Exception as e:
-        raise ApiError(502, "PROVIDER_ERROR", f"transcription failed: {type(e).__name__}") from None
-    ms = (datetime.now(UTC) - t0).total_seconds() * 1000
-    return {"transcript": out.get("transcript", ""), "provider": "meta muse-voice-transcribe-1.0",
-            "provider_ms": round(ms), "audio_ms": out.get("audioDurationMs"), "raw_audio_retained": False}
-
-
 # ------------------------------------------------------------------------------ harness batch
 
 def _harness_worker(n):
@@ -321,7 +292,11 @@ CSP = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' 
 # The page calls relative /api/... URLs only. Max's endpoints are forwarded to his dialogue server
 # with method, body and status unchanged, so the page is same-origin on any port and needs no CORS.
 UPSTREAM_DEFAULT = "http://127.0.0.1:8770"
-MAX_ENDPOINTS = {"dialogue", "investigate", "live-forecast", "display-titles", "scenario", "route"}
+# transcribe: Max's POST /api/transcribe (Meta Voice Transcribe, key server-side) replaces this
+# server's old local route (8 Nov 2026), so voice input works in every browser.
+MAX_ENDPOINTS = {"dialogue", "investigate", "live-forecast", "display-titles", "scenario", "route", "transcribe",
+                 "tamper"}
+MAX_TRANSCRIBE_BODY = 2 * 1024 * 1024  # Max's cap; larger clips are refused before forwarding
 UPSTREAM_TIMEOUT = 60  # Max's doc: client timeout of at least 30 s
 UPSTREAM_MAX_BODY = 4 * 1024 * 1024
 
@@ -339,7 +314,8 @@ def forward(h, method, path_qs):
     """Send the request to Max's server and copy its status, Content-Type and body back unchanged."""
     import http.client
     host, port = upstream_base()
-    body = h._body(MAX_JSON) if method == "POST" else None
+    limit = MAX_TRANSCRIBE_BODY if path_qs.split("?")[0] == "/api/transcribe" else MAX_JSON
+    body = h._body(limit) if method == "POST" else None
     headers = {"Accept": h.headers.get("Accept") or "application/json"}
     if body is not None:
         headers["Content-Type"] = h.headers.get("Content-Type") or "application/json"
@@ -688,13 +664,6 @@ def r_export(h, args, q):
     h._send(200, exp, extra={"Content-Disposition": f'attachment; filename="heatcheck_{rid}.json"'})
 
 
-def r_transcribe(h, args, q):
-    audio = h._body(MAX_AUDIO)
-    if not audio:
-        raise ApiError(400, "NO_AUDIO", "empty audio")
-    h._send(200, transcribe(audio, h.headers.get("Content-Type", "")))
-
-
 def r_harness_start(h, args, q):
     b = h._json()
     n = int(b.get("leagues_per_cell", 12))
@@ -852,7 +821,6 @@ ROUTES = {
     ("POST", "cancel"): r_cancel,
     ("POST", "reveal"): r_reveal,
     ("GET", "export"): r_export,
-    ("POST", "transcribe"): r_transcribe,
     ("POST", "harness"): r_harness_start,
     ("GET", "harness"): r_harness,
     ("GET", "market-scenarios"): r_market_scenarios,

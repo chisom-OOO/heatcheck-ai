@@ -28,10 +28,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from heatcheck.agents import frost
 from heatcheck.agents.confirmatory import (
     CONFIRMATORY_IDS,
     EVIDENCE,
@@ -471,6 +472,22 @@ REF_MENTION = re.compile(
     r"\bdata\b", re.IGNORECASE)
 
 
+# Safer-gambling guard for every Heater line, model-written or template (8 Nov 2026). Whole words
+# or phrases, case-insensitive: "better", "between" and "lockdown" pass; "lock" only as a phrase.
+BETTING_WORDS = re.compile(
+    r"(?<![\w'’])(?:bet|bets|betting|wager|value bet|free money|guaranteed|sure thing|"
+    r"can['’]?t lose|cannot lose|a lock|lock it in|mortal lock)(?![\w'’])", re.IGNORECASE)
+
+
+# Frost's rephrase only (Heater's list above is the user's exact list): British betting slang.
+FROST_EXTRA_BETTING = re.compile(r"(?<![\w'’])punt(?:s|er|ers|ing|ed)?(?![\w'’])", re.IGNORECASE)
+
+
+def betting_words(text: str) -> list[str]:
+    """Betting-encouragement wording in a Heater line; empty means it may be said."""
+    return sorted({m.group(0).lower() for m in BETTING_WORDS.finditer(text or "")})
+
+
 def take_mentions_ref(text: str) -> list[str]:
     """Words that would have Heater speak about the Ref's verdict before the Ref has spoken."""
     return sorted({m.group(0).lower() for m in REF_MENTION.finditer(text or "")})
@@ -516,7 +533,38 @@ class Dialogue:
     def turn(self, question: str) -> dict[str, Any]:
         out = self._turn(question)
         out["heater_reaction"] = heater_reaction(out)
+        # Turns with no evidence entry (no registered test, not yet run): same keys, no challenges.
+        out.setdefault("frost", [])
+        out.setdefault("frost_reaction", frost.FROST_REACTION[None])
         return out
+
+    def _frost_phrase(self, chal, facts) -> dict[str, str]:
+        """Adviser's guarded rephrase of Frost's QUESTION only; any failure keeps the template.
+        Adapted by Max: MetaChat has complete(role, messages), not chat(...); the 4 s deadline never
+        raises the client's own; the calls run in parallel, so Frost adds at most one deadline."""
+        from concurrent.futures import ThreadPoolExecutor
+        # The adviser's max_tokens=60 left no room: live calls ended finish_reason=length with empty text
+        # (8 Nov, 5/5). The client's default cap is kept; the 220-character guard keeps it short.
+        llm = replace(self.llm, timeout_s=min(4.0, self.llm.timeout_s))
+
+        def one(c):
+            try:
+                text = llm.complete("frost", [{"role": "system", "content": frost.FROST_SYSTEM},
+                                              {"role": "user", "content": c.question}]).text
+            except Exception:
+                return None
+            if number_violations(text, facts) or take_mentions_ref(text) or len(text) > 220:
+                return None                   # fall back to the template question
+            # FROST_SYSTEM says "never suggest betting"; enforce it (live, 8 Nov: "simultaneous punts")
+            if betting_words(text) or FROST_EXTRA_BETTING.search(text):
+                return None
+            return text.strip()
+
+        if not chal:
+            return {}
+        with ThreadPoolExecutor(max_workers=len(chal)) as pool:
+            texts = list(pool.map(one, chal))
+        return {c.check: t for c, t in zip(chal, texts, strict=True) if t}
 
     def _turn(self, question: str) -> dict[str, Any]:
         sources: dict[str, str] = {"ref": "TEMPLATE"}
@@ -572,6 +620,10 @@ class Dialogue:
         if ident.get("source") == RECORDED_SOURCE:
             out["phase"] = ident["phase"]
             out["custodian_receipt_id"] = ident["custodian"]["receipt_id"]
+        chal = frost.select(facts)
+        phrased = self._frost_phrase(chal, facts) if self.llm else None   # guarded, see _frost_phrase
+        out["frost"] = frost.to_payload(chal, phrased)
+        out["frost_reaction"] = frost.FROST_REACTION.get(ident["decision"], frost.FROST_REACTION[None])
         return out
 
     def _confirmatory_turn(self, question, claim_id, map_identity, sources) -> dict[str, Any]:
@@ -643,4 +695,7 @@ class Dialogue:
         ref_words = take_mentions_ref(text)
         if ref_words:
             return fallback, f"TEMPLATE (guard rejected Ref mention {ref_words[:4]})"
+        bet_words = betting_words(text)
+        if bet_words:
+            return fallback, f"TEMPLATE (guard rejected betting wording {bet_words[:4]})"
         return text, "LLM"
