@@ -1,0 +1,274 @@
+{
+  "format": "heatcheck-idea-family/1",
+  "mode": "synthetic",
+  "label": "EXPLORATORY",
+  "registration_hash": "d2c15fa8cbf1f60b8626def75d23486eff5a64e3a964365fa83353bd94098013",
+  "n_ideas": 13,
+  "alpha": 0.05,
+  "B": 999,
+  "data_scope": "synthetic planted-truth league; truth withheld from the proposer and the tests",
+  "results": [
+    {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "1"
+      },
+      "n_condition": 5197,
+      "n_rest": 5827,
+      "rate_condition": 0.4845102944006157,
+      "rate_rest": 0.46559121331731596,
+      "status": "EXECUTED",
+      "T": 0.01891908108329976,
+      "null_mean": 0.011953710402703169,
+      "B_effective": 999,
+      "p_raw": 0.221,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "2"
+      },
+      "n_condition": 2277,
+      "n_rest": 7747,
+      "rate_condition": 0.49846288976723757,
+      "rate_rest": 0.4689557247966955,
+      "status": "EXECUTED",
+      "T": 0.029507164970542066,
+      "null_mean": 0.019599666975772194,
+      "B_effective": 999,
+      "p_raw": 0.184,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "3"
+      },
+      "n_condition": 1014,
+      "n_rest": 8010,
+      "rate_condition": 0.5285996055226825,
+      "rate_rest": 0.4735330836454432,
+      "status": "EXECUTED",
+      "T": 0.05506652187723926,
+      "null_mean": 0.027335061753278073,
+      "B_effective": 999,
+      "p_raw": 0.02,
+      "p_holm": 0.24,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "4"
+      },
+      "n_condition": 468,
+      "n_rest": 7557,
+      "rate_condition": 0.532051282051282,
+      "rate_rest": 0.4784967579727405,
+      "status": "EXECUTED",
+      "T": 0.053554524078541554,
+      "null_mean": 0.041614666435964204,
+      "B_effective": 999,
+      "p_raw": 0.278,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "1"
+      },
+      "n_condition": 5827,
+      "n_rest": 5197,
+      "rate_condition": 0.46559121331731596,
+      "rate_rest": 0.4845102944006157,
+      "status": "EXECUTED",
+      "T": -0.01891908108329976,
+      "null_mean": -0.01177498653515433,
+      "B_effective": 999,
+      "p_raw": 0.195,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "2"
+      },
+      "n_condition": 2858,
+      "n_rest": 7166,
+      "rate_condition": 0.4730580825752274,
+      "rate_rest": 0.47669550655874965,
+      "status": "EXECUTED",
+      "T": -0.0036374239835222366,
+      "null_mean": -0.017139834758048655,
+      "B_effective": 999,
+      "p_raw": 0.92,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "3"
+      },
+      "n_condition": 1365,
+      "n_rest": 7659,
+      "rate_condition": 0.45494505494505494,
+      "rate_rest": 0.48413631022326675,
+      "status": "EXECUTED",
+      "T": -0.029191255278211814,
+      "null_mean": -0.023826874197808774,
+      "B_effective": 999,
+      "p_raw": 0.342,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "4"
+      },
+      "n_condition": 668,
+      "n_rest": 7357,
+      "rate_condition": 0.45209580838323354,
+      "rate_rest": 0.48430066603235017,
+      "status": "EXECUTED",
+      "T": -0.032204857649116625,
+      "null_mean": -0.027038870818111002,
+      "B_effective": 999,
+      "p_raw": 0.384,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "less",
+        "condition": "shot_value",
+        "level": "3"
+      },
+      "n_condition": 4861,
+      "n_rest": 7163,
+      "rate_condition": 0.365151203456079,
+      "rate_rest": 0.5464190981432361,
+      "status": "EXECUTED",
+      "T": -0.1812678946871571,
+      "null_mean": -0.014148425312731312,
+      "B_effective": 999,
+      "p_raw": 0.001,
+      "p_holm": 0.013000000000000001,
+      "verdict": "CANDIDATE"
+    },
+    {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "1"
+      },
+      "n_condition": 2973,
+      "n_rest": 9051,
+      "rate_condition": 0.47056844937773296,
+      "rate_rest": 0.47398077560490554,
+      "status": "EXECUTED",
+      "T": -0.0034123262271725796,
+      "null_mean": -0.0026098827632819177,
+      "B_effective": 999,
+      "p_raw": 0.944,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "2"
+      },
+      "n_condition": 3000,
+      "n_rest": 9024,
+      "rate_condition": 0.47533333333333333,
+      "rate_rest": 0.472406914893617,
+      "status": "EXECUTED",
+      "T": 0.002926418439716305,
+      "null_mean": 0.0022083998892509513,
+      "B_effective": 999,
+      "p_raw": 0.936,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "3"
+      },
+      "n_condition": 3043,
+      "n_rest": 8981,
+      "rate_condition": 0.48209004272099903,
+      "rate_rest": 0.47010355194299075,
+      "status": "EXECUTED",
+      "T": 0.011986490778008285,
+      "null_mean": 0.008122336471595945,
+      "B_effective": 999,
+      "p_raw": 0.707,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+      "template": "SHOT_MAKE_AFTER_CONDITION",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "4"
+      },
+      "n_condition": 3008,
+      "n_rest": 9016,
+      "rate_condition": 0.4644281914893617,
+      "rate_rest": 0.47604259094942325,
+      "status": "EXECUTED",
+      "T": -0.011614399460061542,
+      "null_mean": -0.007131529762691387,
+      "B_effective": 999,
+      "p_raw": 0.649,
+      "p_holm": 1.0,
+      "verdict": "NOT_A_CANDIDATE"
+    }
+  ],
+  "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+  "created_utc": "2026-11-07T22:30:13.646302Z"
+}
