@@ -1,0 +1,21 @@
+{
+ "format": "heatcheck-idea-family/1",
+ "ideas": [
+  {
+   "template": "GAME_HOME_WIN_SPLIT",
+   "params": {
+    "feature": "rest_advantage",
+    "level": "home_more",
+    "alternative": "greater"
+   }
+  },
+  {
+   "template": "GAME_HOME_WIN_SPLIT",
+   "params": {
+    "feature": "rest_advantage",
+    "level": "away_more",
+    "alternative": "less"
+   }
+  }
+ ]
+}

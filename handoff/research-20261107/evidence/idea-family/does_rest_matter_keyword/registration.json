@@ -1,0 +1,51 @@
+{
+  "B": 999,
+  "alpha": 0.05,
+  "code_hash": "6e3378adc7021eff8a4c0462cf7e6af7572e2e0dd17a2612ea18186508169205",
+  "created_utc": "2026-11-08T01:55:44.510106Z",
+  "data_identity": {
+    "game_view_sha256": "018b5793973069606cd0d7b0d6faa8aaf8dd6ba2386d46f057b7b2ba1d0aa288",
+    "logical_table_hashes": {
+      "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+      "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+      "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+      "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0",
+      "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+      "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+      "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed"
+    },
+    "n_fga": 165710,
+    "n_games": 926,
+    "season": "2023-24",
+    "shot_view_sha256": "d3267cc1d215842a0070a88f0fbd22c9bc26a1248677ececa6b6ca17145c4836",
+    "split": "development (fit+tune+calibration)",
+    "split_manifest_hash": "30fded21be74e8b4fe0992908a402b8ef471c18414c5674ad7c90d1291508fcf"
+  },
+  "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+  "format": "heatcheck-idea-family/1",
+  "ideas": [
+    {
+      "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+      "params": {
+        "alternative": "greater",
+        "feature": "rest_advantage",
+        "level": "home_more"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    },
+    {
+      "idea_hash": "420a1c3bb5cf9d001d56331cf3f9cd03364a1173ed35fb46bb962626e1531f89",
+      "params": {
+        "alternative": "less",
+        "feature": "rest_advantage",
+        "level": "away_more"
+      },
+      "template": "GAME_HOME_WIN_SPLIT"
+    }
+  ],
+  "label": "EXPLORATORY",
+  "mode": "development",
+  "multiplicity": "Holm across all 2 ideas",
+  "n_ideas": 2,
+  "seed_rule": "int(idea_hash[:8], 16)"
+}

@@ -1,0 +1,54 @@
+{
+  "format": "heatcheck-idea-family/1",
+  "mode": "development",
+  "label": "EXPLORATORY",
+  "registration_hash": "c54df263731e0e979b3a004e22afcfb1ca9563516efef472f7e33774fc911beb",
+  "n_ideas": 2,
+  "alpha": 0.05,
+  "B": 999,
+  "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+  "results": [
+    {
+      "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "greater",
+        "feature": "rest_advantage",
+        "level": "home_more"
+      },
+      "n_condition": 222,
+      "n_rest": 704,
+      "rate_condition": 0.5900900900900901,
+      "rate_rest": 0.5411931818181818,
+      "status": "EXECUTED",
+      "T": 0.04889690827190829,
+      "null_mean": -0.0020612980917034994,
+      "B_effective": 999,
+      "p_raw": 0.107,
+      "p_holm": 0.107,
+      "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+      "idea_hash": "420a1c3bb5cf9d001d56331cf3f9cd03364a1173ed35fb46bb962626e1531f89",
+      "template": "GAME_HOME_WIN_SPLIT",
+      "params": {
+        "alternative": "less",
+        "feature": "rest_advantage",
+        "level": "away_more"
+      },
+      "n_condition": 196,
+      "n_rest": 730,
+      "rate_condition": 0.4897959183673469,
+      "rate_rest": 0.5698630136986301,
+      "status": "EXECUTED",
+      "T": -0.0800670953312832,
+      "null_mean": -0.0024042493709812715,
+      "B_effective": 999,
+      "p_raw": 0.03,
+      "p_holm": 0.06,
+      "verdict": "NOT_A_CANDIDATE"
+    }
+  ],
+  "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+  "created_utc": "2026-11-08T01:55:44.546887Z"
+}
