@@ -30,7 +30,7 @@ from datetime import timedelta
 from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
-from heatcheck.agents.dialogue import number_violations
+from heatcheck.agents.dialogue import number_violations, take_mentions_ref
 from heatcheck.contracts.eligibility import LIVE_MAX_AGE, QuoteSelection
 from heatcheck.contracts.live_forecast import LiveForecast
 from heatcheck.contracts.records import PROTOCOL_VERSION, parse_utc, validate_record, validate_utc
@@ -84,7 +84,7 @@ HYPOTHETICAL_ANSWER = (
 # favours the home team more than the market (home team's forecast above the ask). No model change.
 HOME_BIAS_CAVEAT = ("On last season's games, this model overrated home teams by about 7 points "
                     "(62.4% predicted vs 55.5% actual). Part of any home-side gap is the model's own bias.")
-HOME_BIAS_HEATER = ("And the Ref's calibration note says this model has overrated home teams before, "
+HOME_BIAS_HEATER = ("Fair call. And the calibration note says this model has overrated home teams before, "
                     "so part of this gap could be the model's own bias, not the market's.")
 
 SAMPLE_HEATER = (
@@ -96,9 +96,14 @@ THESIS = re.compile(r"\bback[- ]to[- ]backs?\b|\bb2b\b|\brest(?:ed|ing)?\b|\bres
                     r"\bfatigue\w*|\btired\b|\bsecond night\b", re.IGNORECASE)
 THESIS_CLAIM = "GP-REST"
 
+HEATER_REACTION = {
+    VERDICT_WORTH: "Fair call. A gap is a question to look into, not a finding.",
+    VERDICT_CANT: "Fair enough: no comparison, no take on this game.",
+}
+
 HEATER_SYSTEM = (
-    "If known_model_bias is set, say in words (no numbers) that part of the gap may be the model's "
-    "own bias. "
+    "You speak BEFORE the Ref and do not know the verdict: never mention the Ref, a verdict, a "
+    "check or whether the comparison is valid. "
     "You are the Heater, a friendly NBA explainer. In two to four short sentences, explain the "
     "flag on this game card: where the model's forecast sits against the market's quoted bid and "
     "ask. Cite only the model inputs listed in inputs_used and the card's own numbers, copied "
@@ -445,24 +450,31 @@ def investigate(
         heater_text, heater_source = HYPOTHETICAL_ANSWER.format(inputs=", ".join(inputs)), "FIXED_HYPOTHETICAL"
     else:
         heater_text, heater_source = heater_template(card, flag, inputs), "TEMPLATE"
-        if home_bias:
-            heater_text = f"{heater_text} {HOME_BIAS_HEATER}"
-        if heater_llm is not None:
+        # The model writes Heater's line only for a fan's actual message. Loading the board sends
+        # an empty message for every card; calling the model there took ~4 s per card (rehearsal).
+        if heater_llm is not None and message.strip():
             ctx = {"fan_message": message, "team": card["team_name"], "flag": flag,
                    "card_numbers": {k: v for k, v in facts.items() if k not in ("team", "inputs_used")},
-                   "inputs_used": inputs, "inputs_model_lacks": card["missing_inputs"],
-                   "refs_verdict": verdict,
-                   "known_model_bias": HOME_BIAS_CAVEAT if home_bias else None}
+                   "inputs_used": inputs, "inputs_model_lacks": card["missing_inputs"]}
             try:
                 text = heater_llm(HEATER_SYSTEM, json.dumps(ctx)).strip()
             except Exception as e:  # provider failure never invents text
                 heater_source = f"TEMPLATE (fallback: {type(e).__name__})"
             else:
-                bad = heater_guard(text, inputs, facts)
+                bad = heater_guard(text, inputs, facts) + [f"ref:{w}" for w in take_mentions_ref(text)]
                 if bad or not text:
                     heater_source = f"TEMPLATE (guard rejected: {bad[:4] or ['empty']})"
                 else:
                     heater_text, heater_source = text, "LLM"
+    # Heater's reaction, spoken after the Ref's stamp: the only Heater line that may follow the verdict.
+    if lf.is_sample or hypothetical:
+        heater_reaction = ""
+    elif home_bias:
+        heater_reaction = HOME_BIAS_HEATER
+    else:
+        heater_reaction = HEATER_REACTION.get(verdict, "")
+    if heater_reaction and heater_guard(heater_reaction, inputs, facts):
+        raise AssertionError(f"Heater reaction fails guard: {heater_guard(heater_reaction, inputs, facts)}")
     template_bad = heater_guard(heater_text, inputs, facts) if heater_source.startswith("TEMPLATE") else []
     if template_bad:  # a template that fails its own guard is a code defect; fail loudly
         raise AssertionError(f"Heater template fails guard: {template_bad}")
@@ -489,7 +501,8 @@ def investigate(
             "best_bid": None if card["best_bid"] is None else str(card["best_bid"]),
             "best_ask": None if card["best_ask"] is None else str(card["best_ask"]),
             "received_utc": quote["body"]["received_utc"], "status": quote["body"]["status"]},
-        "heater_text": heater_text, "heater_source": heater_source, "hypothetical": hypothetical,
+        "heater_text": heater_text, "heater_reaction": heater_reaction, "heater_source": heater_source,
+        "hypothetical": hypothetical,
         "challenger_checks": [c.as_dict() for c in checks], "thesis": thesis,
         "verdict": verdict, "ref_text": ref_text, "caveats": caveats,
     }
@@ -514,7 +527,8 @@ def investigate(
         "flag": flag, "caveats": caveats, "challenger_checks": response["challenger_checks"],
         "thesis": None if thesis is None else {k: thesis.get(k) for k in ("claim_id", "status", "evidence_id", "decision")},
         "referee": REF_IDENTITY, "verdict": verdict,
-        "heater": {"source": heater_source, "text": heater_text, "hypothetical": hypothetical},
+        "heater": {"source": heater_source, "text": heater_text, "reaction": heater_reaction,
+                   "hypothetical": hypothetical},
         # The message may be personal: only its hash is kept.
         "message_sha256": hashlib.sha256(message.encode("utf-8")).hexdigest(),
         "outcome": None,  # scored after the game from the official result; never filled here

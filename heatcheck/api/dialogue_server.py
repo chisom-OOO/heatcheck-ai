@@ -242,13 +242,14 @@ def run_route(req: dict, live_forecast: Path | None, clock=None) -> dict:
     """Where a free-text message goes: OPEN_BOARD, OPEN_CARD, SCENARIO or DIALOGUE."""
     fc = live_forecast_payload(live_forecast)
     games = fc["forecast"]["games"] if fc["status"] == "OK" else []
-    out = route(req["message"], games, _now_z(clock))
+    now = _now_z(clock)
+    out = route(req["message"], games, now)
     if out["action"] == "OPEN_BOARD":
         out["heater_text"] = board_intro(len(games)) if games else (
             "Tonight's board has no forecast to show right now; I'll open it so you can see why.")
     elif out["action"] == "OPEN_CARD":
         row = next(g for g in games if g["game_id"] == out["game_id"])
-        out["heater_text"] = card_intro(row)
+        out["heater_text"] = card_intro(row, now)
     out["forecast_status"] = fc["status"]
     return out
 
