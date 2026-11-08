@@ -1,0 +1,46 @@
+{
+  "capture_log_version": "heatcheck-capture/1",
+  "data_mode": "RECORDED_MARKET",
+  "adapter_version": "experience-adapters/1",
+  "game_reference": {
+    "game_id": "nba:0022600191",
+    "season": "2026-27",
+    "competition": "REGULAR_SEASON",
+    "provider_ids": {
+      "nba_com": "0022600191"
+    },
+    "home_team_id": "nba-team:1610612739",
+    "away_team_id": "nba-team:1610612752",
+    "scheduled_tip_utc": "2026-11-08T01:00:00Z",
+    "status": "SCHEDULED",
+    "reference_source": "game_id, tip_utc and team ids from the forecast file C:/Users/chiso/Documents/Codex/GitHub/HeatCheck/data/live/forecasts.json sha256 cf0824723c4104469011e579740f0d84226628f41fbc4ead930b824c0915cd90; source.results: balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie"
+  },
+  "captures": [
+    {
+      "venue": "POLYMARKET",
+      "kind": "MARKET",
+      "source": "GET https://gamma-api.polymarket.com/markets/slug/nba-nyk-cle-2026-11-07",
+      "http_status": 200,
+      "payload_sha256": "392ac70065ffd929a9fda80201ba4f2867682285537a3930a166746761f014dc",
+      "fetch_start_utc": "2026-11-08T02:15:11.786563Z",
+      "received_utc": "2026-11-08T02:15:11.997153Z"
+    },
+    {
+      "venue": "POLYMARKET",
+      "kind": "BOOK",
+      "source": "GET https://clob.polymarket.com/book?token_id=60955229673760716456263204416898543673892689428977581401929964569716185748287",
+      "http_status": 200,
+      "payload_sha256": "fa86ffd6ee52cceb07a5e06c2bd25cef1b9a13cbc112013dac37a30258a019e3",
+      "fetch_start_utc": "2026-11-08T02:15:12.111217Z",
+      "received_utc": "2026-11-08T02:15:12.226521Z",
+      "market_payload_sha256": "392ac70065ffd929a9fda80201ba4f2867682285537a3930a166746761f014dc",
+      "target": {
+        "game_id": "nba:0022600191",
+        "team_id": "nba-team:1610612739",
+        "contract_id": "60955229673760716456263204416898543673892689428977581401929964569716185748287",
+        "expected_label": "Cavaliers"
+      }
+    }
+  ],
+  "note": "Live read-only capture for nba:0022600191 (NYK at CLE, tip 2026-11-08T01:00:00Z), POLYMARKET contract 60955229673760716456263204416898543673892689428977581401929964569716185748287 labelled 'Cavaliers' = home team wins. Received 2026-11-08T02:15:11.997153Z (market) and 2026-11-08T02:15:12.226521Z (book), local clock. Game list: game_id, tip_utc and team ids from the forecast file C:/Users/chiso/Documents/Codex/GitHub/HeatCheck/data/live/forecasts.json sha256 cf0824723c4104469011e579740f0d84226628f41fbc4ead930b824c0915cd90; source.results: balldontlie /v1/games raw pages (fetched by Max 2026-11-08T00:01:33Z-00:04:30Z, max/nba-schedule@eec051d; 14 file(s); sha256 is over the per-file hash list), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; 2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, sha256 5e82e37e...3570); every game matched in balldontlie. Mapping PROPOSED for Max to verify. "
+}
