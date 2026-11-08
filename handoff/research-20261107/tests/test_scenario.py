@@ -125,3 +125,11 @@ def test_small_n_can_be_allowed_explicitly_and_bad_baseline_refused():
     assert r["scenario_p_home"] > 0.6
     with pytest.raises(SC.ScenarioRefused, match="baseline"):
         SC.scenario_probability(1.0, "a", "b", [], ABS, SCH)
+
+
+def test_low_involvement_flag():
+    g, app, _ = _games(n=60)
+    rows = SC.team_rows(g)
+    e = {x["player_id"]: x for x in SC.absence_effects(rows, app, {}, {}, B=20, involvement={(77, 1): 3.0})}
+    assert "low_involvement_outcome_dependent_appearance" in e["nba-player:77"]["flags"]
+    assert e["nba-player:77"]["median_events_per_game"] == 3.0

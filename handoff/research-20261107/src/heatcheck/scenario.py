@@ -78,8 +78,11 @@ def stratified_diff_bootstrap(r_cond: np.ndarray, r_rest: np.ndarray, B: int, rn
 
 
 # --------------------------------------------------------------------------- player absence
+LOW_INVOLVEMENT_EVENTS = 8
+
+
 def absence_effects(rows: pd.DataFrame, appearances: pd.DataFrame, names: dict, tricodes: dict,
-                    B: int = B_DEFAULT, seed: int = 20261108) -> list[dict]:
+                    B: int = B_DEFAULT, seed: int = 20261108, involvement: dict | None = None) -> list[dict]:
     """rows: team_rows output. appearances: unique (game_id, team_id, player_id) for players who appeared.
     For each player, team and season, games 'missed' are that team's games between the player's first and last
     appearance for the team that season (tenure window) in which he did not appear. Seasons for the same
@@ -111,10 +114,13 @@ def absence_effects(rows: pd.DataFrame, appearances: pd.DataFrame, names: dict, 
             flags.append("small_n")
         if pid in moved:
             flags.append("team_change_in_window")
+        inv = (involvement or {}).get((pid, tid))
+        if inv is not None and inv < LOW_INVOLVEMENT_EVENTS:
+            flags.append("low_involvement_outcome_dependent_appearance")
         out.append({"key": f"nba-player:{pid}|nba-team:{tid}", "player_id": f"nba-player:{pid}",
                     "player_name": names.get(pid), "team_id": f"nba-team:{tid}", "team": tricodes.get(tid),
                     "seasons": sorted(set(seasons)), "n_games_missed": int(len(absn)),
-                    "n_games_played": int(len(pres)), "label": LABEL,
+                    "n_games_played": int(len(pres)), "median_events_per_game": inv, "label": LABEL,
                     "effect_win_prob": {"estimate": est, **iv},
                     "effect_log_odds": _logit_scale(est, iv, pbar), "flags": flags})
     return out

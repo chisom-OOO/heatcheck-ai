@@ -58,7 +58,7 @@ def _names(csvs: list[Path]) -> dict:
     for p in csvs:
         d = pd.read_csv(p, usecols=["personId", "playerName", "playerNameI"], low_memory=False).dropna(subset=["personId"])
         d = d[d.personId > 0]
-        d["name"] = d.playerName.fillna(d.playerNameI)
+        d["name"] = d.playerNameI.fillna(d.playerName)      # "A. Davis": less ambiguous than the family name
         out.update({int(k): v for k, v in d.dropna(subset=["name"]).groupby("personId").name.last().items()})
     return out
 
@@ -85,14 +85,16 @@ def main(d23: Path, d24: Path, csv25: Path, out: Path, raw23: Path, raw24: Path)
     ev = pd.concat([_sqlite_events(d23), _sqlite_events(d24),
                     b25.events[["game_id", "team_id", "person_id"]].dropna()], ignore_index=True)
     ev = ev[ev.person_id.astype("int64") > 0]
-    app = pd.DataFrame({"game_id": ev.game_id, "team_id": ev.team_id.astype("int64"),
-                        "player_id": ev.person_id.astype("int64")}).drop_duplicates()
+    full = pd.DataFrame({"game_id": ev.game_id, "team_id": ev.team_id.astype("int64"),
+                         "player_id": ev.person_id.astype("int64")})
+    involvement = full.groupby(["player_id", "team_id", "game_id"]).size().groupby(["player_id", "team_id"]).median()
+    app = full.drop_duplicates()
     names = _names([raw23, raw24, csv25])
     tri = {}
     for g in (g23, g24, g25):
         tri.update(dict(zip(g.home_team_id, g.home_tricode))); tri.update(dict(zip(g.away_team_id, g.away_tricode)))
 
-    absence = SC.absence_effects(rows, app, names, tri)
+    absence = SC.absence_effects(rows, app, names, tri, involvement={k: float(v) for k, v in involvement.items()})
     sched = SC.schedule_effects(rows)
     n_missed = np.array([a["n_games_missed"] for a in absence])
     coverage = {"player_team_keys": int(len(absence)), "with_ge_5_games_missed": int((n_missed >= 5).sum()),
@@ -120,6 +122,10 @@ def main(d23: Path, d24: Path, csv25: Path, out: Path, raw23: Path, raw24: Path)
               "team_change_in_window: the player appeared for more than one team in a season",
               "Elo partly absorbs long absences (ratings drift while a player is out), shrinking estimates toward 0",
               "end-of-tenure absences (after the last appearance) are not counted",
+              "low_involvement_outcome_dependent_appearance: median play-by-play events per game below 8; such "
+              "players often appear only when a game is decided (garbage time), so appearance depends on the "
+              "outcome and the estimate is biased",
+              "no multiplicity adjustment: about 5% of intervals exclude 0 by chance alone across this many keys",
               "2025-26 neutral-site games are not flagged (home court applied)"],
           "effects": {a["key"]: a for a in absence}}
     se = {**common, "format": "heatcheck-scenario-schedule/1",

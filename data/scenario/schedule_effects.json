@@ -1,0 +1,291 @@
+{
+ "label": "ESTIMATE",
+ "not_a_claim": true,
+ "method": "Residual = team result minus the frozen B1 Elo pre-game win probability (home court unless neutral). Effect = mean residual with the condition minus without, on the win-probability scale; log-odds effect by the delta method. Absence: games of the team between the player's first and last appearance for it in a season, absent = no play-by-play event for him; seasons pooled per player-team; bootstrap resamples absent and present games separately (B=2000). Schedule: bootstrap resamples whole games (B=2000).",
+ "data_sources": {
+  "seasons": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "upstream": "shufinskiy/nba_data@46488f0f (cdnnba play-by-play)",
+  "data_2023_24_tables": {
+   "games": "12dc237fd9aaea9737dfb647f6aa1bd8b554177c9efecd74dbdcda69a6f54599",
+   "events": "8e577355c9c090b0f8e4df26475e59288fc1ac46f94fd9cd45d36ccae73819b8",
+   "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+   "games_2022": "20565cc824c1edc581058f437350171d9992dc27195a4ad904dac4f34c35dfb5",
+   "game_labels": "d93245ba06f5a597d2d8d602e4c42b17c2c5b1b3f90fac48625303783b221b7b",
+   "shot_labels": "4f332908cb45c1d3d753b388dc35bc45e0aa1277bfa7861433f0d6ba0b178bed",
+   "game_labels_2022": "b9550972a48f1faea249222ac12373cab97368f094a440329dfd4db859cfe5a0"
+  },
+  "data_2024_25_tables": {
+   "games": "46f24f26360809d6a2f5f89881988a543f23df0d1ef8648acef21fb9d860b193",
+   "events": "6dccbadc16cb7462463b04e2b6a092776240ee972727e614319a8be7e44fbada",
+   "exclusions": "1f3cd453680b613d1856d0f1eb5619d38cf876b0bda601d50283ed5b9ff92eeb",
+   "quarantine": "1504334cb3991403bce0bf28ee4a48fe9a9320fd8b0efc9b3f663e3d680151ca",
+   "game_labels": "f2663cc1caa8aaf0cb2952cecab8d9746ebbe1d0dc665667c4c4b71dc047edf2",
+   "shot_labels": "5f46f73629d15065e615b211218baf5d4b03386cb0c0e72447dd74ba9fd3670f"
+  },
+  "cdnnba_2025_csv_sha256": "464f585fc3b9c8fbf055581ad69baa1d1abcf9cbe85bb6aeff6351b12bec69cf"
+ },
+ "created_utc": "2026-11-08T01:18:13.150682Z",
+ "format": "heatcheck-scenario-schedule/1",
+ "assumptions": [
+  "rest days from the frozen feature code: days since previous game minus 1, capped at 3; season openers count as 3",
+  "schedule conditions are confounded with travel, opponent and late-season rest decisions",
+  "registered_verdict, where present, is the pre-registered result: the UI must say the effect is unproven"
+ ],
+ "effects": {
+  "back_to_back": {
+   "definition": "team played the previous day (rest days = 0), vs the team not on a back-to-back",
+   "applies_to": "team",
+   "n_condition": 1313,
+   "n_rest": 6067,
+   "label": "ESTIMATE",
+   "effect_win_prob": {
+    "estimate": -0.05295514153878046,
+    "ci80": [
+     -0.06996059889295451,
+     -0.035772053378223354
+    ],
+    "ci95": [
+     -0.07927453295582286,
+     -0.028188969605865716
+    ]
+   },
+   "effect_log_odds": {
+    "estimate": -0.21182078009298583,
+    "ci80": [
+     -0.2798426782114382,
+     -0.14308835803137582
+    ],
+    "ci95": [
+     -0.31709845209104554,
+     -0.11275599230641682
+    ],
+    "pbar": 0.5005024924611319,
+    "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+   },
+   "registered_verdict": {
+    "claim": "GP-REST",
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "receipt": "3e238d2d-030e-45b4-aae7-db0787ecb873",
+    "meaning": "the pre-registered 2023-24 final test could not establish that rest difference and back-to-backs add to Elo; the effect is unproven"
+   }
+  },
+  "three_in_four": {
+   "definition": "team's 3rd game within 4 days, vs not",
+   "applies_to": "team",
+   "n_condition": 1934,
+   "n_rest": 5446,
+   "label": "ESTIMATE",
+   "effect_win_prob": {
+    "estimate": -0.028621989330367355,
+    "ci80": [
+     -0.04294436633150482,
+     -0.013866252420171279
+    ],
+    "ci95": [
+     -0.0510149600997747,
+     -0.005947963076251514
+    ]
+   },
+   "effect_log_odds": {
+    "estimate": -0.11448917325149285,
+    "ci80": [
+     -0.17177928970460307,
+     -0.05546559875199094
+    ],
+    "ci95": [
+     -0.20406200763565643,
+     -0.023792104988591366
+    ],
+    "pbar": 0.4983705460711201,
+    "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+   },
+   "registered_verdict": null,
+   "registered_note": "no registered test covers 3-in-4"
+  },
+  "rest_diff": {
+   "definition": "home rest days minus away rest days (each capped at 3, diff clipped to +-3), effect on the HOME team vs games with equal rest",
+   "applies_to": "home",
+   "label": "ESTIMATE",
+   "by_value": {
+    "-3": {
+     "n_condition": 13,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": -0.17862195225845962,
+      "ci80": [
+       -0.33370732558044663,
+       -0.013841142353904923
+      ],
+      "ci95": [
+       -0.40756655978349166,
+       0.07135558830889091
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": -0.7709143979669273,
+      "ci80": [
+       -1.44024728620566,
+       -0.0597369796378418
+      ],
+      "ci95": [
+       -1.759016319630789,
+       0.3079635493129557
+      ],
+      "pbar": 0.635272284521301,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    },
+    "-2": {
+     "n_condition": 126,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": -0.0440311027637066,
+      "ci80": [
+       -0.10209764388366559,
+       0.010879069682006234
+      ],
+      "ci95": [
+       -0.13223778784730142,
+       0.046372990716669345
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": -0.1876671688922076,
+      "ci80": [
+       -0.43515548272857724,
+       0.04636822789471491
+      ],
+      "ci95": [
+       -0.5636173002309409,
+       0.19764864685686007
+      ],
+      "pbar": 0.6240025583476714,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    },
+    "-1": {
+     "n_condition": 627,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": -0.051320286633449355,
+      "ci80": [
+       -0.07725197362848335,
+       -0.025206512136551902
+      ],
+      "ci95": [
+       -0.09043706525821302,
+       -0.010494301054874314
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": -0.21914182635025517,
+      "ci80": [
+       -0.32987225326745495,
+       -0.10763387088963709
+      ],
+      "ci95": [
+       -0.38617367420400867,
+       -0.04481152484319232
+      ],
+      "pbar": 0.6257475787785137,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    },
+    "1": {
+     "n_condition": 687,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": 0.021352959139969242,
+      "ci80": [
+       -0.004678521338917467,
+       0.04742635258443652
+      ],
+      "ci95": [
+       -0.018883149579237465,
+       0.06396952693396532
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": 0.0911689035247405,
+      "ci80": [
+       -0.019975482451413555,
+       0.20249224170561722
+      ],
+      "ci95": [
+       -0.08062376886256827,
+       0.2731252184456891
+      ],
+      "pbar": 0.6256455984055952,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    },
+    "2": {
+     "n_condition": 143,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": 0.11879000064302461,
+      "ci80": [
+       0.06867354554105273,
+       0.16627589105379137
+      ],
+      "ci95": [
+       0.04283134152996951,
+       0.19427046278542895
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": 0.49959965476501034,
+      "ci80": [
+       0.2888229603340255,
+       0.6993128825367728
+      ],
+      "ci95": [
+       0.18013741329793942,
+       0.8170507249200721
+      ],
+      "pbar": 0.6105876043470895,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    },
+    "3": {
+     "n_condition": 24,
+     "n_reference": 2070,
+     "effect_win_prob": {
+      "estimate": -0.13237297826225464,
+      "ci80": [
+       -0.2502391996632852,
+       -0.02935210493734407
+      ],
+      "ci95": [
+       -0.3015447540037013,
+       0.021382712778425628
+      ]
+     },
+     "effect_log_odds": {
+      "estimate": -0.5624732210068286,
+      "ci80": [
+       -1.0633049924881364,
+       -0.12472162539645766
+      ],
+      "ci95": [
+       -1.2813102136762693,
+       0.09085844776051565
+      ],
+      "pbar": 0.621074592576378,
+      "method": "delta method: win-probability effect / (pbar*(1-pbar))"
+     }
+    }
+   },
+   "registered_verdict": {
+    "claim": "GP-REST",
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "receipt": "3e238d2d-030e-45b4-aae7-db0787ecb873",
+    "meaning": "the pre-registered 2023-24 final test could not establish that rest difference and back-to-backs add to Elo; the effect is unproven"
+   }
+  }
+ }
+}
