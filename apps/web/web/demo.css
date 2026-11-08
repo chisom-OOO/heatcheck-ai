@@ -567,3 +567,6 @@ body[data-cast="frost"] .ref.slammed { margin-bottom: 56px; }
 .tamper-status.good { color: #7EE0A1; }
 .tamper-status.bad { color: #FF8A8E; }
 @media (prefers-reduced-motion: reduce) { .tamper-ledger .tamper-new td { animation: none; } }
+/* Max, 8 Nov: games that have tipped off, one collapsed row under the cards */
+.board-earlier { margin-top: 12px; color: var(--muted); font-size: .95rem; }
+.board-earlier summary { cursor: pointer; }

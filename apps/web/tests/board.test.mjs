@@ -231,3 +231,20 @@ test("Max: the board header shows the full responsible-use text next to 'never a
   renderBoard(plain, board, {});
   assert.equal(byClass(plain, "board-ru").length, 0);   // no text loaded: nothing invented (footer still shows)
 });
+
+test("Max: games that have tipped off are one collapsed 'Earlier' row, not cards (user, 8 Nov)", async () => {
+  const board = await withFetch(mockFetch(), () => loadBoard());
+  const nCards = board.games.length;
+  const withEarlier = { ...board, earlier: { count: 2, games: [
+    { game_id: "x1", away_team: "A", home_team: "B", tip_utc: "2026-11-08T00:00:00Z" },
+    { game_id: "x2", away_team: "C", home_team: "D", tip_utc: "2026-11-08T00:30:00Z" }] } };
+  const root = new El("section");
+  renderBoard(root, withEarlier, {});
+  assert.equal(byClass(root, "mcard").length, nCards);
+  const row = byClass(root, "board-earlier");
+  assert.equal(row.length, 1);
+  assert.match(row[0].textContent, /^Earlier: 2 games, tipped off/);
+  const plain = new El("section");
+  renderBoard(plain, { ...board, earlier: { count: 0, games: [] } }, {});
+  assert.equal(byClass(plain, "board-earlier").length, 0);
+});
