@@ -422,3 +422,31 @@ def test_no_home_bias_caveat_when_the_card_cannot_compare(bundle):
     out, _ = run(verified(recs), sha, as_of="2026-11-07T22:30:00Z")  # after tip: Can't compare
     assert out["verdict"] == VERDICT_CANT and out["caveats"] == []
     assert "own bias" not in out["heater_text"] + out["heater_reaction"]
+
+
+# ------------------------------------------------------------------ safer gambling: no betting wording from Heater
+
+def test_every_market_heater_template_and_reaction_has_no_betting_wording(bundle):
+    from heatcheck.agents.dialogue import betting_words
+    sha, recs = bundle
+    sample = forecast_doc()
+    sample["source"] = {"results": "SAMPLE - hand-made", "fetched_utc": "SAMPLE", "sha256": "SAMPLE",
+                        "cross_check": "NOT_RUN"}
+    cases = {"above ask": {}, "below bid": {"doc": forecast_doc(0.2)}, "inside spread": {"doc": forecast_doc(0.265)},
+             "after tip": {"as_of": "2026-11-07T22:30:00Z"}, "sample": {"doc": sample},
+             "hypothetical": {"message": "what if Haliburton is out?"}}
+    seen = set()
+    for name, kw in cases.items():
+        out, _ = run(verified(recs), sha, **kw)
+        for t in (out["heater_text"], out["heater_reaction"]):
+            assert betting_words(t) == [], (name, t)
+        seen.add(out["heater_source"])
+    assert {"TEMPLATE", "FIXED_SAMPLE", "FIXED_HYPOTHETICAL"} <= seen
+
+
+@pytest.mark.parametrize("line", ["Indiana is a lock tonight?", "That's a value bet, folks?",
+                                  "You can't lose with Indiana?", "Lock it in: Indiana?"])
+def test_model_heater_line_with_betting_wording_falls_back_to_the_template(bundle, line):
+    sha, recs = bundle
+    out, _ = run(verified(recs), sha, heater_llm=lambda s_, u: line)
+    assert out["heater_source"].startswith("TEMPLATE (guard rejected") and out["heater_text"] != line

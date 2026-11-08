@@ -325,3 +325,9 @@ A reviewer who wrote none of the code replayed milestones on their own data buil
   - Scenario shrinkage uses one pooled prior, so stars' absence effects are likely understated.
   - Research's confirmatory script would rewrite its result file on a rerun; Max's lane refuses to run it
     again.
+
+## 11. Responsible use
+
+Responsible use. HeatCheck is a statistics demo. It is not a betting or trading service, not financial advice, and not a recommendation to bet or trade. Market prices are shown read-only, for comparison only; HeatCheck never places orders, takes money or links to betting or trading. Nothing shows this model beats the market: a gap between the forecast and the price is a question to look into, not an edge. The HeatCheck team accepts no responsibility for any decision anyone makes using it; use at your own risk. Betting and prediction-market trading are for adults only (18+, or 21+ where the law requires), and only where they are legal. If gambling stops being fun, the National Gambling Helpline (GamCare) is free, confidential and open 24/7: 0808 8020 133, gamcare.org.uk (checked 8 November 2026).
+
+Read-only by design: HeatCheck holds no venue keys or accounts and has no order path; the independent gate review's order-capability scan (`place_order`, `/orders`, POST in market code) found none (`reports/review/2026-11-08-0310-gate-review.md`). Kalshi quotes stay unverified (only Polymarket mappings are verified).

@@ -430,3 +430,19 @@ def test_no_test_question_take_says_nothing_about_tests_and_reaction_does(view, 
     assert out["claim_id"] == "NONE" and out["heater_text"] == HEATER_TAKE_FALLBACK
     assert take_mentions_ref(out["heater_text"]) == []
     assert "no registered test" in out["heater_reaction"]
+
+
+@pytest.mark.parametrize("line", ["The hot hand is a LOCK!", "BET the rested team!", "That's FREE MONEY, folks!",
+                                  "You CAN'T LOSE with shooters!", "Guaranteed hot hand, baby!"])
+def test_heater_take_with_betting_wording_falls_back(view, tmp_path, line):
+    t = FakeTransport(heater=line)
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    assert out["heater_text"] == HEATER_TAKE_FALLBACK
+    assert out["sources"]["heater"].startswith("TEMPLATE (guard rejected betting wording")
+
+
+def test_heater_take_with_better_between_lockdown_is_kept(view, tmp_path):
+    line = "Shooters get BETTER between makes, it's a LOCKDOWN!"
+    t = FakeTransport(heater=line)
+    out = Dialogue(view, EvidenceLedger(tmp_path / "l.jsonl"), llm(tmp_path, t)).turn("hot hand three straight?")
+    assert out["heater_text"] == line and out["sources"]["heater"] == "LLM"
