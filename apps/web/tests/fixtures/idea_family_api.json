@@ -1,0 +1,1228 @@
+{
+ "format": "heatcheck-idea-family/1",
+ "source": "apps/web/tests/fixtures/idea_family",
+ "families": [
+  {
+   "name": "dev_example",
+   "mode": "development",
+   "label": "EXPLORATORY",
+   "n_ideas": 12,
+   "alpha": 0.05,
+   "B": 999,
+   "data_scope": "2023-24 development games only; spent 2023-24 final games and the sealed 2024-25 season are never read",
+   "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+   "created_utc": "2026-11-07T22:29:35.460468Z",
+   "multiplicity": "Holm across all 12 ideas",
+   "registered_utc": "2026-11-07T22:26:21.229208Z",
+   "registration_hash": "7fa1f8953d5d5c5819653a1e5379faced745494d48a720013aad494efb68c5f4",
+   "results_sha256": "3a65f95e3b8d492715abbfff10a6da872b16c42b0ec9466796dcd8f724bec72d",
+   "data": {
+    "season": "2023-24",
+    "split": "development (fit+tune+calibration)",
+    "n_games": 926,
+    "n_fga": 165710
+   },
+   "results": [
+    {
+     "idea_hash": "e5d599684213dfa7c9d25c02d18c892c5babe32c93f070a73f196120520054ff",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "greater",
+      "feature": "away_back_to_back",
+      "level": "yes"
+     },
+     "status": "EXECUTED",
+     "n_condition": 169,
+     "n_rest": 757,
+     "rate_condition": 0.591715976331361,
+     "rate_rest": 0.5442536327608983,
+     "T": 0.04746234357046264,
+     "null_mean": -0.0010818976371257587,
+     "B_effective": 999,
+     "p_raw": 0.162,
+     "p_holm": 0.972,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "be5e45c6739d94c8ac1c9aa89523d52ce3cd89f191a3a11a9f9ca3644e4bcfe3",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "less",
+      "feature": "home_back_to_back",
+      "level": "yes"
+     },
+     "status": "EXECUTED",
+     "n_condition": 154,
+     "n_rest": 772,
+     "rate_condition": 0.5,
+     "rate_rest": 0.5634715025906736,
+     "T": -0.06347150259067358,
+     "null_mean": 9.430061243559957e-07,
+     "B_effective": 999,
+     "p_raw": 0.091,
+     "p_holm": 0.728,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "greater",
+      "feature": "rest_advantage",
+      "level": "home_more"
+     },
+     "status": "EXECUTED",
+     "n_condition": 222,
+     "n_rest": 704,
+     "rate_condition": 0.5900900900900901,
+     "rate_rest": 0.5411931818181818,
+     "T": 0.04889690827190829,
+     "null_mean": -0.0020612980917034994,
+     "B_effective": 999,
+     "p_raw": 0.107,
+     "p_holm": 0.749,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "79f97d47cf813759aa5a6876dc6a68a6652fa3d3e74c9efe055e14f3356d5c65",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "greater",
+      "feature": "elo_gap",
+      "level": "home_fav_100+"
+     },
+     "status": "EXECUTED",
+     "n_condition": 460,
+     "n_rest": 466,
+     "rate_condition": 0.6826086956521739,
+     "rate_rest": 0.4248927038626609,
+     "T": 0.25771599178951293,
+     "null_mean": 4.707076922041e-06,
+     "B_effective": 999,
+     "p_raw": 0.001,
+     "p_holm": 0.012,
+     "verdict": "CANDIDATE"
+    },
+    {
+     "idea_hash": "6e2c78a904ef5fc19a8ba80032873fce1579924f8d188f634fb654b735c06505",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "two_sided",
+      "feature": "day_of_week",
+      "level": "Sun"
+     },
+     "status": "EXECUTED",
+     "n_condition": 105,
+     "n_rest": 821,
+     "rate_condition": 0.5428571428571428,
+     "rate_rest": 0.5542021924482339,
+     "T": -0.011345049591091061,
+     "null_mean": -4.407864740791673e-05,
+     "B_effective": 999,
+     "p_raw": 0.839,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "37fb1dfd72941a08655b5e4cfcb0c9965d54c1ff939fec5d05da6688619704af",
+     "template": "GAME_HOME_WIN_SPLIT",
+     "params": {
+      "alternative": "two_sided",
+      "feature": "month",
+      "level": "12"
+     },
+     "status": "EXECUTED",
+     "n_condition": 205,
+     "n_rest": 721,
+     "rate_condition": 0.5707317073170731,
+     "rate_rest": 0.5478502080443828,
+     "T": 0.022881499272690342,
+     "null_mean": 0.0013960850333097849,
+     "B_effective": 999,
+     "p_raw": 0.622,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 70543,
+     "n_rest": 76290,
+     "rate_condition": 0.47458996640347023,
+     "rate_rest": 0.47807052038275005,
+     "T": -0.0034805539792798212,
+     "null_mean": 0.007169277651191234,
+     "B_effective": 999,
+     "p_raw": 1.0,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 12666,
+     "n_rest": 100296,
+     "rate_condition": 0.4827096162955945,
+     "rate_rest": 0.47694823322964025,
+     "T": 0.005761383065954251,
+     "null_mean": 0.01444161621555857,
+     "B_effective": 999,
+     "p_raw": 0.985,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 34402,
+     "n_rest": 94814,
+     "rate_condition": 0.4777338526829836,
+     "rate_rest": 0.47649081359292933,
+     "T": 0.0012430390900542432,
+     "null_mean": -0.006732726497419132,
+     "B_effective": 999,
+     "p_raw": 0.997,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "shot_value",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 65088,
+     "n_rest": 100622,
+     "rate_condition": 0.36710299901671584,
+     "rate_rest": 0.5447218302160561,
+     "T": -0.1776188311993403,
+     "null_mean": -0.04650265337890448,
+     "B_effective": 999,
+     "p_raw": 0.001,
+     "p_holm": 0.012,
+     "verdict": "CANDIDATE"
+    },
+    {
+     "idea_hash": "db56353916638a8b44d8f1aee9953efc6352b086fa02ed87c556a835224d8760",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "period",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 39268,
+     "n_rest": 126442,
+     "rate_condition": 0.470714067434043,
+     "rate_rest": 0.4762737065215672,
+     "T": -0.005559639087524215,
+     "null_mean": 0.0027057502920621547,
+     "B_effective": 999,
+     "p_raw": 0.001,
+     "p_holm": 0.012,
+     "verdict": "CANDIDATE"
+    },
+    {
+     "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 42873,
+     "n_rest": 122837,
+     "rate_condition": 0.4756373475147529,
+     "rate_rest": 0.47471852943331405,
+     "T": 0.0009188180814388436,
+     "null_mean": -0.006256970364786755,
+     "B_effective": 999,
+     "p_raw": 0.004,
+     "p_holm": 0.036000000000000004,
+     "verdict": "CANDIDATE"
+    }
+   ],
+   "truth": null,
+   "scoreboard": null,
+   "checks": [
+    "registration_hash matches registration.json",
+    "ideas match the registration"
+   ]
+  },
+  {
+   "name": "synthetic_gamma0",
+   "mode": "synthetic",
+   "label": "EXPLORATORY",
+   "n_ideas": 13,
+   "alpha": 0.05,
+   "B": 999,
+   "data_scope": "synthetic planted-truth league; truth withheld from the proposer and the tests",
+   "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+   "created_utc": "2026-11-07T22:30:37.028061Z",
+   "multiplicity": "Holm across all 13 ideas",
+   "registered_utc": "2026-11-07T22:30:13.971152Z",
+   "registration_hash": "f7d86185c6086372dd736ef41737e4c53a413e6935809e89356b64022385608b",
+   "results_sha256": "66df5234d3c68cfa2f5f959e1f4c6f9d9487b3503514c9aed643ddc8d40fba22",
+   "data": {
+    "season": null,
+    "split": null,
+    "n_games": null,
+    "n_fga": 11989
+   },
+   "results": [
+    {
+     "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 5119,
+     "n_rest": 5870,
+     "rate_condition": 0.4713811291267826,
+     "rate_rest": 0.4567291311754685,
+     "T": 0.01465199795131411,
+     "null_mean": 0.007697698072230051,
+     "B_effective": 999,
+     "p_raw": 0.211,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2193,
+     "n_rest": 7796,
+     "rate_condition": 0.4778841769265846,
+     "rate_rest": 0.4581836839404823,
+     "T": 0.01970049298610227,
+     "null_mean": 0.01505371417425871,
+     "B_effective": 999,
+     "p_raw": 0.338,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 945,
+     "n_rest": 8045,
+     "rate_condition": 0.45291005291005293,
+     "rate_rest": 0.46190180236171535,
+     "T": -0.008991749451662423,
+     "null_mean": 0.02629948317888321,
+     "B_effective": 999,
+     "p_raw": 0.993,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 382,
+     "n_rest": 7609,
+     "rate_condition": 0.5026178010471204,
+     "rate_rest": 0.46155868050992244,
+     "T": 0.04105912053719796,
+     "null_mean": 0.029802365257198753,
+     "B_effective": 999,
+     "p_raw": 0.289,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 5870,
+     "n_rest": 5119,
+     "rate_condition": 0.4567291311754685,
+     "rate_rest": 0.4713811291267826,
+     "T": -0.01465199795131411,
+     "null_mean": -0.00816808638436838,
+     "B_effective": 999,
+     "p_raw": 0.224,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2904,
+     "n_rest": 7085,
+     "rate_condition": 0.456267217630854,
+     "rate_rest": 0.46506704304869445,
+     "T": -0.008799825417840468,
+     "null_mean": -0.010449064066400667,
+     "B_effective": 999,
+     "p_raw": 0.574,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 1421,
+     "n_rest": 7569,
+     "rate_condition": 0.4517945109078114,
+     "rate_rest": 0.4626767076231999,
+     "T": -0.010882196715388481,
+     "null_mean": -0.00816580031075178,
+     "B_effective": 999,
+     "p_raw": 0.406,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 694,
+     "n_rest": 7297,
+     "rate_condition": 0.47262247838616717,
+     "rate_rest": 0.46265588598053997,
+     "T": 0.009966592405627195,
+     "null_mean": -0.0007039284837463422,
+     "B_effective": 999,
+     "p_raw": 0.724,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "shot_value",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 4834,
+     "n_rest": 7155,
+     "rate_condition": 0.35539925527513444,
+     "rate_rest": 0.5365478686233404,
+     "T": -0.18114861334820592,
+     "null_mean": -0.011602270802895774,
+     "B_effective": 999,
+     "p_raw": 0.001,
+     "p_holm": 0.013000000000000001,
+     "verdict": "CANDIDATE"
+    },
+    {
+     "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 3010,
+     "n_rest": 8979,
+     "rate_condition": 0.46677740863787376,
+     "rate_rest": 0.4624122953558303,
+     "T": 0.004365113282043476,
+     "null_mean": -0.00109881037730775,
+     "B_effective": 999,
+     "p_raw": 0.562,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 3064,
+     "n_rest": 8925,
+     "rate_condition": 0.47617493472584854,
+     "rate_rest": 0.45915966386554624,
+     "T": 0.0170152708603023,
+     "null_mean": -0.0014859541801127841,
+     "B_effective": 999,
+     "p_raw": 0.052,
+     "p_holm": 0.572,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2985,
+     "n_rest": 9004,
+     "rate_condition": 0.45125628140703516,
+     "rate_rest": 0.4675699689027099,
+     "T": -0.016313687495674745,
+     "null_mean": 0.006285859315222032,
+     "B_effective": 999,
+     "p_raw": 0.017,
+     "p_holm": 0.20400000000000001,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2930,
+     "n_rest": 9059,
+     "rate_condition": 0.4593856655290102,
+     "rate_rest": 0.4648415939949222,
+     "T": -0.0054559284659119744,
+     "null_mean": -0.004117152215869497,
+     "B_effective": 999,
+     "p_raw": 0.895,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ],
+   "truth": {
+    "simulator_family": "A",
+    "gamma_logodds": 0.0,
+    "seed": 20261109,
+    "planted_label": "NULL",
+    "synthetic_period_labels": "uniform 1-4 from default_rng(seed + 7777777); planted NULL",
+    "created_utc": "2026-11-07T22:30:37.028481Z"
+   },
+   "scoreboard": {
+    "tally": {
+     "planted_effects_found": 1,
+     "planted_effects_missed": 0,
+     "nulls_correctly_not_flagged": 12,
+     "false_candidates": 0
+    },
+    "per_idea": [
+     {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "params": {
+       "alternative": "less",
+       "condition": "shot_value",
+       "level": "3"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "CANDIDATE",
+      "p_holm": 0.013000000000000001,
+      "outcome": "FOUND"
+     },
+     {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 0.572,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 0.20400000000000001,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     }
+    ]
+   },
+   "checks": [
+    "registration_hash matches registration.json",
+    "ideas match the registration",
+    "truth.json was written after and cites these results",
+    "scoreboard.json cites these results"
+   ]
+  },
+  {
+   "name": "synthetic_gamma030",
+   "mode": "synthetic",
+   "label": "EXPLORATORY",
+   "n_ideas": 13,
+   "alpha": 0.05,
+   "B": 999,
+   "data_scope": "synthetic planted-truth league; truth withheld from the proposer and the tests",
+   "verdict_meaning": "CANDIDATE = exploratory finding on development data after Holm; not SURVIVED_PROTOCOL. It needs its own pre-registration and a sealed confirmatory test.",
+   "created_utc": "2026-11-07T22:30:13.646302Z",
+   "multiplicity": "Holm across all 13 ideas",
+   "registered_utc": "2026-11-07T22:29:50.881822Z",
+   "registration_hash": "d2c15fa8cbf1f60b8626def75d23486eff5a64e3a964365fa83353bd94098013",
+   "results_sha256": "4cb627276c2e69c3c6b271db5997f0a481711b06293abc86b34ae06252517b46",
+   "data": {
+    "season": null,
+    "split": null,
+    "n_games": null,
+    "n_fga": 12024
+   },
+   "results": [
+    {
+     "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 5197,
+     "n_rest": 5827,
+     "rate_condition": 0.4845102944006157,
+     "rate_rest": 0.46559121331731596,
+     "T": 0.01891908108329976,
+     "null_mean": 0.011953710402703169,
+     "B_effective": 999,
+     "p_raw": 0.221,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2277,
+     "n_rest": 7747,
+     "rate_condition": 0.49846288976723757,
+     "rate_rest": 0.4689557247966955,
+     "T": 0.029507164970542066,
+     "null_mean": 0.019599666975772194,
+     "B_effective": 999,
+     "p_raw": 0.184,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 1014,
+     "n_rest": 8010,
+     "rate_condition": 0.5285996055226825,
+     "rate_rest": 0.4735330836454432,
+     "T": 0.05506652187723926,
+     "null_mean": 0.027335061753278073,
+     "B_effective": 999,
+     "p_raw": 0.02,
+     "p_holm": 0.24,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "greater",
+      "condition": "after_makes",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 468,
+     "n_rest": 7557,
+     "rate_condition": 0.532051282051282,
+     "rate_rest": 0.4784967579727405,
+     "T": 0.053554524078541554,
+     "null_mean": 0.041614666435964204,
+     "B_effective": 999,
+     "p_raw": 0.278,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 5827,
+     "n_rest": 5197,
+     "rate_condition": 0.46559121331731596,
+     "rate_rest": 0.4845102944006157,
+     "T": -0.01891908108329976,
+     "null_mean": -0.01177498653515433,
+     "B_effective": 999,
+     "p_raw": 0.195,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2858,
+     "n_rest": 7166,
+     "rate_condition": 0.4730580825752274,
+     "rate_rest": 0.47669550655874965,
+     "T": -0.0036374239835222366,
+     "null_mean": -0.017139834758048655,
+     "B_effective": 999,
+     "p_raw": 0.92,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 1365,
+     "n_rest": 7659,
+     "rate_condition": 0.45494505494505494,
+     "rate_rest": 0.48413631022326675,
+     "T": -0.029191255278211814,
+     "null_mean": -0.023826874197808774,
+     "B_effective": 999,
+     "p_raw": 0.342,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "after_misses",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 668,
+     "n_rest": 7357,
+     "rate_condition": 0.45209580838323354,
+     "rate_rest": 0.48430066603235017,
+     "T": -0.032204857649116625,
+     "null_mean": -0.027038870818111002,
+     "B_effective": 999,
+     "p_raw": 0.384,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "less",
+      "condition": "shot_value",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 4861,
+     "n_rest": 7163,
+     "rate_condition": 0.365151203456079,
+     "rate_rest": 0.5464190981432361,
+     "T": -0.1812678946871571,
+     "null_mean": -0.014148425312731312,
+     "B_effective": 999,
+     "p_raw": 0.001,
+     "p_holm": 0.013000000000000001,
+     "verdict": "CANDIDATE"
+    },
+    {
+     "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "1"
+     },
+     "status": "EXECUTED",
+     "n_condition": 2973,
+     "n_rest": 9051,
+     "rate_condition": 0.47056844937773296,
+     "rate_rest": 0.47398077560490554,
+     "T": -0.0034123262271725796,
+     "null_mean": -0.0026098827632819177,
+     "B_effective": 999,
+     "p_raw": 0.944,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "2"
+     },
+     "status": "EXECUTED",
+     "n_condition": 3000,
+     "n_rest": 9024,
+     "rate_condition": 0.47533333333333333,
+     "rate_rest": 0.472406914893617,
+     "T": 0.002926418439716305,
+     "null_mean": 0.0022083998892509513,
+     "B_effective": 999,
+     "p_raw": 0.936,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "3"
+     },
+     "status": "EXECUTED",
+     "n_condition": 3043,
+     "n_rest": 8981,
+     "rate_condition": 0.48209004272099903,
+     "rate_rest": 0.47010355194299075,
+     "T": 0.011986490778008285,
+     "null_mean": 0.008122336471595945,
+     "B_effective": 999,
+     "p_raw": 0.707,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+     "template": "SHOT_MAKE_AFTER_CONDITION",
+     "params": {
+      "alternative": "two_sided",
+      "condition": "period",
+      "level": "4"
+     },
+     "status": "EXECUTED",
+     "n_condition": 3008,
+     "n_rest": 9016,
+     "rate_condition": 0.4644281914893617,
+     "rate_rest": 0.47604259094942325,
+     "T": -0.011614399460061542,
+     "null_mean": -0.007131529762691387,
+     "B_effective": 999,
+     "p_raw": 0.649,
+     "p_holm": 1.0,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ],
+   "truth": {
+    "simulator_family": "A",
+    "gamma_logodds": 0.3,
+    "seed": 20261108,
+    "planted_label": "ALTERNATIVE",
+    "synthetic_period_labels": "uniform 1-4 from default_rng(seed + 7777777); planted NULL",
+    "created_utc": "2026-11-07T22:30:13.646726Z"
+   },
+   "scoreboard": {
+    "tally": {
+     "planted_effects_found": 1,
+     "planted_effects_missed": 8,
+     "nulls_correctly_not_flagged": 4,
+     "false_candidates": 0
+    },
+    "per_idea": [
+     {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "1"
+      },
+      "truth": "EFFECT",
+      "true_direction": "greater",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "2"
+      },
+      "truth": "EFFECT",
+      "true_direction": "greater",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "3"
+      },
+      "truth": "EFFECT",
+      "true_direction": "greater",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 0.24,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+      "params": {
+       "alternative": "greater",
+       "condition": "after_makes",
+       "level": "4"
+      },
+      "truth": "EFFECT",
+      "true_direction": "greater",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "1"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "2"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "3"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+      "params": {
+       "alternative": "less",
+       "condition": "after_misses",
+       "level": "4"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "MISSED"
+     },
+     {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "params": {
+       "alternative": "less",
+       "condition": "shot_value",
+       "level": "3"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "CANDIDATE",
+      "p_holm": 0.013000000000000001,
+      "outcome": "FOUND"
+     },
+     {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     },
+     {
+      "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+      "params": {
+       "alternative": "two_sided",
+       "condition": "period",
+       "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+     }
+    ]
+   },
+   "checks": [
+    "registration_hash matches registration.json",
+    "ideas match the registration",
+    "truth.json was written after and cites these results",
+    "scoreboard.json cites these results"
+   ]
+  }
+ ],
+ "refused": []
+}

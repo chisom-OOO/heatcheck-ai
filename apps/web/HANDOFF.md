@@ -44,6 +44,7 @@ Branch status: local build only; no push, deployment, outside message or paid se
 | GET | /api/market-scenarios · POST /api/market-propose · /api/market-compare | `MarketSpec` → `EventMapping` → `BookSnapshot` → `MarketComparison` |
 | GET | /api/gates | the acceptance ledger |
 | GET | /api/evidence | Max's evidence ledger (`--ledger`), verified, read-only |
+| GET | /api/ideas | Research's idea-family results (`--ideas`, default `handoff/research-20261107/evidence/idea-family`); a family is shown only when registration_hash and results_sha256 bindings hold; 404 with the reason when there are none |
 | GET | /api/market-mappings | the market board's mapping ids (newest `data/experience/quotes/*/board.mappings.json`, or `--quote-index`); no prices |
 | any | /api/dialogue · /api/investigate · /api/live-forecast · /api/display-titles | **pass-through** to Max's dialogue server (`--api`, default `http://127.0.0.1:8770`, loopback only): method, body, status and Content-Type unchanged; 502 `UPSTREAM_UNAVAILABLE` when it does not answer |
 

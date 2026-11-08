@@ -26,9 +26,13 @@
   <section class="talk" aria-live="polite">
     <div class="topbar">
       <p class="brand">HEAT<span>CHECK</span></p>
-      <button type="button" class="view-toggle" id="btn-board" aria-pressed="false">Tonight's games</button>
+      <div class="view-buttons">
+        <button type="button" class="view-toggle" id="btn-board" aria-pressed="false">Tonight's games</button>
+        <button type="button" class="view-toggle" id="btn-ideas" aria-pressed="false">Idea board</button>
+      </div>
     </div>
     <section class="board" id="board" hidden aria-label="Tonight's games: forecast against market"></section>
+    <section class="board" id="ideas" hidden aria-label="Idea board: ideas tested by Research's idea machine"></section>
     <div class="bubble" id="bubble" hidden>
       <p class="bubble-text" id="take"></p>
       <p class="bubble-react" id="react" hidden></p>

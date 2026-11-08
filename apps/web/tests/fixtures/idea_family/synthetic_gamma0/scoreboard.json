@@ -1,0 +1,181 @@
+{
+  "results_sha256": "66df5234d3c68cfa2f5f959e1f4c6f9d9487b3503514c9aed643ddc8d40fba22",
+  "tally": {
+    "planted_effects_found": 1,
+    "planted_effects_missed": 0,
+    "nulls_correctly_not_flagged": 12,
+    "false_candidates": 0
+  },
+  "per_idea": [
+    {
+      "idea_hash": "fa9d88c3145d996dd94f4168a49fdfb0c045171c28999765e8ed9c80c9295349",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "2748941910e9aec38d05f634bdf36e96c1484f521eea2e6a6237bc56223fc086",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "5e64b4348f8a7f868e3fc38e5e5c36d218d0f1db13cc10f77a93126f4be37bbe",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "61cfe9d11c5e96e9a770221490ef954ee99fbeaa1d09f7bed311055d7bc070a6",
+      "params": {
+        "alternative": "greater",
+        "condition": "after_makes",
+        "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "d2d925c2fbf66d90c8dd7626d3da21ad0be07345944c79fe0b60dccef6df355c",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "66688a9edae00a80424b5614e1a9779805e1731d51eb8eb7bbd08915e1e98b1e",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "fced4ebf679d7eb172a95f5f95d44c2c28b34c5b838acebc012c806d5e54f2ec",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "83ee645ba4453db87fb07f8716b0fa3c1dd91bae89d62728257ed10aa36796d1",
+      "params": {
+        "alternative": "less",
+        "condition": "after_misses",
+        "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "a880eab42ec40ca1235a0c3b5ec878faf6f78c8d7f7a5bf0fc31a6426d0dce77",
+      "params": {
+        "alternative": "less",
+        "condition": "shot_value",
+        "level": "3"
+      },
+      "truth": "EFFECT",
+      "true_direction": "less",
+      "verdict": "CANDIDATE",
+      "p_holm": 0.013000000000000001,
+      "outcome": "FOUND"
+    },
+    {
+      "idea_hash": "2b84ea38ca43f64e3341dc84a5b51da6416fe192c9411be42deea2255a46b7fa",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "1"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "9ce35e60fcb72be27cbbe6645e67187e10da545655e89ddccfc1fd7660f49e02",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "2"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 0.572,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "6d574f5f5eee020d6cba1def57ca2aeade5b7c08e8cebb5fd9da65ce8fda9069",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "3"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 0.20400000000000001,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    },
+    {
+      "idea_hash": "a61058e18da81b85a9c8502f69370791ff110a7e3468199b13cf96c5bce1e167",
+      "params": {
+        "alternative": "two_sided",
+        "condition": "period",
+        "level": "4"
+      },
+      "truth": "NULL",
+      "true_direction": null,
+      "verdict": "NOT_A_CANDIDATE",
+      "p_holm": 1.0,
+      "outcome": "CORRECTLY_NOT_FLAGGED"
+    }
+  ],
+  "created_utc": "2026-11-07T22:30:37.028622Z"
+}

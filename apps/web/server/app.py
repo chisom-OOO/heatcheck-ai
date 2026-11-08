@@ -21,7 +21,17 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
-from . import comparison, engine_fixture, evidence, files, intake, quotes, timefmt, venue_fixtures
+from . import (
+    comparison,
+    engine_fixture,
+    evidence,
+    files,
+    ideas,
+    intake,
+    quotes,
+    timefmt,
+    venue_fixtures,
+)
 from .authority import AuthorityError, Session, sha
 from .contracts import PROTOCOL_VERSION, ContractError, loads_strict, validate_envelope
 from .venues import UrllibTransport, VenueError, adapter
@@ -813,6 +823,14 @@ def r_market_mappings(h, args, q):
                   "mappings": rows})
 
 
+def r_ideas(h, args, q):
+    """Research's idea-family results, bindings verified (read-only)."""
+    try:
+        h._send(200, ideas.read_all())
+    except ideas.IdeasUnavailable as e:
+        raise ApiError(404, e.status, str(e)) from None
+
+
 def r_gates(h, args, q):
     with open(os.path.join(EVIDENCE, "acceptance_ledger.json")) as f:
         h._send(200, json.load(f))
@@ -844,6 +862,7 @@ ROUTES = {
     ("GET", "gates"): r_gates,
     ("GET", "evidence"): r_evidence,
     ("GET", "market-mappings"): r_market_mappings,
+    ("GET", "ideas"): r_ideas,
 }
 
 
@@ -857,6 +876,8 @@ def main():
     ap.add_argument("--ledger", help="existing Referee evidence ledger (.jsonl) to show read-only")
     ap.add_argument("--quote-index", help="board.mappings.json written by live_quotes index (market board); "
                                           "default: the newest data/experience/quotes/*/board.mappings.json")
+    ap.add_argument("--ideas", help="Research's idea-family directory (default "
+                                    "handoff/research-20261107/evidence/idea-family)")
     ap.add_argument("--api", help=f"Max's dialogue server for the /api pass-through (default {UPSTREAM_DEFAULT})")
     a = ap.parse_args()
     if a.ledger:
@@ -865,6 +886,8 @@ def main():
         os.environ["HEATCHECK_QUOTE_INDEX"] = os.path.abspath(a.quote_index)
     if a.api:
         os.environ["HEATCHECK_DIALOGUE_API"] = a.api
+    if a.ideas:
+        os.environ["HEATCHECK_IDEAS"] = os.path.abspath(a.ideas)
     upstream_base()  # refuse a non-loopback upstream at start-up
     srv = make_server(a.port)
     print(f"HeatCheck-Experience on http://127.0.0.1:{a.port}/  (demo page; code {CODE_HASH[:12]})")

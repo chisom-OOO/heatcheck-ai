@@ -183,6 +183,20 @@ body[data-view="board"] .talk { max-width: 980px; align-self: start; }
 }
 .mcard-ask:disabled { opacity: .45; cursor: default; }
 
+/* ------------------------------------------------------------------ idea board */
+.view-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
+.idea-family { display: grid; gap: 8px; }
+.idea-family-title { margin: 6px 0 0; font: 800 1.2rem/1.2 var(--cond); letter-spacing: .02em; }
+.icard-kind { justify-self: start; font: 700 .74rem/1 var(--cond); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.icard-numbers { margin: 0; font-size: .92rem; }
+.mcard.candidate { border-color: rgba(255, 182, 39, .6); }
+.icard-verdict.candidate { color: #FFB627; }
+.icard-verdict.none { color: #C9C6DA; }
+.icard-verdict.thin { color: #B9B6CC; }
+.icard-tally { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: .92rem; }
+.icard.synthetic .mcard-title { padding-right: 96px; }
+
 /* ------------------------------------------------------------------ ask bar */
 .ask { grid-area: ask; display: grid; gap: 10px; padding-top: 6px; max-width: 1100px; width: 100%; justify-self: center; }
 .ask-row { display: flex; gap: 10px; min-width: 0; }
