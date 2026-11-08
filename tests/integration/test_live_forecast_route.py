@@ -29,3 +29,29 @@ def test_invalid_file_returns_reason_only(tmp_path):
     out = live_forecast_payload(bad)
     assert out["status"] == "DATA_INVALID" and "p_home_win" in out["reason"]
     assert "forecast" not in out
+
+
+def test_board_hides_games_that_have_tipped_off_but_keeps_the_file(tmp_path):
+    """User, 8 Nov: the board lists only games still to tip; earlier ones are counted, not shown as cards."""
+    from datetime import UTC, datetime
+
+    from heatcheck.api.dialogue_server import board_forecast_payload
+    from heatcheck.contracts.records import parse_utc
+    full = live_forecast_payload(FIXTURE)
+    tips = sorted(parse_utc(g["tip_utc"]) for g in full["forecast"]["games"])
+    before = FIXTURE.read_bytes()
+    # before every tip: nothing hidden
+    out = board_forecast_payload(FIXTURE, now=datetime(2000, 1, 1, tzinfo=UTC))
+    assert out["forecast"]["games"] == full["forecast"]["games"] and out["earlier"]["count"] == 0
+    # exactly at the first tip: that game (and any at the same time) moves to "earlier"
+    out = board_forecast_payload(FIXTURE, now=tips[0])
+    n_first = sum(1 for t in tips if t <= tips[0])
+    assert out["earlier"]["count"] == n_first and len(out["forecast"]["games"]) == len(tips) - n_first
+    assert all(parse_utc(g["tip_utc"]) > tips[0] for g in out["forecast"]["games"])
+    assert set(out["earlier"]["games"][0]) == {"game_id", "away_team", "home_team", "tip_utc"}
+    # after the last tip: no cards, all counted; file untouched, hash is of the whole file
+    out = board_forecast_payload(FIXTURE, now=tips[-1])
+    assert out["forecast"]["games"] == [] and out["earlier"]["count"] == len(tips)
+    assert FIXTURE.read_bytes() == before and out["file_sha256"] == full["file_sha256"]
+    # invalid / missing files pass through unchanged
+    assert board_forecast_payload(None)["status"] == "UNAVAILABLE"
