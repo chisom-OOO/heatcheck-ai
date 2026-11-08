@@ -45,27 +45,58 @@ export function renderIdeas(root, data, { onAsk } = {}) {
     + "\"worth a proper test\" means a lead, never a finding."));
   root.append(head);
 
-  // Heater's own proposals (Max): the model turned a fan's question into ideas; not run yet, no numbers.
+  // Heater's own proposals (Max): the model turned a fan's question into ideas. Before Research runs them:
+  // "Not run yet", no numbers. Once the server links Research's run (same request sha256, verified family):
+  // Research's numbers and verdicts on the same cards.
+  const shownFamilies = new Set();
   for (const pr of data.proposals || []) {
+    const fam = pr.status === "RAN" ? data.families.find((f) => f.name === pr.family) : null;
     const sec = el("section", "idea-family idea-proposed");
     sec.append(el("h3", "idea-family-title", `Proposed by Heater: "${pr.message}"`));
-    sec.append(el("p", "board-note", `${pr.ideas.length} ideas the model proposed in Research's grammar. `
-      + "Not run yet: sent to Research's idea machine. No results until it runs them together."));
+    if (fam) {
+      shownFamilies.add(fam.name);
+      const n = pr.ideas.length;
+      sec.append(el("p", "board-note", `${n} ideas the model proposed in Research's grammar, run together by Research's `
+        + `idea machine on 2023-24 development games: ${pr.n_candidates} of ${n} worth a proper test.`));
+      if (fam.research_note) sec.append(el("p", "board-note", fam.research_note));
+    } else {
+      sec.append(el("p", "board-note", `${pr.ideas.length} ideas the model proposed in Research's grammar. `
+        + "Not run yet: sent to Research's idea machine. No results until it runs them together."));
+    }
     const grid = el("div", "board-grid");
-    for (const idea of pr.ideas) {
-      const card = el("article", "mcard icard proposed");
-      card.append(el("span", "icard-kind", "PROPOSED BY HEATER"));
-      card.append(el("h4", "mcard-title", ideaTitle(idea)));
-      card.append(el("p", "mcard-verdict icard-verdict proposed", "Not run yet"));
-      grid.append(card);
+    if (fam) {
+      for (const r of fam.results) {
+        const v = ideaCard(r, fam);
+        const card = el("article", `mcard icard ${v.verdictKind}`);
+        card.append(el("span", "icard-kind", "PROPOSED BY HEATER"));
+        card.append(el("h4", "mcard-title", v.title));
+        card.append(el("p", "icard-numbers", v.numbers));
+        card.append(el("p", "mcard-why", v.chance));
+        card.append(el("p", `mcard-verdict icard-verdict ${v.verdictKind}`, v.verdict));
+        if (v.canAsk && onAsk) {
+          const b = el("button", "mcard-ask", "Ask Heater about this idea");
+          b.type = "button";
+          b.addEventListener("click", () => onAsk(r, fam));
+          card.append(b);
+        }
+        grid.append(card);
+      }
+    } else {
+      for (const idea of pr.ideas) {
+        const card = el("article", "mcard icard proposed");
+        card.append(el("span", "icard-kind", "PROPOSED BY HEATER"));
+        card.append(el("h4", "mcard-title", ideaTitle(idea)));
+        card.append(el("p", "mcard-verdict icard-verdict proposed", "Not run yet"));
+        grid.append(card);
+      }
     }
     sec.append(grid);
     sec.append(el("p", "board-note", `Request ${pr.request_file} · sha256 ${pr.request_sha256.slice(0, 12)}… · `
-      + `${pr.model || "model"} · ${pr.created_utc || ""}`));
+      + `${pr.model || "model"} · ${pr.created_utc || ""}${fam ? ` · results: Research family ${fam.name}` : ""}`));
     root.append(sec);
   }
 
-  for (const f of data.families.filter((x) => x.mode === "development")) {
+  for (const f of data.families.filter((x) => x.mode === "development" && !shownFamilies.has(x.name))) {
     const sec = el("section", "idea-family");
     sec.append(el("h3", "idea-family-title", familyHeadline(f)));
     if (f.research_note) sec.append(el("p", "board-note idea-family-note", f.research_note));

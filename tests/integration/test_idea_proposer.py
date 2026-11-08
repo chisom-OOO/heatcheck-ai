@@ -217,3 +217,33 @@ def test_idea_board_shows_only_model_proposals_matching_their_request(tmp_path, 
     (tmp_path / "does_rest_matter_heater_dev.model_output.json").write_text(_json.dumps(raw), encoding="utf-8")
     ok, bad = ideas.read_proposals()
     assert not ok and "keyword fallback" in bad[0]["reason"]
+
+
+def test_idea_board_links_research_run_to_the_proposal_only_by_exact_request(tmp_path, monkeypatch):
+    import json as _json
+    import shutil
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "apps" / "web"))
+    from server import ideas
+    fam_dir = tmp_path / "idea-family"
+    shutil.copytree(root / "handoff" / "research-20261107" / "evidence" / "idea-family", fam_dir)
+    monkeypatch.setenv("HEATCHECK_PROPOSALS", str(root / "data" / "max" / "idea_requests"))
+
+    def proposal():
+        d = ideas.read_all(str(fam_dir))
+        return next(p for p in d["proposals"] if p["name"] == "does_rest_matter_heater_dev")
+
+    p = proposal()  # Research's committed run of c15abf7's request
+    assert p["status"] == "RAN" and p["family"] == "does_rest_matter_model"
+    assert [r["verdict"] for r in p["results"]] == ["NOT_A_CANDIDATE"] * 5 and p["n_candidates"] == 0
+    prov = fam_dir / "PROVENANCE_does_rest_matter_model.json"
+    doc = _json.loads(prov.read_text(encoding="utf-8"))
+    prov.write_text(_json.dumps({**doc, "request_sha256": "0" * 64}), encoding="utf-8")
+    assert proposal()["status"] == "NOT_RUN"  # another request's hash: not linked
+    prov.write_text(_json.dumps(doc), encoding="utf-8")
+    res = fam_dir / "does_rest_matter_model" / "results.json"
+    res.write_text(res.read_text(encoding="utf-8").replace('"label": "EXPLORATORY"', '"label": "CONFIRMED"'),
+                   encoding="utf-8")
+    assert proposal()["status"] == "NOT_RUN"  # the family fails its own checks: not linked

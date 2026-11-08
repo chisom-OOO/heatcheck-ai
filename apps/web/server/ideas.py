@@ -200,6 +200,31 @@ def read_family(d):
     return fam
 
 
+def _link_runs(proposals, families, root):
+    """A proposal is RAN only when Research's PROVENANCE_*.json in the idea-family directory names this
+    proposal's exact request_sha256 and a family that passed every binding check here, with exactly the
+    proposal's ideas. Then the proposal carries that family's results (Research's verdicts)."""
+    by_name = {f["name"]: f for f in families}
+    for name in sorted(os.listdir(root)):
+        if not (name.startswith("PROVENANCE_") and name.endswith(".json")):
+            continue
+        try:
+            _, prov = _load(os.path.join(root, name))
+        except Refused:
+            continue
+        fam = by_name.get(prov.get("family_dir")) if isinstance(prov, dict) else None
+        if fam is None:
+            continue
+        for p in proposals:
+            if p["status"] != "NOT_RUN" or prov.get("request_sha256") != p["request_sha256"]:
+                continue
+            ran = [{"template": r["template"], "params": r["params"]} for r in fam["results"]]
+            if ran != p["ideas"]:
+                continue  # same hash cited but different ideas: not linked
+            p.update(status="RAN", family=fam["name"], provenance=name, results=fam["results"],
+                     n_candidates=sum(r["verdict"] == "CANDIDATE" for r in fam["results"]))
+
+
 def read_all(root=None):
     root = root or configured_dir()
     if not os.path.isdir(root):
@@ -216,6 +241,7 @@ def read_all(root=None):
             refused.append({"name": name, "reason": str(e)})
     proposals, p_refused = read_proposals()
     refused += p_refused
+    _link_runs(proposals, families, root)
     if not families and not refused and not proposals:
         raise IdeasUnavailable("NOT_FOUND", "the idea-family directory holds no results.json")
     families.sort(key=lambda f: (f["mode"] != "development", f["name"]))
