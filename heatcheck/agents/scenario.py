@@ -467,13 +467,15 @@ class Effect:
     caveats: list[str] = field(default_factory=list)
     included: bool = False
     detail: dict = field(default_factory=dict)
+    evidence: dict = field(default_factory=dict)  # evidence drawer only (e.g. Research's raw, unshrunk values)
 
     def as_dict(self) -> dict:
         return {"change": self.change, "type": self.kind_label, "text": self.text, "n": self.n,
                 "verdict": self.verdict, "caveats": self.caveats, "included": self.included,
                 "elo_shift_home": None if self.elo_shift_home is None else round(self.elo_shift_home, 2),
                 "elo_range_home": None if self.elo_range_home is None else [round(x, 2) for x in self.elo_range_home],
-                "prob_points_team": self.prob_points_team, **({"detail": self.detail} if self.detail else {})}
+                "prob_points_team": self.prob_points_team, **({"detail": self.detail} if self.detail else {}),
+                **({"evidence": self.evidence} if self.evidence else {})}
 
 
 def home_court_in_forecast(row: dict) -> float | None:
@@ -591,7 +593,8 @@ def estimate_scenario(changes: list[dict], row: dict, forecast_doc: dict, is_sam
                             "scenario." if failed else "ESTIMATE from Research's scenario functions."),
                            elo_shift_home=shift, elo_range_home=rng, n=r.get("n"), verdict=verdict,
                            caveats=list(r.get("caveats") or []), included=can_number and not failed,
-                           detail={k2: r.get(k2) for k2 in ("method", "interval", "data_through_utc") if r.get(k2)})
+                           detail={k2: r.get(k2) for k2 in ("method", "interval", "data_through_utc") if r.get(k2)},
+                           evidence=r.get("evidence") or {})
                 effects.append(e)
                 if isinstance(r.get("n"), int) and r["n"] < MIN_N:
                     checks.append(Check("SAMPLE_SIZE", "FLAG", f"{describe_change(c, row)} rests on {r['n']} "

@@ -307,3 +307,40 @@ body[data-view="ideas"] .talk { max-width: 980px; align-self: start; }
   .bubble, .bubble-react, .ref, .ref.slammed, .stamp { animation: none !important; }
   .ref.checking .ref-text::after { animation: none; width: auto; content: "…"; }
 }
+
+/* ---------------------------------------------------------------- what-if scenarios (Max, 2026-11-08) */
+.scenario {
+  margin: 14px 0 0 40px; background: rgba(22, 21, 31, .92); border: 1.5px dashed rgba(255, 210, 63, .55);
+  border-radius: 12px; padding: 14px 18px; animation: slide-in .3s ease-out both;
+}
+.scn-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.scn-badge { font: 900 .78rem/1 var(--cond); letter-spacing: .12em; color: #1E0E00; background: var(--heat-hot);
+  border-radius: 4px; padding: 5px 7px; }
+.scn-title { font: 600 .95rem/1.2 var(--cond); color: var(--muted); }
+.scn-list { margin: 4px 0 10px; padding-left: 20px; }
+.scn-list li { margin: 3px 0; }
+.scn-actions { display: flex; gap: 10px; }
+.scn-actions button { font: 700 .9rem var(--cond); letter-spacing: .04em; border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.scn-confirm { background: var(--heat); color: #1E0E00; border: 0; }
+.scn-cancel { background: transparent; color: var(--fg); border: 1.5px solid #4A4760; }
+.scn-actions button:disabled { opacity: .5; cursor: default; }
+.scn-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 10px; }
+.scn-col { border: 1.5px solid #2E2C40; border-radius: 10px; padding: 10px 12px; }
+.scn-col.what-if { border-color: rgba(255, 210, 63, .6); border-style: dashed; }
+.scn-col-label { color: var(--muted); font-size: .85rem; }
+.scn-col-value { font: 800 1.5rem/1.2 var(--cond); margin-top: 2px; }
+.scn-col-note { color: var(--muted); font-size: .8rem; margin-top: 2px; }
+.scn-effects { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .9rem; }
+.scn-effect-label { font: 800 .72rem/1 var(--cond); letter-spacing: .1em; border: 1px solid #4A4760; border-radius: 4px; padding: 3px 5px; }
+.scn-effect.your_assumption .scn-effect-label { color: var(--heat-hot); border-color: rgba(255, 210, 63, .6); }
+.scn-effect.no_number .scn-effect-label, .scn-effect.failed_test .scn-effect-label { color: #FF8A8F; border-color: rgba(255, 90, 95, .6); }
+.scn-effect.excluded .scn-effect-text { color: var(--muted); }
+.scn-effect-facts, .scn-effect-caveat { color: var(--muted); font-size: .8rem; margin: 2px 0 0 2px; }
+.scn-flags-title { margin-top: 10px; font: 700 .8rem var(--mono); color: #FFB627; letter-spacing: .04em; }
+.scn-flags { margin: 4px 0 0; padding-left: 18px; font-size: .85rem; color: #FFD9A0; }
+.scn-verdict { margin: 10px 0 0; font: 800 1rem var(--cond); color: #FFB627; }
+.scn-receipt { margin: 2px 0 0; font: .75rem var(--mono); color: var(--muted); }
+.board-heater { margin: 6px 0 0; padding: 8px 12px; border-left: 3px solid var(--heat); background: rgba(255, 122, 26, .08);
+  font: 600 1rem/1.4 var(--cond); }
+.mcard.mcard-focus { border-color: var(--heat); box-shadow: 0 0 0 3px rgba(255, 122, 26, .35); }
+@media (max-width: 640px) { .scenario { margin-left: 0; } .scn-compare { grid-template-columns: 1fr; } }

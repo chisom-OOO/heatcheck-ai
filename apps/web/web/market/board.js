@@ -100,6 +100,7 @@ export function renderBoard(root, board, { onAsk, onScenario, loadScenarios } = 
   for (const g of board.games) {
     const v = cardView(g.row, { resp: g.resp, error: g.error, forecast: board.forecast, isSample: board.isSample });
     const card = el("article", `mcard ${v.verdictKind}${v.sample ? " sample" : ""}`);
+    if (card.dataset) card.dataset.gameId = g.row.game_id;
     const top = el("header", "mcard-top");
     top.append(el("h3", "mcard-title", v.title), el("span", "mcard-tip", v.tip));
     card.append(top);

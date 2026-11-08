@@ -18,6 +18,9 @@ import { failedReasons, fmtUtc, heaterPlain, marketEndState, marketRefPlain, mar
 import { heaterScenarioLine, refScenarioText, scenarioEndState, scenarioStamp } from "./market/scenario-model.js";
 import { loadIdeas, renderIdeas } from "./ideas/idea-board.js";
 import { heaterIdeaLine, ideaEndState, ideaStamp, ideaTitle, refIdeaText } from "./ideas/idea-model.js";
+import {
+  ESTIMATE_URL, SCENARIO_URL, confirmBody, postJson, renderEstimate, renderInterpretation, routeMessage,
+} from "./whatif/whatif.js";
 import { createVoice } from "./voice.js";
 
 const params = new URLSearchParams(location.search);
@@ -32,6 +35,7 @@ const ui = {
   bubble: $("bubble"), take: $("take"), react: $("react"), ref: $("ref"), refTitle: $("ref-title"),
   refText: $("ref-text"), stamp: $("stamp"), evidence: $("evidence"), evidenceBody: $("evidence-body"),
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
+  scenario: $("scenario"),
 };
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
   ledger: null, turn: 0, busy: false, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
@@ -124,6 +128,7 @@ function reset() {
   ui.stamp.hidden = true;
   ui.evidence.hidden = true;
   ui.evidence.open = false;
+  ui.scenario.hidden = true;
 }
 
 function restartAnim(el) {
@@ -187,6 +192,16 @@ function evidenceDetails(entry, verified) {
 async function ask(question) {
   question = question.trim();
   if (!question || state.busy) return;
+  // Free text first goes to Max's router: tonight's markets, one game's card, or a what-if.
+  // Anything else (and any router failure) continues to the dialogue below.
+  state.busy = true;
+  setBusy(true);
+  const routed = await routeMessage(question);
+  state.busy = false;
+  setBusy(false);
+  log(`route: ${routed.action}${routed.game_id ? ` ${routed.game_id}` : ""} (${routed.reason})`);
+  if (routed.action === "OPEN_BOARD" || routed.action === "OPEN_CARD") return openBoardFor(routed);
+  if (routed.action === "SCENARIO") return runScenario(question, routed.game_id);
   state.busy = true;
   setBusy(true);
   setView("talk");
@@ -447,6 +462,142 @@ async function askScenario(g, s, data) {
   document.body.dataset.phase = "done";
   state.busy = false;
   setBusy(false);
+}
+
+/** Open the board from a typed message; Heater introduces it, or the named game's card. */
+async function openBoardFor(routed) {
+  voice.stopSpeaking();
+  await openBoard();
+  const line = routed.heater_text || "";
+  if (line) {
+    const p = document.createElement("p");
+    p.className = "board-heater";
+    p.textContent = `Heater: ${line}`;
+    const head = ui.board.firstElementChild;
+    if (head) head.append(p); else ui.board.prepend(p);
+  }
+  if (routed.action === "OPEN_CARD" && routed.game_id) {
+    const card = ui.board.querySelector(`[data-game-id="${CSS.escape(routed.game_id)}"]`);
+    if (card) {
+      card.classList.add("mcard-focus");
+      card.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }
+  if (line) {
+    state.heater.setState("hot_take");
+    await state.heater.speak(line, "heater", { voiceOn: state.voiceOn });
+    state.heater.setState("idle");
+  }
+}
+
+// ------------------------------------------------------------------ what-if scenarios
+function whatifDetails(est) {
+  const dl = document.createElement("dl");
+  const row = (k, v) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  };
+  row("Label", "HYPOTHETICAL: a what-if, not a forecast");
+  row("Verdict", est.verdict);
+  row("Computed at", fmtUtc(est.as_of_utc, { seconds: true }));
+  for (const c of est.challenger_checks || []) row(c.check_id, `${c.status}: ${c.detail}`);
+  row("Research effects", `${est.provider?.name || "?"} ${est.provider?.version || ""}`.trim());
+  // Raw (unshrunk) numbers appear only here, in the evidence drawer; the page shows the shrunk estimate.
+  for (const e of est.effects || []) {
+    const raw = e.evidence?.raw?.effect_log_odds;
+    if (raw && raw.raw_estimate != null) {
+      row(`Raw estimate (${e.evidence.player || "player"})`,
+        `log-odds ${raw.raw_estimate.toFixed(3)}, 95% ${raw.raw_ci95.map((x) => x.toFixed(3)).join(" to ")}; ` +
+        `shrinkage factor ${raw.shrinkage_factor.toFixed(2)} (shown: shrunk)`);
+    }
+  }
+  row("Receipt", est.evidence_id || "not recorded");
+  return dl;
+}
+
+function finishTurn(endState) {
+  if (endState) state.heater.setState(endState, { restart: true });
+  document.body.dataset.phase = "done";
+  state.busy = false;
+  setBusy(false);
+}
+
+/** Heater reads the scenario back; nothing is estimated until the user confirms. */
+async function runScenario(question, gameId) {
+  state.busy = true;
+  setBusy(true);
+  setView("talk");
+  reset();
+  voice.stopSpeaking();
+  const h = state.heater;
+  h.setState("listening");
+  await sleep(350);
+  h.setState("thinking");
+  let it = null;
+  try {
+    const r = await postJson(SCENARIO_URL, gameId ? { message: question, game_id: gameId } : { message: question });
+    it = r.ok ? r.data : null;
+    if (!r.ok) log(`scenario: HTTP ${r.status} ${r.data?.error || ""}`);
+  } catch (e) { log(`scenario: ${e.message}`); }
+  const take = it?.heater_text || "I couldn't reach the what-if service just now, so I won't guess.";
+  document.body.dataset.phase = "take";
+  ui.take.textContent = take;
+  ui.bubble.hidden = false;
+  restartAnim(ui.bubble);
+  h.setState("hot_take");
+  await h.speak(take, "heater", { voiceOn: state.voiceOn });
+  if (it?.status !== "NEEDS_CONFIRMATION") return finishTurn("unsure");
+  h.setState("listening");
+  finishTurn(null);
+  renderInterpretation(ui.scenario, it, {
+    onConfirm: () => runEstimate(it),
+    onCancel: async () => {
+      ui.scenario.hidden = true;
+      ui.take.textContent = "Fair enough. Say it another way and I'll read it again.";
+      h.setState("idle");
+    },
+  });
+}
+
+/** After confirmation: the Ref runs it; baseline vs scenario side by side, marked HYPOTHETICAL. */
+async function runEstimate(it) {
+  if (state.busy) return;
+  state.busy = true;
+  setBusy(true);
+  const h = state.heater;
+  document.body.dataset.phase = "check";
+  ui.refTitle.textContent = `${it.game} · what-if`;
+  ui.refText.textContent = "Checking the tape";
+  ui.ref.className = "ref checking";
+  ui.ref.hidden = false;
+  restartAnim(ui.ref);
+  const [r] = await Promise.all([
+    postJson(ESTIMATE_URL, confirmBody(it)).catch((e) => ({ ok: false, status: 0, data: { error: e.message } })),
+    h.play("heat_check", TIMING.heat_check),
+  ]);
+  h.setState("thinking");
+  ui.ref.classList.remove("checking");
+  if (!r.ok) {
+    const line = `Can't run this what-if: ${r.data?.error || `HTTP ${r.status}`}.`;
+    ui.refText.textContent = line;
+    await h.speak(line, "ref", { voiceOn: state.voiceOn });
+    return finishTurn("blocked");
+  }
+  const est = r.data;
+  log(`scenario ${est.game_id}: ${est.scenario ? est.scenario.p : "no number"}; receipt ${est.evidence_id?.slice(0, 8)}`);
+  renderEstimate(ui.scenario, est);
+  ui.refText.textContent = est.ref_text;
+  document.body.dataset.phase = "ref";
+  await h.speak(est.ref_text, "ref", { voiceOn: state.voiceOn });
+  ui.stamp.className = "stamp insufficient";
+  ui.stamp.textContent = "HYPOTHETICAL";
+  ui.stamp.hidden = false;
+  restartAnim(ui.stamp);
+  ui.ref.classList.add("slammed");
+  ui.evidenceBody.replaceChildren(whatifDetails(est));
+  ui.evidence.hidden = false;
+  finishTurn("thinking");
 }
 
 function marketDetails(resp) {

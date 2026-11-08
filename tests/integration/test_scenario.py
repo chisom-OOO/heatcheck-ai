@@ -495,3 +495,14 @@ def test_get_serves_researchs_own_answers_with_raw_only_in_evidence(rs):
                     assert ev["shown_by_default"] is True and "raw_estimate" in ev["raw"]["effect_log_odds"]
             n += len(a["scenarios"])
     assert n == 280
+
+
+def test_free_text_estimate_shows_shrunk_and_keeps_raw_only_in_evidence(rs):
+    e = est("What if Cleveland were without Jarrett Allen?", G["191"], rs)
+    eff = e["effects"][0]
+    assert eff["type"] == "ESTIMATE"
+    raw = eff["evidence"]["raw"]["effect_log_odds"]
+    row = next(v for v in rs.absence.values() if v.get("player_name") == "J. Allen")
+    assert raw["raw_estimate"] == row["effect_log_odds"]["raw_estimate"]
+    shown = {k: v for k, v in eff.items() if k != "evidence"}
+    assert '"raw_' not in json.dumps(shown) and '"raw_' not in json.dumps({k: v for k, v in e.items() if k != "effects"})
