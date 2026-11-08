@@ -240,25 +240,36 @@ def forecast_bdl(out: Path, raw_dir: Path, gamelist: Path, dest: Path, fetched_u
     cutoff = tips.max() + pd.Timedelta(hours=GAME_END_BOUND_H)
     gl = json.loads(gamelist.read_text())["games"]
     z = lambda t: t.strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
+    inv = {v: k for k, v in tri.items()}
+    allg = _bdl_games(files)
     games = []
     for g in sorted(gl, key=lambda g: (g["tip_utc"], g["game_id"])):
         h, a = int(g["home_team_id"].split(":")[1]), int(g["away_team_id"].split(":")[1])
+        tip = pd.Timestamp(g["tip_utc"])
+        hit = allg[(allg.home == inv[h]) & (allg.away == inv[a]) &
+                   (pd.to_datetime(allg.datetime, utc=True, errors="coerce") == tip)]
+        if len(hit) != 1:
+            raise SystemExit(f"REFUSED: {g['game_id']} ({inv[a]} @ {inv[h]} {g['tip_utc']}) not matched in balldontlie")
         if not z(cutoff) < g["tip_utc"]:
             raise SystemExit(f"REFUSED: cutoff {z(cutoff)} not before tip of {g['game_id']}")
         eh, ea = r[h], r[a]
         games.append({"game_id": g["game_id"], "tip_utc": g["tip_utc"], "home_team_id": g["home_team_id"],
                       "away_team_id": g["away_team_id"], "home_team": g["home_team"], "away_team": g["away_team"],
-                      "p_home_win": round(p_home(eh, ea, False), 6), "elo_home": round(eh, 3), "elo_away": round(ea, 3)})
+                      "p_home_win": round(p_home(eh, ea, bool(g.get("neutral_site", False))), 6),
+                      "elo_home": round(eh, 3), "elo_away": round(ea, 3)})
     doc = {"format": "heatcheck-live-forecast/1", "label": "DESCRIPTIVE FORECAST",
            "model": ("B1 Elo, fixed constants (same code as final run receipt 3e238d2d): K 20, home court 100, "
-                     "between-season carry 0.75*r+0.25*1505; ratings rolled 2022-23 to 2025-26 from "
-                     "shufinskiy/nba_data@46488f0f, then 2026-27 results to date from balldontlie. Game list "
-                     "hand-copied from NBA.com. Neutral sites not flagged for 2025-26/2026-27."),
+                     "carry 0.75*r+0.25*1505 between seasons. Ratings use results through 2026-11-06 ET (balldontlie "
+                     "for 2026-27); the same ratings price Saturday and Sunday. Game 189 DEN vs IND is at a neutral "
+                     "site (Arena CDMX, NBA schedule PDF): no home court."),
            "inputs_used": ["elo_rating_home", "elo_rating_away", "home_court"],
            "data_cutoff_utc": z(cutoff),
            "source": {"results": (f"balldontlie /v1/games raw pages ({provenance}; {len(files)} file(s); sha256 is "
                                   + ("the file's hash" if len(files) == 1 else "over the per-file hash list")
-                                  + "), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26"),
+                                  + "), plus shufinskiy/nba_data@46488f0f for 2023-24 to 2025-26. Game list: "
+                                  "data/live/raw/gamelist_20261107_08.json (2026-11-07 hand-copied from NBA.com; "
+                                  "2026-11-08 ids from cdn.nba.com 2026-27-NBA-Regular-Season-Schedule-By-Date.pdf, "
+                                  "sha256 5e82e37e...3570); every game matched in balldontlie"),
                       "fetched_utc": fetched_utc, "sha256": sha, "cross_check": "NOT_RUN"},
            "backtest_2024_25": st["backtest_2024_25"], "games": games}
     dest.parent.mkdir(parents=True, exist_ok=True)

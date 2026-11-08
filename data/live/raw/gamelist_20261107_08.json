@@ -1,0 +1,146 @@
+{
+  "what": "NBA game list for 2026-11-07 and 2026-11-08 used by data/live/forecasts.json. Not a fetched API payload.",
+  "pdf_source": {
+    "url": "https://cdn.nba.com/manage/2026/08/2026-27-NBA-Regular-Season-Schedule-By-Date.pdf",
+    "sha256": "5e82e37ef1b19e226dee57be69958b95b5694516280d3034aa7c1d64292b3570",
+    "fetched_utc": "2026-11-08T00:08:42Z",
+    "version": "AS OF AUGUST 13, 2026 | SUBJECT TO CHANGE"
+  },
+  "games": [
+    {
+      "game_id": "nba:0022600189",
+      "tip_utc": "2026-11-07T22:00:00Z",
+      "home_team_id": "nba-team:1610612754",
+      "away_team_id": "nba-team:1610612743",
+      "home_team": "Indiana Pacers",
+      "away_team": "Denver Nuggets",
+      "provenance": "Experience E-001 GAME record (experience/live-quote: tests/fixtures/quotes/e001-recorded-0022600189/records.jsonl), from NBA.com",
+      "neutral_site": true,
+      "neutral_site_source": "NBA 2026-27 schedule PDF, game 189 'Denver vs Indiana', note B: 'Game to be played in Arena CDMX, Mexico City'. Indiana kept as the designated home team (NBA.com game record); no home-court term."
+    },
+    {
+      "game_id": "nba:0022600190",
+      "tip_utc": "2026-11-08T00:30:00Z",
+      "home_team_id": "nba-team:1610612737",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Brooklyn Nets",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600191",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612739",
+      "away_team_id": "nba-team:1610612752",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "New York Knicks",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600192",
+      "tip_utc": "2026-11-08T01:00:00Z",
+      "home_team_id": "nba-team:1610612760",
+      "away_team_id": "nba-team:1610612764",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Washington Wizards",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600193",
+      "tip_utc": "2026-11-08T01:30:00Z",
+      "home_team_id": "nba-team:1610612744",
+      "away_team_id": "nba-team:1610612753",
+      "home_team": "Golden State Warriors",
+      "away_team": "Orlando Magic",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600194",
+      "tip_utc": "2026-11-08T02:00:00Z",
+      "home_team_id": "nba-team:1610612756",
+      "away_team_id": "nba-team:1610612745",
+      "home_team": "Phoenix Suns",
+      "away_team": "Houston Rockets",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600195",
+      "tip_utc": "2026-11-08T03:00:00Z",
+      "home_team_id": "nba-team:1610612757",
+      "away_team_id": "nba-team:1610612759",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "San Antonio Spurs",
+      "provenance": "hand-copied by Experience from the NBA.com schedule page at about 2026-11-07T22:30Z (experience/live-quotes-tonight: tests/fixtures/live/forecasts.SAMPLE.json, game list only; its values were placeholders and are not used)"
+    },
+    {
+      "game_id": "nba:0022600196",
+      "tip_utc": "2026-11-08T20:30:00Z",
+      "home_team_id": "nba-team:1610612741",
+      "away_team_id": "nba-team:1610612755",
+      "home_team": "Chicago Bulls",
+      "away_team": "Philadelphia 76ers",
+      "balldontlie_id": 21718059,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 196), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718059"
+    },
+    {
+      "game_id": "nba:0022600197",
+      "tip_utc": "2026-11-08T23:00:00Z",
+      "home_team_id": "nba-team:1610612765",
+      "away_team_id": "nba-team:1610612747",
+      "home_team": "Detroit Pistons",
+      "away_team": "Los Angeles Lakers",
+      "balldontlie_id": 21718060,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 197), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718060"
+    },
+    {
+      "game_id": "nba:0022600198",
+      "tip_utc": "2026-11-09T00:00:00Z",
+      "home_team_id": "nba-team:1610612750",
+      "away_team_id": "nba-team:1610612762",
+      "home_team": "Minnesota Timberwolves",
+      "away_team": "Utah Jazz",
+      "balldontlie_id": 21718061,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 198), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718061"
+    },
+    {
+      "game_id": "nba:0022600199",
+      "tip_utc": "2026-11-09T00:30:00Z",
+      "home_team_id": "nba-team:1610612742",
+      "away_team_id": "nba-team:1610612751",
+      "home_team": "Dallas Mavericks",
+      "away_team": "Brooklyn Nets",
+      "balldontlie_id": 21718062,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 199), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718062"
+    },
+    {
+      "game_id": "nba:0022600200",
+      "tip_utc": "2026-11-09T01:00:00Z",
+      "home_team_id": "nba-team:1610612749",
+      "away_team_id": "nba-team:1610612738",
+      "home_team": "Milwaukee Bucks",
+      "away_team": "Boston Celtics",
+      "balldontlie_id": 21718063,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 200), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718063"
+    },
+    {
+      "game_id": "nba:0022600201",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612746",
+      "away_team_id": "nba-team:1610612740",
+      "home_team": "LA Clippers",
+      "away_team": "New Orleans Pelicans",
+      "balldontlie_id": 21718064,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 201), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718064"
+    },
+    {
+      "game_id": "nba:0022600202",
+      "tip_utc": "2026-11-09T02:00:00Z",
+      "home_team_id": "nba-team:1610612758",
+      "away_team_id": "nba-team:1610612748",
+      "home_team": "Sacramento Kings",
+      "away_team": "Miami Heat",
+      "balldontlie_id": 21718065,
+      "provenance": "NBA game id from the NBA 2026-27 schedule PDF (game number 202), supplied by the user and verified by Research against the PDF; teams and tip checked against balldontlie id 21718065"
+    }
+  ]
+}

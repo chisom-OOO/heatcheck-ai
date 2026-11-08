@@ -76,7 +76,13 @@ def test_balldontlie_path_uses_only_earlier_finals_and_binds_hashes(tmp_path):
                      _bdl(2, "2026-11-07", "2026-11-07T17:00:00.000Z", "Final", "ATL", "BKN", 90, 130),   # same day: unused
                      _bdl(3, "2026-10-10", "2026-10-10T23:00:00.000Z", "Final", "OKC", "WAS", 80, 140, post=False, season=2025),
                      _bdl(4, "2026-11-07", "2026-11-08T00:30:00.000Z", "7:30 pm ET", "ATL", "BKN")]}
-    (raw / "p1.json").write_text(json.dumps(page))
+    gl_games = json.loads((root / "data/live/raw/gamelist_handcopied_20261107.json").read_text())["games"]
+    inv = {int(k): v for k, v in st["tricodes"].items()}
+    for i, g in enumerate(gl_games):   # the listed games must exist in balldontlie (cross-check)
+        if g["game_id"] != "nba:0022600190":
+            page["data"].append(_bdl(100 + i, "2026-11-07", g["tip_utc"].replace("Z", ".000Z"), "scheduled",
+                                     inv[int(g["home_team_id"].split(":")[1])], inv[int(g["away_team_id"].split(":")[1])]))
+    (raw / "01-p1.json").write_text(json.dumps(page))
     gl = root / "data/live/raw/gamelist_handcopied_20261107.json"
     LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "f.json", "2026-11-08T00:00:00Z", "TEST")
     f = json.loads((tmp_path / "f.json").read_text())
@@ -86,7 +92,11 @@ def test_balldontlie_path_uses_only_earlier_finals_and_binds_hashes(tmp_path):
     assert ind["elo_home"] > base["1610612754"] and ind["elo_away"] < base["1610612743"]   # IND beat DEN on 11-05
     atl = next(g for g in f["games"] if g["game_id"] == "nba:0022600190")
     assert atl["elo_home"] == pytest.approx(round(base["1610612737"], 3))                  # 11-07 result not used
-    assert f["source"]["sha256"] == hashlib.sha256((raw / "p1.json").read_bytes()).hexdigest()
-    (raw / "p2.json").write_text(json.dumps({"data": [_bdl(9, "2026-11-01", "2026-11-01T23:00:00.000Z", "Final", "XYZ", "DEN", 1, 0)]}))
+    assert f["source"]["sha256"] == hashlib.sha256((raw / "01-p1.json").read_bytes()).hexdigest()
+    gl_missing = tmp_path / "gl_missing.json"
+    gl_missing.write_text(json.dumps({"games": [dict(gl_games[0], tip_utc="2026-11-07T21:00:00Z")]}))
+    with pytest.raises(SystemExit, match="not matched in balldontlie"):
+        LF.forecast_bdl(tmp_path, raw, gl_missing, tmp_path / "h.json", "x", "TEST")
+    (raw / "02-p2.json").write_text(json.dumps({"data": [_bdl(9, "2026-11-01", "2026-11-01T23:00:00.000Z", "Final", "XYZ", "DEN", 1, 0)]}))
     with pytest.raises(SystemExit, match="XYZ"):
         LF.forecast_bdl(tmp_path, raw, gl, tmp_path / "g.json", "x", "TEST")
