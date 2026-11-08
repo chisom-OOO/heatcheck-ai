@@ -27,6 +27,11 @@ import { MIC, createVoice } from "./voice.js";
 import { firstAskThisSession, loadResponsibleUse } from "./responsible.js";
 import { mount as mountFrost } from "./frost/frost.js";
 import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, skippable } from "./frost/frost-model.js";
+import {
+  TAMPER_EVENTS_URL, TAMPER_FLIP_URL, TAMPER_RESTORE_URL, eventRows, flipView, mockTamperFetch, postTamper, restoreView,
+  tamperMode, tamperRefLine,
+} from "./tamper/tamper-model.js";
+import { renderTamper, setTamperStatus } from "./tamper/tamper.js";
 
 const params = new URLSearchParams(location.search);
 const DEBUG = params.get("debug") === "1";
@@ -42,7 +47,11 @@ const ui = {
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"), ruNotice: $("ru-notice"),
   convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"), sampleFlag: $("sample-flag"),
+  tamper: $("tamper"), tamperBtn: $("btn-tamper"), restoreBtn: $("btn-restore"),
 };
+// The tamper button against Max's endpoints (shown by default; ?tamper=0 hides it); ?tamper=mock:
+// against in-page MOCK replies.
+const TAMPER = tamperMode(params);
 const state = { heater: null, personality: DEFAULT_PERSONALITY, personalitySource: "built-in defaults",
   ledger: null, turn: 0, busy: false, responsible: null, ruMemo: { shown: false }, voiceOn: params.get("voice") !== "0", forceRecord: "", log: [] };
 
@@ -170,6 +179,7 @@ function reset() {
   ui.convo.hidden = true;
   ui.skipHint.hidden = true;
   ui.sampleFlag.hidden = true;
+  ui.tamper.hidden = true;
   setCast(false);
 }
 
@@ -461,6 +471,100 @@ function setBusy(b) {
   ui.chips.forEach((c) => { c.disabled = b; });
   ui.boardBtn.disabled = b;
   ui.ideasBtn.disabled = b;
+  ui.tamperBtn.disabled = b || Boolean(state.tampered);
+  ui.restoreBtn.disabled = b;
+}
+
+// ------------------------------------------------------------------ tamper test
+/** "Corrupt one byte": Max's server flips one byte of a sealed file; the panel shows what the
+ *  validator caught, the Ref rules DATA_INVALID and the new ledger row appears. The values are the
+ *  server's (or, with ?tamper=mock, labelled MOCK); nothing here decides. */
+const mockFetch = TAMPER === "mock" ? mockTamperFetch() : null;
+const tamperFetch = () => mockFetch || globalThis.fetch.bind(globalThis);
+
+async function runTamper() {
+  if (state.busy || state.tampered) return;
+  state.busy = true;
+  setBusy(true);
+  setView("talk");
+  reset();
+  voice.stopSpeaking();
+  const h = state.heater;
+  document.body.dataset.phase = "check";
+  ui.tamper.hidden = false;
+  renderTamper(ui.tamper, null, { status: "Flipping one byte…" });
+  ui.refTitle.textContent = "Tamper test";
+  ui.refText.textContent = "Checking the seal";
+  ui.ref.classList.add("checking");
+  ui.ref.hidden = false;
+  restartAnim(ui.ref);
+  const [res] = await Promise.all([postTamper(TAMPER_FLIP_URL, tamperFetch()), h.play("heat_check", TIMING.heat_check)]);
+  const view = flipView(res.body, { httpStatus: res.status, mock: TAMPER === "mock" || res.body?.mock === true });
+  log(`tamper flip: HTTP ${res.status}; ${view.ok ? `verdict ${view.verdict || "none"}; row ${view.row ? view.row.id : "none"}` : view.problem}`);
+  if (view.ok) { state.tampered = true; ui.restoreBtn.hidden = false; }
+  // the new row: the TAMPER_ATTEMPT event Max's server appended (GET /api/tamper/events)
+  let rows = { recent: [], row: null, found: false };
+  let rowNote = "";
+  if (view.ok) {
+    const ev = await postTamper(TAMPER_EVENTS_URL, tamperFetch(), "GET");
+    if (ev.status === 200) {
+      rows = eventRows(ev.body, view.eventId);
+      if (!rows.found) rowNote = `The tamper ledger does not list the new entry${view.eventId ? ` (${view.eventId.slice(0, 12)})` : ""}.`;
+    } else {
+      rowNote = `The tamper ledger did not load (HTTP ${ev.status}${ev.body?.error ? `: ${ev.body.error}` : ""}).`;
+    }
+    log(`tamper events: HTTP ${ev.status}; new row ${rows.found ? "found" : "not found"}`);
+  }
+  renderTamper(ui.tamper, view, { recent: rows.recent, row: rows.row, rowNote,
+    status: view.ok ? "One byte is corrupted in a scratch copy. Press Restore the byte to delete it." : "" });
+  const refLine = tamperRefLine(view, state.personality);
+  ui.ref.classList.remove("checking");
+  ui.refText.textContent = refLine;
+  document.body.dataset.phase = "ref";
+  h.setState("thinking");
+  await h.speak(refLine, "ref", { voiceOn: state.voiceOn });
+  if (view.ok && view.caught) {
+    const stamp = stampFor("DATA_INVALID", state.personality);
+    ui.stamp.className = `stamp ${stamp.kind}`;
+    ui.stamp.textContent = stamp.text;
+    ui.stamp.hidden = false;
+    restartAnim(ui.stamp);
+    ui.ref.classList.add("slammed");
+    h.setState(stateForDecision("DATA_INVALID"), { restart: true });
+    document.body.dataset.phase = "verdict";
+    await sleep(700);
+    const react = reactFor("DATA_INVALID", state.personality, state.turn++);
+    if (react) { ui.react.textContent = react; ui.react.hidden = false; ui.bubble.hidden = true; await h.speak(react, "heater", { voiceOn: state.voiceOn }); }
+  } else if (view.notDetected) {
+    ui.stamp.className = "stamp blocked";
+    ui.stamp.textContent = "CHECK FAILED";
+    ui.stamp.hidden = false;
+    restartAnim(ui.stamp);
+    h.setState("unsure", { restart: true });
+  } else {
+    h.setState("unsure", { restart: true });
+  }
+  document.body.dataset.phase = "done";
+  state.busy = false;
+  setBusy(false);
+}
+
+async function runRestore() {
+  if (state.busy || !state.tampered) return;
+  state.busy = true;
+  setBusy(true);
+  const res = await postTamper(TAMPER_RESTORE_URL, tamperFetch());
+  const view = restoreView(res.body, { httpStatus: res.status });
+  log(`tamper restore: HTTP ${res.status}; ${view.ok ? "restored" : "failed"}`);
+  ui.tamper.hidden = false;
+  setTamperStatus(ui.tamper, view.text, view.ok);
+  if (view.ok) {
+    // the committed ledger was only read, so nothing on the page needs reloading
+    state.tampered = false;
+    ui.restoreBtn.hidden = true;
+  }
+  state.busy = false;
+  setBusy(false);
 }
 
 // ------------------------------------------------------------------ views: talk, market board, idea board
@@ -481,7 +585,7 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; setCast(false); }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; ui.tamper.hidden = true; setCast(false); }
 }
 
 function toggleView(view, open) {
@@ -1004,6 +1108,11 @@ async function main() {
   setView("talk");
   ui.boardBtn.addEventListener("click", () => toggleView("board", openBoard));
   ui.ideasBtn.addEventListener("click", () => toggleView("ideas", openIdeas));
+  // The tamper button: shown (Max's endpoints) unless ?tamper=0; ?tamper=mock for MOCK replies.
+  ui.tamperBtn.hidden = TAMPER === "off";
+  if (TAMPER === "mock") ui.tamperBtn.textContent = "Corrupt one byte (MOCK)";
+  ui.tamperBtn.addEventListener("click", () => runTamper());
+  ui.restoreBtn.addEventListener("click", () => runRestore());
   state.ledgerLoad = loadLedger().then((l) => {
     state.ledger = l;
     log(`ledger: ${l.entries.length} entries from ${l.source}`);

@@ -29,6 +29,8 @@
       <div class="view-buttons">
         <button type="button" class="view-toggle" id="btn-board" aria-pressed="false">Tonight's games</button>
         <button type="button" class="view-toggle" id="btn-ideas" aria-pressed="false">Idea board</button>
+        <button type="button" class="tamper-btn" id="btn-tamper" hidden>Corrupt one byte</button>
+        <button type="button" class="restore-btn" id="btn-restore" hidden>Restore the byte</button>
       </div>
     </div>
     <section class="board" id="board" hidden aria-label="Tonight's games: forecast against market"></section>
@@ -49,6 +51,7 @@
         <div id="evidence-body"></div>
       </details>
     </article>
+    <section class="tamper" id="tamper" hidden aria-label="Tamper test" aria-live="polite"></section>
     <section class="scenario" id="scenario" hidden aria-label="What-if scenario"></section>
     <p class="hint" id="hint">Ask Heater a question. The Ref checks his take against real NBA data.</p>
     <p class="skip-hint" id="skip-hint" hidden>Press Space to skip to the verdict</p>
