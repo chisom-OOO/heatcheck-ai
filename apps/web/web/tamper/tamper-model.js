@@ -19,10 +19,10 @@ export const TAMPER_EVENTS_URL = "/api/tamper/events";
 /** What Max's server flips (docs/DIALOGUE_API.md): a scratch copy of this file. */
 export const TAMPER_TARGET = "evidence/evidence.jsonl (scratch copy; the committed file is only read)";
 
-/** Whether the button shows. Max's endpoint landed before 08:45, so it shows by default; ?tamper=0
- *  hides it; ?tamper=mock runs against in-page MOCK replies. A server started with --no-tamper
- *  answers 503 TAMPER_OFF, which the panel says plainly. */
-export const TAMPER_DEFAULT_VISIBLE = true;
+/** Whether the button shows. Hidden by default (user, 8 Nov): judges open the page with ?tamper=1;
+ *  ?tamper=mock runs against in-page MOCK replies. A server started with --no-tamper answers
+ *  503 TAMPER_OFF, which the panel says plainly. */
+export const TAMPER_DEFAULT_VISIBLE = false;
 export function tamperMode(params) {
   const p = params?.get?.("tamper");
   if (p === "mock") return "mock";

@@ -479,6 +479,10 @@ BETTING_WORDS = re.compile(
     r"can['’]?t lose|cannot lose|a lock|lock it in|mortal lock)(?![\w'’])", re.IGNORECASE)
 
 
+# Frost's rephrase only (Heater's list above is the user's exact list): British betting slang.
+FROST_EXTRA_BETTING = re.compile(r"(?<![\w'’])punt(?:s|er|ers|ing|ed)?(?![\w'’])", re.IGNORECASE)
+
+
 def betting_words(text: str) -> list[str]:
     """Betting-encouragement wording in a Heater line; empty means it may be said."""
     return sorted({m.group(0).lower() for m in BETTING_WORDS.finditer(text or "")})
@@ -539,7 +543,9 @@ class Dialogue:
         Adapted by Max: MetaChat has complete(role, messages), not chat(...); the 4 s deadline never
         raises the client's own; the calls run in parallel, so Frost adds at most one deadline."""
         from concurrent.futures import ThreadPoolExecutor
-        llm = replace(self.llm, timeout_s=min(4.0, self.llm.timeout_s), max_completion_tokens=60)
+        # The adviser's max_tokens=60 left no room: live calls ended finish_reason=length with empty text
+        # (8 Nov, 5/5). The client's default cap is kept; the 220-character guard keeps it short.
+        llm = replace(self.llm, timeout_s=min(4.0, self.llm.timeout_s))
 
         def one(c):
             try:
@@ -549,6 +555,9 @@ class Dialogue:
                 return None
             if number_violations(text, facts) or take_mentions_ref(text) or len(text) > 220:
                 return None                   # fall back to the template question
+            # FROST_SYSTEM says "never suggest betting"; enforce it (live, 8 Nov: "simultaneous punts")
+            if betting_words(text) or FROST_EXTRA_BETTING.search(text):
+                return None
             return text.strip()
 
         if not chal:
