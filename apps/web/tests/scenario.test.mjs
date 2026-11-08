@@ -207,6 +207,53 @@ test("on the board: 'What if…?' loads once, shows SAMPLE scenarios as SAMPLE, 
   assert.deepEqual(loads, ["nba:0022600190"]);
 });
 
+function sampleBoard() {
+  return {
+    status: "OK", isSample: true, forecast: { model: "SAMPLE", data_cutoff_utc: "2026-11-07T22:00:00Z", inputs_used: [] },
+    games: [{ row: { game_id: "nba:0022600190", home_team: "Atlanta Hawks", away_team: "Brooklyn Nets", tip_utc: "2026-11-08T00:30:00Z", p_home_win: "0.5" },
+      mapping: null, resp: copy(SAMPLE_RESP), error: null }],
+  };
+}
+const sampleLoad = async (gameId, { resp }) => S.readScenarios(ok(FIX.sample_card), { gameId, resp });
+
+test("'Your own scenario' box: under the presets, sends the typed text with this card's game, and fetches nothing itself", async () => {
+  const root = new El("section");
+  const own = [];
+  renderBoard(root, sampleBoard(), { onScenario: () => {}, onOwnScenario: (g, text) => own.push([g.row.game_id, text]), loadScenarios: sampleLoad });
+  await byClass(root, "mcard-whatif")[0].listeners.click();
+  const slot = byClass(root, "scen-slot")[0];
+  const form = byClass(slot, "scen-own")[0];
+  assert.ok(form, "box missing");
+  assert.equal(slot.children.at(-1), form, "the box comes after the preset scenarios");
+  const label = byClass(form, "scen-own-label")[0];
+  const input = byClass(form, "scen-own-input")[0];
+  assert.equal(label.textContent, "Your own scenario");
+  assert.equal(label.attrs.for, input.id);
+  assert.equal(input.maxLength, 200);
+  assert.equal(input.placeholder, "e.g. What if Atlanta Hawks were without their top scorer?");
+  assert.equal(byClass(form, "scen-own-go")[0].type, "submit");
+  const { calls } = await withFetch(() => { throw new Error("the box must not fetch"); }, async () => {
+    let prevented = 0;
+    input.value = "   ";
+    form.listeners.submit({ preventDefault: () => { prevented += 1; } });
+    input.value = "  What if Trae Young sits?  ";
+    form.listeners.submit({ preventDefault: () => { prevented += 1; } });
+    assert.equal(prevented, 2, "the form never reloads the page");
+  });
+  assert.deepEqual(calls, []);
+  assert.deepEqual(own, [["nba:0022600190", "What if Trae Young sits?"]]);
+});
+
+test("no box without onOwnScenario; and demo.js hands the box to Max's free-text flow with the card's game id", async () => {
+  const root = new El("section");
+  renderBoard(root, sampleBoard(), { onScenario: () => {}, loadScenarios: sampleLoad });
+  await byClass(root, "mcard-whatif")[0].listeners.click();
+  assert.equal(byClass(root, "scen-own").length, 0);
+  const demo = readFileSync(join(ROOT, "web", "demo.js"), "utf8");
+  assert.match(demo, /onOwnScenario: \(g, text\) => \{ if \(!state\.busy\) runScenario\(text, g\.row\.game_id\); \}/);
+  assert.match(demo, /postJson\(SCENARIO_URL, gameId \? \{ message: question, game_id: gameId \}/);  // Max's flow sends both
+});
+
 test("without onScenario the board has no What if button (Max's existing board unchanged)", () => {
   const root = new El("section");
   renderBoard(root, { status: "OK", isSample: false, forecast: {}, games: [{ row: { game_id: "g", home_team: "H", away_team: "A", tip_utc: "", p_home_win: "0.5" }, resp: null, error: "x" }] });
