@@ -457,12 +457,27 @@ HEATER_SYSTEM = (
     "basketball statistics show. You are fictional. Never name, quote, imitate or allude to any "
     "real commentator, broadcaster, host or media personality, and do not use their catchphrases. "
     "Speak in at most three short sentences, with big energy and the odd ALL-CAPS burst. You are "
-    "entertainment, not evidence: never state statistics or numbers, and never contradict or "
-    "pre-empt the Ref's verdict. If the Ref says no registered test exists, you may give a hot "
-    "take, but say plainly that it is just your opinion."
+    "entertainment, not evidence: never state statistics or numbers. You speak BEFORE the Ref and "
+    "do not know the verdict: give your hot take on the fan's question only, and never mention the "
+    "Ref, a verdict, a test, a result or the evidence."
 )
 
-HEATER_FALLBACK = {
+# Heater's first line is the hot take only: it is spoken before the Ref, so it never depends on
+# or mentions the verdict (rehearsal fix, 8 Nov 2026). The verdict-aware line is heater_reaction.
+HEATER_TAKE_FALLBACK = "Heater here, and I've got OPINIONS on this one! My gut says YES, and my gut is LOUD."
+REF_MENTION = re.compile(
+    r"\b(?:the\s+)?ref(?:eree)?s?\b|\bverdict|\bsurviv\w*|\bnot\s+supported\b|\binsufficient\b|"
+    r"\bevidence\b|\bregistered\b|\btest(?:ed|s)?\b|\bchecks?\b|\bruled?\b|\bruling\b|\bvault\b|"
+    r"\bdata\b", re.IGNORECASE)
+
+
+def take_mentions_ref(text: str) -> list[str]:
+    """Words that would have Heater speak about the Ref's verdict before the Ref has spoken."""
+    return sorted({m.group(0).lower() for m in REF_MENTION.finditer(text or "")})
+
+
+# Heater's reaction, spoken after the stamp (heater_reaction). Keyed by verdict; None = no test.
+HEATER_REACTION = {
     None: "Heater here, and I've got OPINIONS! But the Ref says there's no registered test for "
           "that one, so take this as pure hot air.",
     "SURVIVED_PROTOCOL": "Heater here! The Ref says it SURVIVED the checks. I'm not saying I "
@@ -477,6 +492,14 @@ HEATER_FALLBACK = {
     "CONFIRMATORY_PENDING": "Heater here! That one's locked in the vault for its one big "
                             "official run. No peeking, no verdict yet. I'm DYING to know.",
 }
+HEATER_FALLBACK = HEATER_REACTION  # old name, kept for importers
+
+
+def heater_reaction(out: dict) -> str:
+    """The reaction after the stamp, from the verdict the Ref actually gave."""
+    if out.get("verdict"):
+        return HEATER_REACTION.get(out["verdict"], "")
+    return HEATER_REACTION[None] if out.get("claim_id") == NONE else HEATER_REACTION["CONFIRMATORY_PENDING"]
 
 
 # --------------------------------------------------------------------------- turn
@@ -491,6 +514,11 @@ class Dialogue:
     confirmatory: ConfirmatoryLane | None = None  # None: default dry-run lane
 
     def turn(self, question: str) -> dict[str, Any]:
+        out = self._turn(question)
+        out["heater_reaction"] = heater_reaction(out)
+        return out
+
+    def _turn(self, question: str) -> dict[str, Any]:
         sources: dict[str, str] = {"ref": "TEMPLATE"}
         claim_id, sources["mapping"], map_identity = self._map(question)
         if claim_id == NONE:
@@ -596,15 +624,13 @@ class Dialogue:
             "kind": "DETERMINISTIC_STANDIN", "model": None, "prompt": None}
 
     def _heater(self, question, claim_id, decision, facts, pending=False) -> tuple[str, str]:
-        fallback = HEATER_FALLBACK["CONFIRMATORY_PENDING" if pending else decision]
+        """Heater's hot take, spoken before the Ref: the verdict, the decision and the pending state
+        are deliberately not used, so the take cannot pre-empt the Ref."""
+        del decision, pending
+        fallback = HEATER_TAKE_FALLBACK
         if not self.llm:
             return fallback, "TEMPLATE"
-        ctx = {"fan_question": question,
-               "registered_claim": statement_of(claim_id) if claim_id else None,
-               "refs_verdict": PLAIN[decision] if decision else (
-                   "Not run yet: this pre-registered test runs once, later, after its seal is "
-                   "verified. There is no verdict." if pending else
-                   "No registered test exists; nothing was run.")}
+        ctx = {"fan_question": question}
         messages = [{"role": "system", "content": HEATER_SYSTEM},
                     {"role": "user", "content": json.dumps(ctx)}]
         try:
@@ -614,4 +640,7 @@ class Dialogue:
         bad = number_violations(text, facts or {})
         if bad:
             return fallback, f"TEMPLATE (guard rejected numbers {bad})"
+        ref_words = take_mentions_ref(text)
+        if ref_words:
+            return fallback, f"TEMPLATE (guard rejected Ref mention {ref_words[:4]})"
         return text, "LLM"

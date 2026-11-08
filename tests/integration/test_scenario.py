@@ -17,10 +17,12 @@ from pathlib import Path
 import pytest
 
 from heatcheck.agents.scenario import (
+    TEAMS,
     VERDICT,
     YOUR_ASSUMPTION,
     ConfirmationError,
     ResearchStub,
+    card_intro,
     check_confirmation,
     elo_from_p,
     estimate_scenario,
@@ -29,6 +31,7 @@ from heatcheck.agents.scenario import (
     parse_changes,
     parse_scenario,
     route,
+    teams_in,
     verdict_for,
 )
 from heatcheck.api.dialogue_server import ScenarioConfig, serve
@@ -73,6 +76,62 @@ def test_route(msg, action, game):
 def test_route_brooklyn_after_saturday_tip_picks_sunday():
     assert route("Brooklyn tonight", GAMES, "2026-11-08T01:05:00Z")["game_id"] == "nba:0022600199"
     assert route("Brooklyn tonight", GAMES, "2026-11-08T00:20:00Z")["game_id"] == "nba:0022600190"
+
+
+# ------------------------------------------------------------------ team aliases (rehearsal fix)
+
+ALIASES = {  # every team: full name, city, nickname, and the one-word/short forms fans use
+    "ATL": ["Atlanta Hawks", "atlanta", "hawks"], "BOS": ["Boston Celtics", "boston", "celtics", "celts"],
+    "BKN": ["Brooklyn Nets", "brooklyn", "nets"], "CHA": ["Charlotte Hornets", "charlotte", "hornets"],
+    "CHI": ["Chicago Bulls", "chicago", "bulls"], "CLE": ["Cleveland Cavaliers", "cleveland", "cavs"],
+    "DAL": ["Dallas Mavericks", "dallas", "mavs"], "DEN": ["Denver Nuggets", "denver", "nuggets"],
+    "DET": ["Detroit Pistons", "detroit", "pistons"], "GSW": ["Golden State Warriors", "golden state", "warriors", "dubs"],
+    "HOU": ["Houston Rockets", "houston", "rockets"], "IND": ["Indiana Pacers", "indiana", "pacers"],
+    "LAC": ["LA Clippers", "los angeles clippers", "clippers", "clips"], "LAL": ["Los Angeles Lakers", "la lakers", "lakers"],
+    "MEM": ["Memphis Grizzlies", "memphis", "grizzlies", "grizz"], "MIA": ["Miami Heat", "miami"],
+    "MIL": ["Milwaukee Bucks", "milwaukee", "bucks"], "MIN": ["Minnesota Timberwolves", "minnesota", "wolves", "t-wolves", "twolves"],
+    "NOP": ["New Orleans Pelicans", "new orleans", "pelicans", "pels"], "NYK": ["New York Knicks", "new york", "knicks"],
+    "OKC": ["Oklahoma City Thunder", "oklahoma city", "thunder", "okc"], "ORL": ["Orlando Magic", "orlando", "magic"],
+    "PHI": ["Philadelphia 76ers", "philadelphia", "philly", "76ers", "sixers"], "PHX": ["Phoenix Suns", "phoenix", "suns"],
+    "POR": ["Portland Trail Blazers", "portland", "trail blazers", "trailblazers", "trail-blazers", "blazers"],
+    "SAC": ["Sacramento Kings", "sacramento", "kings"], "SAS": ["San Antonio Spurs", "san antonio", "spurs"],
+    "TOR": ["Toronto Raptors", "toronto", "raptors"], "UTA": ["Utah Jazz", "utah", "jazz"],
+    "WAS": ["Washington Wizards", "washington", "wizards", "wiz"],
+}
+FULL = {abbr: names[0] for abbr, names in ALIASES.items()}
+
+
+def test_aliases_cover_all_thirty_teams():
+    assert len(ALIASES) == 30 and set(FULL.values()) == {t[0] for t in TEAMS}
+
+
+@pytest.mark.parametrize("abbr,alias", [(a, n) for a, ns in ALIASES.items() for n in ns])
+def test_every_alias_names_its_team_any_case_or_punctuation(abbr, alias):
+    for text in (alias, alias.upper(), alias.title(), f"what about the {alias}?", f"{alias}!!"):
+        assert [n for _, n in teams_in(text)] == [FULL[abbr]], text
+
+
+@pytest.mark.parametrize("msg", ["spurs vs trailblazers?", "Spurs vs. Trail Blazers", "trailblazers vs spurs",
+                                 "Blazers at Spurs", "spurs @ blazers", "SPURS-BLAZERS", "san antonio v portland",
+                                 "rip city vs spurs"])
+def test_rehearsal_spurs_blazers_opens_the_card_in_either_order(msg):
+    r = route(msg, GAMES, "2026-11-08T03:50:00Z")       # after the 03:00Z tip
+    assert (r["action"], r["game_id"], r["under_way"]) == ("OPEN_CARD", "nba:0022600195", True)
+
+
+def test_before_tip_is_not_under_way_and_intro_says_so_after():
+    row = next(g for g in GAMES if g["game_id"] == "nba:0022600195")
+    assert route("spurs vs blazers", GAMES, "2026-11-08T02:00:00Z")["under_way"] is False
+    assert "under way" not in card_intro(row, "2026-11-08T02:00:00Z")
+    assert card_intro(row, "2026-11-08T03:50:00Z").endswith(
+        "This game is under way, so there's no pre-game comparison.")
+
+
+@pytest.mark.parametrize("msg", ["was the hot hand real?", "min minutes", "is HeatCheck any good?",
+                                 "den of thieves", "the magic number"])
+def test_ordinary_words_are_not_teams_unless_they_are_nicknames(msg):
+    names = [n for _, n in teams_in(msg)]
+    assert names in ([], ["Orlando Magic"])  # "magic" is the Magic's nickname; the rest are words
 
 
 def test_heat_alone_is_not_miami():
