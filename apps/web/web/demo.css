@@ -229,6 +229,18 @@ body[data-view="board"] .talk { max-width: 980px; align-self: start; }
 .scen-caveats-head { margin: 0; color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
 .scen-caveats { margin: 0; padding-left: 18px; font-size: .84rem; color: #D6D3E6; }
 .scen-note, .scen-source { margin: 0; color: var(--muted); font-size: .84rem; }
+.scen-own {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 8px; align-items: center;
+  padding: 10px 12px; border-radius: 10px; border: 1px dashed rgba(46, 196, 182, .45);
+}
+.scen-own-label { grid-column: 1 / -1; color: var(--ref-ink); font: 700 .85rem var(--cond); letter-spacing: .04em; }
+.scen-own-input {
+  min-width: 0; font: inherit; font-size: .9rem; color: var(--fg); background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; padding: 7px 12px;
+}
+.scen-own-input:focus-visible { outline: 2px solid var(--ref); outline-offset: 1px; }
+.scen-own-go { margin-top: 0; }
+@media (max-width: 480px) { .scen-own { grid-template-columns: 1fr; } .scen-own-go { justify-self: start; } }
 @media (max-width: 480px) {
   .scen-pair { grid-template-columns: 1fr 1fr; }
   .scen-change { grid-column: 1 / -1; }

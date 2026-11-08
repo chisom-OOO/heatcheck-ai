@@ -79,8 +79,9 @@ function el(tag, cls, text) {
 }
 
 /** Render the board into ``root``. ``onAsk(game)`` runs Heater and the Ref on one card;
- *  ``onScenario(game, scenario, data)`` does the same for one scenario ("What if…?"). */
-export function renderBoard(root, board, { onAsk, onScenario, loadScenarios } = {}) {
+ *  ``onScenario(game, scenario, data)`` does the same for one preset scenario ("What if…?");
+ *  ``onOwnScenario(game, text)`` takes the card's "Your own scenario" box into the free-text flow. */
+export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loadScenarios } = {}) {
   root.replaceChildren();
   const head = el("header", "board-head");
   head.append(el("h2", "board-title", "Tonight's games"));
@@ -123,7 +124,9 @@ export function renderBoard(root, board, { onAsk, onScenario, loadScenarios } = 
       b.addEventListener("click", () => onAsk(g));
       card.append(b);
     }
-    if (onScenario) card.append(scenarioSlot(g, { onAsk: onScenario, ...(loadScenarios ? { load: loadScenarios } : {}) }));
+    if (onScenario) {
+      card.append(scenarioSlot(g, { onAsk: onScenario, onOwn: onOwnScenario, ...(loadScenarios ? { load: loadScenarios } : {}) }));
+    }
     grid.append(card);
   }
   root.append(grid);

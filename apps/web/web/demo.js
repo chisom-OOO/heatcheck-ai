@@ -393,7 +393,12 @@ async function openBoard() {
     state.board = await loadBoard({ log });
     state.heater.setState("idle");
   }
-  renderBoard(ui.board, state.board, { onAsk: (g) => askMarket(g), onScenario: (g, s, data) => askScenario(g, s, data) });
+  renderBoard(ui.board, state.board, {
+    onAsk: (g) => askMarket(g),
+    onScenario: (g, s, data) => askScenario(g, s, data),
+    // "Your own scenario" on a card: Max's free-text what-if flow, pinned to that card's game.
+    onOwnScenario: (g, text) => { if (!state.busy) runScenario(text, g.row.game_id); },
+  });
 }
 
 function scenarioDetails(s, data) {

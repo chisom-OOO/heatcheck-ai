@@ -95,8 +95,35 @@ export function renderScenarios(slot, data, { onAsk } = {}) {
   if (data.source) slot.append(el("p", "scen-source", `Source: ${data.source}`));
 }
 
-/** The card's "What if…?" button and the slot it fills. Loads once per card. */
-export function scenarioSlot(g, { onAsk, load = loadScenarios } = {}) {
+/** "Your own scenario": a free-text box on the card. The text goes, with this card's game id, into
+ *  Max's free-text what-if flow (POST /api/scenario, read back, confirm, /api/scenario/estimate),
+ *  so typed and preset scenarios share one backend. The box itself sends nothing. */
+export function ownScenarioForm(g, onOwn) {
+  const form = el("form", "scen-own");
+  const id = `scen-own-${String(g.row.game_id).replace(/[^A-Za-z0-9_-]/g, "-")}`;
+  const label = el("label", "scen-own-label", "Your own scenario");
+  label.setAttribute("for", id);
+  const input = el("input", "scen-own-input");
+  input.id = id;
+  input.type = "text";
+  input.maxLength = 200;
+  input.autocomplete = "off";
+  input.placeholder = `e.g. What if ${g.row.home_team} were without their top scorer?`;
+  const go = el("button", "mcard-ask scen-own-go", "Ask Heater");
+  go.type = "submit";
+  form.append(label, input, go);
+  form.addEventListener("submit", (ev) => {
+    ev?.preventDefault?.();
+    const text = String(input.value || "").trim();
+    if (!text) return;
+    onOwn(g, text);
+  });
+  return form;
+}
+
+/** The card's "What if…?" button and the slot it fills. Loads once per card. ``onOwn(game, text)``
+ *  adds the "Your own scenario" box under the preset list. */
+export function scenarioSlot(g, { onAsk, onOwn, load = loadScenarios } = {}) {
   const wrap = el("div", "scen-wrap");
   const b = el("button", "mcard-whatif", "What if…?");
   b.type = "button";
@@ -114,6 +141,7 @@ export function scenarioSlot(g, { onAsk, load = loadScenarios } = {}) {
     try {
       loaded = await load(g.row.game_id, { resp: g.resp });
       renderScenarios(slot, loaded, { onAsk: onAsk && ((s, data) => onAsk(g, s, data)) });
+      if (onOwn) slot.append(ownScenarioForm(g, onOwn));
     } finally {
       b.disabled = false;
     }
