@@ -28,7 +28,7 @@ Sports data are full of patterns that look meaningful and are not. Search enough
 something will look significant: a hot hand, a rest edge, a clutch player. The usual failures are choosing
 the test after seeing the data, testing many things and reporting the winners, peeking at the evaluation
 set, and treating confidence as evidence. HeatCheck makes those mistakes hard to commit and easy to detect.
-It does not look for betting edges; any comparison with market prices is descriptive only.
+It does not look for betting edges; market comparisons are descriptive only.
 
 ## 2. How HeatCheck works
 
@@ -39,10 +39,8 @@ It does not look for betting edges; any comparison with market prices is descrip
    attacks but never remove a required one.
 3. **The Referee decides, deterministically.** Plain code applies a fixed rule and returns
    `SURVIVED_PROTOCOL`, `NOT_SUPPORTED`, `INSUFFICIENT_EVIDENCE`, `DATA_INVALID` or `BLOCKED`.
-4. **The ledger records it.** Each decision is appended to a hash-chained ledger together with the plan, the
-   data and code identities, and the attack results. A retry returns the original entry. Edited, deleted,
-   inserted or reordered lines are detected on read. Lines cut from the end are caught only by comparing the
-   chain head with a value recorded elsewhere.
+4. **The ledger records it.** Each decision is appended to a hash-chained ledger with the plan, data, code
+   and attack results. Edited, deleted or reordered lines are detected on read.
 
 **Heater and the Ref.**
 - **Heater** is an AI-generated, original pundit character who improvises hot takes through a language model.
@@ -57,9 +55,8 @@ It does not look for betting edges; any comparison with market prices is descrip
 3. On the idea board, it turns a fan's message into ideas. Its answer is forced into a JSON schema whose
    values are the grammar's enumerations.
 
-In the latest live test, routing was correct in 6 of 6 turns, and every verdict equalled the committed
-ledger entry. The 2023–24 game-prediction verdicts are in the ledger as **recorded references to custodian
-receipt `3e238d2d`** (GP-ELO, GP-REST): copied and hash-bound, not recomputed.
+The 2023–24 game-prediction verdicts are in the ledger as **recorded references to custodian receipt
+`3e238d2d`** (GP-ELO, GP-REST): copied and hash-bound, not recomputed.
 
 ## 3. The protocol
 
@@ -68,8 +65,8 @@ receipt `3e238d2d`** (GP-ELO, GP-REST): copied and hash-bound, not recomputed.
     7 Mar – 14 Apr). Lists were hashed before evaluation.
   - Features use only earlier dates (games) or earlier events (shots). A test flips each shot's outcome and
     checks that earlier rows are unchanged.
-- **Pre-registration.** Hypotheses, tests, nulls, thresholds, sample rules and seeds are committed before the
-  results they govern (`handoff/research-20261107/DECISIONS.md`: D10, D11, D17). The log is append-only.
+- **Pre-registration.** Hypotheses, tests, thresholds, samples and seeds are committed before the results
+  (`DECISIONS.md`: D10, D11, D17).
 - **A custodian guards final data.**
   - It reserves games before a final evaluation and marks them spent before results leave.
   - It refuses any new evaluation touching them; renamed families and shot-level ids map back to the game.
@@ -99,8 +96,8 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
 | H2: Elo beats the base rate | +0.0644 | [+0.0106, +0.1282] | 0.0458 | **SURVIVED_PROTOCOL** |
 | H1: rest/back-to-back adds to Elo | +0.0201 | [−0.0043, +0.0438] | 0.0490 | **INSUFFICIENT_EVIDENCE** |
 
-- **Elo vs base rate survives, narrowly.** The 39-day window is exactly the minimum of five 7-day blocks. The
-  14- and 28-day robustness checks could not be computed, so the verdict rests on the 7-day analysis alone.
+- **Elo vs base rate survives, narrowly.** The 39-day window is exactly the five-block minimum, so the 14- and
+  28-day robustness checks could not run.
 - **Why rest is INSUFFICIENT_EVIDENCE although Holm p = 0.049 < 0.05.** Verbatim from
   `reports/research/2026-11-07-2015-rebuild-and-seal-binding.md` §1:
 
@@ -114,14 +111,11 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
 
 ### 4.2 Hot hand, development games, and testing the tester
 
-- **Development games** (930 games, 165,710 field-goal attempts): P(make after 3 makes) = 0.4827 vs 0.4777
-  after 3 misses. Shuffling within each player's game already produces +0.0190, more than the observed
-  +0.0050, so one-sided p = 0.996: not rejected (`evidence/hot_hand_dev.json`).
-- **Simulated leagues with known truth** (`evidence/harness_report.json`, `null_calibration.json`):
-  - false-positive rate 0.043 at α = 0.05 (1,000 null leagues);
-  - power 0.87 for a strong planted effect and 0.31 for a weak one;
-  - 38% rejections when form drifts within a game with no streak. A rejection would show association, not
-    cause.
+- **Development games** (165,710 field-goal attempts): P(make after 3 makes) 0.4827 vs 0.4777 after 3 misses;
+  shuffling alone produces +0.0190, more than the observed +0.0050 (p = 0.996, not rejected).
+- **Simulated leagues with known truth** (`evidence/harness_report.json`): false-positive rate 0.043 at
+  α = 0.05, and power 0.87 (strong effect) or 0.31 (weak). Within-game form drift with no streak triggers it
+  38% of the time, so a rejection shows association, not cause.
 
 ## 5. The sealed 2024–25 confirmatory test
 
@@ -136,19 +130,17 @@ Source: `reports/research/2026-11-07-1757-confirmatory-seal.md`.
   matched all six sealed tables (**6/6, SEAL MATCH**) in **1 min 57 s**. The script refuses if any byte of a
   sealed table differs.
 
-**Pre-registration** (frozen 17:54:40Z; Holm across the three):
-- **CONF-HA:** in non-neutral games, home teams win more than half the time. Survives only with Holm p < 0.05,
-  CI excluding 0, an excess of at least 1 point, and at least 1,000 games.
-- **CONF-MOM:** a field goal is more likely after a make than after a miss, beyond within-player-game
-  shuffling. Survives only with Holm p < 0.05 and at least 100,000 attempts.
-- **CONF-HH:** the same after three makes vs three misses.
+**Pre-registration** (frozen 17:54:40Z; Holm across three):
+- **CONF-HA:** home teams win more than half of non-neutral games. It needs Holm p < 0.05, a CI excluding 0,
+  an excess of at least 1 point, and 1,000+ games.
+- **CONF-MOM / CONF-HH:** a make is likelier after one make (or three) than after a miss (or three), beyond
+  within-player-game shuffling. These need Holm p < 0.05 and 100,000+ attempts.
 
 **The run.** Before the run, the custodian ledger held zero reservations on the 2024-25 season; the test was
 run once, by a session that wrote none of the code.
-- The adviser Claude session operated it, standing in for the reviewer whose machine failed.
-  Authorisation was given in writing.
-- Beforehand: an independent rebuild matched the seal 6/6, and Max's dry run passed 11/11 checks.
-- The run appended exactly one reserve and one spend. Max's `verify_final_result` passed afterwards.
+- The operator was the adviser Claude session, standing in for the reviewer, with written authorisation.
+- An independent rebuild matched the seal 6/6 beforehand. The run appended exactly one reserve and one
+  spend, and Max's `verify_final_result` passed.
 
 Source: `final_result.json` on `review/confirmatory-run@5f0a432`, copied exactly; run report
 `reports/review/2026-11-07-2232-confirmatory-run.md`.
@@ -173,24 +165,21 @@ Source: `final_result.json` on `review/confirmatory-run@5f0a432`, copied exactly
 The market board sets HeatCheck's descriptive Elo forecast beside the Polymarket price for tonight's and
 Sunday's games. It flags gaps worth a human look; it does not claim an edge.
 
-**The forecast** (`data/live/forecasts.json`, `research/live-forecast@e03629d`; reports
-`reports/research/2026-11-08-0015-…` and `…-0025-…`):
+**The forecast** (`data/live/forecasts.json`, `research/live-forecast@e03629d`):
 - **Model:** the registered B1 Elo, the same code as the 2023–24 final run (K 20, home court 100, fixed
   between-season regression).
-- **Results:** 2023–24 to 2025-26 from `nba_data@46488f0f`. For 2026–27, the **132 completed games** through
-  6 November come from Max's raw balldontlie pages (`max/nba-schedule@eec051d`; 14 files, every sha256
-  verified).
+- **Results:** 2023–24 to 2025–26 from `nba_data@46488f0f`; for 2026–27, the **132 completed games**
+  through 6 November from Max's raw balldontlie pages (`eec051d`, hashes verified).
 - **Data cutoff:** 2026-11-07T07:00:00Z, the last used tip time plus a 4-hour bound on game length.
-- **Games:** 14, seven on Saturday and seven on Sunday. Saturday's game list was copied by hand from NBA.com.
-  Sunday's ids, and game 189's neutral site (Arena CDMX, Mexico City, so no home court), come from the NBA
-  2026–27 schedule PDF (sha256 `5e82e37e…`). Every game was cross-checked against balldontlie for teams,
-  home and away, and tip time.
+- **Games:** 14 (Saturday and Sunday). Ids and game 189's neutral site (Arena CDMX, Mexico City, no home
+  court) come from NBA.com and its 2026–27 schedule PDF; every game matches balldontlie on teams and tip
+  time.
 - **Backtest on 2024–25:** log loss 0.6290 and Brier 0.2196 over 1,230 games.
-- **Not used:** no injuries, lineups, trades or prices. It is not a registered claim.
+- **Not used:** injuries, lineups, trades or prices. Not a registered claim.
 
 **Market data and verdicts** (Max `57e07fd`; Experience's read-only adapters):
-- Polymarket mappings are VERIFIED against the stored rules text: 16 checks each, covering both teams, tip
-  time, the winner wording, overtime, cancellation and token ownership.
+- Polymarket mappings are VERIFIED against the stored rules text (16 checks each: teams, tip, overtime,
+  cancellation, token).
 - Kalshi mappings stay PROPOSED, because their rules text does not state how overtime counts. Kalshi cards
   therefore always show **"Can't compare"**.
 - **The Ref has only two verdicts,** both deterministic templates:
@@ -198,21 +187,39 @@ Sunday's games. It flags gaps worth a human look; it does not claim an edge.
   - **"Can't compare"** otherwise.
 
   It never says "bet" or "edge found".
-- Heater may cite only the forecast's inputs. Any other factor, such as injuries, must be put as a question.
-- Each investigation is recorded with forecast, quote, checks and timestamps, so it can be scored after the
-  game.
+- Heater may cite only the forecast's inputs; injuries and the like only as questions.
+- Each investigation is recorded with timestamps, so it can be scored after the game.
 
 **Example, live before tip:**
 - Cleveland: model 0.662, Polymarket bid/ask 0.36/0.37.
 - Oklahoma City: model 0.936, Polymarket 0.82/0.83.
 
-Research checked the Cleveland contract in Polymarket's raw payload; it is the Cavaliers' token, so the gap is
-not a reversed outcome.
+Research checked Polymarket's raw payload: the Cleveland contract really is the Cavaliers' token.
 
 **Read the gaps plainly:**
 - A large forecast-vs-market gap most likely reflects what Elo does not know: injuries, lineups, trades and
   this season's changes.
 - **No evidence shows this model beats the market.** No such evaluation has been run.
+
+**What-if scenarios (ESTIMATE, not claims;** `research/scenario-effects`**).**
+
+- **Player absence:**
+  - Estimated from 2023–24 to 2025–26 as the team's result minus the Elo expectation, with and without the
+    player.
+  - Coverage: 1,203 player–team keys, 1,046 with at least 5 games missed.
+  - Raw per-player intervals are noisy: 145 of the 1,046 exclude zero, where about 52 would by chance.
+- **Shrinkage:** empirical-Bayes shrinkage toward zero.
+  - The spread of true effects is τ = 0.080 in win probability (from 489 well-covered players), and it
+    leaves **35 of 1,046** intervals excluding zero.
+  - The shrunk value is the default; the raw value appears only in the evidence drawer.
+  - Players with a risk flag (small n, team change, garbage-time appearances) are not shown.
+- **Schedule:** back-to-back −0.053 (95% −0.079 to −0.028), 3-in-4 −0.029; both shown as **unproven**
+  (registered rest test: INSUFFICIENT_EVIDENCE).
+- **Combination:** on the log-odds scale, assuming independence; overlapping rest changes are refused.
+- **Example:** Cleveland without J. Allen is −0.062 (raw −0.172). With New York also on a back-to-back,
+  Cleveland's 0.662 becomes **0.649** (95% 0.513–0.764).
+- **Limits:** absences mix rest and injury; 2026–27 rosters are unverified; one pooled prior likely **pulls
+  stars' effects toward zero too much**.
 
 ## 7. The idea board: HeatCheck testing its own ideas
 
@@ -226,14 +233,22 @@ Grammar: `docs/IDEA_GRAMMAR.md`; runner and results: `research/idea-family` (rep
   - make rate after a shot condition.
 
   Parameters are enumerated values only. Invalid output is refused, never repaired.
-- Research's runner **registers and hashes every idea before computing anything**. It then runs fixed
-  permutation tests and applies **Holm across every idea in the family**.
-- A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`. Only 2023–24 development games are read, never
-  spent final games or the sealed season.
-- Experience's board shows a family only if its registration and result hashes bind.
+- Research's runner **registers every idea before computing**, runs fixed permutation tests, and applies
+  **Holm across every idea in the family**.
+- A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`; only development games are read.
 
-**Results so far.** These families were written by Research to exercise the machine; no Heater-proposed
-family has been run yet.
+**Results so far.**
+- **Keyword fallback** (same question): two ideas, both NOT_A_CANDIDATE (best: raw p 0.030, Holm 0.060).
+- **Heater-proposed by the model** ("Does rest matter?", one `muse-spark-1.3` call; raw text checked against
+  the request): five rest ideas, all **NOT_A_CANDIDATE**.
+  - The strongest, away team more rested, had p 0.043 and Holm 0.215.
+  - Two of the five ideas were the same condition under different names; the grammar does not yet catch that.
+- **Lead, not finding.** These rest ideas overlap with Research's hand-written family and with each other,
+  all on the same 2023–24 development games. Holm is applied within each family, not across families, so
+  the same question was tested more than once with no correction across them. None passed even within its
+  own family.
+
+Research wrote the families below to exercise the machine.
 - **Development data, 12 ideas:**
   - Both planned positive controls became CANDIDATE: strong Elo favourites win more, and 3-pointers go in less
     (Holm p 0.012 each).
@@ -250,8 +265,7 @@ family has been run yet.
 
 ## 8. Independent review and what it caught
 
-A reviewer other than the authors replayed milestones against the exact committed bytes, on their own data
-build, with adversarial tests.
+A reviewer who wrote none of the code replayed milestones on their own data build, with adversarial tests.
 
 **RV-R1 (high): the final evaluation was not bound to its data**
 (`reports/review/2026-11-07-1642-r001-e001-replay.md`).
@@ -264,11 +278,8 @@ build, with adversarial tests.
   - The custodian binds each reservation to its data.
   - The plan was replayed through a recorded code-only amendment on the same data. It reproduced the receipt
     and both verdicts to every digit.
-- **Confirmed independently** (`reports/review/2026-11-07-1733-research-guard-fixes.md`):
-  - tampered labels refused, including with assertions disabled;
-  - a tampered public table refused;
-  - an edited threshold refused;
-  - the replay matched exactly.
+- **Confirmed independently** (`reports/review/2026-11-07-1733-research-guard-fixes.md`): tampered labels or
+  tables and an edited threshold are all refused, and the replay matched exactly.
 
 **Also caught:**
 - RV-R2: re-spelled game ids could reopen spent games. Fixed and confirmed.
@@ -283,8 +294,8 @@ build, with adversarial tests.
   - Experience: UI, Heater character, read-only market adapters;
   - independent reviewer, who wrote none of the code it reviews.
 
-  They coordinated only through GitHub branches and committed reports. Each report records the commit,
-  commands, raw output and PASS/FAIL/NOT_RUN.
+  They coordinated through GitHub branches and committed reports (commit, commands, raw output,
+  PASS/FAIL/NOT_RUN).
 - **Models:** Meta `muse-spark-1.3`, for the three jobs in §2. Heater's art is AI-generated with Google
   Gemini; the credit is recorded on `experience/heater-character@1560525` (`apps/web/web/heater/states.html`
   header and `README.md`).
@@ -303,20 +314,19 @@ build, with adversarial tests.
 - **One game bridged.** Only `nba:0022300061` is in the shared record format that the agent loop reads.
   Season-level analyses run in Research's own tables, and the loop cannot compute game-prediction claims
   itself.
-- **Isolation is logical, not enforced by the operating system.** The custodian and evaluator run as the same
-  user, and reviewer sign-offs are recorded, not cryptographically verified. The custodian needs `fcntl`
-  (Linux, macOS or WSL).
+- **Isolation is logical, not enforced by the operating system,** and reviewer sign-offs are not
+  cryptographically verified.
 - **The 15:22 run's inputs cannot be proven after the fact.** It only copied the plan's data hashes. What is
   proven: today's data match the plan, and replaying on them reproduces every output bit for bit
   (`NONE_PREDATES_BINDING` in the ledger).
-- **Data rights.** The upstream repository is Apache-2.0 licensed, which does not establish rights to the
-  NBA data. Raw files and built tables are not redistributed, with one exception: the raw balldontlie pages
-  committed for the live forecast, whose terms are not reviewed here.
+- **Data rights.** The upstream Apache-2.0 licence does not establish NBA data rights. Raw files are not
+  redistributed, except the balldontlie pages committed for the live forecast (terms not reviewed).
 - **Other limits:**
   - The score reconciliation's second source is from the same organisation, and no independent cross-check
     has been run.
   - Free throws are out of scope.
   - Results come from a single season with public outcomes.
   - Holm applies within a family, not across all families ever tried.
+  - Scenario shrinkage uses one pooled prior, so stars' absence effects are likely understated.
   - Research's confirmatory script would rewrite its result file on a rerun; Max's lane refuses to run it
     again.
