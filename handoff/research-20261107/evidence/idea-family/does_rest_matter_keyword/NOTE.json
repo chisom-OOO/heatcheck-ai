@@ -1,0 +1,117 @@
+{
+ "format": "heatcheck-idea-family-note/1",
+ "kind": "LEAD_NOT_FINDING",
+ "family": "does_rest_matter_keyword",
+ "cites_results_sha256": "606c20b1263be1910b596456f02097582bde551980c75654a5ab0fd17336a2e0",
+ "note": "Lead, not finding. These rest ideas overlap: Research's hand-written family and Heater's keyword and model families test the same rest conditions, on the same 2023-24 development games. Holm is applied within each family, not across families, so the same question has been tested more than once with no correction across them. One idea (home team more rested, one-sided) is identical in two families. Treat any result here as a lead, not a finding: it would need its own pre-registered test on games nobody has looked at.",
+ "overlapping_conditions": [
+  {
+   "condition": "away_back_to_back=yes",
+   "tested_in": [
+    {
+     "family": "dev_example",
+     "alternative": "greater",
+     "idea_hash": "e5d599684213dfa7c9d25c02d18c892c5babe32c93f070a73f196120520054ff",
+     "p_raw": 0.162,
+     "p_holm": 0.972,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "family": "does_rest_matter_model",
+     "alternative": "two_sided",
+     "idea_hash": "16499a5407159ef8a5df11293d51e3c355911f3331625a2ec95913c617cafc35",
+     "p_raw": 0.232,
+     "p_holm": 0.632,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ]
+  },
+  {
+   "condition": "home_back_to_back=yes",
+   "tested_in": [
+    {
+     "family": "dev_example",
+     "alternative": "less",
+     "idea_hash": "be5e45c6739d94c8ac1c9aa89523d52ce3cd89f191a3a11a9f9ca3644e4bcfe3",
+     "p_raw": 0.091,
+     "p_holm": 0.728,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "family": "does_rest_matter_model",
+     "alternative": "two_sided",
+     "idea_hash": "9dc21071871eda0980ba976b9567c37c1264f61bd9f1adccecb4c03daf5938e7",
+     "p_raw": 0.19,
+     "p_holm": 0.632,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ]
+  },
+  {
+   "condition": "rest_advantage=away_more",
+   "tested_in": [
+    {
+     "family": "does_rest_matter_keyword",
+     "alternative": "less",
+     "idea_hash": "420a1c3bb5cf9d001d56331cf3f9cd03364a1173ed35fb46bb962626e1531f89",
+     "p_raw": 0.03,
+     "p_holm": 0.06,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "family": "does_rest_matter_model",
+     "alternative": "two_sided",
+     "idea_hash": "058ed484d1783d8de78760b8b4d725e6b0b3278ada15b208622d7b5f01582653",
+     "p_raw": 0.043,
+     "p_holm": 0.21499999999999997,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ]
+  },
+  {
+   "condition": "rest_advantage=home_more",
+   "tested_in": [
+    {
+     "family": "dev_example",
+     "alternative": "greater",
+     "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+     "p_raw": 0.107,
+     "p_holm": 0.749,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "family": "does_rest_matter_keyword",
+     "alternative": "greater",
+     "idea_hash": "193d7eb09cfd93622caec1c590746c679cfa53fc36fae3a6ba812e181095bb55",
+     "p_raw": 0.107,
+     "p_holm": 0.107,
+     "verdict": "NOT_A_CANDIDATE"
+    },
+    {
+     "family": "does_rest_matter_model",
+     "alternative": "two_sided",
+     "idea_hash": "db3edf1fa3bff04bdd6c6e38103e5eae8ed68ec6dab16c719cf5b6e4d9c767be",
+     "p_raw": 0.233,
+     "p_holm": 0.632,
+     "verdict": "NOT_A_CANDIDATE"
+    }
+   ]
+  }
+ ],
+ "families_overlapping": [
+  "dev_example",
+  "does_rest_matter_keyword",
+  "does_rest_matter_model"
+ ],
+ "written_by": "Research",
+ "written_utc": "2026-11-08T02:20:00Z",
+ "equivalent_conditions": [
+  {
+   "conditions": [
+    "home_rest_days=0",
+    "home_back_to_back=yes"
+   ],
+   "why": "a back-to-back is 0 rest days: the same games, tested as separate ideas"
+  }
+ ]
+}
