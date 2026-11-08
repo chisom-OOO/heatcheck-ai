@@ -47,12 +47,36 @@ It does not look for betting edges; market comparisons are descriptive only.
   state numbers, contradict the Ref or imitate a real commentator; a number guard enforces this.
 - **The Ref** never improvises. No model is called. Its verdict and explanation are templates filled only from
   the ledger entry (`reports/max/2026-11-07-2059-deterministic-ref-recorded-finals.md`).
+- **Frost** is the Challenger's voice and speaks before the Ref. He puts at most three challenges to Heater,
+  one per kind where possible (numbers, basketball, process). Each challenge is tied to an attack that ran or
+  a fact in the record, such as the permutation null, split-half replication, the sealed season, the Holm
+  correction or the missing equivalence test. Each comes with an answer chip that is a template filled only
+  from the record. A chip whose number cannot be traced to the record is dropped, not rounded.
+  - The model may reword Frost's question only. A rewording is refused, and the template kept, if it holds a
+    number not in the record, mentions the Ref, runs too long or uses betting words.
+  - Market cards get three template challenges: the model's home-team bias flag, the contract-mapping check,
+    and the forecast's inputs (what it cannot see).
+  - Shape and a real example: `docs/DIALOGUE_API.md`. Code: `heatcheck/agents/frost.py`.
 
-**The language model** (Meta `muse-spark-1.3`) does three constrained jobs, and never decides a verdict:
-1. It routes a question to a registered claim.
+**The language model** (Meta `muse-spark-1.3`) does four constrained jobs, and never decides a verdict:
+1. It routes a question to a registered claim. The page's three question chips and home-advantage questions
+   are routed by fixed rules instead, so the demo's headline questions never depend on the model.
 2. It writes Heater's lines.
 3. On the idea board, it turns a fan's message into ideas. Its answer is forced into a JSON schema whose
    values are the grammar's enumerations.
+4. It may reword Frost's questions, under the guard above.
+
+**Tamper demo.** The page can corrupt one byte live (button shown with `?tamper=1`). The server copies
+`evidence/evidence.jsonl` to a scratch file and flips one byte inside the verdict field of a middle line. It
+then reads the copy with the same ledger reader the product uses. The reader rejects it ("ledger line 5:
+identity hash mismatch (tampered)"), and the page shows DATA INVALID with the offset and the expected and
+actual bytes.
+- The committed file is only read; it is byte-identical before and after (tested, and checked by sha256 in
+  the real click-through).
+- Each attempt is recorded as a `TAMPER_ATTEMPT` entry in a separate hash-chained ledger. The entry holds the
+  offset and the validator message, never the flipped bytes.
+- The routes allow one flip per 5 seconds (429 otherwise). A server started with `--no-tamper` answers 503.
+- Evidence: `reports/max/2026-11-08-0735-frost-tamper.md`.
 
 The 2023–24 game-prediction verdicts are in the ledger as **recorded references to custodian receipt
 `3e238d2d`** (GP-ELO, GP-REST): copied and hash-bound, not recomputed.
@@ -291,7 +315,7 @@ A reviewer who wrote none of the code replayed milestones on their own data buil
 
   They coordinated through GitHub branches and committed reports (commit, commands, raw output,
   PASS/FAIL/NOT_RUN).
-- **Models:** Meta `muse-spark-1.3`, for the three jobs in §2. Heater's art is AI-generated with Google
+- **Models:** Meta `muse-spark-1.3`, for the four jobs in §2. Heater's art is AI-generated with Google
   Gemini; the credit is recorded on `experience/heater-character@1560525` (`apps/web/web/heater/states.html`
   header and `README.md`).
 - **Prepared before the event.** These were committed on 7 November:

@@ -1,8 +1,9 @@
 # Current project state
 
 Prepared 7 November 2026; event development 7–8 November 2026. Updated 8 November 2026,
-~02:20 UTC, by Max, on branch `max/integrate-r001-e001` (not on `main`; nothing goes to `main`
-without the user's instruction). The scaffold text that stood here before is superseded.
+~08:45 UTC, by Max, on branch `max/integrate-r001-e001`. This branch is merged into `main` on the
+user's instruction (`618ba83`, `37b59e8` and this update). The scaffold text that stood here
+before is superseded.
 
 Every acceptance gate G01–G18 in `ACCEPTANCE.json` is still **NOT_RUN** as a gate: no reviewer
 has marked one. `docs/GATES_EVIDENCE.md` lists, per gate, the evidence that exists and the exact
@@ -38,6 +39,10 @@ No order capability exists anywhere.
 | Scenarios + routing | Max | `/api/route` (board / card / what-if / dialogue); what-if parse → confirm → estimate on Research's functions; GET `/api/scenario` = Research's answers | `heatcheck/agents/scenario.py`, `research_scenario.py` |
 | Idea proposer | Max | Heater turns a question into 3–6 ideas via the model, strict-parsed; keyword fallback | `heatcheck/agents/idea_proposer.py`, `tools/propose_ideas.py` |
 | Demo page | Experience (+ Max wiring) | Heater character, Ref card, stamps, evidence drawer, market board, idea board, what-if view, mic button | `apps/web/web/` |
+| Frost (Challenger's voice) | Max (adviser's module) + Experience (page) | Up to 3 challenges before the Ref, each anchored to a check that ran; answer chips filled only from the record; model may reword the question under the number/Ref/betting guard; 3 template challenges per market card | `heatcheck/agents/frost.py`, `apps/web/web/frost/`, `docs/DIALOGUE_API.md` |
+| Chip routing | Max | The three page chips go to fixed claims (hot hand -> CONF-HH, rest -> GP-REST, home -> CONF-HA) before any model call | `heatcheck/agents/dialogue.py` (`CHIP_ROUTES`) |
+| Tamper demo | Max (API) + Experience (button) | Flip one byte in a scratch copy, read it with the real ledger reader, DATA_INVALID; `TAMPER_ATTEMPT` in a separate chained ledger; 429 / 503; button only with `?tamper=1` | `heatcheck/api/tamper.py`, `apps/web/web/tamper/` |
+| Responsible use | Max (+ Experience page) | Footer, first-Ask notice and board line; betting words refused in Heater's and Frost's text | `apps/web/web/responsible_use.json` |
 | One-command runs | Max | `demo.cmd` (servers + page), `capture_quotes.cmd` (fresh read-only quotes + verification) | `tools/demo.py`, `tools/capture_quotes.py` |
 
 ## Verified (with scope; author's check unless a review is named)
@@ -56,6 +61,11 @@ No order capability exists anywhere.
   calls): chip stamps NOT ENOUGH EVIDENCE / SURVIVED / NOT ENOUGH EVIDENCE; Sunday scenario card;
   free-text routing to board, card and what-if; raw estimates only in the evidence drawer; empty
   console.
+- **Frost and tamper, live** (`reports/max/2026-11-08-0735-frost-tamper.md`, Edge 1440x900,
+  model on): three chips and one market card with and without `?frost=sample`; real tamper
+  click-through: flip 200 with DATA INVALID, events, restore, 429 within 5 s, 503 with
+  `--no-tamper`; committed evidence sha256 unchanged. Repo suite before main: 857 passed, 29
+  skipped, 16 xfailed; node 148; CI green on `e9fff82` and on `main` `37b59e8`.
 - **Read-only quotes**: captures on 7–8 Nov in `data/experience/quotes/`; latest via
   `capture_quotes.cmd` at 02:15 UTC: 24 contracts matched (13 Polymarket, 11 Kalshi), 13/13
   Polymarket mappings verified, no key in any file.
@@ -79,7 +89,10 @@ No order capability exists anywhere.
 - No claim that the model beats the market; no comparison of forecast skill against the market
   has been run (G09 scope is game-prediction against baselines only).
 - Paid model use: ≈ US$0.072 logged of the $5 approval (`reports/max/SPEND.md`).
-- Integration to `main`: not done; needs the user's instruction.
+- Experience page issues found in the Frost run: at 1440x900 (not at 1920x1080, the README shot) Frost's figure covers part of the
+  conversation; after three rounds the Ref card falls below the fold; market cards do not show
+  Frost although the API returns it; the `?frost=sample` fixture's Ref text has "47.27%", which
+  is not in the record (it is labelled SAMPLE).
 - CI runs only the root `tests/`; Research's handoff suite (92 passed, 8 skipped on Windows; three
   files need Linux for `fcntl`) and Experience's `apps/web` suites (104 unittest, 71 node) are run
   by hand only.
