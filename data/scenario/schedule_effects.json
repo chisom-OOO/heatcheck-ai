@@ -28,7 +28,7 @@
   },
   "cdnnba_2025_csv_sha256": "464f585fc3b9c8fbf055581ad69baa1d1abcf9cbe85bb6aeff6351b12bec69cf"
  },
- "created_utc": "2026-11-08T01:18:13.150682Z",
+ "created_utc": "2026-11-08T01:25:44.092466Z",
  "format": "heatcheck-scenario-schedule/1",
  "assumptions": [
   "rest days from the frozen feature code: days since previous game minus 1, capped at 3; season openers count as 3",

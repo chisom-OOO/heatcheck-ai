@@ -1,0 +1,6 @@
+$ python -I handoff/research-20261107/scripts/scenario_answers.py data/live/forecasts.json data/scenario/player_absence_effects.json data/scenario/schedule_effects.json data/scenario/scenario_answers.json
+{"games": 14, "answers": 28, "scenarios": 280}
+$ node check_with_experience_js.mjs data/scenario/scenario_answers.json   # Experience's readScenarios/scenarioProblem, experience/market-board@c9ef784
+{"answers_unavailable":0,"scenarios_total":280,"shown":280,"refused":0}
+$ node check_with_experience_js.mjs bad.json   # negative control
+{"answers_unavailable":0,"scenarios_total":10,"shown":5,"refused":5}

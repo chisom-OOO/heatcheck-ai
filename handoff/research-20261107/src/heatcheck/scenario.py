@@ -20,6 +20,7 @@ LABEL = "ESTIMATE"
 B_DEFAULT = 2000
 Z80, Z95 = 1.2815515655446004, 1.959963984540054
 REST_FAMILY = ("back_to_back", "three_in_four", "rest_diff")
+RISK_FLAGS = ("small_n", "team_change_in_window", "low_involvement_outcome_dependent_appearance")
 
 
 # --------------------------------------------------------------------------- residuals
@@ -124,6 +125,45 @@ def absence_effects(rows: pd.DataFrame, appearances: pd.DataFrame, names: dict, 
                     "effect_win_prob": {"estimate": est, **iv},
                     "effect_log_odds": _logit_scale(est, iv, pbar), "flags": flags})
     return out
+
+
+def apply_eb_shrinkage(effects: list[dict], min_n: int = 5) -> tuple[list[dict], dict]:
+    """Empirical-Bayes shrinkage of absence effects toward 0 (normal-normal model, prior mean 0).
+
+    SE_i = width of the raw 95% bootstrap interval / (2 * 1.96). Spread of true effects from well-covered keys
+    (>= min_n games missed, none of RISK_FLAGS): tau^2 = max(0, var(raw estimates) - mean(SE^2)). Each estimate is
+    multiplied by B_i = tau^2 / (tau^2 + SE_i^2); its interval is the normal posterior mean +- z * sqrt(B_i) * SE_i.
+    The raw values are kept as raw_estimate / raw_ci80 / raw_ci95. Adds shown_by_default (False for any risk flag
+    or fewer than min_n games missed)."""
+    def se_of(e):
+        lo, hi = e["effect_win_prob"]["ci95"]
+        return (hi - lo) / (2 * Z95)
+    well = [e for e in effects if e["n_games_missed"] >= min_n and not any(f in e["flags"] for f in RISK_FLAGS)]
+    est = np.array([e["effect_win_prob"]["estimate"] for e in well])
+    se2 = np.array([se_of(e) ** 2 for e in well])
+    var_est = float(est.var(ddof=1)) if len(est) > 1 else 0.0
+    tau2 = max(0.0, var_est - float(se2.mean())) if len(se2) else 0.0
+    out = []
+    for e in effects:
+        raw = e["effect_win_prob"]; se = se_of(e)
+        b = tau2 / (tau2 + se * se) if (tau2 + se * se) > 0 else 0.0
+        m, sd = b * raw["estimate"], math.sqrt(b) * se
+        wp = {"estimate": m, "ci80": [m - Z80 * sd, m + Z80 * sd], "ci95": [m - Z95 * sd, m + Z95 * sd],
+              "raw_estimate": raw["estimate"], "raw_ci80": raw["ci80"], "raw_ci95": raw["ci95"],
+              "shrinkage_factor": b}
+        pbar = e["effect_log_odds"]["pbar"]; f = 1.0 / (pbar * (1 - pbar))
+        lo = e["effect_log_odds"]
+        lo2 = {"estimate": m * f, "ci80": [v * f for v in wp["ci80"]], "ci95": [v * f for v in wp["ci95"]],
+               "raw_estimate": lo["estimate"], "raw_ci80": lo["ci80"], "raw_ci95": lo["ci95"],
+               "shrinkage_factor": b, "pbar": pbar, "method": lo["method"] + "; empirical-Bayes shrunk toward 0"}
+        shown = e["n_games_missed"] >= min_n and not any(fl in e["flags"] for fl in RISK_FLAGS)
+        out.append({**e, "effect_win_prob": wp, "effect_log_odds": lo2, "shown_by_default": shown})
+    meta = {"method": "empirical Bayes, normal-normal, prior mean 0; tau^2 = max(0, var(raw) - mean(SE^2)) over "
+                      "well-covered keys; estimate x tau^2/(tau^2+SE^2); posterior normal intervals",
+            "well_covered_keys": len(well), "var_raw_estimates": var_est, "mean_se2": float(se2.mean()) if len(se2) else None,
+            "tau2": tau2, "tau": math.sqrt(tau2), "mean_raw_estimate_well_covered": float(est.mean()) if len(est) else None,
+            "prior_mean": 0.0}
+    return out, meta
 
 
 # --------------------------------------------------------------------------- schedule
@@ -263,6 +303,7 @@ def scenario_probability(baseline_p_home: float, home_team_id: str, away_team_id
         applied.append({"change": c, "log_odds": sign * eff["estimate"], "se": se})
     sd = math.sqrt(var)
     return {"label": LABEL, "baseline_p_home": float(baseline_p_home), "scenario_p_home": _expit(z),
+            "log_odds": z, "sd_log_odds": sd,
             "ci80": [_expit(z - Z80 * sd), _expit(z + Z80 * sd)], "ci95": [_expit(z - Z95 * sd), _expit(z + Z95 * sd)],
             "applied": applied,
             "assumptions": ["effects are independent and additive on the log-odds scale",
@@ -270,3 +311,78 @@ def scenario_probability(baseline_p_home: float, home_team_id: str, away_team_id
                             "the baseline probability is treated as fixed (no baseline uncertainty)",
                             "estimates, not claims: absences mix rest and injury; schedule effects are unproven "
                             "where the registered verdict says so"]}
+
+
+# --------------------------------------------------------------------------- heatcheck-scenario/1 answer (pure)
+SCENARIO_FORMAT = "heatcheck-scenario/1"
+Z90 = 1.6448536269514722
+LATEST_SEASON = "2025-26"   # absence scenarios only for players who appeared for the team in this season
+COMMON_CAVEATS = ["Estimate from 2023-24 to 2025-26 games, not a tested claim.",
+                  "The baseline is an Elo forecast with no injury, lineup or roster information.",
+                  "Assumes this is the only change and treats the forecast itself as exact."]
+
+
+def _p(x: float) -> str:
+    return f"{min(max(x, 0.0), 1.0):.3f}"
+
+
+def scenario_api_answer(game: dict, team_id: str, team_name: str, baseline_p_team: str, forecast_id: str,
+                        absence: dict, schedule: dict, *, source: str, max_players: int = 3,
+                        level: float = 0.90) -> dict:
+    """One GET /api/scenario answer (heatcheck-scenario/1) for a game card.
+
+    game: a heatcheck-live-forecast/1 games row. team_id/team_name/baseline_p_team: the card's team and its
+    forecast string, echoed unchanged. Scenarios: each team on a back-to-back or 3-in-4, and each team without
+    one of its players (estimates with >= 5 games missed and none of RISK_FLAGS, most games played first).
+    Probabilities are decimal strings; the range is a `level` interval on the team's win probability."""
+    if team_id not in (game["home_team_id"], game["away_team_id"]):
+        raise ScenarioRefused(f"{team_id} does not play in {game['game_id']}")
+    base = float(baseline_p_team)
+    is_home = team_id == game["home_team_id"]
+    p_home = base if is_home else 1 - base
+    names = {"home": game["home_team"], "away": game["away_team"]}
+    ids = {"home": game["home_team_id"], "away": game["away_team_id"]}
+    z_level = {0.80: Z80, 0.90: Z90, 0.95: Z95}[level]
+    cands = []
+    for side in ("away", "home") if is_home else ("home", "away"):        # opponent first
+        cands.append((f"{game['game_id']}:b2b:{side}", f"{names[side]} on the second night of a back-to-back",
+                      [{"type": "schedule", "effect": "back_to_back", "side": side}],
+                      schedule["back_to_back"]["n_condition"], "team-games on a back-to-back, 2023-24 to 2025-26",
+                      ["Rest effect unproven: the pre-registered test (GP-REST) returned INSUFFICIENT_EVIDENCE.",
+                       "Back-to-backs also mix travel, opponent and planned rest."]))
+        cands.append((f"{game['game_id']}:3in4:{side}", f"{names[side]} playing a third game in four nights",
+                      [{"type": "schedule", "effect": "three_in_four", "side": side}],
+                      schedule["three_in_four"]["n_condition"], "team-games that were a 3rd game in 4 days, 2023-24 to 2025-26",
+                      ["No registered test covers 3-in-4.", "Overlaps with back-to-backs; never combined with them."]))
+    both = ({v["player_id"] for v in absence.values() if v["team_id"] == ids["home"]}
+            & {v["player_id"] for v in absence.values() if v["team_id"] == ids["away"]})
+    for side in ("away", "home") if is_home else ("home", "away"):
+        rows = sorted([v for v in absence.values() if v["team_id"] == ids[side] and v["n_games_missed"] >= 5
+                       and v.get("player_name") and LATEST_SEASON in v["seasons"] and v["player_id"] not in both
+                       and v.get("shown_by_default", True) and not any(f in v["flags"] for f in RISK_FLAGS)],
+                      key=lambda v: (-v["n_games_played"], v["key"]))[:max_players]
+        for v in rows:
+            cands.append((f"{game['game_id']}:absent:{v['player_id']}:{v['team_id']}",
+                          f"{names[side]} without {v['player_name']}",
+                          [{"type": "player_absence", "key": v["key"], "side": side}], v["n_games_missed"],
+                          f"games {v['player_name']} missed for {names[side]}, {', '.join(v['seasons'])}",
+                          ["Absences mix rest, injury, suspension and coach decisions; this is not an injury effect.",
+                           "Shrunk toward no effect (empirical Bayes); the raw estimate is noisier.",
+                           "Elo partly absorbs long absences, which pulls the estimate toward no effect.",
+                           f"Player listed from {LATEST_SEASON} play-by-play; the current 2026-27 roster is not verified."]))
+    scen = []
+    for sid, text, changes, n, unit, cav in cands:
+        r = scenario_probability(p_home, game["home_team_id"], game["away_team_id"], changes, absence, schedule)
+        lo_h, hi_h = _expit(r["log_odds"] - z_level * r["sd_log_odds"]), _expit(r["log_odds"] + z_level * r["sd_log_odds"])
+        p_t = r["scenario_p_home"] if is_home else 1 - r["scenario_p_home"]
+        lo, hi = (lo_h, hi_h) if is_home else (1 - hi_h, 1 - lo_h)
+        if not (isinstance(n, int) and n >= 1):
+            continue
+        scen.append({"scenario_id": sid, "text": text, "label": LABEL, "p_team_win": _p(p_t),
+                     "range": {"low": _p(lo), "high": _p(hi), "level": f"{level:.2f}"},
+                     "n": int(n), "n_unit": unit, "caveats": cav + COMMON_CAVEATS,
+                     "method": "Elo-residual effect added on the log-odds scale; normal-approximation interval "
+                               "from the bootstrap"})
+    return {"format": SCENARIO_FORMAT, "status": "OK", "game_id": game["game_id"], "team": team_name,
+            "is_sample": False, "source": source,
+            "baseline": {"p_team_win": baseline_p_team, "forecast_id": forecast_id}, "scenarios": scen}
