@@ -2,7 +2,7 @@
 // server after checking every hash binding) and renders them. Relative URL only. All text is
 // set with textContent.
 
-import { CANDIDATE_NOTE, familyHeadline, ideaCard, scoreboardText } from "./idea-model.js";
+import { CANDIDATE_NOTE, familyHeadline, ideaCard, ideaTitle, scoreboardText } from "./idea-model.js";
 
 /** {status: OK|UNAVAILABLE, reason, families, refused, source}. */
 export async function loadIdeas({ timeoutMs = 15000 } = {}) {
@@ -15,7 +15,8 @@ export async function loadIdeas({ timeoutMs = 15000 } = {}) {
     if (r.status !== 200 || !Array.isArray(body?.families)) {
       return { status: "UNAVAILABLE", reason: body?.message || body?.error || `HTTP ${r.status}`, families: [], refused: [] };
     }
-    return { status: "OK", families: body.families, refused: body.refused || [], source: body.source };
+    return { status: "OK", families: body.families, refused: body.refused || [], source: body.source,
+      proposals: Array.isArray(body.proposals) ? body.proposals : [] };
   } catch (e) {
     return { status: "UNAVAILABLE", reason: e.name === "AbortError" ? "timeout" : e.message, families: [], refused: [] };
   } finally {
@@ -43,6 +44,26 @@ export function renderIdeas(root, data, { onAsk } = {}) {
   head.append(el("p", "board-note", "Ideas tested together by Research's idea machine. Exploratory: "
     + "\"worth a proper test\" means a lead, never a finding."));
   root.append(head);
+
+  // Heater's own proposals (Max): the model turned a fan's question into ideas; not run yet, no numbers.
+  for (const pr of data.proposals || []) {
+    const sec = el("section", "idea-family idea-proposed");
+    sec.append(el("h3", "idea-family-title", `Proposed by Heater: "${pr.message}"`));
+    sec.append(el("p", "board-note", `${pr.ideas.length} ideas the model proposed in Research's grammar. `
+      + "Not run yet: sent to Research's idea machine. No results until it runs them together."));
+    const grid = el("div", "board-grid");
+    for (const idea of pr.ideas) {
+      const card = el("article", "mcard icard proposed");
+      card.append(el("span", "icard-kind", "PROPOSED BY HEATER"));
+      card.append(el("h4", "mcard-title", ideaTitle(idea)));
+      card.append(el("p", "mcard-verdict icard-verdict proposed", "Not run yet"));
+      grid.append(card);
+    }
+    sec.append(grid);
+    sec.append(el("p", "board-note", `Request ${pr.request_file} · sha256 ${pr.request_sha256.slice(0, 12)}… · `
+      + `${pr.model || "model"} · ${pr.created_utc || ""}`));
+    root.append(sec);
+  }
 
   for (const f of data.families.filter((x) => x.mode === "development")) {
     const sec = el("section", "idea-family");

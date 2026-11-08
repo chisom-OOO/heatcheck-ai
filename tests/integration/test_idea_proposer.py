@@ -164,3 +164,56 @@ def test_proposer_never_sees_data():
     P.propose_family("hot hand?", llm=lambda m, f: seen.append(m) or "{}")
     text = json.dumps(seen)
     assert "2024-25" not in text and "truth" not in text and "gamma" not in text.lower()
+
+
+def test_model_family_bounded_3_to_6_with_keyword_fallback():
+    import json as _json
+
+    from heatcheck.agents.idea_proposer import propose_family as _pf
+    g = lambda f, lv, a="two_sided": {"template": "GAME_HOME_WIN_SPLIT",  # noqa: E731
+                                     "params": {"feature": f, "level": lv, "alternative": a}}
+    four = _json.dumps({"format": "heatcheck-idea-family/1", "ideas": [
+        g("rest_advantage", "home_more"), g("rest_advantage", "away_more"),
+        g("home_back_to_back", "yes", "less"), g("away_back_to_back", "yes", "greater")]})
+    seen = {}
+
+    def llm(messages, fmt):
+        seen["fmt"] = fmt
+        return four
+    out = _pf("does rest matter?", "development", llm, min_ideas=3, max_ideas=6)
+    assert out["source"] == "LLM" and len(out["ideas"]) == 4 and out["llm_raw"] == four
+    arr = seen["fmt"]["json_schema"]["schema"]["properties"]["ideas"]
+    assert (arr["minItems"], arr["maxItems"]) == (3, 6)
+    two = _json.dumps({"format": "heatcheck-idea-family/1", "ideas": [g("rest_advantage", "home_more")] * 1})
+    out = _pf("does rest matter?", "development", lambda m, f: two, min_ideas=3, max_ideas=6)
+    assert out["source"].startswith("KEYWORD_STANDIN (LLM proposal refused: 1 ideas, outside 3 to 6")
+    assert out["llm_raw"] == two  # the refused model text is kept for the record
+    out = _pf("does rest matter?", "development", lambda m, f: "not json", min_ideas=3, max_ideas=6)
+    assert out["source"].startswith("KEYWORD_STANDIN (LLM proposal refused: not strict JSON")
+
+
+def test_idea_board_shows_only_model_proposals_matching_their_request(tmp_path, monkeypatch):
+    import json as _json
+    import shutil
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "apps" / "web"))
+    from server import ideas
+    src = root / "data" / "max" / "idea_requests"
+    for f in ("does_rest_matter_heater_dev.json", "does_rest_matter_heater_dev.model_output.json"):
+        shutil.copy(src / f, tmp_path / f)
+    monkeypatch.setenv("HEATCHECK_PROPOSALS", str(tmp_path))
+    ok, bad = ideas.read_proposals()
+    assert [p["name"] for p in ok] == ["does_rest_matter_heater_dev"] and not bad
+    assert ok[0]["status"] == "NOT_RUN" and 3 <= len(ok[0]["ideas"]) <= 6
+    req = _json.loads((tmp_path / "does_rest_matter_heater_dev.json").read_text(encoding="utf-8"))
+    req["ideas"] = req["ideas"][:-1]
+    (tmp_path / "does_rest_matter_heater_dev.json").write_text(_json.dumps(req), encoding="utf-8")
+    ok, bad = ideas.read_proposals()
+    assert not ok and "does not match" in bad[0]["reason"]
+    raw = _json.loads((tmp_path / "does_rest_matter_heater_dev.model_output.json").read_text(encoding="utf-8"))
+    raw["source"] = "KEYWORD_STANDIN (fallback: LLMUnavailable)"
+    (tmp_path / "does_rest_matter_heater_dev.model_output.json").write_text(_json.dumps(raw), encoding="utf-8")
+    ok, bad = ideas.read_proposals()
+    assert not ok and "keyword fallback" in bad[0]["reason"]

@@ -178,7 +178,7 @@ def keyword_ideas(message: str) -> list[dict]:
 
 SYSTEM = (
     "You propose testable basketball ideas for a fixed test machine. Answer only with JSON in the "
-    "schema given. Choose 1 to {max} ideas from the enumerations that match what the fan is asking. "
+    "schema given. Choose {min} to {max} different ideas from the enumerations that match what the fan is asking. "
     "Use 'greater' or 'less' only when the fan states a direction (for example 'tired teams lose more'); "
     "otherwise 'two_sided'. Do not invent features. If nothing in the enumerations fits, return the "
     "single closest idea. Templates: GAME_HOME_WIN_SPLIT compares the home-win rate in games with one "
@@ -187,7 +187,7 @@ SYSTEM = (
 )
 
 
-def response_schema(mode: str) -> dict:
+def response_schema(mode: str, min_ideas: int = 1, max_ideas: int = MAX_IDEAS) -> dict:
     game = {"type": "object", "additionalProperties": False, "required": ["template", "params"],
             "properties": {"template": {"type": "string", "enum": ["GAME_HOME_WIN_SPLIT"]},
                            "params": {"type": "object", "additionalProperties": False,
@@ -208,11 +208,12 @@ def response_schema(mode: str) -> dict:
     return {"type": "json_schema", "json_schema": {"name": "idea_family", "strict": True, "schema": {
         "type": "object", "additionalProperties": False, "required": ["format", "ideas"],
         "properties": {"format": {"type": "string", "enum": [FORMAT]},
-                       "ideas": {"type": "array", "minItems": 1, "maxItems": MAX_IDEAS, "items": items}}}}}
+                       "ideas": {"type": "array", "minItems": min_ideas, "maxItems": max_ideas, "items": items}}}}}
 
 
 def propose_family(message: str, mode: str = "development",
-                   llm: Callable[[list[dict], dict], str] | None = None) -> dict:
+                   llm: Callable[[list[dict], dict], str] | None = None, *, min_ideas: int = 1,
+                   max_ideas: int = MAX_IDEAS) -> dict:
     """Returns {"request", "source", "proposer", "ideas": [{idea, idea_hash}]} or, when nothing
     in the grammar fits, {"request": None, "source", "reason"}. The request always validates."""
     if mode not in MODES:
@@ -220,15 +221,20 @@ def propose_family(message: str, mode: str = "development",
     source = "KEYWORD_STANDIN"
     proposer: dict[str, Any] = {"kind": "DETERMINISTIC_STANDIN", "grammar": GRAMMAR_SOURCE,
                                 "message_sha256": hashlib.sha256(message.encode("utf-8")).hexdigest()}
-    request = None
+    if not 1 <= min_ideas <= max_ideas <= MAX_IDEAS:
+        raise ValueError("need 1 <= min_ideas <= max_ideas <= MAX_IDEAS")
+    request, llm_raw = None, None
     if llm is not None:
-        fmt = response_schema(mode)
-        messages = [{"role": "system", "content": SYSTEM.format(max=MAX_IDEAS)},
+        fmt = response_schema(mode, min_ideas, max_ideas)
+        messages = [{"role": "system", "content": SYSTEM.format(min=min_ideas, max=max_ideas)},
                     {"role": "user", "content": message}]
         prompt = hashlib.sha256(json.dumps([messages, fmt], sort_keys=True).encode()).hexdigest()
         try:
             text = llm(messages, fmt)
-            validate_request(text, mode)
+            llm_raw = text
+            n = len(validate_request(text, mode))  # strict parse of the model's exact text
+            if not min_ideas <= n <= max_ideas:
+                raise IdeaRefused(f"{n} ideas, outside {min_ideas} to {max_ideas}")
             request = loads_strict(text)
             source = "LLM"
             proposer.update(kind="LLM", prompt_sha256=prompt)
@@ -246,7 +252,7 @@ def propose_family(message: str, mode: str = "development",
                     "reason": "no idea in heatcheck-idea-family/1 matches this message"}
         request = {"format": FORMAT, "ideas": ideas}
     ideas = validate_request(request, mode)  # always re-validated, whichever path produced it
-    return {"request": request, "source": source, "proposer": proposer, "mode": mode,
+    return {"request": request, "source": source, "proposer": proposer, "mode": mode, "llm_raw": llm_raw,
             "ideas": [{"idea": i, "idea_hash": idea_hash(i)} for i in ideas]}
 
 

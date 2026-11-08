@@ -32,6 +32,44 @@ class Refused(Exception):
     pass
 
 
+PROPOSALS_DIR = os.path.join(REPO, "data", "max", "idea_requests")
+
+
+def read_proposals(root=None):
+    """Heater-proposed families not yet run by Research: each ``<name>.model_output.json`` (the
+    model's raw text and call record) with its ``<name>.json`` request. Shown only when the request's
+    ideas equal the ideas parsed from the model output; otherwise listed as refused. NOT_RUN always."""
+    root = root or os.environ.get("HEATCHECK_PROPOSALS") or PROPOSALS_DIR
+    out, refused = [], []
+    if not os.path.isdir(root):
+        return out, refused
+    for name in sorted(os.listdir(root)):
+        if not name.endswith(".model_output.json"):
+            continue
+        stem = name[: -len(".model_output.json")]
+        try:
+            _, raw = _load(os.path.join(root, name))
+            req_path = os.path.join(root, stem + ".json")
+            with open(req_path, "rb") as fh:
+                req_bytes = fh.read()
+            _, req = _load(req_path)
+            parsed = [x["idea"] for x in raw.get("parsed_ideas") or []]
+            if not str(raw.get("source", "")).startswith("LLM"):
+                raise Refused("not proposed by the model (keyword fallback)")
+            if req.get("format") != FORMAT or req.get("ideas") != parsed:
+                raise Refused("request file does not match the model's parsed ideas")
+            calls = raw.get("llm_calls") or []
+            out.append({"name": stem, "message": raw.get("message"), "mode": raw.get("mode"),
+                        "created_utc": raw.get("created_utc"), "status": "NOT_RUN",
+                        "request_file": os.path.relpath(req_path, REPO).replace(os.sep, "/"),
+                        "request_sha256": hashlib.sha256(req_bytes).hexdigest(),
+                        "model": calls[-1].get("model") if calls else None,
+                        "ideas": [{"template": i["template"], "params": i["params"]} for i in req["ideas"]]})
+        except (Refused, OSError, ValueError, KeyError, TypeError) as e:
+            refused.append({"name": stem, "reason": f"proposal: {e}"})
+    return out, refused
+
+
 def configured_dir():
     return os.environ.get("HEATCHECK_IDEAS") or DEFAULT_DIR
 
@@ -160,9 +198,11 @@ def read_all(root=None):
             families.append(read_family(d))
         except (Refused, OSError) as e:
             refused.append({"name": name, "reason": str(e)})
-    if not families and not refused:
+    proposals, p_refused = read_proposals()
+    refused += p_refused
+    if not families and not refused and not proposals:
         raise IdeasUnavailable("NOT_FOUND", "the idea-family directory holds no results.json")
     families.sort(key=lambda f: (f["mode"] != "development", f["name"]))
     rel = os.path.relpath(root, REPO).replace(os.sep, "/")
     return {"format": FORMAT, "source": rel if not rel.startswith("..") else os.path.basename(root),
-            "families": families, "refused": refused}
+            "families": families, "refused": refused, "proposals": proposals}
