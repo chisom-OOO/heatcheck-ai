@@ -1,0 +1,45 @@
+{
+ "format": "heatcheck-idea-family/1",
+ "ideas": [
+  {
+   "params": {
+    "alternative": "two_sided",
+    "feature": "home_back_to_back",
+    "level": "yes"
+   },
+   "template": "GAME_HOME_WIN_SPLIT"
+  },
+  {
+   "params": {
+    "alternative": "two_sided",
+    "feature": "away_back_to_back",
+    "level": "yes"
+   },
+   "template": "GAME_HOME_WIN_SPLIT"
+  },
+  {
+   "params": {
+    "alternative": "two_sided",
+    "feature": "rest_advantage",
+    "level": "home_more"
+   },
+   "template": "GAME_HOME_WIN_SPLIT"
+  },
+  {
+   "params": {
+    "alternative": "two_sided",
+    "feature": "rest_advantage",
+    "level": "away_more"
+   },
+   "template": "GAME_HOME_WIN_SPLIT"
+  },
+  {
+   "params": {
+    "alternative": "two_sided",
+    "feature": "home_rest_days",
+    "level": "0"
+   },
+   "template": "GAME_HOME_WIN_SPLIT"
+  }
+ ]
+}
