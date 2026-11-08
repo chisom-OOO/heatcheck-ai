@@ -54,7 +54,7 @@ from heatcheck.agents.roles import (
     view_capabilities,
 )
 from heatcheck.agents.views import ShotView
-from heatcheck.api.display_titles import display_title
+from heatcheck.api.display_titles import display_title, ref_headline
 from heatcheck.contracts.records import loads_strict
 from heatcheck.ledger.evidence import EvidenceLedger
 
@@ -548,6 +548,7 @@ class Dialogue:
         # Turns with no evidence entry (no registered test, not yet run): same keys, no challenges.
         out.setdefault("frost", [])
         out.setdefault("frost_reaction", frost.FROST_REACTION[None])
+        out["ref_headline"] = ref_headline(out.get("verdict"), out.get("claim_id"))
         return out
 
     def _frost_phrase(self, chal, facts) -> dict[str, str]:

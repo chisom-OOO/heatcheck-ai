@@ -35,9 +35,11 @@ test("one pose map covers all 9 states; unsure and blocked borrow thinking and l
   for (const s of M.STATES) assert.ok(M.POSES.includes(M.POSE_FOR_STATE[s]), s);
   assert.equal(M.POSE_FOR_STATE.unsure, "thinking");
   assert.equal(M.POSE_FOR_STATE.blocked, "listening");
+  assert.equal(M.POSE_FOR_STATE.hot_take, "thinking");   // hot_take.webp has three arms (user, 8 Nov)
+  assert.ok(!M.POSES.includes("hot_take"));
   for (const p of M.POSES) assert.equal(M.POSE_FOR_STATE[p], p);
   assert.equal(M.poseFile("cooled"), "poses/cooled.webp");
-  assert.equal(M.POSES.length, 7);
+  assert.equal(M.POSES.length, 6);
 });
 
 const missingPoses = M.POSES.filter((p) => !existsSync(join(H, "poses", `${p}.webp`)));

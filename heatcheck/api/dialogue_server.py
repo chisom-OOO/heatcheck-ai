@@ -101,6 +101,23 @@ def live_forecast_payload(path: Path | None) -> dict:
             "forecast": lf.doc}
 
 
+def board_forecast_payload(path: Path | None, now: datetime | None = None) -> dict:
+    """GET /api/live-forecast for the board (user, 8 Nov): only games that have not tipped off.
+    The file is unchanged and still validated whole; earlier games are listed in ``earlier`` so the
+    page can show one collapsed row. Other routes still read every game (live_forecast_payload)."""
+    from heatcheck.contracts.records import parse_utc
+    fc = live_forecast_payload(path)
+    if fc.get("status") != "OK":
+        return fc
+    now = now or datetime.now(UTC)
+    games = fc["forecast"].get("games") or []
+    upcoming = [g for g in games if parse_utc(g["tip_utc"]) > now]
+    earlier = [{k: g.get(k) for k in ("game_id", "away_team", "home_team", "tip_utc")}
+               for g in games if parse_utc(g["tip_utc"]) <= now]
+    return {**fc, "forecast": {**fc["forecast"], "games": upcoming},
+            "earlier": {"count": len(earlier), "games": earlier, "as_of_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ")}}
+
+
 @dataclass
 class InvestigationConfig:
     """Sources for POST /api/investigate. Every request re-reads and re-validates both files."""
@@ -370,7 +387,7 @@ def make_handler(dialogue: Dialogue, live_forecast: Path | None = None,
             if self.path == "/api/display-titles":
                 return self._send(200, {"display_titles": DISPLAY_TITLES})
             if self.path == "/api/live-forecast":
-                return self._send(200, live_forecast_payload(live_forecast))
+                return self._send(200, board_forecast_payload(live_forecast))
             if self.path.split("?", 1)[0] == "/api/scenario":
                 try:
                     return self._send(*run_scenario_menu(self.path.partition("?")[2], live_forecast, scenario))

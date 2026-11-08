@@ -71,7 +71,7 @@ export async function loadForecast({ mappingsUrl = "/api/market-mappings", timeo
     const pick = mappingNote ? { mapping: null, note: mappingNote } : pickMapping(mappings, row.game_id);
     return { row, mapping: pick.mapping, resp: null, error: pick.note, pending: Boolean(pick.mapping) };
   });
-  return { status: "OK", isSample: fc.body.is_sample, forecast, games };
+  return { status: "OK", isSample: fc.body.is_sample, forecast, games, earlier: fc.body.earlier || null };
 }
 
 /** What "Ask Heater about this game" sends: a non-empty message is what makes Max's server have the
@@ -179,8 +179,17 @@ export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loa
   // Responsible use (responsible_use.json "full"; Max, 8 Nov 2026)
   if (responsibleText) head.append(el("p", "board-ru", responsibleText));
   root.append(head);
+  // Games that have tipped off are not cards (Max's server lists them in `earlier`; user, 8 Nov).
+  const earlier = board.earlier && board.earlier.count > 0 ? board.earlier : null;
+  const earlierRow = () => {
+    const d = el("details", "board-earlier");
+    d.append(el("summary", "", `Earlier: ${earlier.count} game${earlier.count === 1 ? "" : "s"}, tipped off`));
+    for (const g of earlier.games || []) d.append(el("p", "board-note", `${g.away_team} at ${g.home_team}, tip ${g.tip_utc}`));
+    return d;
+  };
   if (!board.games.length) {
-    root.append(el("p", "board-note", "The forecast file lists no games."));
+    root.append(el("p", "board-note", earlier ? "No games left to tip off in the forecast file." : "The forecast file lists no games."));
+    if (earlier) root.append(earlierRow());
     return none;
   }
   const grid = el("div", "board-grid");
@@ -195,6 +204,7 @@ export function renderBoard(root, board, { onAsk, onScenario, onOwnScenario, loa
     grid.append(card);
   }
   root.append(grid);
+  if (earlier) root.append(earlierRow());
   return {
     update(g) {
       const c = cards.get(g);

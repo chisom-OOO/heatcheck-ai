@@ -86,9 +86,12 @@ body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflo
 }
 @keyframes slide-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .ref header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
-.ref-badge { font: 700 .78rem/1 var(--mono); letter-spacing: .14em; color: var(--ref); }
-.ref-title { font: 600 .95rem/1.2 var(--cond); color: var(--muted); letter-spacing: .02em; }
-.ref-text { margin: 0; font: 500 1.12rem/1.5 system-ui, sans-serif; min-height: 1.5em; }
+/* Ref card (user, 8 Nov): "THE REF" at double size, no claim title beside it; first line the
+   headline (Max's ref_headline, or built from the verdict and the claim title) in capitals, bold,
+   full teal; second line the Ref's explanation (ref_text) in sentence case at 70% opacity. */
+.ref-badge { font: 700 1.56rem/1 var(--mono); letter-spacing: .14em; color: var(--ref); }
+.ref-headline { margin: 0 0 8px; font: 700 30px/1.15 var(--cond); text-transform: uppercase; color: #2EC4B6; letter-spacing: .02em; overflow-wrap: anywhere; }
+.ref-text { margin: 0; font: 500 22px/1.4 system-ui, sans-serif; min-height: 1.4em; opacity: .7; }
 .ref.slammed { padding-bottom: 60px; }
 .ref.checking .ref-text { color: var(--ref); }
 .ref.checking .ref-text::after { content: ""; display: inline-block; width: 1.4em; animation: dots 1s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
@@ -392,18 +395,59 @@ body { padding-bottom: var(--ru-h); }
    to the right; result chips sit under Frost's questions on his side. The Ref's card and stamp are
    centred at the bottom of the middle column. */
 :root { --ice: #8FD3FF; --ice-ink: #EAF6FF; --ice-bg: #101823; --f-flip: 1; /* poses face left; -1 flips */ }
+/* Big figures (user, 8 Nov): Heater and Frost run the full height of the stage beside the conversation
+   (both rows, so the ask box sits under the conversation only). The middle column is 560 px, growing
+   to 640 px on wide screens (1920: 640). Each side column is a size container; a figure is
+   --fig-h tall = the smallest of 88% of the viewport height, what fits above the footer under its name
+   label, and 165% of its column width. The last limit keeps the drawn figure inside its column:
+   measured over every pose, Heater's figure spans 8-93% of the image width and Frost's 30-70%, and
+   the image is 687/1024 wide, so 1.65 x 0.671 x 0.92 ~ 1 column. The box itself may be wider than the
+   column; its empty edges are clipped (overflow: hidden), never drawn over the conversation.
+   1920x1080: 88% (950 px). 1440x900: as large as the 392 px columns allow (~72%). */
 body[data-cast="frost"] .stage {
-  grid-template-columns: minmax(0, 1fr) minmax(420px, 760px) minmax(0, 1fr);
-  grid-template-areas: "hero talk frost" "ask ask ask";
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(560px, clamp(560px, 100vw - 1280px, 640px)) minmax(0, 1fr);
+  grid-template-areas: "hero talk frost" "hero ask frost";
+  align-items: end; padding-left: 16px; padding-right: 16px;
 }
-body[data-cast="frost"] .talk { max-width: 760px; justify-self: center; width: 100%; align-self: end; }
-body[data-cast="frost"] .hero { justify-self: start; }
-body[data-cast="frost"] .hero .h-root { height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px); }
-.frost-side { grid-area: frost; justify-self: end; position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: flex-end; min-width: 0; overflow: hidden; }
+body[data-cast="frost"] .talk { max-width: none; justify-self: stretch; width: 100%; align-self: end; }
+body[data-cast="frost"] .hero, .frost-side {
+  --fig-h: min(88vh, calc(100vh - var(--ru-h) - 96px), 165cqw);
+  container-type: inline-size; align-self: stretch; justify-self: stretch; min-width: 0; overflow: clip;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+/* The figures stay standing just above the footer while a long conversation scrolls (sticky; the
+   columns clip with overflow: clip, which, unlike hidden, keeps the page as the scroller). Each name
+   label sticks with its figure, overlapping the empty top of the image by --name-in. */
+body[data-cast="frost"] #heater, body[data-cast="frost"] #frost { position: sticky; bottom: var(--ru-h); }
+/* Heater's box is right-aligned (his figure leans toward the middle); Frost's is centred. */
+body[data-cast="frost"] .hero { align-items: flex-end; }
+body[data-cast="frost"] .hero .h-root { height: var(--fig-h); min-height: 0; max-width: none; flex: none; }
+.frost-side { grid-area: frost; position: relative; z-index: 2; align-items: center; }
+/* Name labels, centred over each figure, overlapping the empty top of the image (about 4-9% of its
+   height). Heater harsh and condensed, Frost softer; about double the bubble text, a faint glow. */
+.cast-name { display: none; }
+body[data-cast="frost"] .cast-name {
+  display: block; align-self: center; position: sticky; z-index: 3; margin: 0 0 calc(var(--fig-h) * var(--name-in) * -1);
+  bottom: calc(var(--ru-h) + var(--fig-h) * (1 - var(--name-in)));
+  font-size: 44px; line-height: 1; white-space: nowrap; text-transform: uppercase; pointer-events: none;
+}
+/* Heater's flames start 3-5% down his image; Frost's hair 7-9% down (measured in tests/layout). */
+.heater-name { --name-in: .02; }
+.frost-name { --name-in: .05; }
+.heater-name {
+  font-family: "Oswald", "Bebas Neue", var(--cond); font-weight: 700; letter-spacing: 4px; padding-left: 4px;
+  color: #FF7A1A; text-shadow: 0 0 16px rgba(255, 122, 26, .5), 0 0 3px rgba(255, 122, 26, .4);
+}
+.frost-name {
+  font-family: "Nunito", "Quicksand", system-ui, sans-serif; font-weight: 700; letter-spacing: 2px; padding-left: 2px;
+  color: #8FD3FF; text-shadow: 0 0 16px rgba(143, 211, 255, .5), 0 0 3px rgba(143, 211, 255, .4);
+}
 .f-root {
-  position: relative; height: min(calc(100vh - 230px), 720px); height: min(calc(100dvh - 230px), 720px);
-  min-height: 380px; aspect-ratio: 687 / 1024; max-width: 100%;
+  position: relative; height: var(--fig-h, min(calc(100vh - 230px), 720px)); flex: none;
+  min-height: 0; aspect-ratio: 687 / 1024; max-width: none;
+  /* Frost's feet sit at 92.6% of his image, Heater's at 96%: drop Frost's box so their feet line up
+     (relative offset: the empty strip below goes under the footer). */
+  top: calc(var(--fig-h, 0px) * .035);
   transform: translateX(40px); opacity: 0; transition: transform .35s ease-out, opacity .35s ease-out;
 }
 .f-root.entered { transform: none; opacity: 1; }
@@ -435,13 +479,14 @@ body[data-cast="frost"] .hero .h-root { height: min(calc(100vh - 230px), 720px);
 .cv-frost::before { right: -24px; width: 26px; height: 26px; background: var(--ice); clip-path: polygon(0 0, 100% 55%, 0 100%); }
 .cv-frost::after { right: -17px; width: 22px; height: 18px; margin-top: 4px; background: var(--ice-bg); clip-path: polygon(0 0, 100% 55%, 0 100%); }
 .cv-reaction .cv-text { font-size: 17px; }
+/* A result chip is a fact from the record, not a speaker: centred in the thread, grey on a subtle dark
+   background, no tail, a little smaller than the bubbles. The ice-blue left border is its only colour
+   (pass, fail and info chips look the same; the words say which). */
 .cv-chip {
-  align-self: flex-end; max-width: 80%; margin: -4px 14px 0 0; padding: 8px 12px; border-radius: 6px;
-  font-size: 14px; line-height: 1.4; color: #BFE6FF; background: #0B1B2B; border-left: 3px solid var(--ice);
-  overflow-wrap: anywhere; animation: pop-in .2s ease-out both;
+  align-self: center; max-width: 80%; margin: -4px 0 0; padding: 8px 14px; border-radius: 6px;
+  font-size: 16px; line-height: 1.4; color: #9B97AD; background: rgba(255, 255, 255, .045);
+  border-left: 3px solid var(--ice); overflow-wrap: anywhere; animation: pop-in .2s ease-out both;
 }
-.cv-chip.pass { border-left-color: var(--ref); }
-.cv-chip.fail { border-left-color: #FF8A8E; }
 body[data-cast="frost"] .ref { margin: 18px auto 0; width: min(100%, 620px); text-align: left; align-self: center; }
 body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-50%) rotate(-9deg); animation-name: slam-centre; max-width: 80%; }
 @keyframes slam-centre {
@@ -451,6 +496,22 @@ body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-
   100% { opacity: 1; transform: translateX(-50%) rotate(-9deg) scale(1); }
 }
 .skip-hint { margin: 0; text-align: center; color: var(--muted); font-size: .8rem; }
+/* During an exchange the question as asked replaces the wordmark (user, 8 Nov): the page's own body
+   font, bold, a little larger than the bubbles, centred in the space beside the view buttons. */
+.asked {
+  margin: 0; flex: 1 1 0; min-width: 0; text-align: center; overflow-wrap: anywhere;
+  font: 700 26px/1.25 system-ui, -apple-system, "Segoe UI", sans-serif; color: #ECEAF4;
+}
+/* The Ref card and its stamp stay clear of the fixed footer when scrolled into view. The stamp hangs
+   about 50 px below the card (26 px offset plus its rotation), so the card keeps that much room under it
+   (the page can scroll that far) and the scroll margin covers it (measured in tests/layout). */
+body[data-cast="frost"] .ref { scroll-margin-bottom: calc(var(--ru-h) + 64px); scroll-margin-top: 16px; }
+body[data-cast="frost"] .ref.slammed { margin-bottom: 56px; }
+.cv, .cv-chip { scroll-margin-bottom: calc(var(--ru-h) + 16px); }
+/* Once the Ref is checking, earlier chips fold to one line (the full text stays in the page and the
+   tooltip; hover or keyboard focus opens it again), so the card fits on screen after three rounds. */
+.convo.settled .cv-chip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
+.convo.settled .cv-chip:hover, .convo.settled .cv-chip:focus { white-space: normal; }
 .sample-flag {
   margin: 0; padding: 6px 10px; border: 1px dashed #FFC24D; border-radius: 6px; color: #FFC24D;
   font: 700 .78rem/1.3 var(--mono); text-align: center;
@@ -461,9 +522,11 @@ body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas: "hero frost" "talk talk" "ask ask"; grid-template-rows: auto auto auto;
   }
-  body[data-cast="frost"] .hero .h-root, body[data-cast="frost"] .f-root { height: 140px; min-height: 0; }
-  body[data-cast="frost"] .hero { justify-self: center; justify-content: flex-start; }
-  body[data-cast="frost"] .frost-side { justify-self: center; justify-content: flex-end; }
+  body[data-cast="frost"] .hero .h-root, body[data-cast="frost"] .f-root { height: 140px; min-height: 0; top: 0; }
+  body[data-cast="frost"] #heater, body[data-cast="frost"] #frost, body[data-cast="frost"] .cast-name { position: static; }
+  body[data-cast="frost"] .hero, body[data-cast="frost"] .frost-side { justify-self: center; align-items: center; }
+  body[data-cast="frost"] .cast-name { font-size: 22px; margin-bottom: 2px; }
+  .asked { font-size: 20px; }
   .cv { max-width: 94%; }
   .cv-text { font-size: 17px; }
 }
@@ -504,3 +567,6 @@ body[data-cast="frost"] .stamp { left: 50%; right: auto; transform: translateX(-
 .tamper-status.good { color: #7EE0A1; }
 .tamper-status.bad { color: #FF8A8E; }
 @media (prefers-reduced-motion: reduce) { .tamper-ledger .tamper-new td { animation: none; } }
+/* Max, 8 Nov: games that have tipped off, one collapsed row under the cards */
+.board-earlier { margin-top: 12px; color: var(--muted); font-size: .95rem; }
+.board-earlier summary { cursor: pointer; }

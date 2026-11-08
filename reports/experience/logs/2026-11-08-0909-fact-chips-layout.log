@@ -1,0 +1,10 @@
+commit: 18c744fe168a77aa90345a0aa06ba20f777494c3
+command: node apps/web/tests/layout/frost_layout.mjs reports/experience/2026-11-08-0909-fact-chips-layout
+edge: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+
+PASS dialogue-1440x900
+PASS market-1440x900
+PASS dialogue-1920x1080
+PASS market-1920x1080
+4/4 cases PASS
+exit=0

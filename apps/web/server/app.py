@@ -285,7 +285,11 @@ def load_cached_harness():
 MIME = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
         ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".json": "application/json",
         ".png": "image/png", ".webp": "image/webp", ".ico": "image/x-icon", ".jsonl": "application/x-ndjson; charset=utf-8"}
-CSP = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; "
+# The demo page's two display fonts (Oswald, Nunito; user, 8 Nov) come from Google Fonts: its stylesheet
+# and font files are the only outside origins allowed, for styles and fonts only. Scripts and data
+# requests stay same-origin.
+CSP = ("default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; "
+       "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; "
        "media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
 
 # ------------------------------------------------------------------------------ Max's API pass-through

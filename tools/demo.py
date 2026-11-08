@@ -193,6 +193,14 @@ def main(argv: list[str]) -> int:
     say("market card: forecast " + (str(LIVE_FORECAST.relative_to(ROOT)) if LIVE_FORECAST.exists()
                                      else "MISSING (Research's data/live/forecasts.json not present)")
         + "; quotes " + ("RECORDED as of capture" if "--recorded-market" in argv else "LIVE (60 s limit)"))
+    try:   # the board shows only games still to tip (user, 8 Nov); say how many, from the same rule
+        from heatcheck.api.dialogue_server import board_forecast_payload
+        bf = board_forecast_payload(LIVE_FORECAST)
+        if bf.get("status") == "OK":
+            say(f"board: {len(bf['forecast']['games'])} games still to tip; "
+                f"{bf['earlier']['count']} earlier (tipped off) hidden as one row")
+    except Exception as e:  # the count is a convenience; never stops the demo
+        say(f"board: game count unavailable ({type(e).__name__})")
     ui = subprocess.Popen([sys.executable, "-m", "server.app", "--port", str(UI_PORT),
                            "--ledger", str(DEMO_LEDGER)], cwd=ROOT / "apps" / "web")
     try:

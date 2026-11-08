@@ -26,7 +26,7 @@ import {
 import { MIC, createVoice } from "./voice.js";
 import { firstAskThisSession, loadResponsibleUse } from "./responsible.js";
 import { mount as mountFrost } from "./frost/frost.js";
-import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, skippable } from "./frost/frost-model.js";
+import { exchangeFromApi, exchangeSteps, frostEndState, isSkipKey, pickCastVoices, refHeadline, skippable } from "./frost/frost-model.js";
 import {
   TAMPER_EVENTS_URL, TAMPER_FLIP_URL, TAMPER_RESTORE_URL, eventRows, flipView, mockTamperFetch, postTamper, restoreView,
   tamperMode, tamperRefLine,
@@ -47,6 +47,7 @@ const ui = {
   hint: $("hint"), q: $("q"), go: $("go"), chips: [...document.querySelectorAll(".chip")],
   scenario: $("scenario"), ruNotice: $("ru-notice"),
   convo: $("convo"), frostSide: $("frost-side"), skipHint: $("skip-hint"), sampleFlag: $("sample-flag"),
+  brand: document.querySelector(".brand"), asked: $("asked"),
   tamper: $("tamper"), tamperBtn: $("btn-tamper"), restoreBtn: $("btn-restore"),
 };
 // The tamper button against Max's endpoints (shown by default; ?tamper=0 hides it); ?tamper=mock:
@@ -147,6 +148,7 @@ async function answer(question) {
   // Frost's questions and result chips come only from the server's answer; none: Heater-only flow.
   const exchange = forced ? null : exchangeFromApi(api, { take });
   return { claimId, entry, apiOnly, take, lastWord, exchange, sample: Boolean(api?.is_sample),
+    refHeadline: forced ? null : api?.ref_headline ?? null,
     takeSource: `${takeFromApi ? "dialogue API" : state.personalitySource}${lastWord ? "; reaction: dialogue API" : ""}` };
 }
 
@@ -176,11 +178,21 @@ function reset() {
   ui.scenario.hidden = true;
   ui.ruNotice.hidden = true;
   ui.convo.replaceChildren();
+  ui.convo.classList.remove("settled");
   ui.convo.hidden = true;
   ui.skipHint.hidden = true;
   ui.sampleFlag.hidden = true;
   ui.tamper.hidden = true;
+  showAsked("");
   setCast(false);
+}
+
+/** During an exchange the question as asked replaces the HEATCHECK wordmark; "" brings the
+ *  wordmark back (home view, other views, and exchanges that start from a button, not a question). */
+function showAsked(text) {
+  ui.asked.textContent = text || "";
+  ui.asked.hidden = !text;
+  ui.brand.hidden = Boolean(text);
 }
 
 // ------------------------------------------------------------------ Frost on stage
@@ -205,14 +217,23 @@ function convoBubble(who, text, extra = "") {
   return li;
 }
 
-/** A result chip under Frost's question, on his side. No voice. The source goes on the tooltip. */
+/** A result chip under Frost's question, on his side. No voice. The tooltip holds the full text (chips
+ *  fold to one line once the Ref is checking) and the source. Focusable, so the keyboard can open it. */
 function convoChip(chip) {
   const li = document.createElement("li");
   li.className = `cv-chip ${chip.kind}`;
   li.textContent = chip.text;
-  if (chip.source) li.title = `Source: ${chip.source}`;
+  li.title = chip.source ? `${chip.text} (source: ${chip.source})` : chip.text;
+  li.tabIndex = 0;
   ui.convo.append(li);
   return li;
+}
+
+/** Keep the newest line of the exchange on screen; the Ref card and its stamp are scrolled fully into
+ *  view (above the fixed footer, via scroll-margin) when they land. */
+function keepInView(el, block = "nearest") {
+  const reduce = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  el?.scrollIntoView?.({ block, behavior: reduce ? "auto" : "smooth" });
 }
 
 /** Space: draw everything up to the stamp at once and stop the voice that is talking. */
@@ -230,31 +251,30 @@ const untilSkip = (p) => (state.skip ? Promise.resolve() : Promise.race([p, stat
 const CHIP_PAUSE_MS = 1200;
 
 /** Heater's take, Frost's questions with their result chips, the Ref, the stamp, then Frost's and
- *  Heater's reactions. Nothing here decides: the questions, chips and verdict are the server's and
- *  the record's. */
-async function runExchange(a, turn) {
+ *  Heater's reactions. Used by the dialogue and by market cards. Nothing here decides: the questions,
+ *  chips and verdict are the server's and the record's; ``show`` says what the Ref shows:
+ *  {title, refLine(), stamp: {text, kind}, heaterEnd, frostEnd, evidence() -> Node|null, sample}. */
+async function runExchange(ex, show) {
   const h = state.heater;
   const opts = { voiceOn: state.voiceOn };
-  const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
-  const ex = { ...a.exchange, heaterReaction: a.exchange.heaterReaction || a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "") };
   const steps = exchangeSteps(ex);
   setCast(true);
   const f = state.frost || (state.frost = mountFrost($("frost")));
   f.leave();
   f.setState("idle");
   ui.convo.hidden = false;
-  ui.sampleFlag.hidden = !a.sample;
+  ui.sampleFlag.hidden = !show.sample;
   state.skip = false;
   state.skipSignal = new Promise((res) => { state.skipNow = res; });
   state.exchangeRunning = true;
   ui.skipHint.hidden = false;
-  log(`frost: ${a.exchange.challenges.length} question(s)`);
+  log(`frost: ${ex.challenges.length} question(s)`);
   try {
     for (const st of steps) {
       const fast = state.skip && skippable(st);
       if (st.kind === "take") {
         document.body.dataset.phase = "take";
-        convoBubble("heater", st.text);
+        keepInView(convoBubble("heater", st.text));
         h.setState("hot_take");
         if (!fast) await untilSkip(h.speak(st.text, "heater", opts));
       } else if (st.kind === "question") {
@@ -262,46 +282,52 @@ async function runExchange(a, turn) {
         if (st.first) { f.enter(); if (!fast) await untilSkip(sleep(450)); }
         f.setState("challenging");
         h.setState("listening");
-        convoBubble("frost", st.text);
+        keepInView(convoBubble("frost", st.text));
         if (!fast) await untilSkip(f.speak(st.text, opts));
       } else if (st.kind === "chip") {
         f.setState("evidence");
-        convoChip(st.chip);
+        keepInView(convoChip(st.chip));
         if (!fast) await untilSkip(sleep(CHIP_PAUSE_MS));
       } else if (st.kind === "ruling") {
         f.setState("unconvinced");
         document.body.dataset.phase = "check";
-        ui.refTitle.textContent = CLAIM_TITLES[a.claimId] || a.claimId;
+        ui.convo.classList.add("settled");          // earlier chips fold to one line
+        ui.refTitle.textContent = show.title;
         ui.refText.textContent = "Checking the tape";
         ui.ref.classList.add("checking");
         ui.ref.hidden = false;
         restartAnim(ui.ref);
+        keepInView(ui.ref, "end");
         if (!fast) await untilSkip(h.play("heat_check", TIMING.heat_check));
         h.setState("thinking");
-        const refLine = refLineFor(a);
+        const refLine = show.refLine();
         ui.ref.classList.remove("checking");
+        ui.refTitle.textContent = refHeadline(show.headline, { verdict: show.verdict, claimId: show.claimId, title: show.title, stampText: show.stamp.text });
         ui.refText.textContent = refLine;
         document.body.dataset.phase = "ref";
+        keepInView(ui.ref, "end");
         if (!fast) await untilSkip(h.speak(refLine, "ref", opts));
       } else if (st.kind === "stamp") {
         state.exchangeRunning = false;
         ui.skipHint.hidden = true;
-        const stamp = stampFor(decision, state.personality);
-        ui.stamp.className = `stamp ${stamp.kind}`;
-        ui.stamp.textContent = stamp.text;
+        ui.stamp.className = `stamp ${show.stamp.kind}`;
+        ui.stamp.textContent = show.stamp.text;
         ui.stamp.hidden = false;
         restartAnim(ui.stamp);
         ui.ref.classList.add("slammed");
-        h.setState(decision ? stateForDecision(decision) : "unsure", { restart: true });
-        f.setState(frostEndState(decision));
-        if (a.entry) {
-          ui.evidenceBody.replaceChildren(evidenceDetails(a.entry, state.ledger.verified));
+        h.setState(show.heaterEnd, { restart: true });
+        f.setState(show.frostEnd);
+        const ev = show.evidence?.();
+        if (ev) {
+          ui.evidenceBody.replaceChildren(ev);
           ui.evidence.hidden = false;
         }
         document.body.dataset.phase = "verdict";
+        keepInView(ui.ref, "end");
         await sleep(700);
       } else if (st.kind === "reaction") {
         convoBubble(st.who, st.text, "cv-reaction");
+        keepInView(ui.ref, "end");                  // the reaction lands above the card; the card stays in view
         if (st.who === "frost") await f.speak(st.text, opts);
         else await h.speak(st.text, "heater", opts);
       }
@@ -393,6 +419,7 @@ async function ask(question) {
   const h = state.heater;
   const turn = state.turn++;
   reset();
+  showAsked(question);
   voice.stopSpeaking();
   log(`question: ${question}`);
 
@@ -405,7 +432,18 @@ async function ask(question) {
 
   // With Frost's questions in the answer: Heater, Frost, the Ref in the middle column.
   if (a.exchange) {
-    await runExchange(a, turn);
+    const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
+    const heaterReaction = a.exchange.heaterReaction || a.lastWord || (decision ? reactFor(decision, state.personality, turn) : "");
+    await runExchange({ ...a.exchange, heaterReaction }, {
+      title: CLAIM_TITLES[a.claimId] || a.claimId,
+      headline: a.refHeadline, verdict: decision, claimId: a.claimId,
+      refLine: () => refLineFor(a),
+      stamp: stampFor(decision, state.personality),
+      heaterEnd: decision ? stateForDecision(decision) : "unsure",
+      frostEnd: frostEndState(decision),
+      evidence: () => (a.entry ? evidenceDetails(a.entry, state.ledger.verified) : null),
+      sample: a.sample,
+    });
     document.body.dataset.phase = "done";
     state.busy = false;
     setBusy(false);
@@ -434,6 +472,7 @@ async function ask(question) {
   const decision = a.entry ? a.entry.identity.decision : a.apiOnly ? a.apiOnly.verdict : null;
   const refLine = refLineFor(a);
   ui.ref.classList.remove("checking");
+  ui.refTitle.textContent = refHeadline(a.refHeadline, { verdict: decision, claimId: a.claimId, title: CLAIM_TITLES[a.claimId] || a.claimId, stampText: stampFor(decision, state.personality).text });
   ui.refText.textContent = refLine;
   document.body.dataset.phase = "ref";
   await h.speak(refLine, "ref", { voiceOn: state.voiceOn });
@@ -585,7 +624,7 @@ function setView(view) {
     v.button().setAttribute("aria-pressed", String(on));
     v.button().textContent = on ? "Back to Heater" : v.label;
   }
-  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; ui.tamper.hidden = true; setCast(false); }
+  if (view !== "talk") { ui.hint.hidden = true; ui.bubble.hidden = true; ui.ref.hidden = true; ui.convo.hidden = true; ui.sampleFlag.hidden = true; ui.tamper.hidden = true; showAsked(""); setCast(false); }
 }
 
 function toggleView(view, open) {
@@ -842,6 +881,7 @@ async function runScenario(question, gameId) {
   setBusy(true);
   setView("talk");
   reset();
+  showAsked(question);
   voice.stopSpeaking();
   const h = state.heater;
   h.setState("listening");
@@ -943,6 +983,7 @@ async function askMarket(g) {
   setBusy(true);
   setView("talk");
   reset();
+  showAsked(ASK_MESSAGE);   // what the card's Ask sends to Max's server
   voice.stopSpeaking();
   const h = state.heater;
   // Responsible use: the full notice once per session, the first time a market card is asked about.
@@ -966,6 +1007,26 @@ async function askMarket(g) {
   // holds back any sentence that mentions the Ref or a verdict until after the stamp.
   const split = splitTake(heaterPlain(resp.heater_text, resp.forecast?.inputs_used));
   const take = split.first || MARKET_OPENER;
+  // With Frost's challenges in the card's answer (Max's /api/investigate): the same sequence as a
+  // question, Heater left, Frost right, the Ref and the card's stamp in the middle column.
+  const exchange = exchangeFromApi(resp, { take });
+  if (exchange) {
+    await runExchange({ ...exchange, heaterReaction: marketReaction(split, resp) }, {
+      title: `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`,
+      headline: resp.ref_headline,
+      refLine: () => marketRefPlain(resp),
+      stamp: marketStamp(resp),
+      heaterEnd: marketEndState(resp),
+      frostEnd: frostEndState(resp.verdict),
+      evidence: () => marketDetails(resp),
+      sample: false,
+    });
+    document.body.dataset.phase = "done";
+    log(`market reasons: ${failedReasons(resp).join("; ") || "none"}`);
+    state.busy = false;
+    setBusy(false);
+    return;
+  }
   ui.take.textContent = take;
   ui.bubble.hidden = false;
   restartAnim(ui.bubble);
@@ -980,11 +1041,12 @@ async function askMarket(g) {
   await h.play("heat_check", TIMING.heat_check);
   h.setState("thinking");
   const line = marketRefPlain(resp);
+  const stamp = marketStamp(resp);
   ui.ref.classList.remove("checking");
+  ui.refTitle.textContent = refHeadline(resp.ref_headline, { title: `${g.row.away_team} at ${g.row.home_team} · forecast vs. market`, stampText: stamp.text });
   ui.refText.textContent = line;
   document.body.dataset.phase = "ref";
   await h.speak(line, "ref", { voiceOn: state.voiceOn });
-  const stamp = marketStamp(resp);
   ui.stamp.className = `stamp ${stamp.kind}`;
   ui.stamp.textContent = stamp.text;
   ui.stamp.hidden = false;
