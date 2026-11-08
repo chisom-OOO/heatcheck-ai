@@ -96,8 +96,8 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
 | H2: Elo beats the base rate | +0.0644 | [+0.0106, +0.1282] | 0.0458 | **SURVIVED_PROTOCOL** |
 | H1: rest/back-to-back adds to Elo | +0.0201 | [−0.0043, +0.0438] | 0.0490 | **INSUFFICIENT_EVIDENCE** |
 
-- **Elo vs base rate survives, narrowly.** The 39-day window is exactly the minimum of five 7-day blocks. The
-  14- and 28-day robustness checks could not be computed, so the verdict rests on the 7-day analysis alone.
+- **Elo vs base rate survives, narrowly.** The 39-day window is exactly the five-block minimum, so the 14- and
+  28-day robustness checks could not run.
 - **Why rest is INSUFFICIENT_EVIDENCE although Holm p = 0.049 < 0.05.** Verbatim from
   `reports/research/2026-11-07-2015-rebuild-and-seal-binding.md` §1:
 
@@ -111,9 +111,8 @@ Source: `handoff/research-20261107/evidence/game_prediction_final.json`, receipt
 
 ### 4.2 Hot hand, development games, and testing the tester
 
-- **Development games** (930 games, 165,710 field-goal attempts): P(make after 3 makes) = 0.4827 vs 0.4777
-  after 3 misses. Shuffling within each player's game already produces +0.0190, more than the observed
-  +0.0050, so one-sided p = 0.996: not rejected (`evidence/hot_hand_dev.json`).
+- **Development games** (165,710 field-goal attempts): P(make after 3 makes) 0.4827 vs 0.4777 after 3 misses;
+  shuffling alone produces +0.0190, more than the observed +0.0050 (p = 0.996, not rejected).
 - **Simulated leagues with known truth** (`evidence/harness_report.json`): false-positive rate 0.043 at
   α = 0.05, and power 0.87 (strong effect) or 0.31 (weak). Within-game form drift with no streak triggers it
   38% of the time, so a rejection shows association, not cause.
@@ -239,15 +238,17 @@ Grammar: `docs/IDEA_GRAMMAR.md`; runner and results: `research/idea-family` (rep
 - A survivor is a `CANDIDATE`, never `SURVIVED_PROTOCOL`; only development games are read.
 
 **Results so far.**
-- **Heater-proposed, keyword fallback** (same question, Max `e1c2dc3`): two ideas, both NOT_A_CANDIDATE
-  (away team more rested: raw p 0.030, Holm 0.060).
-- **Heater-proposed, model** (one `muse-spark-1.3` call, Max `c15abf7`; Research checked the raw model text
-  matches the request): five rest ideas, all **NOT_A_CANDIDATE**.
+- **Keyword fallback** (same question): two ideas, both NOT_A_CANDIDATE (best: raw p 0.030, Holm 0.060).
+- **Heater-proposed by the model** ("Does rest matter?", one `muse-spark-1.3` call; raw text checked against
+  the request): five rest ideas, all **NOT_A_CANDIDATE**.
   - The strongest, away team more rested, had p 0.043 and Holm 0.215.
   - Two of the five ideas were the same condition under different names; the grammar does not yet catch that.
-  - Both Heater families agree with the registered rest verdict: not shown.
+- **Lead, not finding.** These rest ideas overlap with Research's hand-written family and with each other,
+  all on the same 2023–24 development games. Holm is applied within each family, not across families, so
+  the same question was tested more than once with no correction across them. None passed even within its
+  own family.
 
-The families below were written by Research to exercise the machine.
+Research wrote the families below to exercise the machine.
 - **Development data, 12 ideas:**
   - Both planned positive controls became CANDIDATE: strong Elo favourites win more, and 3-pointers go in less
     (Holm p 0.012 each).
@@ -318,9 +319,8 @@ A reviewer who wrote none of the code replayed milestones on their own data buil
 - **The 15:22 run's inputs cannot be proven after the fact.** It only copied the plan's data hashes. What is
   proven: today's data match the plan, and replaying on them reproduces every output bit for bit
   (`NONE_PREDATES_BINDING` in the ledger).
-- **Data rights.** The upstream repository is Apache-2.0 licensed, which does not establish rights to the
-  NBA data. Raw files and built tables are not redistributed, with one exception: the raw balldontlie pages
-  committed for the live forecast, whose terms are not reviewed here.
+- **Data rights.** The upstream Apache-2.0 licence does not establish NBA data rights. Raw files are not
+  redistributed, except the balldontlie pages committed for the live forecast (terms not reviewed).
 - **Other limits:**
   - The score reconciliation's second source is from the same organisation, and no independent cross-check
     has been run.
